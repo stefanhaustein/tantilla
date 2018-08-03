@@ -1,0 +1,16 @@
+apply plugin: 'java-library'
+apply plugin: 'application'
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    api "com.github.stefanhaustein.expressionparser:core:v2.3.0"
+}
+
+
+run {
+    standardInput = System.in
+}
