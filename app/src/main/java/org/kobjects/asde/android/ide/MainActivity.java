@@ -193,11 +193,13 @@ public class MainActivity extends AppCompatActivity implements Console {
         case NUMBER:
           int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
           tokenizer.nextToken();
-          if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER) {
+          if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER || "?".equals(tokenizer.currentValue)) {
             getCurrentFunction().put(lineNumber, program.parser.parseStatementList(tokenizer));
             break;
           }
+          // Not
           tokenizer = program.parser.createTokenizer(line);
+          tokenizer.nextToken();
           // Fall-through intended
         default:
           List<Statement> statements = program.parser.parseStatementList(tokenizer);

@@ -63,10 +63,16 @@ public class Parser {
       }
     }
     if (type == null) {
-      type = Statement.Type.LET;
-    } else {
-      tokenizer.nextToken();
+      Node expression = expressionParser.parse(tokenizer);
+
+      if ((expression instanceof Operator) && (expression.children[0] instanceof AssignableNode)
+              && ((Operator) expression).name.equals("=")) {
+        return new Statement(program, Statement.Type.LET, new String[]{" = "}, expression.children);
+      }
+      return new Statement(program, Statement.Type.PRINT, new String[0], expression);
     }
+    tokenizer.nextToken();
+
     switch (type) {
       case RUN:  // 0 or 1 param; Default is 0
       case RESTORE:

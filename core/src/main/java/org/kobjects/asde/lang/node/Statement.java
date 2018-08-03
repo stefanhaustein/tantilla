@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.node;
 
-import org.kobjects.asde.lang.BasicShell;
+import org.kobjects.asde.lang.AsdeShell;
 import org.kobjects.asde.lang.DefFn;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
@@ -305,7 +305,7 @@ public class Statement extends Node {
       BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
       while (null != (line = reader.readLine())) {
         try {
-          BasicShell.processInputLine(interpreter, line);
+          AsdeShell.processInputLine(interpreter, line);
         } catch (Exception e) {
           program.println(line);
           program.println(e.getMessage());

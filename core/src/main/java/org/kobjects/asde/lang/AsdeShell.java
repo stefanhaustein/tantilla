@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
-public class BasicShell {
+public class AsdeShell {
 
     /**
      * Returns true if the line was "interactive" and a "ready" prompt should be displayed.
