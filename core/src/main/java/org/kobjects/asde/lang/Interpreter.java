@@ -41,7 +41,7 @@ public class Interpreter {
     }
 
     public void runProgram() {
-        runStatements(Collections.singletonList(new Statement(program, Statement.Type.GOTO)));
+        runStatements(Collections.singletonList(new Statement(program, Statement.Type.RUN)));
     }
 
     public void runStatements(final List<Statement> statements) {
@@ -57,11 +57,11 @@ public class Interpreter {
                         currentLine = entry.getKey();
                         runStatementsImpl(entry.getValue());
                     }
-                    if (interpreterThread != null) {
-                        interpreterThread = null;
-                        for (StartStopListener startStopListener : startStopListeners) {
-                            startStopListener.programStopped();
-                        }
+                }
+                if (interpreterThread != null) {
+                    interpreterThread = null;
+                    for (StartStopListener startStopListener : startStopListeners) {
+                        startStopListener.programStopped();
                     }
                 }
             }
