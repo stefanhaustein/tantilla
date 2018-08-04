@@ -2,6 +2,7 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.type.Type;
 
 public class Literal extends Node {
   Object value;
@@ -17,8 +18,8 @@ public class Literal extends Node {
   }
 
   @Override
-  public Class<?> returnType() {
-    return value.getClass();
+  public Type returnType() {
+    return value instanceof String ? Type.STRING : Type.NUMBER;
   }
 
   @Override

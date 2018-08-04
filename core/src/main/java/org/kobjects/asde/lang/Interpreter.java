@@ -41,7 +41,7 @@ public class Interpreter {
     }
 
     public void runProgram() {
-        runStatements(Collections.singletonList(new Statement(program, Statement.Type.RUN)));
+        runStatements(Collections.singletonList(new Statement(program, Statement.Kind.RUN)));
     }
 
     public void runStatements(final List<Statement> statements) {

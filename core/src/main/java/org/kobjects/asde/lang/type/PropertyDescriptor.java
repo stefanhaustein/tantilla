@@ -1,7 +1,7 @@
-package org.kobjects.asde.lang.classifier;
+package org.kobjects.asde.lang.type;
 
 public interface PropertyDescriptor {
     int ordinal();
     String name();
-    Object type();
+    Type type();
 }

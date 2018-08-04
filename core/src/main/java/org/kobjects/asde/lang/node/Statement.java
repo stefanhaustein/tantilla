@@ -5,6 +5,7 @@ import org.kobjects.asde.lang.DefFn;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.StackEntry;
+import org.kobjects.asde.lang.type.Type;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,7 +20,7 @@ import java.util.Map;
 
 public class Statement extends Node {
 
-  public enum Type {
+  public enum Kind {
     CLEAR, CONTINUE,
     DATA, DIM, DEF, DUMP,
     END,
@@ -36,22 +37,22 @@ public class Statement extends Node {
   }
 
   final Program program;
-  public final Type type;
+  public final Kind kind;
   final String[] delimiter;
 
-  public Statement(Program program, Type type, String[] delimiter, Node... children) {
+  public Statement(Program program, Kind kind, String[] delimiter, Node... children) {
     super(children);
     this.program = program;
-    this.type = type;
+    this.kind = kind;
     this.delimiter = delimiter;
   }
 
-  public Statement(Program program, Type type, Node... children) {
-    this(program, type, null, children);
+  public Statement(Program program, Kind kind, Node... children) {
+    this(program, kind, null, children);
   }
 
   public Object eval(Interpreter interpreter) {
-    if (type == null) {
+    if (kind == null) {
       return null;
     }
 
@@ -59,7 +60,7 @@ public class Statement extends Node {
       program.print(interpreter.currentLine + ":" + interpreter.currentIndex + ": " + this);
     }
 
-    switch (type) {
+    switch (kind) {
       case CONTINUE:
         if (program.stopped == null) {
           throw new RuntimeException("Not stopped.");
@@ -198,7 +199,7 @@ public class Statement extends Node {
             if (interpreter.dataStatement != null) {
               interpreter.dataPosition[1]++;
             }
-            interpreter.dataStatement = find(Type.DATA, null, interpreter.dataPosition);
+            interpreter.dataStatement = find(Kind.DATA, null, interpreter.dataPosition);
             if (interpreter.dataStatement == null) {
               throw new RuntimeException("Out of data.");
             }
@@ -249,7 +250,7 @@ public class Statement extends Node {
         break;
 
       default:
-        throw new RuntimeException("Unimplemented statement: " + type);
+        throw new RuntimeException("Unimplemented statement: " + kind);
     }
     if (program.trace) {
       program.println();
@@ -257,14 +258,14 @@ public class Statement extends Node {
     return null;
   }
 
-  Statement find(Type type, String name, int[] position) {
+  Statement find(Kind kind, String name, int[] position) {
     Map.Entry<Integer, List<Statement>> entry;
     while (null != (entry = program.main.code.ceilingEntry(position[0]))) {
       position[0] = entry.getKey();
       List<Statement> list = entry.getValue();
       while (position[1] < list.size()) {
         Statement statement = list.get(position[1]);
-        if (statement.type == type) {
+        if (statement.kind == kind) {
           if (name == null || statement.children.length == 0) {
             return statement;
           }
@@ -289,7 +290,7 @@ public class Statement extends Node {
       program.print(entry.getKey());
       List<Statement> line = entry.getValue();
       for (int i = 0; i < line.size(); i++) {
-        program.print(i == 0 || line.get(i - 1).type == Type.IF ? " " : " : ");
+        program.print(i == 0 || line.get(i - 1).kind == Kind.IF ? " " : " : ");
         program.print(line.get(i));
       }
       program.println();
@@ -325,7 +326,7 @@ public class Statement extends Node {
     double step = children.length > 3 ? evalDouble(interpreter, 3) : 1.0;
     if (Math.signum(step) == Math.signum(Double.compare(current, end))) {
       int nextPosition[] = new int[3];
-      if (find(Type.NEXT, children[0].toString(), nextPosition) == null) {
+      if (find(Kind.NEXT, children[0].toString(), nextPosition) == null) {
         throw new RuntimeException("FOR without NEXT");
       }
       interpreter.currentLine = nextPosition[0];
@@ -371,7 +372,7 @@ public class Statement extends Node {
   void input(Interpreter interpreter) {
     for (int i = 0; i < children.length; i++) {
       Node child = children[i];
-      if (type == Type.INPUT && child instanceof Variable) {
+      if (kind == Kind.INPUT && child instanceof Variable) {
         if (i <= 0 || i > delimiter.length || !delimiter[i-1].equals(", ")) {
           program.print("? ");
         }
@@ -397,17 +398,17 @@ public class Statement extends Node {
   }
 
   @Override
-  public Class<?> returnType() {
-    return Void.class;
+  public Type returnType() {
+    return Type.VOID;
   }
 
   @Override
   public String toString() {
-    if (type == null) {
+    if (kind == null) {
       return "";
     }
     StringBuilder sb = new StringBuilder();
-    sb.append(type.name());
+    sb.append(kind.name());
     if (children.length > 0) {
       sb.append(' ');
       sb.append(children[0]);

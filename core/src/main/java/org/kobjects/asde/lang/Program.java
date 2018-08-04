@@ -1,13 +1,9 @@
 package org.kobjects.asde.lang;
 
-import org.kobjects.asde.lang.classifier.Classifier;
-import org.kobjects.asde.lang.node.Statement;
-import org.kobjects.asde.lang.node.Variable;
+import org.kobjects.asde.lang.type.Classifier;
 import org.kobjects.asde.lang.parser.Parser;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 

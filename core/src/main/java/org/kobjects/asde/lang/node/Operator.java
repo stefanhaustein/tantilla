@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.type.Type;
 
 public class Operator extends Node {
   public final String name;
@@ -52,9 +53,9 @@ public class Operator extends Node {
   }
 
   @Override
-  public Class<?> returnType() {
-    return (name.equals("+") && (children[0].returnType() == String.class
-        || children[1].returnType() == String.class)) ? String.class : Double.class;
+  public Type returnType() {
+    return (name.equals("+") && (children[0].returnType() == Type.STRING
+        || children[1].returnType() == Type.STRING)) ? Type.STRING : Type.NUMBER;
   }
 
   @Override

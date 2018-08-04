@@ -7,6 +7,7 @@ import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Operator;
 import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.asde.lang.node.Variable;
+import org.kobjects.asde.lang.type.Type;
 import org.kobjects.expressionparser.ExpressionParser;
 
 import java.util.ArrayList;
@@ -19,9 +20,12 @@ public class Parser {
   final Program program;
   final ExpressionParser<Node> expressionParser;
 
-  static char returnTypeCode(Object type) {
-    if (type instanceof Class<?>) {
-      return ((Class<?>) type).getSimpleName().charAt(0);
+  static char returnTypeCode(Type type) {
+    if (type == Type.NUMBER) {
+      return 'D';
+    }
+    if (type == Type.STRING) {
+      return 'S';
     }
     return 'O';
   }
@@ -55,8 +59,8 @@ public class Parser {
     } else if (name.equals("?")) {
       name = "PRINT";
     }
-    Statement.Type type = null;
-    for (Statement.Type t : Statement.Type.values()) {
+    Statement.Kind type = null;
+    for (Statement.Kind t : Statement.Kind.values()) {
       if (name.equalsIgnoreCase(t.name())) {
         type = t;
         break;
@@ -67,9 +71,9 @@ public class Parser {
 
       if ((expression instanceof Operator) && (expression.children[0] instanceof AssignableNode)
               && ((Operator) expression).name.equals("=")) {
-        return new Statement(program, Statement.Type.LET, new String[]{" = "}, expression.children);
+        return new Statement(program, Statement.Kind.LET, new String[]{" = "}, expression.children);
       }
-      return new Statement(program, Statement.Type.PRINT, new String[0], expression);
+      return new Statement(program, Statement.Kind.PRINT, new String[0], expression);
     }
     tokenizer.nextToken();
 
@@ -212,7 +216,7 @@ public class Parser {
       }
       statement = parseStatement(tokenizer);
       result.add(statement);
-    } while (statement.type == Statement.Type.IF ? statement.children.length == 1
+    } while (statement.kind == Statement.Kind.IF ? statement.children.length == 1
         : tokenizer.tryConsume(":"));
     if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF) {
       throw tokenizer.exception("Leftover input.", null);
@@ -242,7 +246,7 @@ public class Parser {
     static Pattern reservedWordPattern;
     static {
       StringBuilder sb = new StringBuilder();
-      for (Statement.Type t: Statement.Type.values()) {
+      for (Statement.Kind t: Statement.Kind.values()) {
         sb.append(t.name());
         sb.append('|');
       }

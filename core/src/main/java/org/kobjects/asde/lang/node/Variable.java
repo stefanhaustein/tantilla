@@ -2,6 +2,7 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.type.Type;
 
 import java.util.TreeMap;
 
@@ -61,8 +62,8 @@ public class Variable extends AssignableNode {
     return result == null ? dollar ? "" : 0.0 : result;
   }
 
-  public Class<?> returnType() {
-    return dollar ? String.class : Double.class;
+  public Type returnType() {
+    return dollar ? Type.STRING : Type.NUMBER;
   }
 
   public String toString() {

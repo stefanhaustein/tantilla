@@ -1,9 +1,10 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.classifier.Instance;
-import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.PropertyDescriptor;
+import org.kobjects.asde.lang.type.Instance;
+import org.kobjects.asde.lang.type.Property;
+import org.kobjects.asde.lang.type.PropertyDescriptor;
+import org.kobjects.asde.lang.type.Type;
 
 
 public class Path extends AssignableNode {
@@ -32,8 +33,8 @@ public class Path extends AssignableNode {
     }
 
     @Override
-    public Object returnType() {
-        return null;
+    public Type returnType() {
+        return Type.VOID;
     }
 
     @Override

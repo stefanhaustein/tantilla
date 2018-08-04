@@ -1,4 +1,4 @@
-package org.kobjects.asde.lang.classifier;
+package org.kobjects.asde.lang.type;
 
 public class PhysicalProperty<T> extends Property<T> {
 

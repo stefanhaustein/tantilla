@@ -1,8 +1,8 @@
-package org.kobjects.asde.lang.classifier;
+package org.kobjects.asde.lang.type;
 
 import java.util.TreeMap;
 
-public abstract class Classifier {
+public abstract class Classifier implements Type {
 
     TreeMap<String, PropertyDescriptor> properties = new TreeMap<>();
     public abstract Object createInstance();

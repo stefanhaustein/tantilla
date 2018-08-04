@@ -3,6 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.asde.lang.DefFn;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.type.Type;
 
 // User-defined function
 public class FnCall extends Node {
@@ -27,8 +28,8 @@ public class FnCall extends Node {
     return def.eval(interpreter, params);
   }
 
-  public Class<?> returnType() {
-    return name.endsWith("$") ? String.class : Double.class;
+  public Type returnType() {
+    return name.endsWith("$") ? Type.STRING : Type.NUMBER;
   }
 
   public String toString() {

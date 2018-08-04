@@ -2,7 +2,8 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.classifier.Classifier;
+import org.kobjects.asde.lang.type.Classifier;
+import org.kobjects.asde.lang.type.Type;
 
 public class New extends Node {
     final String name;
@@ -21,7 +22,7 @@ public class New extends Node {
     }
 
     @Override
-    public Object returnType() {
+    public Type returnType() {
         return classifier;
     }
 

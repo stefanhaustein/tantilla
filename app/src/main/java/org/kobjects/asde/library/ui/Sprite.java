@@ -2,11 +2,12 @@ package org.kobjects.asde.library.ui;
 
 import android.app.Activity;
 
-import org.kobjects.asde.lang.classifier.Classifier;
-import org.kobjects.asde.lang.classifier.Instance;
-import org.kobjects.asde.lang.classifier.PropertyDescriptor;
-import org.kobjects.asde.lang.classifier.PhysicalProperty;
-import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.type.Classifier;
+import org.kobjects.asde.lang.type.Instance;
+import org.kobjects.asde.lang.type.PropertyDescriptor;
+import org.kobjects.asde.lang.type.PhysicalProperty;
+import org.kobjects.asde.lang.type.Property;
+import org.kobjects.asde.lang.type.Type;
 import org.kobjects.emojisprites.EmojiSprite;
 
 public class Sprite extends Instance implements Runnable {
@@ -15,16 +16,16 @@ public class Sprite extends Instance implements Runnable {
     final EmojiSprite sprite;
 
     enum SpriteMetaProperty implements PropertyDescriptor {
-        x(Double.class), y(Double.class), size(Double.class);
+        x(Type.NUMBER), y(Type.NUMBER), size(Type.NUMBER);
 
-        private final Object type;
+        private final Type type;
 
-        SpriteMetaProperty(Object type) {
+        SpriteMetaProperty(Type type) {
             this.type = type;
         }
 
         @Override
-        public Object type() {
+        public Type type() {
             return type;
         }
     }

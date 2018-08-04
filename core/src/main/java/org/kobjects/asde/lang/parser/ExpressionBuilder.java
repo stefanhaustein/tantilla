@@ -9,6 +9,7 @@ import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Operator;
 import org.kobjects.asde.lang.node.Path;
 import org.kobjects.asde.lang.node.Variable;
+import org.kobjects.asde.lang.type.Type;
 import org.kobjects.expressionparser.ExpressionParser;
 
 import java.util.List;
@@ -28,7 +29,7 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
   @Override
   public Node call(ExpressionParser.Tokenizer tokenizer, String name, String bracket, List<Node> arguments) {
     Node[] children = arguments.toArray(new Node[arguments.size()]);
-    for (Builtin.Type builtinId: Builtin.Type.values()) {
+    for (Builtin.Kind builtinId: Builtin.Kind.values()) {
       if (name.equalsIgnoreCase(builtinId.name())) {
         String signature = builtinId.signature;
         if (arguments.size() > signature.length() ||
@@ -37,7 +38,7 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
         }
         for (int i = 0; i < arguments.size(); i++) {
           if (signature.charAt(i) != Parser.returnTypeCode(arguments.get(i).returnType())) {
-            throw new RuntimeException("Parameter number " + i + " type mismatch.");
+            throw new RuntimeException("Parameter number " + i + " kind mismatch.");
           }
         }
         return new Builtin(program, builtinId, children);
@@ -51,7 +52,7 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
       System.out.println("Unsupported Function? " + name);
     }
     for (int i = 0; i < arguments.size(); i++) {
-      if (arguments.get(i).returnType() != Double.class) {
+      if (arguments.get(i).returnType() != Type.NUMBER) {
         throw new IllegalArgumentException("Numeric array index expected.");
       }
     }
@@ -60,14 +61,14 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
 
   @Override
   public Node prefixOperator(ExpressionParser.Tokenizer tokenizer, String name, Node param) {
-    if (param.returnType() != Double.class) {
+    if (param.returnType() != Type.NUMBER) {
       throw new IllegalArgumentException("Numeric argument expected for '" + name + "'.");
     }
     if (name.equalsIgnoreCase("NOT")) {
-      return new Builtin(program, Builtin.Type.NOT, param);
+      return new Builtin(program, Builtin.Kind.NOT, param);
     }
     if (name.equals("-")) {
-      return new Builtin(program, Builtin.Type.NEG, param);
+      return new Builtin(program, Builtin.Kind.NEG, param);
     }
     if (name.equals("+")) {
       return param;
@@ -80,8 +81,8 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
     if (name.equals(".")) {
       return new Path(left, right);
     }
-    if ("+<=<>=".indexOf(name) == -1 && (left.returnType() != Double.class ||
-        right.returnType() != Double.class)) {
+    if ("+<=<>=".indexOf(name) == -1 && (left.returnType() != Type.NUMBER ||
+        right.returnType() != Type.NUMBER)) {
       throw new IllegalArgumentException("Numeric arguments expected for '" + name + "'.");
     }
     return new Operator(name.toLowerCase(), left, right);
@@ -93,8 +94,8 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
   }
 
   @Override public Node identifier(ExpressionParser.Tokenizer tokenizer, String name) {
-    if (name.equalsIgnoreCase(Builtin.Type.RND.name())) {
-      return new Builtin(program, Builtin.Type.RND);
+    if (name.equalsIgnoreCase(Builtin.Kind.RND.name())) {
+      return new Builtin(program, Builtin.Kind.RND);
     }
 
     name = name.toLowerCase();

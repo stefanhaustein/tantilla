@@ -2,10 +2,11 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.type.Type;
 
 public class Builtin extends Node {
 
-  public enum Type {
+  public enum Kind {
     ABS(1, "D"), ASC(1, "S"), CHR$(1, "D"), COS(1, "D"), EXP(1, "D"), INT(1, "D"),
     LEFT$(2, "SD"), LEN(1, "S"), MID$(2, "SDD"), LOG(1, "D"), NEG(1, "D"), NOT(1, "D"),
     RIGHT$(2, "SD"), RND(0, "D"), SGN(1, "D"), STR$(1, "D"), SQR(1, "D"), SIN(1, "D"),
@@ -14,26 +15,26 @@ public class Builtin extends Node {
     public int minParams;
     public String signature;
 
-    Type(int minParams, String parameters) {
+    Kind(int minParams, String parameters) {
       this.minParams = minParams;
       this.signature = parameters;
     }
   }
 
   final Program program;
-  final Type type;
+  final Kind kind;
 
-  public Builtin(Program program, Type id, Node... args) {
+  public Builtin(Program program, Kind kind, Node... args) {
     super(args);
     this.program = program;
-    this.type = id;
+    this.kind = kind;
   }
 
   public Object eval(Interpreter interpreter) {
-    if (type == null) {
+    if (kind == null) {
       return children[0].eval(interpreter);  // Grouping ().
     }
-    switch (type) {
+    switch (kind) {
       case ABS: return Math.abs(evalDouble(interpreter, 0));
       case ASC: {
         String s = evalString(interpreter,0);
@@ -62,7 +63,7 @@ public class Builtin extends Node {
       case NEG: return -evalDouble(interpreter,0);
       case NOT: return Double.valueOf(~((int) evalDouble(interpreter,0)));
       case SGN: return Math.signum(evalDouble(interpreter,0));
-      case SIN: return Math.sin(evalDouble(interpreter,0));
+      case SIN: return Math.sin((interpreter,0));
       case SQR: return Math.sqrt(evalDouble(interpreter,0));
       case STR$: return Program.toString(evalDouble(interpreter,0));
       case RIGHT$: {
@@ -74,25 +75,25 @@ public class Builtin extends Node {
       case TAN: return Math.tan(evalDouble(interpreter,0));
       case VAL: return Double.parseDouble(evalString(interpreter,0));
       default:
-        throw new IllegalArgumentException("NYI: " + type);
+        throw new IllegalArgumentException("NYI: " + kind);
     }
   }
 
-  public Object returnType() {
-    return type == null ? children[0].returnType() : type.name().endsWith("$")
-        ? String.class : Double.class;
+  public Type returnType() {
+    return kind == null ? children[0].returnType() : kind.name().endsWith("$")
+        ? Type.STRING : Type.NUMBER;
   }
 
   public String toString() {
-    if (type == null) {
+    if (kind == null) {
       return children[0].toString();
-    } else if (type == Type.NEG) {
+    } else if (kind == Kind.NEG) {
       return "-" + children[0];
-    } else if (type == Type.NOT) {
+    } else if (kind == Kind.NOT) {
       return "NOT " + children[0];
     } else if (children.length == 0) {
-      return type.name();
+      return kind.name();
     }
-    return type.name() + "(" + super.toString() + ")";
+    return kind.name() + "(" + super.toString() + ")";
   }
 }

@@ -2,10 +2,10 @@ package org.kobjects.asde.library.ui;
 
 import android.widget.FrameLayout;
 
-import org.kobjects.asde.lang.classifier.Classifier;
-import org.kobjects.asde.lang.classifier.Instance;
-import org.kobjects.asde.lang.classifier.PropertyDescriptor;
-import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.type.Classifier;
+import org.kobjects.asde.lang.type.Instance;
+import org.kobjects.asde.lang.type.PropertyDescriptor;
+import org.kobjects.asde.lang.type.Property;
 
 public class Screen extends Instance {
 
