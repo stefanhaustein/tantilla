@@ -35,9 +35,6 @@ public class Program {
 
   private TreeMap<String, Symbol> symbolMap = new TreeMap<>();
   public Exception lastException;
- // TreeMap<String, double[]> forMap = new TreeMap<>();
-  public TreeMap<String, DefFn> functionDefinitions = new TreeMap<>();
-
   public int[] stopped;
   public int tabPos;
   public boolean trace;
@@ -60,7 +57,6 @@ public class Program {
         symbolMap = cleared;
     }
     stopped = null;
-    functionDefinitions.clear();
   }
 
 

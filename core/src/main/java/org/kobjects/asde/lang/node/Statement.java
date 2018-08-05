@@ -5,6 +5,7 @@ import org.kobjects.asde.lang.DefFn;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.StackEntry;
+import org.kobjects.asde.lang.Symbol;
 import org.kobjects.asde.lang.type.Type;
 
 import java.io.BufferedReader;
@@ -74,8 +75,15 @@ public class Statement extends Node {
         break;
 
       case DEF: {
-        DefFn f = new DefFn(program, children[0]);
-        program.functionDefinitions.put(f.name, f);
+        Node assignment = children[0];
+        if (!(assignment instanceof Operator)
+                || !((Operator) assignment).name.equals("=")
+                || !(assignment.children[0] instanceof FnCall)) {
+          throw new RuntimeException("Assignment to function declaration expected.");
+        }
+        FnCall target = (FnCall) assignment.children[0];
+        DefFn f = new DefFn(program, target, assignment.children[1]);
+        program.setSymbol(target.name, new Symbol(f));
         break;
       }
       case DATA:

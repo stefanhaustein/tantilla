@@ -4,46 +4,58 @@ import org.kobjects.asde.lang.node.FnCall;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Operator;
 import org.kobjects.asde.lang.node.Variable;
+import org.kobjects.asde.lang.type.FunctionType;
+import org.kobjects.asde.lang.type.Parameter;
+import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.type.Typed;
 
-public class DefFn {
+import java.lang.annotation.Inherited;
+
+public class DefFn implements Typed {
   Program program;
-  String[] parameterNames;
-  public String name;
   Node expression;
+  FunctionType type;
 
-  public DefFn(Program program, Node assignment) {
+  public DefFn(Program program, FnCall target, Node expression) {
     this.program = program;
-    if (!(assignment instanceof Operator)
-        || !((Operator) assignment).name.equals("=")
-        || !(assignment.children[0] instanceof FnCall)) {
-      throw new RuntimeException("SetLocal to function declaration expected.");
-    }
-    FnCall target = (FnCall) assignment.children[0];
-    this.name = target.name;
-    parameterNames = new String[target.children.length];
-    for (int i = 0; i < parameterNames.length; i++) {
+
+    Parameter[] parameters = new Parameter[target.children.length];
+    for (int i = 0; i < parameters.length; i++) {
       Node param = target.children[i];
       if (!(param instanceof Variable) || param.children.length != 0) {
         throw new RuntimeException("parameter name expected, got " + param);
       }
-      parameterNames[i] = ((Variable) param).name;
+      String name = ((Variable) param).name;
+      Type type = name.endsWith("$") ? Type.STRING : Type.NUMBER;
+      parameters[i] = new Parameter(name, type);
     }
-    expression = assignment.children[1];
+    this.expression = expression;
+    type = new FunctionType(target.name.endsWith("$") ? Type.STRING : Type.NUMBER, parameters);
   }
 
   public Object eval(Interpreter interpreter, Object[] parameterValues) {
-    Symbol[] saved = new Symbol[parameterNames.length];
-    for (int i = 0; i < parameterNames.length; i++) {
-      String param = parameterNames[i];
+    Symbol[] saved = new Symbol[type.getParameterCount()];
+    for (int i = 0; i < type.getParameterCount(); i++) {
+      String param = type.getParameter(i).name;
       saved[i] = program.getSymbol(param);
       program.setSymbol(param, new Symbol(parameterValues[i]));
     }
     try {
       return expression.eval(interpreter);
     } finally {
-      for (int i = 0; i < parameterNames.length; i++) {
-        program.setSymbol(parameterNames[i], saved[i]);
+      for (int i = 0; i < type.getParameterCount(); i++) {
+        program.setSymbol(type.getParameter(i).name, saved[i]);
       }
     }
+  }
+
+  @Override
+  public FunctionType getType() {
+    return type;
+  }
+
+  @Override
+  public String toString() {
+    return expression.toString();
   }
 }

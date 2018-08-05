@@ -49,7 +49,7 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
       return new FnCall(program, name, children);
     }
     if (name.length() > 2) {
-      System.out.println("Unsupported Function? " + name);
+      System.out.println("Unsupported FunctionType? " + name);
     }
     for (int i = 0; i < arguments.size(); i++) {
       if (arguments.get(i).returnType() != Type.NUMBER) {

@@ -30,7 +30,7 @@ public class VariableView extends LinearLayout {
         int index = 1;
         TreeMap<String, Symbol> symbolMap = program.getSymbolMap();
         for (Map.Entry<String,Symbol> entry : symbolMap.entrySet()) {
-           if (entry.getKey().equals("pi") || entry.getKey().equals("tau")) {
+           if (entry.getKey().equals("pi") || entry.getKey().equals("tau") || entry.getValue() == null) {
                  continue;
            }
            TextView textView;
