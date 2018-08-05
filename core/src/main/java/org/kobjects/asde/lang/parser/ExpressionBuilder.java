@@ -30,15 +30,16 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
 
   @Override
   public Node apply(ExpressionParser.Tokenizer tokenizer, Node base, String bracket, List<Node> arguments) {
-    Node[] children = arguments.toArray(new Node[arguments.size()]);
-    return new Apply(program, base, children);
+    Node[] children = new Node[arguments.size() + 1];
+    children[0] = base;
+    for (int i = 0; i < arguments.size(); i++) {
+      children[i + 1] = arguments.get(i);
+    }
+    return new Apply(program, children);
   }
 
   @Override
   public Node prefixOperator(ExpressionParser.Tokenizer tokenizer, String name, Node param) {
-    if (param.returnType() != Type.NUMBER) {
-      throw new IllegalArgumentException("Numeric argument expected for '" + name + "'.");
-    }
     if (name.equalsIgnoreCase("not") || name.equals("-")) {
       return new Operator(name, param);
     }
@@ -52,10 +53,6 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
   public Node infixOperator(ExpressionParser.Tokenizer tokenizer, String name, Node left, Node right) {
     if (name.equals(".")) {
       return new Path(left, right);
-    }
-    if ("+<=<>=".indexOf(name) == -1 && (left.returnType() != Type.NUMBER ||
-        right.returnType() != Type.NUMBER)) {
-      throw new IllegalArgumentException("Numeric arguments expected for '" + name + "'.");
     }
     return new Operator(name.toLowerCase(), left, right);
   }

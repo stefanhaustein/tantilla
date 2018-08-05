@@ -16,9 +16,9 @@ public class DefFn implements Function {
   public DefFn(Program program, Apply target, Node expression) {
     this.program = program;
 
-    Parameter[] parameters = new Parameter[target.children.length];
+    Parameter[] parameters = new Parameter[target.children.length - 1];
     for (int i = 0; i < parameters.length; i++) {
-      Node param = target.children[i];
+      Node param = target.children[i + 1];
       if (!(param instanceof Identifier) || param.children.length != 0) {
         throw new RuntimeException("parameter name expected, got " + param);
       }
@@ -27,7 +27,7 @@ public class DefFn implements Function {
       parameters[i] = new Parameter(name, type);
     }
     this.expression = expression;
-    type = new FunctionType(((Identifier) target.base).name.endsWith("$") ? Type.STRING : Type.NUMBER, parameters);
+    type = new FunctionType(((Identifier) target.children[0]).name.endsWith("$") ? Type.STRING : Type.NUMBER, parameters);
   }
 
   public Object eval(Interpreter interpreter, Object[] parameterValues) {

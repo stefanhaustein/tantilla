@@ -2,6 +2,7 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.ResolutionContext;
 import org.kobjects.asde.lang.type.Type;
 
 public abstract class Node {
@@ -9,6 +10,12 @@ public abstract class Node {
 
   protected Node(Node... children) {
     this.children = children;
+  }
+
+  public void resolve(ResolutionContext resolutionContext) {
+    for (Node child: children) {
+      child.resolve(resolutionContext);
+    }
   }
 
   public abstract Object eval(Interpreter interpreter);

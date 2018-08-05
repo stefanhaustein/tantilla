@@ -2,25 +2,31 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.ResolutionContext;
 import org.kobjects.asde.lang.Symbol;
 import org.kobjects.asde.lang.type.Type;
-
-import java.util.TreeMap;
 
 // Not static for access to the variables.
 public class Identifier extends AssignableNode {
   final Program program;
   public final String name;
-  final boolean dollar;
+  Symbol resolved;
 
   public Identifier(Program program, String name) {
     this.program = program;
-    dollar = name.endsWith("$");
     this.name = name;
   }
 
+  public void resolve(ResolutionContext resolutionContext) {
+      super.resolve(resolutionContext);
+      resolved = resolutionContext.getSymbol(name);
+      if (resolved == null) {
+        throw new RuntimeException("Symbol not found: " + name);
+      }
+  }
+
   public void set(Interpreter interpreter, Object value) {
-    Symbol symbol = program.getSymbol(name);
+    Symbol symbol = resolved == null ? program.getSymbol(name) : resolved;
     if (symbol == null) {
       symbol = new Symbol(interpreter.getSymbolScope(), value);
       program.setSymbol(name, symbol);
@@ -32,20 +38,20 @@ public class Identifier extends AssignableNode {
   @Override
   public Object eval(Interpreter interpreter) {
     Object result = evalRaw(interpreter);
-    return result == null ? dollar ? "" : 0.0 : result;
+    return result == null ? name.endsWith("$") ? "" : 0.0 : result;
   }
 
   @Override
   public Object evalRaw(Interpreter interpreter) {
-    Symbol symbol = program.getSymbol(name);
+    Symbol symbol = resolved != null ? resolved : program.getSymbol(name);
     return symbol == null ? null : symbol.value;
   }
 
   public Type returnType() {
-    return dollar ? Type.STRING : Type.NUMBER;
+    return resolved.type;
   }
 
   public String toString() {
-    return children.length == 0 ? name : name.substring(0, name.indexOf('[')) + "(" + super.toString() + ")";
+    return name;
   }
 }

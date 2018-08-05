@@ -30,7 +30,7 @@ public class Program {
   }
 
   public Parser parser = new Parser(this);
-  public CallableUnit main = new CallableUnit();
+  public CallableUnit main = new CallableUnit(this);
   public Map<String, Classifier> classifiers = new TreeMap<>();
 
   // Program state

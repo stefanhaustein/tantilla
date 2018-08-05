@@ -79,12 +79,12 @@ public class Statement extends Node {
         if (!(assignment instanceof Operator)
                 || !((Operator) assignment).name.equals("=")
                 || !(assignment.children[0] instanceof Apply)
-                || !(((Apply) assignment.children[0]).base instanceof Identifier)) {
+                || !(((Apply) assignment.children[0]).children[0] instanceof Identifier)) {
           throw new RuntimeException("Assignment to function declaration expected.");
         }
         Apply target = (Apply) assignment.children[0];
         DefFn f = new DefFn(program, target, assignment.children[1]);
-        program.setSymbol(((Identifier) target.base).name, new Symbol(interpreter.getSymbolScope(), f));
+        program.setSymbol(((Identifier) target.children[0]).name, new Symbol(interpreter.getSymbolScope(), f));
         break;
       }
       case DATA:
