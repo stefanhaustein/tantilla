@@ -88,9 +88,8 @@ public class Statement extends Node {
           program.lastException.printStackTrace();
           program.lastException = null;
         } else {
-          synchronized (program.variables) {
-            program.println("\n" + program.variables);
-          }
+            program.println("\n" + program.getSymbolMap());
+
         /*  for (int i = 0; i < program.arrays.length; i++) {
             if (!program.arrays[i].isEmpty()) {
               program.println((i + 1) + ": " + program.arrays[i]);

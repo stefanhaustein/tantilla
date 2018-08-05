@@ -32,21 +32,17 @@ public class DefFn {
   }
 
   public Object eval(Interpreter interpreter, Object[] parameterValues) {
-    Object[] saved = new Object[parameterNames.length];
+    Symbol[] saved = new Symbol[parameterNames.length];
     for (int i = 0; i < parameterNames.length; i++) {
       String param = parameterNames[i];
-      synchronized (program.variables) {
-        saved[i] = program.variables.get(param);
-        program.variables.put(param, parameterValues[i]);
-      }
+      saved[i] = program.getSymbol(param);
+      program.setSymbol(param, new Symbol(parameterValues[i]));
     }
     try {
       return expression.eval(interpreter);
     } finally {
       for (int i = 0; i < parameterNames.length; i++) {
-        synchronized (program.variables) {
-          program.variables.put(parameterNames[i], saved[i]);
-        }
+        program.setSymbol(parameterNames[i], saved[i]);
       }
     }
   }

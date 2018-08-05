@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.type;
 
-public abstract class Instance {
+public abstract class Instance implements Typed {
     private final Classifier classifier;
 
     public Instance(Classifier classifier) {
@@ -9,7 +9,9 @@ public abstract class Instance {
 
     public abstract Property getProperty(PropertyDescriptor property);
 
-    public Classifier getClassifier() {
+/*    public Classifier getClassifier() {
         return classifier;
-    }
+    }*/
+
+    public Classifier getType() { return classifier; }
 }

@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.type;
 
 import java.util.TreeMap;
 
-public abstract class Classifier implements Type {
+public abstract class Classifier implements Type, Typed {
 
     TreeMap<String, PropertyDescriptor> properties = new TreeMap<>();
     public abstract Object createInstance();
@@ -15,5 +15,9 @@ public abstract class Classifier implements Type {
 
     public PropertyDescriptor getPropertyDescriptor(String name) {
         return properties.get(name);
+    }
+
+    public Type getType() {
+        return new MetaType(this);
     }
 }

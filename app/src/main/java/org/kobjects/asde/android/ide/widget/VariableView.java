@@ -5,8 +5,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.Symbol;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 public class VariableView extends LinearLayout {
 
@@ -26,21 +28,20 @@ public class VariableView extends LinearLayout {
 
     public void sync() {
         int index = 1;
-        synchronized (program.variables) {
-           for (Map.Entry<String,Object> entry : program.variables.entrySet()) {
-               if (entry.getKey().equals("pi") || entry.getKey().equals("tau")) {
-                   continue;
-               }
-               TextView textView;
-               if (index < getChildCount()) {
-                   textView = (TextView) getChildAt(index);
-               } else {
-                   textView = new TextView(getContext());
-                   addView(textView);
-               }
-               textView.setText(" " + entry.getKey() + ": " + entry.getValue());
-               index++;
+        TreeMap<String, Symbol> symbolMap = program.getSymbolMap();
+        for (Map.Entry<String,Symbol> entry : symbolMap.entrySet()) {
+           if (entry.getKey().equals("pi") || entry.getKey().equals("tau")) {
+                 continue;
            }
+           TextView textView;
+           if (index < getChildCount()) {
+              textView = (TextView) getChildAt(index);
+           } else {
+              textView = new TextView(getContext());
+              addView(textView);
+            }
+            textView.setText(" " + entry.getKey() + ": " + entry.getValue().value);
+            index++;
         }
         while (getChildCount() > index) {
             removeViewAt(getChildCount() -1);

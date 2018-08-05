@@ -63,7 +63,7 @@ public class Builtin extends Node {
       case NEG: return -evalDouble(interpreter,0);
       case NOT: return Double.valueOf(~((int) evalDouble(interpreter,0)));
       case SGN: return Math.signum(evalDouble(interpreter,0));
-      case SIN: return Math.sin((interpreter,0));
+      case SIN: return Math.sin(evalDouble(interpreter,0));
       case SQR: return Math.sqrt(evalDouble(interpreter,0));
       case STR$: return Program.toString(evalDouble(interpreter,0));
       case RIGHT$: {

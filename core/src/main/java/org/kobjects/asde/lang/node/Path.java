@@ -23,7 +23,7 @@ public class Path extends AssignableNode {
             throw new RuntimeException("instance expected");
         }
         Instance instance = (Instance) base;
-        PropertyDescriptor propertyDescriptor = instance.getClassifier().getPropertyDescriptor(pathName);
+        PropertyDescriptor propertyDescriptor = instance.getType().getPropertyDescriptor(pathName);
         return instance.getProperty(propertyDescriptor);
     }
 

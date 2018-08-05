@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Full implementation of <a href="http://goo.gl/kIIPc0">ECMA-55</a> minimal program with
+ * Full implementation of <a href="http://goo.gl/kIIPc0">ECMA-55</a> with
  * some common additions.
  * <p>
  * Example for mixing the expresion parser with "outer" parsing.
@@ -33,7 +33,7 @@ public class Program {
 
   // Program state
 
-  public TreeMap<String, Object> variables = new TreeMap<>();
+  private TreeMap<String, Symbol> symbolMap = new TreeMap<>();
   public Exception lastException;
  // TreeMap<String, double[]> forMap = new TreeMap<>();
   public TreeMap<String, DefFn> functionDefinitions = new TreeMap<>();
@@ -49,10 +49,15 @@ public class Program {
   }
 
   public void clear() {
-    synchronized (variables) {
-      variables.clear();
-      variables.put("pi", Math.PI);
-      variables.put("tau", 2 * Math.PI);
+      TreeMap<String, Symbol> cleared = new TreeMap<String, Symbol>();
+    synchronized (symbolMap) {
+        for (Map.Entry<String, Symbol> entry : symbolMap.entrySet()) {
+            Symbol symbol = entry.getValue();
+            if (symbol.persistent) {
+                cleared.put(entry.getKey(), symbol);
+            }
+        }
+        symbolMap = cleared;
     }
     stopped = null;
     functionDefinitions.clear();
@@ -86,6 +91,25 @@ public class Program {
     } else {
       tabPos = s.length() - cut - 1;
     }
+  }
+
+  public TreeMap<String, Symbol> getSymbolMap() {
+      synchronized (symbolMap) {
+          return new TreeMap<>(symbolMap);
+      }
+  }
+
+  public Symbol getSymbol(String name) {
+      synchronized (symbolMap) {
+          return symbolMap.get(name);
+      }
+  }
+
+  // Remove?
+  public void setSymbol(String name, Symbol symbol) {
+      synchronized (symbolMap) {
+          symbolMap.put(name, symbol);
+      }
   }
 
   public void println() {
