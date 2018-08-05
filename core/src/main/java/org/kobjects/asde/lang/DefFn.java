@@ -1,31 +1,28 @@
 package org.kobjects.asde.lang;
 
-import org.kobjects.asde.lang.node.FnCall;
+import org.kobjects.asde.lang.node.Call;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.node.Operator;
-import org.kobjects.asde.lang.node.Variable;
+import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.type.FunctionType;
 import org.kobjects.asde.lang.type.Parameter;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Typed;
-
-import java.lang.annotation.Inherited;
 
 public class DefFn implements Typed {
   Program program;
   Node expression;
   FunctionType type;
 
-  public DefFn(Program program, FnCall target, Node expression) {
+  public DefFn(Program program, Call target, Node expression) {
     this.program = program;
 
     Parameter[] parameters = new Parameter[target.children.length];
     for (int i = 0; i < parameters.length; i++) {
       Node param = target.children[i];
-      if (!(param instanceof Variable) || param.children.length != 0) {
+      if (!(param instanceof Identifier) || param.children.length != 0) {
         throw new RuntimeException("parameter name expected, got " + param);
       }
-      String name = ((Variable) param).name;
+      String name = ((Identifier) param).name;
       Type type = name.endsWith("$") ? Type.STRING : Type.NUMBER;
       parameters[i] = new Parameter(name, type);
     }

@@ -11,10 +11,10 @@ public class Path extends AssignableNode {
     String pathName;
     public Path(Node left, Node right) {
         super(left);
-        if (!(right instanceof Variable)) {
+        if (!(right instanceof Identifier)) {
             throw new RuntimeException("Path name expected");
         }
-        pathName = ((Variable) right).name;
+        pathName = ((Identifier) right).name;
     }
 
     Property evalProperty(Interpreter interpreter) {

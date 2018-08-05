@@ -6,7 +6,7 @@ import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Operator;
 import org.kobjects.asde.lang.node.Statement;
-import org.kobjects.asde.lang.node.Variable;
+import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.expressionparser.ExpressionParser;
 
@@ -114,7 +114,7 @@ public class Parser {
 
       case FOR: {
         Node assignment = expressionParser.parse(tokenizer);
-        if (!(assignment instanceof Operator) || !(assignment.children[0] instanceof Variable)
+        if (!(assignment instanceof Operator) || !(assignment.children[0] instanceof Identifier)
             || assignment.children[0].children.length != 0
             || !((Operator) assignment).name.equals("=")) {
           throw new RuntimeException("LocalVariable assignment expected after FOR");
@@ -197,7 +197,7 @@ public class Parser {
         if (sb.length() > 0 && sb.charAt(0) == ' ') {
           sb.deleteCharAt(0);
         }
-        return new Statement(program, type, new Variable(program, sb.toString()));
+        return new Statement(program, type, new Identifier(program, sb.toString()));
       }
       default:
         return new Statement(program, type);

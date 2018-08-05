@@ -1,14 +1,14 @@
 package org.kobjects.asde.lang.parser;
 
 import org.kobjects.asde.lang.node.Builtin;
+import org.kobjects.asde.lang.node.Call;
 import org.kobjects.asde.lang.node.New;
-import org.kobjects.asde.lang.node.FnCall;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Operator;
 import org.kobjects.asde.lang.node.Path;
-import org.kobjects.asde.lang.node.Variable;
+import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.expressionparser.ExpressionParser;
 
@@ -45,18 +45,12 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
       }
     }
     name = name.toLowerCase();
-    if (name.startsWith("fn") && name.length() > 2) {
-      return new FnCall(program, name, children);
-    }
-    if (name.length() > 2) {
-      System.out.println("Unsupported FunctionType? " + name);
-    }
     for (int i = 0; i < arguments.size(); i++) {
-      if (arguments.get(i).returnType() != Type.NUMBER) {
+      if (arguments.get(i).returnType() != Type.NUMBER && arguments.get(i).returnType() != null) {
         throw new IllegalArgumentException("Numeric array index expected.");
       }
     }
-    return new Variable(program, name, children);
+    return new Call(program, name, children);
   }
 
   @Override
@@ -105,10 +99,7 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
       return new New(program, className);
     }
 
-    if (name.startsWith("fn") && name.length() > 2) {
-      return new FnCall(program, name);
-    }
-    return new Variable(program, name);
+    return new Identifier(program, name);
   }
 
   @Override public Node numberLiteral(ExpressionParser.Tokenizer tokenizer, String value) {

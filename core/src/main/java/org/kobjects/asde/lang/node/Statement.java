@@ -78,10 +78,10 @@ public class Statement extends Node {
         Node assignment = children[0];
         if (!(assignment instanceof Operator)
                 || !((Operator) assignment).name.equals("=")
-                || !(assignment.children[0] instanceof FnCall)) {
+                || !(assignment.children[0] instanceof Call)) {
           throw new RuntimeException("Assignment to function declaration expected.");
         }
-        FnCall target = (FnCall) assignment.children[0];
+        Call target = (Call) assignment.children[0];
         DefFn f = new DefFn(program, target, assignment.children[1]);
         program.setSymbol(target.name, new Symbol(f));
         break;
@@ -211,7 +211,7 @@ public class Statement extends Node {
               throw new RuntimeException("Out of data.");
             }
           }
-          ((Variable) children[i]).set(interpreter, interpreter.dataStatement.children[interpreter.dataPosition[2]++].eval(interpreter));
+          ((Identifier) children[i]).set(interpreter, interpreter.dataStatement.children[interpreter.dataPosition[2]++].eval(interpreter));
         }
         break;
 
@@ -328,7 +328,7 @@ public class Statement extends Node {
 
   void loopStart(Interpreter interpreter) {
     double current = evalDouble(interpreter,1);
-    ((Variable) children[0]).set(interpreter, current);
+    ((Identifier) children[0]).set(interpreter, current);
     double end = evalDouble(interpreter, 2);
     double step = children.length > 3 ? evalDouble(interpreter, 3) : 1.0;
     if (Math.signum(step) == Math.signum(Double.compare(current, end))) {
@@ -341,7 +341,7 @@ public class Statement extends Node {
       interpreter.nextSubIndex = nextPosition[2] + 1;
     } else {
       StackEntry entry = new StackEntry();
-      entry.forVariable = (Variable) children[0];
+      entry.forVariable = (Identifier) children[0];
       entry.end = end;
       entry.step = step;
       entry.lineNumber = interpreter.currentLine;
@@ -379,11 +379,11 @@ public class Statement extends Node {
   void input(Interpreter interpreter) {
     for (int i = 0; i < children.length; i++) {
       Node child = children[i];
-      if (kind == Kind.INPUT && child instanceof Variable) {
+      if (kind == Kind.INPUT && child instanceof Identifier) {
         if (i <= 0 || i > delimiter.length || !delimiter[i-1].equals(", ")) {
           program.print("? ");
         }
-        Variable variable = (Variable) child;
+        Identifier variable = (Identifier) child;
         Object value;
         while(true) {
           value = program.console.read();
