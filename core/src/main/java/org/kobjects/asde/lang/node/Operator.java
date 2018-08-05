@@ -1,18 +1,29 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.asde.lang.Builtin;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.type.Type;
 
 public class Operator extends Node {
   public final String name;
 
-  public Operator(String name, Node left, Node right) {
-    super(left, right);
+  public Operator(String name, Node... children) {
+    super(children);
     this.name = name;
   }
 
   public Object eval(Interpreter interpreter) {
     Object lVal = children[0].eval(interpreter);
+
+    if (children.length == 1) {
+      switch (name.charAt(0)) {
+        case '-': return -(Double) lVal;
+        case 'n': return Double.valueOf(~(Builtin.asInt(lVal)));
+        default:
+          throw new RuntimeException("Unsupported unary operator: " + name);
+      }
+    }
+
     Object rVal = children[1].eval(interpreter);
     boolean numbers = (lVal instanceof Double) && (rVal instanceof Double);
     if (!numbers) {
@@ -48,7 +59,7 @@ public class Operator extends Node {
       case '*':
         return l * r;
       default:
-        throw new RuntimeException("Unsupported operator " + name);
+        throw new RuntimeException("Unsupported binary operator " + name);
     }
   }
 
@@ -60,6 +71,7 @@ public class Operator extends Node {
 
   @Override
   public String toString() {
-    return children[0].toString() + ' ' + name + ' ' + children[1].toString();
+    return children.length == 1 ? (name.equals("-") ? "-" : (name + " ")) + children[0]
+            : (children[0].toString() + ' ' + name + ' ' + children[1].toString());
   }
 }

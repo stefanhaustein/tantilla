@@ -8,7 +8,7 @@ import org.kobjects.asde.lang.type.Parameter;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Typed;
 
-public class DefFn implements Typed {
+public class DefFn implements Function {
   Program program;
   Node expression;
   FunctionType type;
@@ -35,7 +35,7 @@ public class DefFn implements Typed {
     for (int i = 0; i < type.getParameterCount(); i++) {
       String param = type.getParameter(i).name;
       saved[i] = program.getSymbol(param);
-      program.setSymbol(param, new Symbol(parameterValues[i]));
+      program.setSymbol(param, new Symbol(interpreter.getSymbolScope(), parameterValues[i]));
     }
     try {
       return expression.eval(interpreter);

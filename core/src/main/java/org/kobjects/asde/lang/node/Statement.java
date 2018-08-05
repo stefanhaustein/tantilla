@@ -84,7 +84,7 @@ public class Statement extends Node {
         }
         Apply target = (Apply) assignment.children[0];
         DefFn f = new DefFn(program, target, assignment.children[1]);
-        program.setSymbol(((Identifier) target.base).name, new Symbol(f));
+        program.setSymbol(((Identifier) target.base).name, new Symbol(interpreter.getSymbolScope(), f));
         break;
       }
       case DATA:

@@ -7,7 +7,7 @@ import org.kobjects.asde.lang.type.Type;
 public abstract class Node {
   public Node[] children;
 
-  Node(Node... children) {
+  protected Node(Node... children) {
     this.children = children;
   }
 

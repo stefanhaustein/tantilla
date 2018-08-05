@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.swing.plaf.basic.BasicButtonUI;
+
 /**
  * Full implementation of <a href="http://goo.gl/kIIPc0">ECMA-55</a> with
  * some common additions.
@@ -43,6 +45,10 @@ public class Program {
   public Program(Console console) {
     this.console = console;
     clear();
+
+    for (Builtin builtin : Builtin.values()) {
+        setSymbol(builtin.name().toLowerCase(), new Symbol(Symbol.Scope.BUILTIN, builtin));
+    }
   }
 
   public void clear() {
@@ -50,7 +56,7 @@ public class Program {
     synchronized (symbolMap) {
         for (Map.Entry<String, Symbol> entry : symbolMap.entrySet()) {
             Symbol symbol = entry.getValue();
-            if (symbol.persistent) {
+            if (symbol.scope != Symbol.Scope.TRANSIENT) {
                 cleared.put(entry.getKey(), symbol);
             }
         }

@@ -44,6 +44,10 @@ public class Interpreter {
         runStatements(Collections.singletonList(new Statement(program, Statement.Kind.RUN)));
     }
 
+    public Symbol.Scope getSymbolScope() {
+        return currentLine == -2 ? Symbol.Scope.PERSISTENT : Symbol.Scope.TRANSIENT;
+    }
+
     public void runStatements(final List<Statement> statements) {
         stop();
         interpreterThread = new Thread(new Runnable() {

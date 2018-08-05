@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.node;
 
-import org.kobjects.asde.lang.DefFn;
+import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Symbol;
@@ -27,7 +27,7 @@ public class Apply extends AssignableNode {
 
     Symbol symbol = program.getSymbol(name);
     if (symbol == null) {
-      symbol = new Symbol(null);
+      symbol = new Symbol(interpreter.getSymbolScope(), null);
       program.setSymbol(name, symbol);
     }
 
@@ -54,12 +54,12 @@ public class Apply extends AssignableNode {
     if (value == null) {
       result = null;
     } else {
-      if (value instanceof DefFn) {
+      if (value instanceof Function) {
         Object[] params = new Object[children.length];
         for (int i = 0; i < params.length; i++) {
           params[i] = children[i].eval(interpreter);
         }
-        result = ((DefFn) value).eval(interpreter, params);
+        result = ((Function) value).eval(interpreter, params);
       } else if (children.length == 0) {
         result = value;
       } else {

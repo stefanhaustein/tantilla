@@ -22,7 +22,7 @@ public class Identifier extends AssignableNode {
   public void set(Interpreter interpreter, Object value) {
     Symbol symbol = program.getSymbol(name);
     if (symbol == null) {
-      symbol = new Symbol(value);
+      symbol = new Symbol(interpreter.getSymbolScope(), value);
       program.setSymbol(name, symbol);
     } else {
       symbol.value = value;
