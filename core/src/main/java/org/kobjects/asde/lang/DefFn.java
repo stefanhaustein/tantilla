@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang;
 
-import org.kobjects.asde.lang.node.Call;
+import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.type.FunctionType;
@@ -13,7 +13,7 @@ public class DefFn implements Typed {
   Node expression;
   FunctionType type;
 
-  public DefFn(Program program, Call target, Node expression) {
+  public DefFn(Program program, Apply target, Node expression) {
     this.program = program;
 
     Parameter[] parameters = new Parameter[target.children.length];
@@ -27,7 +27,7 @@ public class DefFn implements Typed {
       parameters[i] = new Parameter(name, type);
     }
     this.expression = expression;
-    type = new FunctionType(target.name.endsWith("$") ? Type.STRING : Type.NUMBER, parameters);
+    type = new FunctionType(((Identifier) target.base).name.endsWith("$") ? Type.STRING : Type.NUMBER, parameters);
   }
 
   public Object eval(Interpreter interpreter, Object[] parameterValues) {

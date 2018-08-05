@@ -29,15 +29,16 @@ public class Identifier extends AssignableNode {
     }
   }
 
+  @Override
   public Object eval(Interpreter interpreter) {
-    Symbol symbol = program.getSymbol(name);
-    Object result;
-    if (symbol == null) {
-      result = null;
-    } else {
-       result = symbol.value;
-    }
+    Object result = evalRaw(interpreter);
     return result == null ? dollar ? "" : 0.0 : result;
+  }
+
+  @Override
+  public Object evalRaw(Interpreter interpreter) {
+    Symbol symbol = program.getSymbol(name);
+    return symbol == null ? null : symbol.value;
   }
 
   public Type returnType() {

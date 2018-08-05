@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.parser;
 
 import org.kobjects.asde.lang.node.Builtin;
-import org.kobjects.asde.lang.node.Call;
+import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.New;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.Literal;
@@ -26,31 +26,43 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
     this.program = program;
   }
 
+  static char returnTypeCode(Type type) {
+    if (type == Type.NUMBER) {
+      return 'D';
+    }
+    if (type == Type.STRING) {
+      return 'S';
+    }
+    return 'O';
+  }
+
   @Override
-  public Node call(ExpressionParser.Tokenizer tokenizer, String name, String bracket, List<Node> arguments) {
+  public Node apply(ExpressionParser.Tokenizer tokenizer, Node base, String bracket, List<Node> arguments) {
     Node[] children = arguments.toArray(new Node[arguments.size()]);
-    for (Builtin.Kind builtinId: Builtin.Kind.values()) {
-      if (name.equalsIgnoreCase(builtinId.name())) {
-        String signature = builtinId.signature;
-        if (arguments.size() > signature.length() ||
-            arguments.size() < builtinId.minParams ) {
-          throw new IllegalArgumentException("Parameter count mismatch.");
-        }
-        for (int i = 0; i < arguments.size(); i++) {
-          if (signature.charAt(i) != Parser.returnTypeCode(arguments.get(i).returnType())) {
-            throw new RuntimeException("Parameter number " + i + " kind mismatch.");
+    if (base instanceof Identifier) {
+      String name = ((Identifier) base).name;
+      for (Builtin.Kind builtinId : Builtin.Kind.values()) {
+        if (name.equalsIgnoreCase(builtinId.name())) {
+          String signature = builtinId.signature;
+          if (arguments.size() > signature.length() ||
+                  arguments.size() < builtinId.minParams) {
+            throw new IllegalArgumentException("Parameter count mismatch.");
           }
+          for (int i = 0; i < arguments.size(); i++) {
+            if (signature.charAt(i) != returnTypeCode(arguments.get(i).returnType())) {
+              throw new RuntimeException("Parameter number " + i + " kind mismatch.");
+            }
+          }
+          return new Builtin(program, builtinId, children);
         }
-        return new Builtin(program, builtinId, children);
       }
     }
-    name = name.toLowerCase();
     for (int i = 0; i < arguments.size(); i++) {
       if (arguments.get(i).returnType() != Type.NUMBER && arguments.get(i).returnType() != null) {
         throw new IllegalArgumentException("Numeric array index expected.");
       }
     }
-    return new Call(program, name, children);
+    return new Apply(program, base, children);
   }
 
   @Override

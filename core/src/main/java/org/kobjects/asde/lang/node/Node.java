@@ -13,6 +13,9 @@ public abstract class Node {
 
   public abstract Object eval(Interpreter interpreter);
 
+  public Object evalRaw(Interpreter interpreter) {
+    return eval(interpreter);
+  }
 
   double evalDouble(Interpreter interpreter, int i) {
     Object o = children[i].eval(interpreter);

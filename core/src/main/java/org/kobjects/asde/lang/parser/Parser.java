@@ -20,24 +20,14 @@ public class Parser {
   final Program program;
   final ExpressionParser<Node> expressionParser;
 
-  static char returnTypeCode(Type type) {
-    if (type == Type.NUMBER) {
-      return 'D';
-    }
-    if (type == Type.STRING) {
-      return 'S';
-    }
-    return 'O';
-  }
-
   public Parser(Program program) {
     this.program = program;
 
     expressionParser = new ExpressionParser<>(new ExpressionBuilder(program));
-    expressionParser.addCallBrackets("(", ",", ")");
-    expressionParser.addCallBrackets("[", ",", "]");  // HP
+    expressionParser.addApplyBrackets(9,"(", ",", ")");
+    expressionParser.addApplyBrackets(9,"[", ",", "]");  // HP
     expressionParser.addGroupBrackets("(", null, ")");
-    expressionParser.addOperators(ExpressionParser.OperatorType.INFIX, 9, ".");
+    expressionParser.addOperators(ExpressionParser.OperatorType.INFIX, 10, ".");
     expressionParser.addOperators(ExpressionParser.OperatorType.INFIX, 8, "^");
     expressionParser.addOperators(ExpressionParser.OperatorType.PREFIX, 7, "-");
     expressionParser.addOperators(ExpressionParser.OperatorType.INFIX, 6, "*", "/");
@@ -59,14 +49,14 @@ public class Parser {
     } else if (name.equals("?")) {
       name = "PRINT";
     }
-    Statement.Kind type = null;
+    Statement.Kind kind = null;
     for (Statement.Kind t : Statement.Kind.values()) {
       if (name.equalsIgnoreCase(t.name())) {
-        type = t;
+        kind = t;
         break;
       }
     }
-    if (type == null) {
+    if (kind == null) {
       Node expression = expressionParser.parse(tokenizer);
 
       if ((expression instanceof Operator) && (expression.children[0] instanceof AssignableNode)
@@ -77,20 +67,21 @@ public class Parser {
     }
     tokenizer.nextToken();
 
-    switch (type) {
+    switch (kind) {
       case RUN:  // 0 or 1 param; Default is 0
       case RESTORE:
+      case RETURN:
         if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF &&
             !tokenizer.currentValue.equals(":")) {
-          return new Statement(program, type, expressionParser.parse(tokenizer));
+          return new Statement(program, kind, expressionParser.parse(tokenizer));
         }
-        return new Statement(program, type);
+        return new Statement(program, kind);
 
       case DEF:  // Exactly one param
       case GOTO:
       case GOSUB:
       case LOAD:
-        return new Statement(program, type, expressionParser.parse(tokenizer));
+        return new Statement(program, kind, expressionParser.parse(tokenizer));
 
       case NEXT:   // Zero of more
         ArrayList<Node> vars = new ArrayList<>();
@@ -100,7 +91,7 @@ public class Parser {
             vars.add(expressionParser.parse(tokenizer));
           } while (tokenizer.tryConsume(","));
         }
-        return new Statement(program, type, vars.toArray(new Node[vars.size()]));
+        return new Statement(program, kind, vars.toArray(new Node[vars.size()]));
 
       case DATA:  // One or more params
       case DIM:
@@ -109,7 +100,7 @@ public class Parser {
         do {
           expressions.add(expressionParser.parse(tokenizer));
         } while (tokenizer.tryConsume(","));
-        return new Statement(program, type, expressions.toArray(new Node[expressions.size()]));
+        return new Statement(program, kind, expressions.toArray(new Node[expressions.size()]));
       }
 
       case FOR: {
@@ -122,11 +113,11 @@ public class Parser {
         require(tokenizer, "TO");
         Node end = expressionParser.parse(tokenizer);
         if (tryConsume(tokenizer, "STEP")) {
-          return new Statement(program, type, new String[]{" = ", " TO ", " STEP "},
+          return new Statement(program, kind, new String[]{" = ", " TO ", " STEP "},
               assignment.children[0], assignment.children[1], end,
               expressionParser.parse(tokenizer));
         }
-        return new Statement(program, type, new String[]{" = ", " TO "},
+        return new Statement(program, kind, new String[]{" = ", " TO "},
             assignment.children[0], assignment.children[1], end);
       }
 
@@ -138,10 +129,10 @@ public class Parser {
         if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.NUMBER) {
           double target = (int) Double.parseDouble(tokenizer.currentValue);
           tokenizer.nextToken();
-          return new Statement(program, type, new String[]{" THEN "}, condition,
+          return new Statement(program, kind, new String[]{" THEN "}, condition,
               new Literal(target));
         }
-        return new Statement(program, type, new String[]{" THEN"}, condition);
+        return new Statement(program, kind, new String[]{" THEN"}, condition);
 
       case INPUT:
       case PRINT:
@@ -159,7 +150,7 @@ public class Parser {
             args.add(expressionParser.parse(tokenizer));
           }
         }
-        return new Statement(program, type, delimiter.toArray(new String[delimiter.size()]),
+        return new Statement(program, kind, delimiter.toArray(new String[delimiter.size()]),
             args.toArray(new Node[args.size()]));
 
       case LET: {
@@ -169,23 +160,23 @@ public class Parser {
           throw tokenizer.exception("Unrecognized statement or illegal assignment: '"
               + assignment + "'.", null);
         }
-        return new Statement(program, type, new String[]{" = "}, assignment.children);
+        return new Statement(program, kind, new String[]{" = "}, assignment.children);
       }
       case ON: {
         List<Node> expressions = new ArrayList<Node>();
         expressions.add(expressionParser.parse(tokenizer));
-        String[] kind = new String[1];
+        String[] suffix = new String[1];
         if (tryConsume(tokenizer, "GOTO")) {
-          kind[0] = " GOTO ";
+          suffix[0] = " GOTO ";
         } else if (tryConsume(tokenizer, "GOSUB")) {
-          kind[0] = " GOSUB ";
+          suffix[0] = " GOSUB ";
         } else {
           throw tokenizer.exception("GOTO or GOSUB expected.", null);
         }
         do {
           expressions.add(expressionParser.parse(tokenizer));
         } while (tokenizer.tryConsume(","));
-        return new Statement(program, type, kind,
+        return new Statement(program, kind, suffix,
             expressions.toArray(new Node[expressions.size()]));
       }
       case REM: {
@@ -197,10 +188,10 @@ public class Parser {
         if (sb.length() > 0 && sb.charAt(0) == ' ') {
           sb.deleteCharAt(0);
         }
-        return new Statement(program, type, new Identifier(program, sb.toString()));
+        return new Statement(program, kind, new Identifier(program, sb.toString()));
       }
       default:
-        return new Statement(program, type);
+        return new Statement(program, kind);
     }
   }
 

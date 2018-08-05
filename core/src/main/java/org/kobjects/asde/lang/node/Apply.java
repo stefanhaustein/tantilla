@@ -9,19 +9,22 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.TreeMap;
 
 // Not static for access to the variables.
-public class Call extends AssignableNode {
+public class Apply extends AssignableNode {
   final Program program;
-  public final String name;
-  final boolean dollar;
+  public final Node base;
 
-  public Call(Program program, String name, Node... children) {
+  public Apply(Program program, Node base, Node... children) {
     super(children);
+    this.base = base;
     this.program = program;
-    dollar = name.endsWith("$");
-    this.name = name;
   }
 
   public void set(Interpreter interpreter, Object value) {
+    if (!(base instanceof Identifier)) {
+        throw new RuntimeException("Not assignable");
+    }
+    String name = ((Identifier) base).name;
+
     Symbol symbol = program.getSymbol(name);
     if (symbol == null) {
       symbol = new Symbol(null);
@@ -46,35 +49,35 @@ public class Call extends AssignableNode {
   }
 
   public Object eval(Interpreter interpreter) {
-    Symbol symbol = program.getSymbol(name);
+    Object value = base.evalRaw(interpreter);
     Object result;
-    if (symbol == null) {
+    if (value == null) {
       result = null;
     } else {
-      if (symbol.value instanceof DefFn) {
+      if (value instanceof DefFn) {
         Object[] params = new Object[children.length];
         for (int i = 0; i < params.length; i++) {
           params[i] = children[i].eval(interpreter);
         }
-        result = ((DefFn) symbol.value).eval(interpreter, params);
+        result = ((DefFn) value).eval(interpreter, params);
       } else if (children.length == 0) {
-        result = symbol.value;
+        result = value;
       } else {
-        TreeMap<Integer, Object> arr = (TreeMap<Integer, Object>) symbol.value;
+        TreeMap<Integer, Object> arr = (TreeMap<Integer, Object>) value;
         for (int i = 0; i < children.length - 1 && arr != null; i++) {
           arr = (TreeMap<Integer, Object>) arr.get((int) evalDouble(interpreter, i));
         }
         result = arr == null ? null : arr.get((int) evalDouble(interpreter, children.length - 1));
       }
     }
-    return result == null ? dollar ? "" : 0.0 : result;
+    return result == null ? base.toString().endsWith("$") ? "" : 0.0 : result;
   }
 
   public Type returnType() {
-    return dollar ? Type.STRING : Type.NUMBER;
+    return base.toString().endsWith("$") ? Type.STRING : Type.NUMBER;
   }
 
   public String toString() {
-    return name + "(" + super.toString() + ")";
+    return base + "(" + super.toString() + ")";
   }
 }
