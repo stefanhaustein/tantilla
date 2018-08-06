@@ -16,7 +16,12 @@ public class Interpreter {
 
     public int[] dataPosition = new int[3];
     public Statement dataStatement;
-    public Interpreter(Program program) {this.program = program;}
+    CallableUnit callableUnit;
+    public Object returnValue;
+
+    public Interpreter(Program program) {
+        this.program = program;
+    }
 
     Thread interpreterThread;
     List<StartStopListener> startStopListeners = new ArrayList<>();
@@ -40,28 +45,23 @@ public class Interpreter {
         }
     }
 
-    public void runProgram() {
-        runStatements(Collections.singletonList(new Statement(program, Statement.Kind.RUN)));
+    public void runAsync(CallableUnit callableUnit) {
+        runStatementsAsync(Collections.singletonList(new Statement(program, Statement.Kind.RUN)), callableUnit);
     }
 
     public Symbol.Scope getSymbolScope() {
         return currentLine == -2 ? Symbol.Scope.PERSISTENT : Symbol.Scope.TRANSIENT;
     }
 
-    public void runStatements(final List<Statement> statements) {
+    public void runStatementsAsync(final List<Statement> statements, final CallableUnit callableUnit) {
         stop();
         interpreterThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 currentLine = -2;
+                Interpreter.this.callableUnit = callableUnit;
                 runStatementsImpl(statements);
-                if (currentLine > -1) {
-                    Map.Entry<Integer, List<Statement>> entry;
-                    while (null != (entry = program.main.code.ceilingEntry(currentLine)) && !Thread.currentThread().isInterrupted()) {
-                        currentLine = entry.getKey();
-                        runStatementsImpl(entry.getValue());
-                    }
-                }
+                runCallableUnit();
                 if (interpreterThread != null) {
                     interpreterThread = null;
                     for (StartStopListener startStopListener : startStopListeners) {
@@ -92,6 +92,24 @@ public class Interpreter {
         }
         currentIndex = 0;
         currentLine++;
+    }
+
+    private void runCallableUnit() {
+        if (currentLine > -1) {
+            Map.Entry<Integer, List<Statement>> entry;
+            while (null != (entry = callableUnit.code.ceilingEntry(currentLine)) && !Thread.currentThread().isInterrupted()) {
+                currentLine = entry.getKey();
+                runStatementsImpl(entry.getValue());
+            }
+        }
+
+    }
+
+    public Object call(CallableUnit callableUnit) {
+        Interpreter sub = new Interpreter(program);
+        sub.callableUnit = callableUnit;
+        sub.runCallableUnit();
+        return sub.returnValue;
     }
 
 }

@@ -2,6 +2,7 @@ package org.kobjects.asde.lang;
 
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.asde.lang.parser.Parser;
+import org.kobjects.typesystem.Type;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class Program {
   }
 
   public Parser parser = new Parser(this);
-  public CallableUnit main = new CallableUnit(this);
+  public CallableUnit main = new CallableUnit(this, Type.VOID);
   public Map<String, Classifier> classifiers = new TreeMap<>();
 
   // Program state
@@ -54,7 +55,7 @@ public class Program {
     synchronized (symbolMap) {
         for (Map.Entry<String, Symbol> entry : symbolMap.entrySet()) {
             Symbol symbol = entry.getValue();
-            if (symbol.scope != Symbol.Scope.TRANSIENT) {
+            if (symbol != null && symbol.scope != Symbol.Scope.TRANSIENT) {
                 cleared.put(entry.getKey(), symbol);
             }
         }

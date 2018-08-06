@@ -33,7 +33,7 @@ public class AsdeShell {
                 return false;
             default:
                 List<Statement> statements = program.parser.parseStatementList(tokenizer);
-                interpreter.runStatements(statements);
+                interpreter.runStatementsAsync(statements, program.main);
                 return true;
         }
     }

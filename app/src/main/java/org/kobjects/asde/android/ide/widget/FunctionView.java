@@ -24,13 +24,13 @@ public class FunctionView extends LinearLayout {
     Interpreter interpreter;
     final Program program;
 
-    public FunctionView(final Activity context, final Interpreter interpreter, final CallableUnit callableUnit) {
+    public FunctionView(final Activity context, final Interpreter interpreter, String name, final CallableUnit callableUnit) {
         super(context);
         this.context = context;
         this.program = interpreter.program;
         setOrientation(VERTICAL);
         titleView = new TitleView(context);
-        titleView.setTitle("Program");
+        titleView.setTitle(name == null ? "Main Program" : (name + callableUnit.getType()));
         startStopIcon = new IconButton(context, R.drawable.baseline_play_arrow_black_24);
         titleView.addView(startStopIcon);
 
@@ -60,7 +60,7 @@ public class FunctionView extends LinearLayout {
                 if (interpreter.isRunning()) {
                     interpreter.stop();
                 } else {
-                    interpreter.runProgram();
+                    interpreter.runAsync(callableUnit);
                 };
             }
         });
@@ -80,7 +80,7 @@ public class FunctionView extends LinearLayout {
         sync();
     }
 
-    void sync() {
+    public void sync() {
         int index = 1;
         for (Map.Entry<Integer, List<Statement>> entry : callableUnit.code.entrySet()) {
             CodeLineView codeLineView;

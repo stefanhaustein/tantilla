@@ -1,11 +1,12 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.asde.lang.AsdeShell;
-import org.kobjects.asde.lang.DefFn;
+import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.StackEntry;
 import org.kobjects.asde.lang.Symbol;
+import org.kobjects.typesystem.Parameter;
 import org.kobjects.typesystem.Type;
 
 import java.io.BufferedReader;
@@ -15,6 +16,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -83,8 +85,15 @@ public class Statement extends Node {
           throw new RuntimeException("Assignment to function declaration expected.");
         }
         Apply target = (Apply) assignment.children[0];
-        DefFn f = new DefFn(program, target, assignment.children[1]);
-        program.setSymbol(((Identifier) target.children[0]).name, new Symbol(interpreter.getSymbolScope(), f));
+        String name = ((Identifier) target.children[0]).name;
+        Parameter[] parameters = new Parameter[target.children.length - 1];
+        for (int i = 0; i < parameters.length; i++) {
+          Identifier parameterNode = (Identifier) target.children[i + 1];
+          parameters[i] = new Parameter(parameterNode.name, parameterNode.name.endsWith("$") ? Type.STRING : Type.NUMBER);
+        }
+        CallableUnit fn = new CallableUnit(program, name.endsWith("$") ? Type.STRING : Type.NUMBER, parameters);
+        fn.code.put(10, Collections.singletonList(new Statement(program, Kind.RETURN, assignment.children[1])));
+        program.setSymbol(name, new Symbol(interpreter.getSymbolScope(), fn));
         break;
       }
       case DATA:
@@ -225,15 +234,21 @@ public class Statement extends Node {
         break;
 
       case RETURN:
-        while (true) {
-          if (interpreter.stack.isEmpty()) {
-            throw new RuntimeException("RETURN without GOSUB.");
-          }
-          StackEntry entry = interpreter.stack.remove(interpreter.stack.size() - 1);
-          if (entry.forVariable == null) {
-            interpreter.currentLine = entry.lineNumber;
-            interpreter.currentIndex = entry.statementIndex + 1;
-            break;
+        if (children.length > 0) {
+          interpreter.returnValue = children[0].eval(interpreter);
+          interpreter.currentLine = Integer.MAX_VALUE;
+          interpreter.currentIndex = 0;
+        } else {
+          while (true) {
+            if (interpreter.stack.isEmpty()) {
+              throw new RuntimeException("RETURN without GOSUB.");
+            }
+            StackEntry entry = interpreter.stack.remove(interpreter.stack.size() - 1);
+            if (entry.forVariable == null) {
+              interpreter.currentLine = entry.lineNumber;
+              interpreter.currentIndex = entry.statementIndex + 1;
+              break;
+            }
           }
         }
         break;

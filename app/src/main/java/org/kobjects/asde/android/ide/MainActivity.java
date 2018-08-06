@@ -25,7 +25,9 @@ import org.kobjects.asde.android.ide.widget.FunctionView;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.android.ide.widget.VariableView;
+import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.StartStopListener;
+import org.kobjects.asde.lang.Symbol;
 import org.kobjects.asde.library.ui.Screen;
 import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.asde.lang.Program;
@@ -34,6 +36,8 @@ import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.node.Statement;
 
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class MainActivity extends AppCompatActivity implements Console {
   LinearLayout contentLayout;
@@ -43,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   EditText mainInput;
   TextView errorView;
   IconButton enterButton;
-  FunctionView currentFunction;
+  FunctionView mainView;
   Program program = new Program(this);
   Drawable systemListDivider;
   LinearLayout shellLayout;
@@ -52,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   Screen screen;
   VariableView variableView;
   Interpreter interpreter = new Interpreter(program);
+  TreeMap<String,FunctionView> functionViews = new TreeMap<>();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     });
 
     variableView = new VariableView(this, program);
+    mainView = new FunctionView(this, interpreter, null, program.main);
 
     TitleView titleView = new TitleView(this);
     titleView.setTitle("Shell");
@@ -99,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     contentLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
     contentLayout.setDividerDrawable(divider);
     contentLayout.addView(variableView);
+    contentLayout.addView(mainView);
     contentLayout.addView(shellLayout);
 
     scrollView = new ScrollView(this);
@@ -155,7 +162,12 @@ public class MainActivity extends AppCompatActivity implements Console {
 
         @Override
         public void programStopped() {
-
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    sync();
+                }
+            });
         }
     });
 
@@ -164,13 +176,6 @@ public class MainActivity extends AppCompatActivity implements Console {
 
   }
 
-  FunctionView getCurrentFunction() {
-    if (currentFunction == null) {
-      currentFunction = new FunctionView(this, interpreter, program.main);
-      contentLayout.addView(currentFunction, 0);
-    }
-    return currentFunction;
-  }
 
   void enter() {
     if (interpreter.isRunning()) {
@@ -194,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements Console {
           int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
           tokenizer.nextToken();
           if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER || "?".equals(tokenizer.currentValue)) {
-            getCurrentFunction().put(lineNumber, program.parser.parseStatementList(tokenizer));
+            mainView.put(lineNumber, program.parser.parseStatementList(tokenizer));
             break;
           }
           // Not
@@ -212,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements Console {
           shellLayout.addView(inputView);
           inputPrinted = true;
 
-          interpreter.runStatements(statements);
+          interpreter.runStatementsAsync(statements, program.main);
 
           break;
       }
@@ -222,7 +227,6 @@ public class MainActivity extends AppCompatActivity implements Console {
         errorView.setText(e.getMessage());
         errorView.setVisibility(View.VISIBLE);
     }
-    variableView.sync();
   }
 
   int lineCount;
@@ -255,6 +259,25 @@ public class MainActivity extends AppCompatActivity implements Console {
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
+  }
+
+  void sync() {
+      variableView.sync();
+      mainView.sync();
+      for (Map.Entry<String, Symbol> entry : program.getSymbolMap().entrySet()) {
+          Symbol symbol = entry.getValue();
+          if (symbol == null) {
+              continue;
+          }
+          String name = entry.getKey();
+          if (symbol.scope == Symbol.Scope.PERSISTENT && symbol.value instanceof CallableUnit) {
+              if (!functionViews.containsKey(name)) {
+                  FunctionView functionView = new FunctionView(this, interpreter, name, (CallableUnit) symbol.value);
+                  contentLayout.addView(functionView, 1);
+                  functionViews.put(name, functionView);
+              }
+          }
+      }
   }
 
   @Override
