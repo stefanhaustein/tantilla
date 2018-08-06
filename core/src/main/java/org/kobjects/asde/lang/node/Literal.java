@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.type.Type;
+import org.kobjects.typesystem.Type;
 
 public class Literal extends Node {
   Object value;

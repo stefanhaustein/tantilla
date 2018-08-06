@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang;
 
-import org.kobjects.asde.lang.type.FunctionType;
-import org.kobjects.asde.lang.type.Typed;
+import org.kobjects.typesystem.FunctionType;
+import org.kobjects.typesystem.Typed;
 
 public interface Function extends Typed {
 

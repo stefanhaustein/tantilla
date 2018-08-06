@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang;
 
-import org.kobjects.asde.lang.type.Type;
+import org.kobjects.typesystem.Type;
 
 public class Symbol {
 

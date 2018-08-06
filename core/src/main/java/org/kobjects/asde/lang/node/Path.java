@@ -1,10 +1,10 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.type.Instance;
-import org.kobjects.asde.lang.type.Property;
-import org.kobjects.asde.lang.type.PropertyDescriptor;
-import org.kobjects.asde.lang.type.Type;
+import org.kobjects.typesystem.Instance;
+import org.kobjects.typesystem.Property;
+import org.kobjects.typesystem.PropertyDescriptor;
+import org.kobjects.typesystem.Type;
 
 
 public class Path extends AssignableNode {

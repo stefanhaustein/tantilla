@@ -24,8 +24,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation 'com.android.support:appcompat-v7:27.0.2'
     api project(':core')
+    api project(':typesystem')
+    api project(':emojisprites')
     api 'com.vanniktech:emoji-twitter:0.6.0-SNAPSHOT'
 
 
-    compile project(path: ':emojisprites')
 }

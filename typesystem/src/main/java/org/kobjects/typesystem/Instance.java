@@ -1,4 +1,4 @@
-package org.kobjects.asde.lang.type;
+package org.kobjects.typesystem;
 
 public abstract class Instance implements Typed {
     private final Classifier classifier;

@@ -7,7 +7,7 @@ import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Operator;
 import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.asde.lang.node.Identifier;
-import org.kobjects.asde.lang.type.Type;
+import org.kobjects.typesystem.Type;
 import org.kobjects.expressionparser.ExpressionParser;
 
 import java.util.ArrayList;

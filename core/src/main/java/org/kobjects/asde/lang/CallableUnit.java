@@ -1,8 +1,7 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.asde.lang.node.Statement;
-import org.kobjects.asde.lang.type.FunctionType;
-import org.kobjects.expressionparser.ExpressionParser;
+import org.kobjects.typesystem.FunctionType;
 
 import java.util.List;
 import java.util.TreeMap;

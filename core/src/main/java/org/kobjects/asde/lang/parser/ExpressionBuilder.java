@@ -1,7 +1,5 @@
 package org.kobjects.asde.lang.parser;
 
-import org.kobjects.asde.lang.Builtin;
-import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.New;
@@ -11,7 +9,7 @@ import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Operator;
 import org.kobjects.asde.lang.node.Path;
 import org.kobjects.asde.lang.node.Identifier;
-import org.kobjects.asde.lang.type.Type;
+import org.kobjects.typesystem.Type;
 import org.kobjects.expressionparser.ExpressionParser;
 
 import java.util.List;

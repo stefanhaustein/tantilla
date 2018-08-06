@@ -1,4 +1,4 @@
-package org.kobjects.asde.lang.type;
+package org.kobjects.typesystem;
 
 public class PhysicalProperty<T> extends Property<T> {
 

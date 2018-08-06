@@ -4,7 +4,7 @@ import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.ResolutionContext;
 import org.kobjects.asde.lang.Symbol;
-import org.kobjects.asde.lang.type.Type;
+import org.kobjects.typesystem.Type;
 
 // Not static for access to the variables.
 public class Identifier extends AssignableNode {

@@ -1,13 +1,11 @@
 package org.kobjects.asde.lang;
 
-import org.kobjects.asde.lang.type.Classifier;
+import org.kobjects.typesystem.Classifier;
 import org.kobjects.asde.lang.parser.Parser;
 
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
-
-import javax.swing.plaf.basic.BasicButtonUI;
 
 /**
  * Full implementation of <a href="http://goo.gl/kIIPc0">ECMA-55</a> with

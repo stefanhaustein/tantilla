@@ -2,12 +2,12 @@ package org.kobjects.asde.library.ui;
 
 import android.app.Activity;
 
-import org.kobjects.asde.lang.type.Classifier;
-import org.kobjects.asde.lang.type.Instance;
-import org.kobjects.asde.lang.type.PropertyDescriptor;
-import org.kobjects.asde.lang.type.PhysicalProperty;
-import org.kobjects.asde.lang.type.Property;
-import org.kobjects.asde.lang.type.Type;
+import org.kobjects.typesystem.Classifier;
+import org.kobjects.typesystem.Instance;
+import org.kobjects.typesystem.PropertyDescriptor;
+import org.kobjects.typesystem.PhysicalProperty;
+import org.kobjects.typesystem.Property;
+import org.kobjects.typesystem.Type;
 import org.kobjects.emojisprites.EmojiSprite;
 
 public class Sprite extends Instance implements Runnable {

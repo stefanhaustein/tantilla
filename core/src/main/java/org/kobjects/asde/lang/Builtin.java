@@ -1,8 +1,8 @@
 package org.kobjects.asde.lang;
 
-import org.kobjects.asde.lang.type.FunctionType;
-import org.kobjects.asde.lang.type.Parameter;
-import org.kobjects.asde.lang.type.Type;
+import org.kobjects.typesystem.FunctionType;
+import org.kobjects.typesystem.Parameter;
+import org.kobjects.typesystem.Type;
 
 public enum Builtin implements Function {
 

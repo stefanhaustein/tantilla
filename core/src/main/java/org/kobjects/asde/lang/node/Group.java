@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.type.Type;
+import org.kobjects.typesystem.Type;
 
 public class Group extends Node {
     public Group(Node child) {

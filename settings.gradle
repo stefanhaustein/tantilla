@@ -1,1 +1,1 @@
-include ':app', ':core', ':emojisprites'
+include ':app', ':core', ':emojisprites', ':typesystem'

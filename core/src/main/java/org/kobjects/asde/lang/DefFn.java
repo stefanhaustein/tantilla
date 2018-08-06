@@ -3,10 +3,10 @@ package org.kobjects.asde.lang;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Identifier;
-import org.kobjects.asde.lang.type.FunctionType;
-import org.kobjects.asde.lang.type.Parameter;
-import org.kobjects.asde.lang.type.Type;
-import org.kobjects.asde.lang.type.Typed;
+import org.kobjects.typesystem.FunctionType;
+import org.kobjects.typesystem.Parameter;
+import org.kobjects.typesystem.Type;
+import org.kobjects.typesystem.Typed;
 
 public class DefFn implements Function {
   Program program;

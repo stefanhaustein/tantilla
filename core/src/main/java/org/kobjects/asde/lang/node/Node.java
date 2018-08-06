@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.ResolutionContext;
-import org.kobjects.asde.lang.type.Type;
+import org.kobjects.typesystem.Type;
 
 public abstract class Node {
   public Node[] children;
