@@ -1,8 +1,11 @@
 package org.kobjects.asde.android.ide.widget;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
 import android.widget.LinearLayout;
 
 import org.kobjects.asde.R;
@@ -12,8 +15,11 @@ import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.StartStopListener;
 import org.kobjects.asde.lang.node.Statement;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class FunctionView extends LinearLayout {
 
@@ -21,10 +27,15 @@ public class FunctionView extends LinearLayout {
     TitleView titleView;
     CallableUnit callableUnit;
     IconButton startStopIcon;
+    IconButton foldIcon;
     Interpreter interpreter;
     final Program program;
+    boolean collapsed;
+    int fullHeight;
+    ValueAnimator heightAnimator;
+    List<ExpandListener> expandListeners = new ArrayList<>();
 
-    public FunctionView(final Activity context, final Interpreter interpreter, String name, final CallableUnit callableUnit) {
+    public FunctionView(final Activity context, String name, final CallableUnit callableUnit, final Interpreter interpreter) {
         super(context);
         this.context = context;
         this.program = interpreter.program;
@@ -66,7 +77,17 @@ public class FunctionView extends LinearLayout {
         });
 
 
-        addView(titleView, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        foldIcon = new IconButton(context, R.drawable.baseline_expand_less_black_24);
+        titleView.addView(foldIcon);
+        foldIcon.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setCollapsed(!collapsed);
+            }
+        });
+
+
+        addView(titleView, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, WRAP_CONTENT));
         //setPadding(0, 0, 0, 16);
         this.callableUnit = callableUnit;
 
@@ -74,8 +95,68 @@ public class FunctionView extends LinearLayout {
     }
 
 
-    public void put(int lineNumber, List<Statement> statementList) {
+    public void setCollapsed(boolean collapse) {
+        if (collapsed == collapse) {
+            return;
+        }
+        if (heightAnimator != null) {
+            heightAnimator.cancel();
+            heightAnimator = null;
+        } else if (collapse) {
+            fullHeight = getMeasuredHeight();
+        }
+        collapsed = collapse;
+        if (collapse) {
+            heightAnimator = ValueAnimator.ofInt(fullHeight, titleView.getHeight());
+        } else {
+            heightAnimator = ValueAnimator.ofInt(getHeight(), fullHeight);
+            for (ExpandListener expandListener : expandListeners) {
+                expandListener.notifyExpanding(this);
+            }
+        }
+        heightAnimator.setTarget(this);
+        heightAnimator.setDuration(300);
+        heightAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) getLayoutParams();
+                layoutParams.height = (Integer) animation.getAnimatedValue();
+                setLayoutParams(layoutParams);
+            }
+        });
+        heightAnimator.start();
+        heightAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
 
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (collapsed) {
+
+                } else {
+                    LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) getLayoutParams();
+                    layoutParams.height = WRAP_CONTENT;
+                }
+                heightAnimator = null;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+            }
+        });
+        foldIcon.animate().rotation(collapse ? 180 : 0).setDuration(300).start();
+    }
+
+    public void addExpandListener(ExpandListener expandListener) {
+        expandListeners.add(expandListener);
+    }
+
+    public void put(int lineNumber, List<Statement> statementList) {
         callableUnit.code.put(lineNumber, statementList);
         sync();
     }
@@ -108,5 +189,8 @@ public class FunctionView extends LinearLayout {
         sync();
     }
 
+    public interface ExpandListener {
+        void notifyExpanding(FunctionView functionView);
+    }
 
 }

@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class MainActivity extends AppCompatActivity implements Console {
+public class MainActivity extends AppCompatActivity implements Console, FunctionView.ExpandListener {
   LinearLayout contentLayout;
   LinearLayout mainLayout;
   ScrollView scrollView;
@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   VariableView variableView;
   Interpreter interpreter = new Interpreter(program);
   TreeMap<String,FunctionView> functionViews = new TreeMap<>();
+  FunctionView currentFunctionView;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +83,9 @@ public class MainActivity extends AppCompatActivity implements Console {
     });
 
     variableView = new VariableView(this, program);
-    mainView = new FunctionView(this, interpreter, null, program.main);
+    mainView = new FunctionView(this, null, program.main, interpreter);
+     mainView.addExpandListener(this);
+    currentFunctionView = mainView;
 
     TitleView titleView = new TitleView(this);
     titleView.setTitle("Shell");
@@ -199,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements Console {
           int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
           tokenizer.nextToken();
           if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER || "?".equals(tokenizer.currentValue)) {
-            mainView.put(lineNumber, program.parser.parseStatementList(tokenizer));
+            currentFunctionView.put(lineNumber, program.parser.parseStatementList(tokenizer));
             break;
           }
           // Not
@@ -272,7 +275,9 @@ public class MainActivity extends AppCompatActivity implements Console {
           String name = entry.getKey();
           if (symbol.scope == Symbol.Scope.PERSISTENT && symbol.value instanceof CallableUnit) {
               if (!functionViews.containsKey(name)) {
-                  FunctionView functionView = new FunctionView(this, interpreter, name, (CallableUnit) symbol.value);
+                  FunctionView functionView = new FunctionView(this, name, (CallableUnit) symbol.value, interpreter);
+                  functionView.addExpandListener(this);
+                  notifyExpanding(functionView);
                   contentLayout.addView(functionView, 1);
                   functionViews.put(name, functionView);
               }
@@ -295,4 +300,13 @@ public class MainActivity extends AppCompatActivity implements Console {
     return result;
   }
 
+    @Override
+    public void notifyExpanding(FunctionView functionView) {
+      if (functionView != currentFunctionView) {
+          if (currentFunctionView != null) {
+              currentFunctionView.setCollapsed(true);
+          }
+          currentFunctionView = functionView;
+      }
+    }
 }
