@@ -6,6 +6,7 @@ import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.StackEntry;
 import org.kobjects.asde.lang.Symbol;
+import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Parameter;
 import org.kobjects.typesystem.Type;
 
@@ -86,12 +87,14 @@ public class Statement extends Node {
         }
         Apply target = (Apply) assignment.children[0];
         String name = ((Identifier) target.children[0]).name;
-        Parameter[] parameters = new Parameter[target.children.length - 1];
-        for (int i = 0; i < parameters.length; i++) {
+        Type[] parameterTypes = new Type[target.children.length - 1];
+        String[] parameterNames = new String[parameterTypes.length];
+        for (int i = 0; i < parameterTypes.length; i++) {
           Identifier parameterNode = (Identifier) target.children[i + 1];
-          parameters[i] = new Parameter(parameterNode.name, parameterNode.name.endsWith("$") ? Type.STRING : Type.NUMBER);
+          parameterNames[i] = parameterNode.name;
+          parameterTypes[i] = parameterNode.name.endsWith("$") ? Type.STRING : Type.NUMBER;
         }
-        CallableUnit fn = new CallableUnit(program, name.endsWith("$") ? Type.STRING : Type.NUMBER, parameters);
+        CallableUnit fn = new CallableUnit(program, new FunctionType(name.endsWith("$") ? Type.STRING : Type.NUMBER, parameterTypes), parameterNames);
         fn.code.put(10, Collections.singletonList(new Statement(program, Kind.RETURN, assignment.children[1])));
         program.setSymbol(name, new Symbol(interpreter.getSymbolScope(), fn));
         break;

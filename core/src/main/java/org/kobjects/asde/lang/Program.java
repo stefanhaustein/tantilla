@@ -2,6 +2,7 @@ package org.kobjects.asde.lang;
 
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.asde.lang.parser.Parser;
+import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
 
 import java.util.Arrays;
@@ -29,7 +30,7 @@ public class Program {
   }
 
   public Parser parser = new Parser(this);
-  public CallableUnit main = new CallableUnit(this, Type.VOID);
+  public CallableUnit main = new CallableUnit(this, new FunctionType(Type.VOID));
   public Map<String, Classifier> classifiers = new TreeMap<>();
 
   // Program state

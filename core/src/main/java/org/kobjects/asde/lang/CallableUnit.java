@@ -11,11 +11,13 @@ import java.util.TreeMap;
 public class CallableUnit implements Function {
     final Program program;
     FunctionType type;
+    String[] parameterNames;
     public TreeMap<Integer, List<Statement>> code = new TreeMap<>();
 
-    public CallableUnit(Program program, Type returnType, Parameter... parameters) {
+    public CallableUnit(Program program, FunctionType type, String... parameterNames) {
         this.program = program;
-        this.type = new FunctionType(returnType, parameters);
+        this.type = type;
+        this.parameterNames = parameterNames;
     }
 
     public void resolve() {
@@ -42,7 +44,7 @@ public class CallableUnit implements Function {
     public Object eval(Interpreter interpreter, Object[] parameterValues) {
         Symbol[] saved = new Symbol[type.getParameterCount()];
         for (int i = 0; i < type.getParameterCount(); i++) {
-            String param = type.getParameter(i).name;
+            String param = parameterNames[i];
             saved[i] = program.getSymbol(param);
             program.setSymbol(param, new Symbol(interpreter.getSymbolScope(), parameterValues[i]));
         }
@@ -50,7 +52,7 @@ public class CallableUnit implements Function {
             return interpreter.call(this);
         } finally {
            for (int i = 0; i < type.getParameterCount(); i++) {
-              program.setSymbol(type.getParameter(i).name, saved[i]);
+              program.setSymbol(parameterNames[i], saved[i]);
           }
        }
 
