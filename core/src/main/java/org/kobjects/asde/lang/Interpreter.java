@@ -96,10 +96,10 @@ public class Interpreter {
 
     private void runCallableUnit() {
         if (currentLine > -1) {
-            Map.Entry<Integer, List<Statement>> entry;
-            while (null != (entry = callableUnit.code.ceilingEntry(currentLine)) && !Thread.currentThread().isInterrupted()) {
+            Map.Entry<Integer, CodeLine> entry;
+            while (null != (entry = callableUnit.ceilingEntry(currentLine)) && !Thread.currentThread().isInterrupted()) {
                 currentLine = entry.getKey();
-                runStatementsImpl(entry.getValue());
+                runStatementsImpl(entry.getValue().statements);
             }
         }
 

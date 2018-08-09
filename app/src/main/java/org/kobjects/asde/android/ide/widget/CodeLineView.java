@@ -7,26 +7,18 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.node.Statement;
 
 import java.util.List;
 
 public class CodeLineView extends LinearLayout {
 
-    public static String statementListToString(List<Statement> statementList) {
-        StringBuilder sb = new StringBuilder();
-        for (Statement statement : statementList) {
-            if (sb.length() > 0) {
-                sb.append(" : ");
-            }
-            sb.append(statement.toString());
-        }
-        return sb.toString();
-    }
 
     TextView lineNumberView;
     TextView statementView;
-    List<Statement> statementList;
+    CodeLine codeLine;
 
     public CodeLineView(Context context) {
         super(context);
@@ -46,10 +38,11 @@ public class CodeLineView extends LinearLayout {
     void setLineNumber(int lineNumber) {
         lineNumberView.setText(lineNumber + " ");
     }
-    void setStatement(List<Statement> statementList) {
-        this.statementList = statementList;
 
-        statementView.setText(statementListToString(statementList));
+    void setCodeLine(CodeLine codeLine) {
+        AnnotatedStringBuilder sb = new AnnotatedStringBuilder();
+        codeLine.toString(sb);
+        statementView.setText(codeLine.toString());
     }
 
 }

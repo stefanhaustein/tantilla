@@ -1,7 +1,9 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.AsdeShell;
 import org.kobjects.asde.lang.CallableUnit;
+import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.StackEntry;
@@ -32,7 +34,7 @@ public class Statement extends Node {
     GOTO, GOSUB,
     IF, INPUT,
     LET, LIST, LOAD,
-    NEW, NEXT,
+    NEXT,
     ON,
     PRINT,
     READ, REM, RESTORE, RETURN, RUN,
@@ -95,7 +97,7 @@ public class Statement extends Node {
           parameterTypes[i] = parameterNode.name.endsWith("$") ? Type.STRING : Type.NUMBER;
         }
         CallableUnit fn = new CallableUnit(program, new FunctionType(name.endsWith("$") ? Type.STRING : Type.NUMBER, parameterTypes), parameterNames);
-        fn.code.put(10, Collections.singletonList(new Statement(program, Kind.RETURN, assignment.children[1])));
+        fn.setLine(10, new CodeLine(Collections.singletonList(new Statement(program, Kind.RETURN, assignment.children[1]))));
         program.setSymbol(name, new Symbol(interpreter.getSymbolScope(), fn));
         break;
       }
@@ -156,17 +158,15 @@ public class Statement extends Node {
         }
         break;
       }
-      case LIST:
-        list();
+      case LIST: {
+        AnnotatedStringBuilder sb = new AnnotatedStringBuilder();
+        program.toString(sb);
+        program.print(sb.toString());
         break;
+      }
 
       case LOAD:
         load(interpreter);
-        break;
-
-      case NEW:
-        program.clear();
-        program.main.code.clear();
         break;
 
       case NEXT:
@@ -285,10 +285,10 @@ public class Statement extends Node {
   }
 
   Statement find(Kind kind, String name, int[] position) {
-    Map.Entry<Integer, List<Statement>> entry;
-    while (null != (entry = program.main.code.ceilingEntry(position[0]))) {
+    Map.Entry<Integer, CodeLine> entry;
+    while (null != (entry = program.main.ceilingEntry(position[0]))) {
       position[0] = entry.getKey();
-      List<Statement> list = entry.getValue();
+      List<Statement> list = entry.getValue().statements;
       while (position[1] < list.size()) {
         Statement statement = list.get(position[1]);
         if (statement.kind == kind) {
@@ -310,18 +310,6 @@ public class Statement extends Node {
     return null;
   }
 
-  void list() {
-    program.println();
-    for (Map.Entry<Integer, List<Statement>> entry : program.main.code.entrySet()) {
-      program.print(entry.getKey());
-      List<Statement> line = entry.getValue();
-      for (int i = 0; i < line.size(); i++) {
-        program.print(i == 0 || line.get(i - 1).kind == Kind.IF ? " " : " : ");
-        program.print(line.get(i));
-      }
-      program.println();
-    }
-  }
 
   void load(Interpreter interpreter) {
     String line = null;

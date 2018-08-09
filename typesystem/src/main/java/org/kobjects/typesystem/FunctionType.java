@@ -27,7 +27,7 @@ public class FunctionType implements Type {
             if (i > 0) {
                 sb.append(", ");
             }
-            sb.append(parameterTypes[i].toString().substring(0, 1) + (parameterTypes.length > 1 ? (char) ('\u2081' + i): ""));
+            sb.append(parameterTypes[i].toString());
         }
         sb.append(") -> ");
         sb.append(returnType.toString().substring(0, 1));

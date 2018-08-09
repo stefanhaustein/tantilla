@@ -6,15 +6,22 @@ import org.kobjects.asde.lang.ResolutionContext;
 import org.kobjects.typesystem.Type;
 
 public abstract class Node {
+
+  static final Node[] EMPTY_NODE_ARRAY = new Node[0];
+
   public Node[] children;
 
   protected Node(Node... children) {
-    this.children = children;
+    this.children = children == null || children.length == 0 ? EMPTY_NODE_ARRAY : children;
   }
 
   public void resolve(ResolutionContext resolutionContext) {
     for (Node child: children) {
-      child.resolve(resolutionContext);
+      try {
+        child.resolve(resolutionContext);
+      } catch (Exception e) {
+        resolutionContext.addError(child, e);
+      }
     }
   }
 

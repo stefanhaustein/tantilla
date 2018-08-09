@@ -26,6 +26,7 @@ import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.android.ide.widget.VariableView;
 import org.kobjects.asde.lang.CallableUnit;
+import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.StartStopListener;
 import org.kobjects.asde.lang.Symbol;
 import org.kobjects.asde.library.ui.Screen;
@@ -213,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements Console, Function
           List<Statement> statements = program.parser.parseStatementList(tokenizer);
 
           TextView inputView = new TextView(this);
-          inputView.setText(CodeLineView.statementListToString(statements));
+          inputView.setText(new CodeLine(statements).toString());
           inputView.setTextColor(Colors.SECONDARY);
           inputView.setTypeface(Typeface.MONOSPACE);
 

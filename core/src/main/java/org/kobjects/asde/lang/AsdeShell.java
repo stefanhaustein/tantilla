@@ -26,9 +26,9 @@ public class AsdeShell {
                 int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
                 tokenizer.nextToken();
                 if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.EOF) {
-                    program.main.code.remove(lineNumber);
+                    program.main.setLine(lineNumber, null);
                 } else {
-                    program.main.code.put(lineNumber, program.parser.parseStatementList(tokenizer));
+                    program.main.setLine(lineNumber, new CodeLine(program.parser.parseStatementList(tokenizer)));
                 }
                 return false;
             default:

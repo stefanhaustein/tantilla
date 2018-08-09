@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.asde.lang.parser.Parser;
 import org.kobjects.typesystem.FunctionType;
@@ -112,6 +113,20 @@ public class Program {
       synchronized (symbolMap) {
           symbolMap.put(name, symbol);
       }
+  }
+
+
+  public void toString(AnnotatedStringBuilder sb) {
+      for (Map.Entry<String, Symbol> entry : getSymbolMap().entrySet()) {
+          Symbol symbol = entry.getValue();
+          if (symbol != null && symbol.scope == Symbol.Scope.PERSISTENT) {
+              String name = entry.getKey();
+              if (symbol.value instanceof CallableUnit) {
+                  ((CallableUnit) symbol.value).toString(sb, name);
+              }
+          }
+      }
+      main.toString(sb, null);
   }
 
   public void println() {

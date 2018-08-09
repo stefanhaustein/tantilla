@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 
 import org.kobjects.asde.R;
 import org.kobjects.asde.lang.CallableUnit;
+import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.StartStopListener;
@@ -27,7 +28,6 @@ public class FunctionView extends LinearLayout {
     TitleView titleView;
     CallableUnit callableUnit;
     IconButton startStopIcon;
-    IconButton foldIcon;
     Interpreter interpreter;
     final Program program;
     boolean collapsed;
@@ -39,9 +39,10 @@ public class FunctionView extends LinearLayout {
         super(context);
         this.context = context;
         this.program = interpreter.program;
+        this.interpreter = interpreter;
         setOrientation(VERTICAL);
         titleView = new TitleView(context);
-        titleView.setTitle(name == null ? "Main Program" : (name + callableUnit.getType()));
+        titleView.setTitle(name == null ? "Main Program" : (name + "(" + callableUnit.getType().getParameterCount() + ")"));
         startStopIcon = new IconButton(context, R.drawable.baseline_play_arrow_black_24);
         titleView.addView(startStopIcon);
 
@@ -77,9 +78,7 @@ public class FunctionView extends LinearLayout {
         });
 
 
-        foldIcon = new IconButton(context, R.drawable.baseline_expand_less_black_24);
-        titleView.addView(foldIcon);
-        foldIcon.setOnClickListener(new OnClickListener() {
+        titleView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 setCollapsed(!collapsed);
@@ -149,7 +148,6 @@ public class FunctionView extends LinearLayout {
             public void onAnimationRepeat(Animator animation) {
             }
         });
-        foldIcon.animate().rotation(collapse ? 180 : 0).setDuration(300).start();
     }
 
     public void addExpandListener(ExpandListener expandListener) {
@@ -157,13 +155,13 @@ public class FunctionView extends LinearLayout {
     }
 
     public void put(int lineNumber, List<Statement> statementList) {
-        callableUnit.code.put(lineNumber, statementList);
+        callableUnit.setLine(lineNumber, new CodeLine(statementList));
         sync();
     }
 
     public void sync() {
         int index = 1;
-        for (Map.Entry<Integer, List<Statement>> entry : callableUnit.code.entrySet()) {
+        for (Map.Entry<Integer, CodeLine> entry : callableUnit.entrySet()) {
             CodeLineView codeLineView;
             if (index < getChildCount()) {
                 codeLineView = (CodeLineView) getChildAt(index);
@@ -175,17 +173,19 @@ public class FunctionView extends LinearLayout {
                 addView(codeLineView);
             }
             codeLineView.setLineNumber(entry.getKey());
-            codeLineView.setStatement(entry.getValue());
+            codeLineView.setCodeLine(entry.getValue());
             index++;
         }
         while (index < getChildCount()) {
             removeViewAt(getChildCount() - 1);
         }
         setVisibility(index > 1 ? VISIBLE : GONE);
+
+        titleView.setBackgroundColor(callableUnit.errors.size() > 0 ? Colors.SECONDARY : Colors.PRIMARY);
     }
 
     void remove(int lineNumber) {
-        callableUnit.code.remove(lineNumber);
+        callableUnit.setLine(lineNumber, null);
         sync();
     }
 
