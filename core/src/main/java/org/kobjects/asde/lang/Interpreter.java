@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.asde.lang.node.Statement;
+import org.kobjects.asde.lang.symbol.GlobalSymbol;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +19,7 @@ public class Interpreter {
     public Statement dataStatement;
     CallableUnit callableUnit;
     public Object returnValue;
+    public Object[] locals;
 
     public Interpreter(Program program) {
         this.program = program;
@@ -49,8 +51,8 @@ public class Interpreter {
         runStatementsAsync(Collections.singletonList(new Statement(program, Statement.Kind.RUN)), callableUnit);
     }
 
-    public Symbol.Scope getSymbolScope() {
-        return currentLine == -2 ? Symbol.Scope.PERSISTENT : Symbol.Scope.TRANSIENT;
+    public GlobalSymbol.Scope getSymbolScope() {
+        return currentLine == -2 ? GlobalSymbol.Scope.PERSISTENT : GlobalSymbol.Scope.TRANSIENT;
     }
 
     public void runStatementsAsync(final List<Statement> statements, final CallableUnit callableUnit) {
@@ -105,8 +107,9 @@ public class Interpreter {
 
     }
 
-    public Object call(CallableUnit callableUnit) {
+    public Object call(CallableUnit callableUnit, Object[] locals) {
         Interpreter sub = new Interpreter(program);
+        sub.locals = locals;
         sub.callableUnit = callableUnit;
         sub.runCallableUnit();
         return sub.returnValue;

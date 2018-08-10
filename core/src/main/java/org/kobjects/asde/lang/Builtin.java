@@ -39,6 +39,10 @@ public enum Builtin implements Function {
     return signature;
   }
 
+  public int getLocalVariableCount() {
+      return signature.getParameterCount();
+  }
+
   public Object eval(Interpreter interpreter, Object[] params) {
     switch (this) {
       case ABS: return Math.abs((Double) params[0]);

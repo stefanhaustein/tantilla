@@ -18,7 +18,6 @@ import com.vanniktech.emoji.EmojiManager;
 import com.vanniktech.emoji.twitter.TwitterEmojiProvider;
 
 import org.kobjects.asde.R;
-import org.kobjects.asde.android.ide.widget.CodeLineView;
 import org.kobjects.asde.android.ide.widget.Colors;
 import org.kobjects.asde.android.ide.widget.Dimensions;
 import org.kobjects.asde.android.ide.widget.FunctionView;
@@ -28,13 +27,16 @@ import org.kobjects.asde.android.ide.widget.VariableView;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.StartStopListener;
-import org.kobjects.asde.lang.Symbol;
+import org.kobjects.asde.lang.parser.ResolutionContext;
+import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.asde.library.ui.Screen;
 import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Console;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.node.Statement;
+import org.kobjects.typesystem.FunctionType;
+import org.kobjects.typesystem.Type;
 
 import java.util.List;
 import java.util.Map;
@@ -212,7 +214,10 @@ public class MainActivity extends AppCompatActivity implements Console, Function
           // Fall-through intended
         default:
           List<Statement> statements = program.parser.parseStatementList(tokenizer);
-
+          ResolutionContext resolutionContext = new ResolutionContext(program, ResolutionContext.ResolutionMode.SHELL, new FunctionType(Type.VOID));
+          for (Statement statement : statements) {
+              statement.resolve(resolutionContext);
+          }
           TextView inputView = new TextView(this);
           inputView.setText(new CodeLine(statements).toString());
           inputView.setTextColor(Colors.SECONDARY);
@@ -268,13 +273,13 @@ public class MainActivity extends AppCompatActivity implements Console, Function
   void sync() {
       variableView.sync();
       mainView.sync();
-      for (Map.Entry<String, Symbol> entry : program.getSymbolMap().entrySet()) {
-          Symbol symbol = entry.getValue();
+      for (Map.Entry<String, GlobalSymbol> entry : program.getSymbolMap().entrySet()) {
+          GlobalSymbol symbol = entry.getValue();
           if (symbol == null) {
               continue;
           }
           String name = entry.getKey();
-          if (symbol.scope == Symbol.Scope.PERSISTENT && symbol.value instanceof CallableUnit) {
+          if (symbol.scope == GlobalSymbol.Scope.PERSISTENT && symbol.value instanceof CallableUnit) {
               if (!functionViews.containsKey(name)) {
                   FunctionView functionView = new FunctionView(this, name, (CallableUnit) symbol.value, interpreter);
                   functionView.addExpandListener(this);

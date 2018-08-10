@@ -2,15 +2,16 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.ResolutionContext;
-import org.kobjects.asde.lang.Symbol;
+import org.kobjects.asde.lang.parser.ResolutionContext;
+import org.kobjects.asde.lang.symbol.GlobalSymbol;
+import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.typesystem.Type;
 
 // Not static for access to the variables.
 public class Identifier extends AssignableNode {
   final Program program;
   public final String name;
-  Symbol resolved;
+  ResolvedSymbol resolved;
 
   public Identifier(Program program, String name) {
     this.program = program;
@@ -19,20 +20,14 @@ public class Identifier extends AssignableNode {
 
   public void resolve(ResolutionContext resolutionContext) {
       super.resolve(resolutionContext);
-      resolved = resolutionContext.getSymbol(name);
+      resolved = resolutionContext.resolve(name);
       if (resolved == null) {
-        throw new RuntimeException("Symbol not found: " + name);
+        throw new RuntimeException("Identifier not found: " + name);
       }
   }
 
   public void set(Interpreter interpreter, Object value) {
-    Symbol symbol = resolved == null ? program.getSymbol(name) : resolved;
-    if (symbol == null) {
-      symbol = new Symbol(interpreter.getSymbolScope(), value);
-      program.setSymbol(name, symbol);
-    } else {
-      symbol.value = value;
-    }
+    resolved.set(interpreter, value);
   }
 
   @Override
@@ -43,12 +38,11 @@ public class Identifier extends AssignableNode {
 
   @Override
   public Object evalRaw(Interpreter interpreter) {
-    Symbol symbol = resolved != null ? resolved : program.getSymbol(name);
-    return symbol == null ? null : symbol.value;
+    return resolved.get(interpreter);
   }
 
   public Type returnType() {
-    return resolved.type;
+    return resolved.getType();
   }
 
   public String toString() {

@@ -7,9 +7,8 @@ import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.StackEntry;
-import org.kobjects.asde.lang.Symbol;
+import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.Parameter;
 import org.kobjects.typesystem.Type;
 
 import java.io.BufferedReader;
@@ -98,7 +97,7 @@ public class Statement extends Node {
         }
         CallableUnit fn = new CallableUnit(program, new FunctionType(name.endsWith("$") ? Type.STRING : Type.NUMBER, parameterTypes), parameterNames);
         fn.setLine(10, new CodeLine(Collections.singletonList(new Statement(program, Kind.RETURN, assignment.children[1]))));
-        program.setSymbol(name, new Symbol(interpreter.getSymbolScope(), fn));
+        program.setSymbol(name, new GlobalSymbol(interpreter.getSymbolScope(), fn));
         break;
       }
       case DATA:

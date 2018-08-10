@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.ResolutionContext;
+import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.Type;
 
 public abstract class Node {

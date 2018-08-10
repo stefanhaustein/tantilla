@@ -6,7 +6,7 @@ import android.widget.TextView;
 
 import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.Program;
-import org.kobjects.asde.lang.Symbol;
+import org.kobjects.asde.lang.symbol.GlobalSymbol;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -29,10 +29,10 @@ public class VariableView extends LinearLayout {
 
     public void sync() {
         int index = 1;
-        TreeMap<String, Symbol> symbolMap = program.getSymbolMap();
-        for (Map.Entry<String,Symbol> entry : symbolMap.entrySet()) {
-            Symbol symbol = entry.getValue();
-            if (symbol == null || symbol.scope != Symbol.Scope.PERSISTENT || symbol.value instanceof Function) {
+        TreeMap<String, GlobalSymbol> symbolMap = program.getSymbolMap();
+        for (Map.Entry<String,GlobalSymbol> entry : symbolMap.entrySet()) {
+            GlobalSymbol symbol = entry.getValue();
+            if (symbol == null || symbol.scope != GlobalSymbol.Scope.PERSISTENT || symbol.value instanceof Function) {
                  continue;
             }
             TextView textView;

@@ -3,12 +3,11 @@ package org.kobjects.asde.lang;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Statement;
+import org.kobjects.asde.lang.parser.ResolutionContext;
+import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.Parameter;
-import org.kobjects.typesystem.Type;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -18,6 +17,7 @@ public class CallableUnit implements Function {
     String[] parameterNames;
     private TreeMap<Integer, CodeLine> code = new TreeMap<>();
     public HashMap<Node, Exception> errors = new HashMap<>();
+    private int localVariableCount;
 
     public CallableUnit(Program program, FunctionType type, String... parameterNames) {
         this.program = program;
@@ -26,7 +26,9 @@ public class CallableUnit implements Function {
     }
 
     public void resolve() {
-        ResolutionContext resolutionContext = new ResolutionContext(program);
+        ResolutionContext resolutionContext = new ResolutionContext(program,
+                this == program.main ? ResolutionContext.ResolutionMode.MAIN : ResolutionContext.ResolutionMode.FUNCTION,
+                type, parameterNames);
 
         int indent = 0;
         for (CodeLine line : code.values()) {
@@ -51,6 +53,7 @@ public class CallableUnit implements Function {
         }
 
         errors = resolutionContext.errors;
+        localVariableCount = resolutionContext.getLocalVariableCount();
         for (Exception exception : errors.values()) {
             exception.printStackTrace();
         }
@@ -62,21 +65,13 @@ public class CallableUnit implements Function {
     }
 
     @Override
-    public Object eval(Interpreter interpreter, Object[] parameterValues) {
-        Symbol[] saved = new Symbol[type.getParameterCount()];
-        for (int i = 0; i < type.getParameterCount(); i++) {
-            String param = parameterNames[i];
-            saved[i] = program.getSymbol(param);
-            program.setSymbol(param, new Symbol(interpreter.getSymbolScope(), parameterValues[i]));
-        }
-        try {
-            return interpreter.call(this);
-        } finally {
-           for (int i = 0; i < type.getParameterCount(); i++) {
-              program.setSymbol(parameterNames[i], saved[i]);
-          }
-       }
+    public int getLocalVariableCount() {
+        return localVariableCount;
+    }
 
+    @Override
+    public Object eval(Interpreter interpreter, Object[] parameterValues) {
+        return interpreter.call(this, parameterValues);
     }
 
     public void toString(AnnotatedStringBuilder sb, String name) {

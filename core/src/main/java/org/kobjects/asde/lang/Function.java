@@ -7,5 +7,7 @@ public interface Function extends Typed {
 
     FunctionType getType();
 
+    int getLocalVariableCount();
+
     Object eval(Interpreter interpreter, Object[] args);
 }

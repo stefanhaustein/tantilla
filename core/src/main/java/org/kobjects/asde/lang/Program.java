@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.asde.lang.parser.Parser;
 import org.kobjects.typesystem.FunctionType;
@@ -36,7 +37,7 @@ public class Program {
 
   // Program state
 
-  private TreeMap<String, Symbol> symbolMap = new TreeMap<>();
+  private TreeMap<String, GlobalSymbol> symbolMap = new TreeMap<>();
   public Exception lastException;
   public int[] stopped;
   public int tabPos;
@@ -48,16 +49,16 @@ public class Program {
     clear();
 
     for (Builtin builtin : Builtin.values()) {
-        setSymbol(builtin.name().toLowerCase(), new Symbol(Symbol.Scope.BUILTIN, builtin));
+        setSymbol(builtin.name().toLowerCase(), new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, builtin));
     }
   }
 
   public void clear() {
-      TreeMap<String, Symbol> cleared = new TreeMap<String, Symbol>();
+      TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
     synchronized (symbolMap) {
-        for (Map.Entry<String, Symbol> entry : symbolMap.entrySet()) {
-            Symbol symbol = entry.getValue();
-            if (symbol != null && symbol.scope != Symbol.Scope.TRANSIENT) {
+        for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
+            GlobalSymbol symbol = entry.getValue();
+            if (symbol != null && symbol.scope != GlobalSymbol.Scope.TRANSIENT) {
                 cleared.put(entry.getKey(), symbol);
             }
         }
@@ -96,20 +97,20 @@ public class Program {
     }
   }
 
-  public TreeMap<String, Symbol> getSymbolMap() {
+  public TreeMap<String, GlobalSymbol> getSymbolMap() {
       synchronized (symbolMap) {
           return new TreeMap<>(symbolMap);
       }
   }
 
-  public Symbol getSymbol(String name) {
+  public GlobalSymbol getSymbol(String name) {
       synchronized (symbolMap) {
           return symbolMap.get(name);
       }
   }
 
   // Remove?
-  public void setSymbol(String name, Symbol symbol) {
+  public void setSymbol(String name, GlobalSymbol symbol) {
       synchronized (symbolMap) {
           symbolMap.put(name, symbol);
       }
@@ -117,9 +118,9 @@ public class Program {
 
 
   public void toString(AnnotatedStringBuilder sb) {
-      for (Map.Entry<String, Symbol> entry : getSymbolMap().entrySet()) {
-          Symbol symbol = entry.getValue();
-          if (symbol != null && symbol.scope == Symbol.Scope.PERSISTENT) {
+      for (Map.Entry<String, GlobalSymbol> entry : getSymbolMap().entrySet()) {
+          GlobalSymbol symbol = entry.getValue();
+          if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
               String name = entry.getKey();
               if (symbol.value instanceof CallableUnit) {
                   ((CallableUnit) symbol.value).toString(sb, name);

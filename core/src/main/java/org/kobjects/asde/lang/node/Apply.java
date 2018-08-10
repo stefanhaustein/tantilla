@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Program;
-import org.kobjects.asde.lang.Symbol;
+import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.typesystem.Type;
 
 import java.util.TreeMap;
@@ -23,9 +23,9 @@ public class Apply extends AssignableNode {
     }
     String name = ((Identifier) children[0]).name;
 
-    Symbol symbol = program.getSymbol(name);
+    GlobalSymbol symbol = program.getSymbol(name);
     if (symbol == null) {
-      symbol = new Symbol(interpreter.getSymbolScope(), null);
+      symbol = new GlobalSymbol(interpreter.getSymbolScope(), null);
       program.setSymbol(name, symbol);
     }
 
@@ -53,11 +53,12 @@ public class Apply extends AssignableNode {
       result = null;
     } else {
       if (value instanceof Function) {
-        Object[] params = new Object[children.length - 1];
-        for (int i = 0; i < params.length; i++) {
-          params[i] = children[i + 1].eval(interpreter);
+        Function function = (Function) value;
+        Object[] locals = new Object[function.getLocalVariableCount()];
+        for (int i = 1; i < children.length; i++) {
+          locals[i - 1] = children[i].eval(interpreter);
         }
-        result = ((Function) value).eval(interpreter, params);
+        result = ((Function) value).eval(interpreter, locals);
       } else if (children.length == 1) {
         result = value;
       } else {
