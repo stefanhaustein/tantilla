@@ -1,8 +1,7 @@
 package org.kobjects.typesystem;
 
 public class PhysicalProperty<T> extends Property<T> {
-
-    T value;
+    private T value;
 
     public PhysicalProperty(T initialValue) {
         value = initialValue;

@@ -71,6 +71,7 @@ public class Parser {
       case RUN:  // 0 or 1 param; Default is 0
       case RESTORE:
       case RETURN:
+      case SAVE:
         if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF &&
             !tokenizer.currentValue.equals(":")) {
           return new Statement(program, kind, expressionParser.parse(tokenizer));

@@ -14,6 +14,7 @@ import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.StartStopListener;
+import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Statement;
 
 import java.util.ArrayList;
@@ -39,13 +40,13 @@ public class FunctionView extends LinearLayout {
         super(context);
         this.context = context;
         this.program = interpreter.program;
+        this.callableUnit = callableUnit;
         this.interpreter = interpreter;
         setOrientation(VERTICAL);
         titleView = new TitleView(context);
-        titleView.setTitle(name == null ? "Main Program" : (name + "(" + callableUnit.getType().getParameterCount() + ")"));
-        startStopIcon = new IconButton(context, R.drawable.baseline_play_arrow_black_24);
-        titleView.addView(startStopIcon);
+        setName(name);
 
+        startStopIcon = new IconButton(context, R.drawable.baseline_play_arrow_black_24);
         interpreter.addStartStopListener(new StartStopListener() {
             @Override
             public void programStarted() {
@@ -76,23 +77,25 @@ public class FunctionView extends LinearLayout {
                 };
             }
         });
-
-
+        titleView.addView(startStopIcon);
         titleView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 setCollapsed(!collapsed);
             }
         });
-
-
         addView(titleView, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, WRAP_CONTENT));
-        //setPadding(0, 0, 0, 16);
-        this.callableUnit = callableUnit;
 
         sync();
     }
 
+    public void setName(String name) {
+        StringBuilder sb = new StringBuilder(name);
+        if (callableUnit.getType().getReturnType() != Types.VOID) {
+            sb.append("(" + callableUnit.getType().getParameterCount() + ")");
+        }
+        titleView.setTitle(sb.toString());
+    }
 
     public void setCollapsed(boolean collapse) {
         if (collapsed == collapse) {

@@ -1,5 +1,6 @@
 package org.kobjects.asde.android.ide;
 
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -27,6 +28,7 @@ import org.kobjects.asde.android.ide.widget.VariableView;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.StartStopListener;
+import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.asde.library.ui.Screen;
@@ -36,8 +38,12 @@ import org.kobjects.asde.lang.Console;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.Type;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -61,12 +67,16 @@ public class MainActivity extends AppCompatActivity implements Console, Function
   Interpreter interpreter = new Interpreter(program);
   TreeMap<String,FunctionView> functionViews = new TreeMap<>();
   FunctionView currentFunctionView;
+  SharedPreferences sharedPreferences;
 
-  @Override
+    private TitleView shellTitleView;
+
+    @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
     EmojiManager.install(new TwitterEmojiProvider());
+
+    sharedPreferences = getPreferences(MODE_PRIVATE);
 
     int[] attrs = { android.R.attr.listDivider };
     TypedArray ta = getApplicationContext().obtainStyledAttributes(attrs);
@@ -86,16 +96,17 @@ public class MainActivity extends AppCompatActivity implements Console, Function
     });
 
     variableView = new VariableView(this, program);
-    mainView = new FunctionView(this, null, program.main, interpreter);
-     mainView.addExpandListener(this);
+    mainView = new FunctionView(this, "Program \"" +program.getName() + "\"", program.main, interpreter);
+    mainView.addExpandListener(this);
     currentFunctionView = mainView;
 
-    TitleView titleView = new TitleView(this);
-    titleView.setTitle("Shell");
-    titleView.addView(clearButton);
+    
+    shellTitleView = new TitleView(this);
+    shellTitleView.setTitle("Shell");
+    shellTitleView.addView(clearButton);
     shellLayout = new LinearLayout(this);
     shellLayout.setOrientation(LinearLayout.VERTICAL);
-    shellLayout.addView(titleView);
+    shellLayout.addView(shellTitleView);
 
     contentLayout = new LinearLayout(this);
     contentLayout.setOrientation(LinearLayout.VERTICAL);
@@ -146,8 +157,6 @@ public class MainActivity extends AppCompatActivity implements Console, Function
     screenView.addView(scrollView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
     screen = new Screen(screenView);
-    program.classifiers.put("screen", Screen.CLASSIFIER);
-    program.classifiers.put("sprite", screen.spriteClassifier);
 
     mainLayout = new LinearLayout(this);
     mainLayout.setOrientation(LinearLayout.VERTICAL);
@@ -177,8 +186,13 @@ public class MainActivity extends AppCompatActivity implements Console, Function
         }
     });
 
+    program.classifiers.put("screen", Screen.CLASSIFIER);
+    program.classifiers.put("sprite", screen.spriteClassifier);
+    String programName = sharedPreferences.getString("ProgramName", "Scratch");
+    program.load(programName);
+
     print("  " + (Runtime.getRuntime().totalMemory() / 1024) + "K SYSTEM  "
-            + Runtime.getRuntime().freeMemory() + " ASDE BYTES FREE\n\n");
+               + Runtime.getRuntime().freeMemory() + " ASDE BYTES FREE\n\n");
 
   }
 
@@ -214,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements Console, Function
           // Fall-through intended
         default:
           List<Statement> statements = program.parser.parseStatementList(tokenizer);
-          ResolutionContext resolutionContext = new ResolutionContext(program, ResolutionContext.ResolutionMode.SHELL, new FunctionType(Type.VOID));
+          ResolutionContext resolutionContext = new ResolutionContext(program, ResolutionContext.ResolutionMode.SHELL, new FunctionType(Types.VOID));
           for (Statement statement : statements) {
               statement.resolve(resolutionContext);
           }
@@ -305,6 +319,25 @@ public class MainActivity extends AppCompatActivity implements Console, Function
     readLine = null;
     return result;
   }
+
+    @Override
+    public File getProgramStoragePath() {
+        File programDir = new File(getFilesDir(), "programs");
+        programDir.mkdir();
+        return programDir;
+    }
+
+    @Override
+    public void programNameChangedTo(final String name) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mainView.setName("Program \"" + name + "\"");
+                sharedPreferences.edit().putString("ProgramName", name).commit();
+            }
+        });
+    }
+
 
     @Override
     public void notifyExpanding(FunctionView functionView) {

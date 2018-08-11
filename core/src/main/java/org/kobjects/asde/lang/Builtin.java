@@ -6,16 +6,16 @@ import org.kobjects.typesystem.Type;
 
 public enum Builtin implements Function {
 
-    ABS(1, Type.NUMBER), ASC(1, Type.STRING),
-    CHR$(1, Type.NUMBER), COS(1, Type.NUMBER),
-    EXP(1, Type.NUMBER),
-    INT(1, Type.NUMBER),
-    LEFT$(2, Type.STRING, Type.NUMBER), LEN(1, Type.STRING), LOG(1, Type.NUMBER),
-    MID$(2, Type.STRING, Type.NUMBER, Type.NUMBER),
-    RIGHT$(2, Type.STRING, Type.NUMBER), RND(0, Type.NUMBER),
-    SGN(1, Type.NUMBER), STR$(1, Type.NUMBER), SQR(1, Type.NUMBER), SIN(1, Type.NUMBER),
-    TAB(1, Type.NUMBER), TAN(1, Type.NUMBER),
-    VAL(1, Type.STRING);
+    ABS(1, Types.NUMBER), ASC(1, Types.STRING),
+    CHR$(1, Types.NUMBER), COS(1, Types.NUMBER),
+    EXP(1, Types.NUMBER),
+    INT(1, Types.NUMBER),
+    LEFT$(2, Types.STRING, Types.NUMBER), LEN(1, Types.STRING), LOG(1, Types.NUMBER),
+    MID$(2, Types.STRING, Types.NUMBER, Types.NUMBER),
+    RIGHT$(2, Types.STRING, Types.NUMBER), RND(0, Types.NUMBER),
+    SGN(1, Types.NUMBER), STR$(1, Types.NUMBER), SQR(1, Types.NUMBER), SIN(1, Types.NUMBER),
+    TAB(1, Types.NUMBER), TAN(1, Types.NUMBER),
+    VAL(1, Types.STRING);
 
   public static int asInt(Object o) {
     return Math.round(((Double) o).floatValue());
@@ -31,7 +31,7 @@ public enum Builtin implements Function {
       for (int i = 0; i < parameters.length; i++) {
         parameters[i] = new Parameter(String.valueOf((char) ('a' + i)), parameterTypes[i]);
       }
-      this.signature = new FunctionType(name().endsWith("$") ? Type.STRING : Type.NUMBER);
+      this.signature = new FunctionType(name().endsWith("$") ? Types.STRING : Types.NUMBER);
     }
 
   @Override

@@ -7,6 +7,7 @@ import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.StackEntry;
+import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
@@ -37,7 +38,7 @@ public class Statement extends Node {
     ON,
     PRINT,
     READ, REM, RESTORE, RETURN, RUN,
-    STOP,
+    SAVE, STOP,
     TRON, TROFF
   }
 
@@ -93,9 +94,9 @@ public class Statement extends Node {
         for (int i = 0; i < parameterTypes.length; i++) {
           Identifier parameterNode = (Identifier) target.children[i + 1];
           parameterNames[i] = parameterNode.name;
-          parameterTypes[i] = parameterNode.name.endsWith("$") ? Type.STRING : Type.NUMBER;
+          parameterTypes[i] = parameterNode.name.endsWith("$") ? Types.STRING : Types.NUMBER;
         }
-        CallableUnit fn = new CallableUnit(program, new FunctionType(name.endsWith("$") ? Type.STRING : Type.NUMBER, parameterTypes), parameterNames);
+        CallableUnit fn = new CallableUnit(program, new FunctionType(name.endsWith("$") ? Types.STRING : Types.NUMBER, parameterTypes), parameterNames);
         fn.setLine(10, new CodeLine(Collections.singletonList(new Statement(program, Kind.RETURN, assignment.children[1]))));
         program.setSymbol(name, new GlobalSymbol(interpreter.getSymbolScope(), fn));
         break;
@@ -158,9 +159,7 @@ public class Statement extends Node {
         break;
       }
       case LIST: {
-        AnnotatedStringBuilder sb = new AnnotatedStringBuilder();
-        program.toString(sb);
-        program.print(sb.toString());
+        program.print(program.toString());
         break;
       }
 
@@ -259,6 +258,10 @@ public class Statement extends Node {
         program.clear();
         interpreter.currentLine = children.length == 0 ? 0 : (int) evalDouble(interpreter,0);
         interpreter.currentIndex = 0;
+        break;
+
+      case SAVE:
+        program.save(children.length == 0 ? null : evalString(interpreter,0));
         break;
 
       case STOP:
@@ -412,7 +415,7 @@ public class Statement extends Node {
 
   @Override
   public Type returnType() {
-    return Type.VOID;
+    return Types.VOID;
   }
 
   @Override

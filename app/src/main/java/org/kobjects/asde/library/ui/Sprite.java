@@ -2,6 +2,7 @@ package org.kobjects.asde.library.ui;
 
 import android.app.Activity;
 
+import org.kobjects.asde.lang.Types;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.Instance;
 import org.kobjects.typesystem.PropertyDescriptor;
@@ -11,24 +12,8 @@ import org.kobjects.typesystem.Type;
 import org.kobjects.emojisprites.EmojiSprite;
 
 public class Sprite extends Instance implements Runnable {
-
-    final Screen screen;
-    final EmojiSprite sprite;
-
-    enum SpriteMetaProperty implements PropertyDescriptor {
-        x(Type.NUMBER), y(Type.NUMBER), size(Type.NUMBER);
-
-        private final Type type;
-
-        SpriteMetaProperty(Type type) {
-            this.type = type;
-        }
-
-        @Override
-        public Type type() {
-            return type;
-        }
-    }
+    private final EmojiSprite sprite;
+    private final Screen screen;
 
     final SyncProperty<Double> x = new SyncProperty<>(Double.valueOf(0));
     final SyncProperty<Double> y = new SyncProperty<>(Double.valueOf(0));
@@ -39,7 +24,7 @@ public class Sprite extends Instance implements Runnable {
     public Sprite(Classifier classifier, Screen screen) {
         super(classifier);
         this.screen = screen;
-        sprite = new EmojiSprite(screen.view);
+        sprite = new EmojiSprite(screen.getView());
 
         requestSync();
     }
@@ -57,7 +42,7 @@ public class Sprite extends Instance implements Runnable {
     void requestSync() {
         if (!syncRequested) {
             syncRequested = true;
-            ((Activity) screen.view.getContext()).runOnUiThread(this);
+            ((Activity) screen.getView().getContext()).runOnUiThread(this);
         }
     }
 
@@ -66,9 +51,14 @@ public class Sprite extends Instance implements Runnable {
         if (!sprite.isVisible()) {
             sprite.show();
         }
-        sprite.setScale(size.get().floatValue() / 10);
-        sprite.setX(x.get().floatValue());
-        sprite.setY(y.get().floatValue());
+
+        float scale = screen.getScale();
+        float spriteMax = Math.max(sprite.getIntrinsicWidth(), sprite.getIntrinsicHeight());
+
+        sprite.setSize(size.get().floatValue() * sprite.getIntrinsicWidth() / spriteMax * scale,
+                size.get().floatValue() * sprite.getIntrinsicHeight() / spriteMax * scale);
+        sprite.setX(x.get().floatValue() * scale);
+        sprite.setY(y.get().floatValue() * scale);
     }
 
 
@@ -84,6 +74,22 @@ public class Sprite extends Instance implements Runnable {
                 return true;
             }
             return false;
+        }
+    }
+
+
+    enum SpriteMetaProperty implements PropertyDescriptor {
+        x(Types.NUMBER), y(Types.NUMBER), size(Types.NUMBER);
+
+        private final Type type;
+
+        SpriteMetaProperty(Type type) {
+            this.type = type;
+        }
+
+        @Override
+        public Type type() {
+            return type;
         }
     }
 }

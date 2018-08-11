@@ -40,9 +40,19 @@ public class EmojiSprite {
         }
     }
 
-    public void setScale(float scale) {
-        imageView.setScaleX(scale);
-        imageView.setScaleY(scale);
+    public void setSize(float width, float height) {
+        ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+        layoutParams.height = Math.round(height);
+        layoutParams.width = Math.round(width);
+        imageView.setLayoutParams(layoutParams);
+    }
+
+    public int getIntrinsicWidth() {
+        return imageView.getDrawable().getIntrinsicWidth();
+    }
+
+    public int getIntrinsicHeight() {
+        return imageView.getDrawable().getIntrinsicWidth();
     }
 
     public void setX(float v) {
@@ -51,5 +61,9 @@ public class EmojiSprite {
 
     public void setY(float v) {
         imageView.setTranslationY(v);
+    }
+
+    public ImageView getImageView() {
+        return imageView;
     }
 }

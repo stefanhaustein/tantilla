@@ -5,8 +5,11 @@ import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.asde.lang.parser.Parser;
 import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.Type;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
@@ -18,6 +21,8 @@ import java.util.TreeMap;
  * Example for mixing the expresion parser with "outer" parsing.
  */
 public class Program {
+  private String name = "Scratch";
+
   public static final String INVISIBLE_STRING = new String();
 
   public static String toString(double d) {
@@ -32,7 +37,7 @@ public class Program {
   }
 
   public Parser parser = new Parser(this);
-  public CallableUnit main = new CallableUnit(this, new FunctionType(Type.VOID));
+  public CallableUnit main = new CallableUnit(this, new FunctionType(Types.VOID));
   public Map<String, Classifier> classifiers = new TreeMap<>();
 
   // Program state
@@ -116,6 +121,9 @@ public class Program {
       }
   }
 
+  public String getName() {
+      return name;
+  }
 
   public void toString(AnnotatedStringBuilder sb) {
       for (Map.Entry<String, GlobalSymbol> entry : getSymbolMap().entrySet()) {
@@ -134,4 +142,32 @@ public class Program {
     print("\n");
   }
 
+
+  @Override
+  public String toString() {
+      AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
+      toString(asb);
+      return asb.toString();
+  }
+
+  public void save(String name) {
+      if (name != null) {
+          this.name = name;
+          console.programNameChangedTo(name);
+      }
+      File saveFile = new File(console.getProgramStoragePath(), this.name);
+
+      try {
+          OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(saveFile), "utf8");
+          writer.write(toString());
+          writer.close();
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
+  }
+
+    public void load(String programName) {
+      console.print("TBD: load \"" + programName + "\"\n");
+      name = programName;
+    }
 }

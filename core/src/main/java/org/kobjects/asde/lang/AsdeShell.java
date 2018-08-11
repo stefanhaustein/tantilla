@@ -4,6 +4,7 @@ import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.expressionparser.ExpressionParser;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -54,6 +55,17 @@ public class AsdeShell {
                 throw new RuntimeException(e);
             }
         }
+
+        @Override
+        public File getProgramStoragePath() {
+            throw new RuntimeException("NYI");
+        }
+
+        @Override
+        public void programNameChangedTo(String name) {
+            // Ignore
+        }
+
     });
 
     System.out.println("  **** EXPRESSION PARSER BASIC DEMO V1 ****\n");

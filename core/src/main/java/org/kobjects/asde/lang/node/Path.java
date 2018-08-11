@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.Types;
 import org.kobjects.typesystem.Instance;
 import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.PropertyDescriptor;
@@ -34,7 +35,7 @@ public class Path extends AssignableNode {
 
     @Override
     public Type returnType() {
-        return Type.VOID;
+        return Types.VOID;
     }
 
     @Override

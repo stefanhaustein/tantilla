@@ -3,6 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.typesystem.Type;
 
@@ -73,7 +74,7 @@ public class Apply extends AssignableNode {
   }
 
   public Type returnType() {
-    return children[0].toString().endsWith("$") ? Type.STRING : Type.NUMBER;
+    return children[0].toString().endsWith("$") ? Types.STRING : Types.NUMBER;
   }
 
   public String toString() {
