@@ -27,7 +27,7 @@ public class FunctionView extends LinearLayout {
 
     Activity context;
     TitleView titleView;
-    CallableUnit callableUnit;
+    public CallableUnit callableUnit;
     IconButton startStopIcon;
     Interpreter interpreter;
     final Program program;
@@ -98,6 +98,10 @@ public class FunctionView extends LinearLayout {
     }
 
     public void setCollapsed(boolean collapse) {
+        if (getVisibility() == GONE) {
+            return;
+        }
+
         if (collapsed == collapse) {
             return;
         }
@@ -183,6 +187,10 @@ public class FunctionView extends LinearLayout {
             removeViewAt(getChildCount() - 1);
         }
         setVisibility(index > 1 ? VISIBLE : GONE);
+
+        if (getVisibility() == GONE) {
+            collapsed = true;
+        }
 
         titleView.setBackgroundColor(callableUnit.errors.size() > 0 ? Colors.SECONDARY : Colors.PRIMARY);
     }

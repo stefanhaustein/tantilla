@@ -190,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements Console, Function
     program.classifiers.put("sprite", screen.spriteClassifier);
     String programName = sharedPreferences.getString("ProgramName", "Scratch");
     program.load(programName);
+    sync();
 
     print("  " + (Runtime.getRuntime().totalMemory() / 1024) + "K SYSTEM  "
                + Runtime.getRuntime().freeMemory() + " ASDE BYTES FREE\n\n");

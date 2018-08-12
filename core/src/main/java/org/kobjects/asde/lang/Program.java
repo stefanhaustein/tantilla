@@ -2,17 +2,25 @@ package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
+import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.asde.lang.parser.Parser;
 import org.kobjects.typesystem.FunctionType;
+import org.kobjects.typesystem.Type;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
+
 
 /**
  * Full implementation of <a href="http://goo.gl/kIIPc0">ECMA-55</a> with
@@ -57,6 +65,22 @@ public class Program {
         setSymbol(builtin.name().toLowerCase(), new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, builtin));
     }
   }
+
+  public void clearAll() {
+      main.clear();
+      TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
+      synchronized (symbolMap) {
+          for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
+              GlobalSymbol symbol = entry.getValue();
+              if (symbol != null && symbol.scope == GlobalSymbol.Scope.BUILTIN) {
+                  cleared.put(entry.getKey(), symbol);
+              }
+          }
+          symbolMap = cleared;
+      }
+      stopped = null;
+  }
+
 
   public void clear() {
       TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
@@ -164,10 +188,86 @@ public class Program {
       } catch (IOException e) {
           throw new RuntimeException(e);
       }
-  }
+   }
+
+    // move to parser
+   private Type parseType(ExpressionParser.Tokenizer tokenizer) {
+       String typeName = tokenizer.consumeIdentifier();
+       if (typeName.equalsIgnoreCase("number")) {
+           return Types.NUMBER;
+       }
+       if (typeName.equalsIgnoreCase("string")) {
+           return Types.STRING;
+       }
+       GlobalSymbol symbol = getSymbol(typeName);
+       if (symbol == null) {
+          throw new RuntimeException("Unrecognized type: " + typeName);
+       }
+       if (!(symbol.value instanceof Type)) {
+           throw new RuntimeException("'" + typeName + "' is not a type!");
+       }
+       return  (Type) symbol.value;
+   }
+
+   // move to parser
+    private FunctionType parseSignature(ExpressionParser.Tokenizer tokenizer, ArrayList<String> parameterNames) {
+        tokenizer.consume("(");
+        ArrayList<Type> parameterTypes = new ArrayList<>();
+        while (!tokenizer.tryConsume(")")) {
+            Type parameterType = parseType(tokenizer);
+            parameterTypes.add(parameterType);
+            String parameterName = tokenizer.consumeIdentifier();
+            parameterNames.add(parameterName);
+
+            if (!tokenizer.tryConsume(",")) {
+                if (tokenizer.tryConsume(")")) {
+                    break;
+                }
+                throw new RuntimeException("',' or ')' expected.");
+            }
+        }
+        tokenizer.consume("->");
+        Type returnType = parseType(tokenizer);
+
+        return new FunctionType(returnType, parameterTypes.toArray(new Type[0]));
+    }
+
 
     public void load(String programName) {
-      console.print("TBD: load \"" + programName + "\"\n");
-      name = programName;
+      File programFile = new File(console.getProgramStoragePath(), programName);
+      try {
+          this.name = programName;
+          console.programNameChangedTo(programName);
+
+          clearAll();
+
+          BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(programFile)));
+          CallableUnit currentFunction = main;
+          while (true) {
+              String line = reader.readLine();
+              if (line == null) {
+                  break;
+              }
+              ExpressionParser.Tokenizer tokenizer = parser.createTokenizer(line);
+              tokenizer.nextToken();
+              if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.NUMBER) {
+                  int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
+                  tokenizer.nextToken();
+                  currentFunction.setLine(lineNumber, new CodeLine(parser.parseStatementList(tokenizer)));
+              } else if (tokenizer.tryConsume("FUNCTION")) {
+                  String functionName = tokenizer.consumeIdentifier();
+                  ArrayList<String> parameterNames = new ArrayList();
+                  FunctionType functionType = parseSignature(tokenizer, parameterNames);
+                  currentFunction = new CallableUnit(this, functionType, parameterNames.toArray(new String[0]));
+                  setSymbol(functionName, new GlobalSymbol(GlobalSymbol.Scope.PERSISTENT, currentFunction));
+              } else if (tokenizer.tryConsume("END")) {
+                  currentFunction = main;
+              } else if (!tokenizer.tryConsume("")) {
+                  throw new RuntimeException("Unrecognized token: " + tokenizer.toString());
+              }
+          }
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
     }
 }

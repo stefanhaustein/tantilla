@@ -7,14 +7,11 @@ import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Operator;
 import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.asde.lang.node.Identifier;
-import org.kobjects.typesystem.Type;
 import org.kobjects.expressionparser.ExpressionParser;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Parser {
   final Program program;
@@ -38,9 +35,11 @@ public class Parser {
     expressionParser.addOperators(ExpressionParser.OperatorType.INFIX, 1, "or", "OR", "Or");
   }
 
+
   public ExpressionParser.Tokenizer createTokenizer(String line) {
-    return new GwTokenizer(new Scanner(line), expressionParser.getSymbols());
+    return new ExpressionParser.Tokenizer(new Scanner(line), expressionParser.getSymbols(), "->");
   }
+
 
   Statement parseStatement(ExpressionParser.Tokenizer tokenizer) {
     String name = tokenizer.currentValue;
@@ -228,70 +227,6 @@ public class Parser {
       return true;
     }
     return false;
-  }
-
-  /**
-   * A tokenizer subclass that splits identifiers if they contain reserved words,
-   * so it will report "IFA<4THENPRINTZ" as "IF" "A" "<" "4" "THEN" "PRINT" "Z"
-   */
-  static class GwTokenizer extends ExpressionParser.Tokenizer {
-    static Pattern reservedWordPattern;
-    static {
-      StringBuilder sb = new StringBuilder();
-      for (Statement.Kind t: Statement.Kind.values()) {
-        sb.append(t.name());
-        sb.append('|');
-      }
-      sb.append("AND|ELSE|NOT|OR|STEP|TO|THEN");
-      reservedWordPattern = Pattern.compile(sb.toString());
-    }
-
-    Matcher gwMatcher;
-    String gwIdentifier;
-    int gwConsumed = 0;
-
-    GwTokenizer(Scanner scanner, Iterable<String> symbols) {
-      super(scanner, symbols, ":", ";", "?");
-      stringPattern = Pattern.compile("\\G\\s*(\"[^\"]*\")+");
-    }
-
-    private TokenType gwToken(int start, int end) {
-      currentValue = gwIdentifier.substring(start, end);
-      if (end == gwIdentifier.length()) {
-        gwIdentifier = null;
-        gwMatcher = null;
-        gwConsumed = 0;
-      } else {
-        gwConsumed = end;
-      }
-      currentType = currentValue.matches("\\d+") ? TokenType.NUMBER : TokenType.IDENTIFIER;
-      return currentType;
-    }
-
-    public TokenType nextToken() {
-      if (gwIdentifier != null && gwConsumed < gwIdentifier.length()) {
-        if (gwConsumed == gwMatcher.start()) {
-          return gwToken(gwConsumed, gwMatcher.end());
-        }
-        if (gwMatcher.find()) {
-          return gwToken(gwConsumed, gwMatcher.start() > gwConsumed
-              ? gwMatcher.start() : gwMatcher.end());
-        }
-        return gwToken(gwConsumed, gwIdentifier.length());
-      }
-
-      super.nextToken();
-
-      if (currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER) {
-        gwMatcher = reservedWordPattern.matcher(currentValue);
-        if (gwMatcher.find()) {
-          gwIdentifier = currentValue;
-          return gwToken(0, gwMatcher.start() == 0 ? gwMatcher.end() : gwMatcher.start());
-        }
-        gwMatcher = null;
-      }
-      return currentType;
-    }
   }
 
 

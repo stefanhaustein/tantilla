@@ -100,7 +100,7 @@ public class CallableUnit implements Function {
         }
 
         if (name != null) {
-            sb.append("END FUNCTION\n\n10");
+            sb.append("END FUNCTION\n\n");
         }
 
     }
@@ -116,5 +116,9 @@ public class CallableUnit implements Function {
 
     public Iterable<Map.Entry<Integer, CodeLine>> entrySet() {
         return code.entrySet();
+    }
+
+    public void clear() {
+        code = new TreeMap<>();
     }
 }
