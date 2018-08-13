@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -40,10 +41,6 @@ import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.typesystem.FunctionType;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -68,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements Console, Function
   TreeMap<String,FunctionView> functionViews = new TreeMap<>();
   FunctionView currentFunctionView;
   SharedPreferences sharedPreferences;
+  boolean autoScroll = true;
 
     private TitleView shellTitleView;
 
@@ -98,9 +96,9 @@ public class MainActivity extends AppCompatActivity implements Console, Function
     variableView = new VariableView(this, program);
     mainView = new FunctionView(this, "Program \"" +program.getName() + "\"", program.main, interpreter);
     mainView.addExpandListener(this);
+    mainView.setVisibility(View.GONE);
     currentFunctionView = mainView;
 
-    
     shellTitleView = new TitleView(this);
     shellTitleView.setTitle("Shell");
     shellTitleView.addView(clearButton);
@@ -114,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements Console, Function
     ColorDrawable divider = new ColorDrawable(0x0) {
       @Override
       public int getIntrinsicHeight() {
-        return iconPadding;
+        return Dimensions.dpToPx(MainActivity.this, 6);
       }
    };
 
@@ -180,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements Console, Function
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    sync();
+                    sync(true);
                 }
             });
         }
@@ -190,12 +188,23 @@ public class MainActivity extends AppCompatActivity implements Console, Function
     program.classifiers.put("sprite", screen.spriteClassifier);
     String programName = sharedPreferences.getString("ProgramName", "Scratch");
     program.load(programName);
-    sync();
+    sync(false);
 
     print("  " + (Runtime.getRuntime().totalMemory() / 1024) + "K SYSTEM  "
                + Runtime.getRuntime().freeMemory() + " ASDE BYTES FREE\n\n");
 
-  }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+                @Override
+                public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                    if (scrollY < oldScrollY) {
+                        autoScroll = false;
+                    }
+                }
+            });
+        }
+    }
 
 
   void enter() {
@@ -238,6 +247,7 @@ public class MainActivity extends AppCompatActivity implements Console, Function
           inputView.setTextColor(Colors.SECONDARY);
           inputView.setTypeface(Typeface.MONOSPACE);
 
+          postScrollIfAtEnd();
           shellLayout.addView(inputView);
           inputPrinted = true;
 
@@ -255,6 +265,27 @@ public class MainActivity extends AppCompatActivity implements Console, Function
 
   int lineCount;
 
+  void postScrollIfAtEnd() {
+
+
+      if (contentLayout.getHeight() <= scrollView.getHeight() + scrollView.getScrollY()) {
+          autoScroll = true;
+      }
+
+      if (autoScroll) {
+          scrollView.post(new Runnable() {
+
+          @Override
+              public void run() {
+                  if (contentLayout.getHeight() != scrollView.getHeight() + scrollView.getScrollY()) {
+                      scrollView.scrollTo(0, Integer.MAX_VALUE / 2);
+                      scrollView.post(this);
+                  }
+              }
+          });
+      }
+  }
+
   @Override
   public void print(final String s) {
     runOnUiThread(new Runnable() {
@@ -268,9 +299,12 @@ public class MainActivity extends AppCompatActivity implements Console, Function
           TextView textView = new TextView(MainActivity.this);
           textView.setText(errorView.getText() + s.substring(0, cut));
           textView.setTypeface(Typeface.MONOSPACE);
+
+          postScrollIfAtEnd();
           shellLayout.addView(textView);
+
           errorView.setText("");
-   //       errorView.setVisibility(View.GONE);
+          errorView.setVisibility(View.GONE);
           lineCount = shellLayout.getChildCount();
           if (cut < s.length() - 1) {
             print(s.substring(cut + 1));
@@ -285,9 +319,9 @@ public class MainActivity extends AppCompatActivity implements Console, Function
     }
   }
 
-  void sync() {
+  void sync(boolean expandNew) {
       variableView.sync();
-      mainView.sync();
+
       for (Map.Entry<String, GlobalSymbol> entry : program.getSymbolMap().entrySet()) {
           GlobalSymbol symbol = entry.getValue();
           if (symbol == null) {
@@ -298,12 +332,20 @@ public class MainActivity extends AppCompatActivity implements Console, Function
               if (!functionViews.containsKey(name)) {
                   FunctionView functionView = new FunctionView(this, name, (CallableUnit) symbol.value, interpreter);
                   functionView.addExpandListener(this);
-                  notifyExpanding(functionView);
                   contentLayout.addView(functionView, 1);
                   functionViews.put(name, functionView);
+                  if (expandNew) {
+                      functionView.setExpanded(true, false);
+                  }
               }
           }
       }
+
+      if (program.main.getLineCount() > 0 && mainView.getVisibility() == View.GONE) {
+          mainView.setVisibility(View.VISIBLE);
+          mainView.setExpanded(true, false);
+      }
+      mainView.sync();
   }
 
   @Override
@@ -341,10 +383,10 @@ public class MainActivity extends AppCompatActivity implements Console, Function
 
 
     @Override
-    public void notifyExpanding(FunctionView functionView) {
+    public void notifyExpanding(FunctionView functionView, boolean animated) {
       if (functionView != currentFunctionView) {
           if (currentFunctionView != null) {
-              currentFunctionView.setCollapsed(true);
+              currentFunctionView.setExpanded(false, animated);
           }
           currentFunctionView = functionView;
       }

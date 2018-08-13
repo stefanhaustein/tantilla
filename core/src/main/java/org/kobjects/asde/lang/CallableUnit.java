@@ -4,7 +4,6 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.asde.lang.parser.ResolutionContext;
-import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.typesystem.FunctionType;
 
 import java.util.HashMap;
@@ -120,5 +119,9 @@ public class CallableUnit implements Function {
 
     public void clear() {
         code = new TreeMap<>();
+    }
+
+    public int getLineCount() {
+        return code.size();
     }
 }
