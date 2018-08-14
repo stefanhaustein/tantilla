@@ -39,7 +39,7 @@ public class Statement extends Node {
     PRINT,
     READ, REM, RESTORE, RETURN, RUN,
     SAVE, STOP,
-    TRON, TROFF
+    TRON, PAUSE, TROFF
   }
 
   final Program program;
@@ -173,6 +173,14 @@ public class Statement extends Node {
 
       case INPUT:
         input(interpreter);
+        break;
+
+      case PAUSE:
+        try {
+          Thread.sleep(evalInt(interpreter, 0));
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+        }
         break;
 
       case PRINT:

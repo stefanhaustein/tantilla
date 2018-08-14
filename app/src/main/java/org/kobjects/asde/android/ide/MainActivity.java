@@ -22,6 +22,7 @@ import com.vanniktech.emoji.twitter.TwitterEmojiProvider;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.widget.Colors;
 import org.kobjects.asde.android.ide.widget.Dimensions;
+import org.kobjects.asde.android.ide.widget.ExpandableView;
 import org.kobjects.asde.android.ide.widget.FunctionView;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.TitleView;
@@ -45,7 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class MainActivity extends AppCompatActivity implements Console, FunctionView.ExpandListener {
+public class MainActivity extends AppCompatActivity implements Console, ExpandableView.ExpandListener {
   LinearLayout contentLayout;
   LinearLayout mainLayout;
   ScrollView scrollView;
@@ -345,7 +346,7 @@ public class MainActivity extends AppCompatActivity implements Console, Function
           mainView.setVisibility(View.VISIBLE);
           mainView.setExpanded(true, false);
       }
-      mainView.sync();
+      mainView.syncContent();
   }
 
   @Override
@@ -383,12 +384,12 @@ public class MainActivity extends AppCompatActivity implements Console, Function
 
 
     @Override
-    public void notifyExpanding(FunctionView functionView, boolean animated) {
-      if (functionView != currentFunctionView) {
+    public void notifyExpanding(ExpandableView functionView, boolean animated) {
+      if (functionView != currentFunctionView && functionView instanceof FunctionView) {
           if (currentFunctionView != null) {
               currentFunctionView.setExpanded(false, animated);
           }
-          currentFunctionView = functionView;
+          currentFunctionView = (FunctionView) functionView;
       }
     }
 }

@@ -81,6 +81,7 @@ public class Parser {
       case GOTO:
       case GOSUB:
       case LOAD:
+      case PAUSE:
         return new Statement(program, kind, expressionParser.parse(tokenizer));
 
       case NEXT:   // Zero of more
