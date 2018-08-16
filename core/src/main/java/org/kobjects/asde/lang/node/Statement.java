@@ -1,6 +1,5 @@
 package org.kobjects.asde.lang.node;
 
-import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.AsdeShell;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
@@ -225,7 +224,7 @@ public class Statement extends Node {
             if (interpreter.dataStatement != null) {
               interpreter.dataPosition[1]++;
             }
-            interpreter.dataStatement = find(Kind.DATA, null, interpreter.dataPosition);
+            interpreter.dataStatement = (Statement) find(Kind.DATA, null, interpreter.dataPosition);
             if (interpreter.dataStatement == null) {
               throw new RuntimeException("Out of data.");
             }
@@ -294,14 +293,14 @@ public class Statement extends Node {
     return null;
   }
 
-  Statement find(Kind kind, String name, int[] position) {
+  Node find(Kind kind, String name, int[] position) {
     Map.Entry<Integer, CodeLine> entry;
     while (null != (entry = program.main.ceilingEntry(position[0]))) {
       position[0] = entry.getKey();
-      List<Statement> list = entry.getValue().statements;
+      List<Node> list = entry.getValue().statements;
       while (position[1] < list.size()) {
-        Statement statement = list.get(position[1]);
-        if (statement.kind == kind) {
+        Node statement = list.get(position[1]);
+        if (statement instanceof Statement && ((Statement) statement).kind == kind) {
           if (name == null || statement.children.length == 0) {
             return statement;
           }
@@ -432,9 +431,13 @@ public class Statement extends Node {
       return "";
     }
     StringBuilder sb = new StringBuilder();
-    sb.append(kind.name());
+    if (kind != Kind.LET) {
+      sb.append(kind.name());
+    }
     if (children.length > 0) {
-      sb.append(' ');
+      if (kind != Kind.LET) {
+        sb.append(' ');
+      }
       sb.append(children[0]);
       for (int i = 1; i < children.length; i++) {
         sb.append((delimiter == null || i > delimiter.length) ? ", " : delimiter[i - 1]);

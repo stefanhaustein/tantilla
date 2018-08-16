@@ -11,8 +11,6 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.node.Statement;
 
-import java.util.List;
-
 public class CodeLineView extends LinearLayout {
 
 

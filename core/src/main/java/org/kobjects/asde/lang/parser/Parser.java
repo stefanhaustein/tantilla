@@ -2,12 +2,15 @@ package org.kobjects.asde.lang.parser;
 
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.AssignableNode;
+import org.kobjects.asde.lang.node.Declaration;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Operator;
 import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.asde.lang.node.Identifier;
+import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.expressionparser.ExpressionParser;
+import org.kobjects.typesystem.Type;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +44,7 @@ public class Parser {
   }
 
 
-  Statement parseStatement(ExpressionParser.Tokenizer tokenizer) {
+  Node parseStatement(ExpressionParser.Tokenizer tokenizer) {
     String name = tokenizer.currentValue;
     if (tryConsume(tokenizer, "GO")) {  // GO TO, GO SUB -> GOTO, GOSUB
       name += tokenizer.currentValue;
@@ -56,13 +59,20 @@ public class Parser {
       }
     }
     if (kind == null) {
-      Node expression = expressionParser.parse(tokenizer);
+      GlobalSymbol symbol = program.getSymbol(name);
+      if (symbol != null && symbol.scope != GlobalSymbol.Scope.TRANSIENT && symbol.value instanceof Type) {
+        tokenizer.nextToken();
+        String varName = tokenizer.consumeIdentifier();
+        return new Declaration(name, varName);
+      } else {
+        Node expression = expressionParser.parse(tokenizer);
 
-      if ((expression instanceof Operator) && (expression.children[0] instanceof AssignableNode)
-              && ((Operator) expression).name.equals("=")) {
-        return new Statement(program, Statement.Kind.LET, new String[]{" = "}, expression.children);
+        if ((expression instanceof Operator) && (expression.children[0] instanceof AssignableNode)
+                && ((Operator) expression).name.equals("=")) {
+          return new Statement(program, Statement.Kind.LET, new String[]{" = "}, expression.children);
+        }
+        return new Statement(program, Statement.Kind.PRINT, new String[0], expression);
       }
-      return new Statement(program, Statement.Kind.PRINT, new String[0], expression);
     }
     tokenizer.nextToken();
 
@@ -196,9 +206,9 @@ public class Parser {
     }
   }
 
-  public List<Statement> parseStatementList(ExpressionParser.Tokenizer tokenizer) {
-    ArrayList<Statement> result = new ArrayList<>();
-    Statement statement;
+  public List<? extends Node> parseStatementList(ExpressionParser.Tokenizer tokenizer) {
+    ArrayList<Node> result = new ArrayList<>();
+    Node statement;
     do {
       while (tokenizer.tryConsume(":")) {
         result.add(new Statement(program, null));
@@ -208,7 +218,7 @@ public class Parser {
       }
       statement = parseStatement(tokenizer);
       result.add(statement);
-    } while (statement.kind == Statement.Kind.IF ? statement.children.length == 1
+    } while (statement instanceof Statement && ((Statement) statement).kind == Statement.Kind.IF ? statement.children.length == 1
         : tokenizer.tryConsume(":"));
     if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF) {
       throw tokenizer.exception("Leftover input.", null);

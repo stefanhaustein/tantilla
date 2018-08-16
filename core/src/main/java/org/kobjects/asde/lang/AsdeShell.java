@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang;
 
-import org.kobjects.asde.lang.node.Statement;
+import org.kobjects.asde.lang.node.Node;
 import org.kobjects.expressionparser.ExpressionParser;
 
 import java.io.BufferedReader;
@@ -33,7 +33,7 @@ public class AsdeShell {
                 }
                 return false;
             default:
-                List<Statement> statements = program.parser.parseStatementList(tokenizer);
+                List<? extends Node> statements = program.parser.parseStatementList(tokenizer);
                 interpreter.runStatementsAsync(statements, program.main);
                 return true;
         }

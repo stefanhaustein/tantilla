@@ -4,10 +4,6 @@ import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.typesystem.Classifier;
-import org.kobjects.typesystem.MetaType;
-import org.kobjects.typesystem.Type;
-
-import sun.awt.Symbol;
 
 public class New extends Node {
     final String name;

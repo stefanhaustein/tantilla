@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang;
 
+import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 
@@ -55,7 +56,7 @@ public class Interpreter {
         return currentLine == -2 ? GlobalSymbol.Scope.PERSISTENT : GlobalSymbol.Scope.TRANSIENT;
     }
 
-    public void runStatementsAsync(final List<Statement> statements, final CallableUnit callableUnit) {
+    public void runStatementsAsync(final List<? extends Node> statements, final CallableUnit callableUnit) {
         stop();
         interpreterThread = new Thread(new Runnable() {
             @Override
@@ -79,7 +80,7 @@ public class Interpreter {
         interpreterThread.start();
     }
 
-    private void runStatementsImpl(List<Statement> statements) {
+    private void runStatementsImpl(List<? extends Node> statements) {
         int line = currentLine;
 
         while (currentIndex < statements.size() && !Thread.currentThread().isInterrupted()) {

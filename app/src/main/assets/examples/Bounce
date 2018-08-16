@@ -1,4 +1,4 @@
-10 bob = new sprite
+10 sprite bob
 20 bob.size = 20
 100 if bob.x + bob.size > screen.width then dx = -0.5
 110 if bob.x <= 0 then dx = 0.5

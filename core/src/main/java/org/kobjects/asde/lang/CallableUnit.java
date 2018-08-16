@@ -32,17 +32,18 @@ public class CallableUnit implements Function {
         int indent = 0;
         for (CodeLine line : code.values()) {
             line.indent = indent;
-            for (Statement statement : line.statements) {
-                switch (statement.kind) {
-                    case FOR:
-                        indent++;
-                        break;
-                    case NEXT:
-                        line.indent--;
-                        indent--;
-                        break;
+            for (Node statement : line.statements) {
+                if (statement instanceof Statement) {
+                    switch (((Statement) statement).kind) {
+                        case FOR:
+                            indent++;
+                            break;
+                        case NEXT:
+                            line.indent--;
+                            indent--;
+                            break;
+                    }
                 }
-
                 try {
                     statement.resolve(resolutionContext);
                 } catch (Exception e) {

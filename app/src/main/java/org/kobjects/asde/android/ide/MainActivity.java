@@ -1,7 +1,6 @@
 package org.kobjects.asde.android.ide;
 
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -35,6 +34,7 @@ import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.StartStopListener;
 import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.asde.library.ui.Screen;
@@ -277,9 +277,9 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
           tokenizer.nextToken();
           // Fall-through intended
         default:
-          List<Statement> statements = program.parser.parseStatementList(tokenizer);
+          List<? extends Node> statements = program.parser.parseStatementList(tokenizer);
           ResolutionContext resolutionContext = new ResolutionContext(program, ResolutionContext.ResolutionMode.SHELL, new FunctionType(Types.VOID));
-          for (Statement statement : statements) {
+          for (Node statement : statements) {
               statement.resolve(resolutionContext);
           }
           TextView inputView = new TextView(this);

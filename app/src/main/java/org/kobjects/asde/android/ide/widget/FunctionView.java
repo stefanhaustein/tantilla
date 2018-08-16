@@ -2,8 +2,6 @@ package org.kobjects.asde.android.ide.widget;
 
 import android.app.Activity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import org.kobjects.asde.R;
@@ -12,13 +10,11 @@ import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.StartStopListener;
 import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Statement;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 public class FunctionView extends ExpandableView<LinearLayout> {
 
@@ -84,7 +80,7 @@ public class FunctionView extends ExpandableView<LinearLayout> {
     }
 
 
-    public void put(int lineNumber, List<Statement> statementList) {
+    public void put(int lineNumber, List<? extends Node> statementList) {
         callableUnit.setLine(lineNumber, new CodeLine(statementList));
         syncContent();
     }
