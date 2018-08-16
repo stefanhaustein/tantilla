@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Array;
@@ -236,12 +237,20 @@ public class Program {
     public void load(String programName) {
       File programFile = new File(console.getProgramStoragePath(), programName);
       try {
+          load(programName, new FileInputStream(programFile));
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
+    }
+
+    public void load(String programName, InputStream inputStream) {
+      try {
           this.name = programName;
           console.programNameChangedTo(programName);
 
           clearAll();
 
-          BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(programFile)));
+          BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "utf-8"));
           CallableUnit currentFunction = main;
           while (true) {
               String line = reader.readLine();

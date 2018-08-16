@@ -1,6 +1,7 @@
 package org.kobjects.asde.android.ide;
 
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -8,11 +9,14 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -42,6 +46,7 @@ import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.typesystem.FunctionType;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -129,6 +134,31 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
 
     // Input Layout
 
+    IconButton hamburgerButton = new IconButton(this, R.drawable.baseline_expand_less_black_24);
+    hamburgerButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            PopupMenu popupMenu = new PopupMenu(MainActivity.this, v);
+            Menu mainMenu = popupMenu.getMenu();
+            Menu examplesMenu = mainMenu.addSubMenu("Examples");
+            try {
+                for (final String example : MainActivity.this.getAssets().list("examples")) {
+                    examplesMenu.add(example).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            openExample(example);
+                            return true;
+                        }
+                    });
+                }
+            }catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            popupMenu.show();
+        }
+    });
+
     errorView = new TextView(this);
     errorView.setVisibility(View.GONE);
     errorView.setTypeface(Typeface.MONOSPACE);
@@ -144,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     });
 
     LinearLayout inputLayout = new LinearLayout(this);
+    inputLayout.addView(hamburgerButton);
     inputLayout.addView(mainInput, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
     inputLayout.addView(enterButton);
 
@@ -188,7 +219,13 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     program.classifiers.put("screen", Screen.CLASSIFIER);
     program.classifiers.put("sprite", screen.spriteClassifier);
     String programName = sharedPreferences.getString("ProgramName", "Scratch");
-    program.load(programName);
+    if (new File(getProgramStoragePath(), programName).exists()) {
+        try {
+            program.load(programName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     sync(false);
 
     print("  " + (Runtime.getRuntime().totalMemory() / 1024) + "K SYSTEM  "
@@ -231,6 +268,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
           tokenizer.nextToken();
           if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER || "?".equals(tokenizer.currentValue)) {
             currentFunctionView.put(lineNumber, program.parser.parseStatementList(tokenizer));
+            sync(true);
             break;
           }
           // Not
@@ -382,6 +420,14 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
         });
     }
 
+    public void openExample(String name) {
+      try {
+          program.load(name, getAssets().open("examples/" + name));
+          sync(false);
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
+    }
 
     @Override
     public void notifyExpanding(ExpandableView functionView, boolean animated) {

@@ -1,0 +1,10 @@
+10 bob = new sprite
+20 bob.size = 20
+100 if bob.x + bob.size > 100 then dx = -0.5
+110 if bob.x <= 0 then dx = 0.5
+120 if bob.y + bob.size > 100 then dy = -2
+130 bob.x = bob.x + dx
+140 bob.y = bob.y + dy
+150 dy = dy + 0.04
+160 pause 15
+170 goto 100
