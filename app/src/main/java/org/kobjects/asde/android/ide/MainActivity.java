@@ -216,8 +216,9 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
         }
     });
 
-    program.classifiers.put("screen", Screen.CLASSIFIER);
-    program.classifiers.put("sprite", screen.spriteClassifier);
+    program.setSymbol("sprite", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen.spriteClassifier));
+    program.setSymbol("screen", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen));
+
     String programName = sharedPreferences.getString("ProgramName", "Scratch");
     if (new File(getProgramStoragePath(), programName).exists()) {
         try {

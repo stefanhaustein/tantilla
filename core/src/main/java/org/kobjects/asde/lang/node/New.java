@@ -2,18 +2,29 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.typesystem.Classifier;
+import org.kobjects.typesystem.MetaType;
 import org.kobjects.typesystem.Type;
+
+import sun.awt.Symbol;
 
 public class New extends Node {
     final String name;
-    final Classifier classifier;
+    Classifier classifier;
 
     public New(Program program, String name) {
         super();
         this.name = name;
-        classifier = program.classifiers.get(name);
-        if (classifier == null) throw new RuntimeException("Unrecognized class: " + name);
+        GlobalSymbol symbol = program.getSymbol(name);
+        if (symbol == null) {
+            throw new RuntimeException("'" + name + "' is not defined");
+        }
+        Object value = symbol.value;
+        if (!(value instanceof Classifier)) {
+            throw new RuntimeException("'" + name + "' is not a classifier");
+        }
+        classifier = (Classifier) value;
     }
 
     @Override
@@ -22,7 +33,7 @@ public class New extends Node {
     }
 
     @Override
-    public Type returnType() {
+    public Classifier returnType() {
         return classifier;
     }
 

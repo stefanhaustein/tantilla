@@ -15,9 +15,10 @@ public class Sprite extends Instance implements Runnable {
     private final EmojiSprite sprite;
     private final Screen screen;
 
-    final SyncProperty<Double> x = new SyncProperty<>(Double.valueOf(0));
-    final SyncProperty<Double> y = new SyncProperty<>(Double.valueOf(0));
-    final SyncProperty<Double> size = new SyncProperty<>(Double.valueOf(10));
+    final SyncProperty<Double> x = new SyncProperty<>(0.0);
+    final SyncProperty<Double> y = new SyncProperty<>(0.0);
+    final SyncProperty<Double> size = new SyncProperty<>(10.0);
+    final SyncProperty<Double> angle = new SyncProperty<>(0.0);
 
     boolean syncRequested;
 
@@ -35,6 +36,7 @@ public class Sprite extends Instance implements Runnable {
             case x: return x;
             case y: return y;
             case size: return size;
+            case angle: return angle;
         }
         throw new IllegalArgumentException();
     }
@@ -59,6 +61,7 @@ public class Sprite extends Instance implements Runnable {
                 size.get().floatValue() * sprite.getIntrinsicHeight() / spriteMax * scale);
         sprite.setX(x.get().floatValue() * scale);
         sprite.setY(y.get().floatValue() * scale);
+        sprite.getImageView().setRotation(angle.get().floatValue());
     }
 
 
@@ -79,7 +82,7 @@ public class Sprite extends Instance implements Runnable {
 
 
     enum SpriteMetaProperty implements PropertyDescriptor {
-        x(Types.NUMBER), y(Types.NUMBER), size(Types.NUMBER);
+        x(Types.NUMBER), y(Types.NUMBER), size(Types.NUMBER), angle(Types.NUMBER);
 
         private final Type type;
 

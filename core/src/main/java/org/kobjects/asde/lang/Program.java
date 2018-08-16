@@ -47,7 +47,6 @@ public class Program {
 
   public Parser parser = new Parser(this);
   public CallableUnit main = new CallableUnit(this, new FunctionType(Types.VOID));
-  public Map<String, Classifier> classifiers = new TreeMap<>();
 
   // Program state
 
