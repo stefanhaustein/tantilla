@@ -26,6 +26,7 @@ dependencies {
     api project(':core')
     api project(':typesystem')
     api project(':emojisprites')
+    api project(':sound')
     api 'com.vanniktech:emoji-twitter:0.6.0-SNAPSHOT'
 
 

@@ -1,5 +1,6 @@
 package org.kobjects.emojisprites;
 
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -28,6 +29,9 @@ public class EmojiSprite {
             Emoji emoji = emojis.get(0).emoji;
             imageView.setImageDrawable(emoji.getDrawable(container.getContext()));
         }
+
+        labelView = new TextView(container.getContext());
+        labelView.setTranslationY(imageView.getDrawable().getIntrinsicHeight());
     }
 
     public boolean isVisible() {
@@ -37,6 +41,7 @@ public class EmojiSprite {
     public void show() {
         if (!isVisible()) {
             container.addView(imageView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            container.addView(labelView);
         }
     }
 
@@ -45,6 +50,7 @@ public class EmojiSprite {
         layoutParams.height = Math.round(height);
         layoutParams.width = Math.round(width);
         imageView.setLayoutParams(layoutParams);
+        labelView.setTranslationY(height);
     }
 
     public int getIntrinsicWidth() {
@@ -61,6 +67,16 @@ public class EmojiSprite {
 
     public void setY(float v) {
         imageView.setTranslationY(v);
+    }
+
+    public void setLabel(String label) {
+        if (label == null || label.isEmpty()) {
+            labelView.setText("");
+            labelView.setVisibility(View.GONE);
+        } else {
+            labelView.setText(label);
+        }
+
     }
 
     public ImageView getImageView() {

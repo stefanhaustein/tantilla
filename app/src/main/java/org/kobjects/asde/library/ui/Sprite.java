@@ -19,6 +19,7 @@ public class Sprite extends Instance implements Runnable {
     final SyncProperty<Double> y = new SyncProperty<>(0.0);
     final SyncProperty<Double> size = new SyncProperty<>(10.0);
     final SyncProperty<Double> angle = new SyncProperty<>(0.0);
+    final SyncProperty<String> label = new SyncProperty<>("");
 
     boolean syncRequested;
 
@@ -37,6 +38,7 @@ public class Sprite extends Instance implements Runnable {
             case y: return y;
             case size: return size;
             case angle: return angle;
+            case label: return label;
         }
         throw new IllegalArgumentException();
     }
@@ -62,6 +64,8 @@ public class Sprite extends Instance implements Runnable {
         sprite.setX(x.get().floatValue() * scale);
         sprite.setY(y.get().floatValue() * scale);
         sprite.getImageView().setRotation(angle.get().floatValue());
+
+        sprite.setLabel(label.get());
     }
 
 
@@ -82,7 +86,7 @@ public class Sprite extends Instance implements Runnable {
 
 
     enum SpriteMetaProperty implements PropertyDescriptor {
-        x(Types.NUMBER), y(Types.NUMBER), size(Types.NUMBER), angle(Types.NUMBER);
+        x(Types.NUMBER), y(Types.NUMBER), size(Types.NUMBER), angle(Types.NUMBER), label(Types.STRING);
 
         private final Type type;
 
