@@ -6,6 +6,7 @@ import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.FunctionType;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -95,7 +96,7 @@ public class CallableUnit implements Function {
         for (Map.Entry<Integer, CodeLine> entry : code.entrySet()) {
             sb.append(String.valueOf(entry.getKey()));
             sb.append(' ');
-            entry.getValue().toString(sb);
+            entry.getValue().toString(sb, errors);
             sb.append('\n');
         }
 

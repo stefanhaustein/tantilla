@@ -1,9 +1,12 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.typesystem.Classifier;
+
+import java.util.Map;
 
 public class New extends Node {
     final String name;
@@ -33,7 +36,8 @@ public class New extends Node {
         return classifier;
     }
 
-    public String toString() {
-        return "new " + name;
+    @Override
+    public void toString(AnnotatedStringBuilder asb, Map<Node,Exception> errors) {
+        appendLinked(asb, "new " + name, errors);
     }
 }

@@ -32,6 +32,7 @@ import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.android.ide.widget.VariableView;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
+import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.StartStopListener;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Node;
@@ -49,6 +50,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class MainActivity extends AppCompatActivity implements Console, ExpandableView.ExpandListener {
@@ -362,6 +364,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
   void sync(boolean expandNew) {
       variableView.sync();
 
+      Set<String> removeViews = functionViews.keySet();
       for (Map.Entry<String, GlobalSymbol> entry : program.getSymbolMap().entrySet()) {
           GlobalSymbol symbol = entry.getValue();
           if (symbol == null) {
@@ -369,6 +372,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
           }
           String name = entry.getKey();
           if (symbol.scope == GlobalSymbol.Scope.PERSISTENT && symbol.value instanceof CallableUnit) {
+              removeViews.remove(name);
               if (!functionViews.containsKey(name)) {
                   FunctionView functionView = new FunctionView(this, name, (CallableUnit) symbol.value, interpreter);
                   functionView.addExpandListener(this);
@@ -379,6 +383,10 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
                   }
               }
           }
+      }
+      for (String remove : removeViews) {
+          contentLayout.removeView(functionViews.get(remove));
+          functionViews.remove(remove);
       }
 
       if (program.main.getLineCount() > 0 && mainView.getVisibility() == View.GONE) {

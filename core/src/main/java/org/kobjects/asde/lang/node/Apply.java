@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Program;
@@ -7,6 +8,7 @@ import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.typesystem.Type;
 
+import java.util.Map;
 import java.util.TreeMap;
 
 // Not static for access to the variables.
@@ -77,18 +79,16 @@ public class Apply extends AssignableNode {
     return children[0].toString().endsWith("$") ? Types.STRING : Types.NUMBER;
   }
 
-  public String toString() {
-
-      StringBuilder sb = new StringBuilder();
-      sb.append(children[0].toString());
-      sb.append('(');
-      for (int i = 1; i < children.length; i++) {
+  @Override
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+     children[0].toString(asb, errors);
+     asb.append('(');
+     for (int i = 1; i < children.length; i++) {
           if (i > 1) {
-              sb.append(", ");
+              asb.append(", ");
           }
-          sb.append(children[i].toString());
+          children[i].toString(asb, errors);
       }
-      sb.append(')');
-      return sb.toString();
+      asb.append(')');
   }
 }

@@ -1,9 +1,13 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.Type;
+
+import java.util.Collections;
+import java.util.Map;
 
 public abstract class Node {
 
@@ -47,19 +51,24 @@ public abstract class Node {
     return Program.toString(children[i].eval(interpreter));
   }
 
-  public String toString() {
-    if (children.length == 0) {
-      return "";
-    } else if (children.length == 1) {
-      return children[0].toString();
-    } else {
-      StringBuilder sb = new StringBuilder(children[0].toString());
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+    if (children.length > 0) {
+      children[0].toString(asb, errors);
       for (int i = 1; i < children.length; i++) {
-        sb.append(", ");
-        sb.append(children[i]);
+        asb.append(", ");
+        children[i].toString(asb, errors);
       }
-      return sb.toString();
     }
+  }
+
+  protected void appendLinked(AnnotatedStringBuilder asb, String s, Map<Node, Exception> errors) {
+    asb.append(s);
+  }
+
+  public final String toString() {
+    AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
+    toString(asb, Collections.<Node, Exception>emptyMap());
+    return asb.toString();
   }
 
   public abstract Type returnType();

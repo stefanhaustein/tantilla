@@ -9,7 +9,10 @@ import android.widget.TextView;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.CodeLine;
+import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Statement;
+
+import java.util.Collections;
 
 public class CodeLineView extends LinearLayout {
 
@@ -39,7 +42,7 @@ public class CodeLineView extends LinearLayout {
 
     void setCodeLine(CodeLine codeLine) {
         AnnotatedStringBuilder sb = new AnnotatedStringBuilder();
-        codeLine.toString(sb);
+        codeLine.toString(sb, Collections.<Node, Exception>emptyMap());
         statementView.setText(codeLine.toString());
     }
 

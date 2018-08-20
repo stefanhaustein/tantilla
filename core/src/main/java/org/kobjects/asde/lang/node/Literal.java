@@ -1,9 +1,12 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.typesystem.Type;
+
+import java.util.Map;
 
 public class Literal extends Node {
   Object value;
@@ -24,10 +27,11 @@ public class Literal extends Node {
   }
 
   @Override
-  public String toString() {
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
     if (value != Program.INVISIBLE_STRING && value instanceof String) {
-      return "\"" + ((String) value).replace("\"", "\"\"") + '"';
+      appendLinked(asb, "\"" + ((String) value).replace("\"", "\"\"") + '"', errors);
+    } else {
+      appendLinked(asb, Program.toString(value), errors);
     }
-    return Program.toString(value);
   }
 }

@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.AsdeShell;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
@@ -426,27 +427,25 @@ public class Statement extends Node {
   }
 
   @Override
-  public String toString() {
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
     if (kind == null) {
-      return "";
+      return;
     }
-    StringBuilder sb = new StringBuilder();
     if (kind != Kind.LET) {
-      sb.append(kind.name());
+      appendLinked(asb, kind.name(), errors);
     }
     if (children.length > 0) {
       if (kind != Kind.LET) {
-        sb.append(' ');
+        appendLinked(asb, " ", errors);
       }
-      sb.append(children[0]);
+      children[0].toString(asb, errors);
       for (int i = 1; i < children.length; i++) {
-        sb.append((delimiter == null || i > delimiter.length) ? ", " : delimiter[i - 1]);
-        sb.append(children[i]);
+        asb.append((delimiter == null || i > delimiter.length) ? ", " : delimiter[i - 1]);
+        children[i].toString(asb, errors);
       }
       if (delimiter != null && delimiter.length == children.length) {
-        sb.append(delimiter[delimiter.length - 1]);
+        asb.append(delimiter[delimiter.length - 1]);
       }
     }
-    return sb.toString();
   }
 }

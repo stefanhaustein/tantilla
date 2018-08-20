@@ -1,11 +1,14 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.typesystem.Type;
+
+import java.util.Map;
 
 // Not static for access to the variables.
 public class Identifier extends AssignableNode {
@@ -45,7 +48,7 @@ public class Identifier extends AssignableNode {
     return resolved.getType();
   }
 
-  public String toString() {
-    return name;
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+    appendLinked(asb, name, errors);
   }
 }

@@ -1,7 +1,10 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.typesystem.Type;
+
+import java.util.Map;
 
 public class Group extends Node {
     public Group(Node child) {
@@ -19,7 +22,9 @@ public class Group extends Node {
     }
 
     @Override
-    public String toString() {
-        return "(" + children[0] + ")";
+    public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+        asb.append("(");
+        children[0].toString(asb, errors);
+        asb.append(")");
     }
 }

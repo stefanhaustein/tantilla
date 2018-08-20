@@ -1,9 +1,12 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Builtin;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.typesystem.Type;
+
+import java.util.Map;
 
 public class Operator extends Node {
   public final String name;
@@ -71,8 +74,14 @@ public class Operator extends Node {
   }
 
   @Override
-  public String toString() {
-    return children.length == 1 ? (name.equals("-") ? "-" : (name + " ")) + children[0]
-            : (children[0].toString() + ' ' + name + ' ' + children[1].toString());
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+    if (children.length == 1) {
+      appendLinked(asb, name.equals("-") ? "-" : (name + " "), errors);
+      children[0].toString(asb, errors);
+    } else {
+      children[0].toString(asb, errors);
+      appendLinked(asb, ' ' + name + ' ', errors);
+      children[1].toString(asb, errors);
+    }
   }
 }

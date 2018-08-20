@@ -1,11 +1,14 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.Type;
+
+import java.util.Map;
 
 public class Declaration extends Node {
     String typeName;
@@ -39,7 +42,8 @@ public class Declaration extends Node {
         return null;
     }
 
-    public String toString() {
-        return typeName + " " + variableName;
+    @Override
+    public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+        appendLinked(asb, typeName + " " + variableName, errors);
     }
 }

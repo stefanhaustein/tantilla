@@ -5,7 +5,9 @@ import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Statement;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class CodeLine {
     public ArrayList<Node> statements;
@@ -16,7 +18,7 @@ public class CodeLine {
     }
 
 
-    public void toString(AnnotatedStringBuilder sb) {
+    public void toString(AnnotatedStringBuilder sb, Map<Node, Exception> errors) {
         for (int i = 0; i < indent; i++) {
             sb.append("  ");
         }
@@ -31,7 +33,7 @@ public class CodeLine {
     @Override
     public String toString() {
         AnnotatedStringBuilder sb = new AnnotatedStringBuilder();
-        toString(sb);
+        toString(sb, Collections.<Node, Exception>emptyMap());
         return sb.toString();
     }
 }
