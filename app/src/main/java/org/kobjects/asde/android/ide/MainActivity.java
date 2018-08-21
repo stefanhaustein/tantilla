@@ -142,6 +142,25 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
         public void onClick(View v) {
             PopupMenu popupMenu = new PopupMenu(MainActivity.this, v);
             Menu mainMenu = popupMenu.getMenu();
+
+            if (interpreter.isRunning()) {
+                mainMenu.add("Stop").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        interpreter.stop();
+                        return true;
+                    }
+                });
+            } else {
+                mainMenu.add("Run").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        interpreter.runAsync(interpreter.program.main);
+                        return true;
+                    }
+                });
+            }
+
             Menu examplesMenu = mainMenu.addSubMenu("Examples");
             try {
                 for (final String example : MainActivity.this.getAssets().list("examples")) {
