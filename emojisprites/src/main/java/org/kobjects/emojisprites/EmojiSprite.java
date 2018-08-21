@@ -1,5 +1,6 @@
 package org.kobjects.emojisprites;
 
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -17,6 +18,8 @@ public class EmojiSprite {
     ImageView imageView;
     TextView labelView;
     TextView speechBubble;
+    float width;
+    float height;
 
     public EmojiSprite(FrameLayout container) {
         this.container = container;
@@ -32,6 +35,7 @@ public class EmojiSprite {
 
         labelView = new TextView(container.getContext());
         labelView.setTranslationY(imageView.getDrawable().getIntrinsicHeight());
+        labelView.setBackgroundColor(Color.WHITE);
     }
 
     public boolean isVisible() {
@@ -41,7 +45,7 @@ public class EmojiSprite {
     public void show() {
         if (!isVisible()) {
             container.addView(imageView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            container.addView(labelView);
+            container.addView(labelView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
     }
 
@@ -50,7 +54,10 @@ public class EmojiSprite {
         layoutParams.height = Math.round(height);
         layoutParams.width = Math.round(width);
         imageView.setLayoutParams(layoutParams);
-        labelView.setTranslationY(height);
+        this.width = width;
+        this.height = height;
+        setX(imageView.getTranslationX());
+        setY(imageView.getTranslationY());
     }
 
     public int getIntrinsicWidth() {
@@ -63,10 +70,12 @@ public class EmojiSprite {
 
     public void setX(float v) {
         imageView.setTranslationX(v);
+        labelView.setTranslationX(v + width / 2 - labelView.getPaint().measureText(labelView.getText().toString()) / 2);
     }
 
     public void setY(float v) {
         imageView.setTranslationY(v);
+        labelView.setTranslationY(v + height * 1.1f);
     }
 
     public void setLabel(String label) {
@@ -74,7 +83,9 @@ public class EmojiSprite {
             labelView.setText("");
             labelView.setVisibility(View.GONE);
         } else {
-            labelView.setText(label);
+            labelView.setVisibility(View.VISIBLE);
+            labelView.setText(" " + label + " ");
+            setX(imageView.getTranslationX());
         }
 
     }
