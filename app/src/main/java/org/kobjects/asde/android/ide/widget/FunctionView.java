@@ -29,38 +29,41 @@ public class FunctionView extends ExpandableView<LinearLayout> {
         this.interpreter = interpreter;
         setName(name);
 
-        startStopIcon = new IconButton(context, R.drawable.baseline_play_arrow_black_24);
-        interpreter.addStartStopListener(new StartStopListener() {
-            @Override
-            public void programStarted() {
-                context.runOnUiThread(new Runnable() {
-                    public void run() {
-                        startStopIcon.setImageResource(R.drawable.baseline_stop_black_24);
-                    }
-                });
-            }
+        if (interpreter != null) {
+            startStopIcon = new IconButton(context, R.drawable.baseline_play_arrow_black_24);
+            interpreter.addStartStopListener(new StartStopListener() {
+                @Override
+                public void programStarted() {
+                    context.runOnUiThread(new Runnable() {
+                        public void run() {
+                            startStopIcon.setImageResource(R.drawable.baseline_stop_black_24);
+                        }
+                    });
+                }
 
-            @Override
-            public void programStopped() {
-                context.runOnUiThread(new Runnable() {
-                    public void run() {
-                        startStopIcon.setImageResource(R.drawable.baseline_play_arrow_black_24);
-                    }
-                });
-            }
-        });
+                @Override
+                public void programStopped() {
+                    context.runOnUiThread(new Runnable() {
+                        public void run() {
+                            startStopIcon.setImageResource(R.drawable.baseline_play_arrow_black_24);
+                        }
+                    });
+                }
+            });
 
-        startStopIcon.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (interpreter.isRunning()) {
-                    interpreter.stop();
-                } else {
-                    interpreter.runAsync(callableUnit);
-                };
-            }
-        });
-        titleView.addView(startStopIcon);
+            startStopIcon.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (interpreter.isRunning()) {
+                        interpreter.stop();
+                    } else {
+                        interpreter.runAsync();
+                    }
+                    ;
+                }
+            });
+            titleView.addView(startStopIcon);
+        }
         titleView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

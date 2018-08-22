@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 public class Interpreter {
+    public final CallableUnit callableUnit;
     public final Program program;
+    public final Object[] locals;
     public int currentLine;
     public int currentIndex;
     public int nextSubIndex;  // index within next when skipping a for loop; reset in next
@@ -18,12 +20,12 @@ public class Interpreter {
 
     public int[] dataPosition = new int[3];
     public Statement dataStatement;
-    CallableUnit callableUnit;
     public Object returnValue;
-    public Object[] locals;
 
-    public Interpreter(Program program) {
+    public Interpreter(Program program, CallableUnit callableUnit, Object[] locals) {
         this.program = program;
+        this.callableUnit = callableUnit;
+        this.locals = locals;
     }
 
     Thread interpreterThread;
@@ -32,7 +34,6 @@ public class Interpreter {
     public void addStartStopListener(StartStopListener startStopListener) {
         startStopListeners.add(startStopListener);
     }
-
 
     public boolean isRunning() {
         return interpreterThread != null;
@@ -48,23 +49,16 @@ public class Interpreter {
         }
     }
 
-    public void runAsync(CallableUnit callableUnit) {
-        runStatementsAsync(Collections.singletonList(new Statement(program, Statement.Kind.RUN)), callableUnit);
+    public void runAsync() {
+        runAsync(0);
     }
 
-    public GlobalSymbol.Scope getSymbolScope() {
-        return currentLine == -2 ? GlobalSymbol.Scope.PERSISTENT : GlobalSymbol.Scope.TRANSIENT;
-    }
-
-    public void runStatementsAsync(final List<? extends Node> statements, final CallableUnit callableUnit) {
+    public void runAsync(final Runnable runnable) {
         stop();
         interpreterThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                currentLine = -2;
-                Interpreter.this.callableUnit = callableUnit;
-                runStatementsImpl(statements);
-                runCallableUnit();
+                runnable.run();
                 if (interpreterThread != null) {
                     interpreterThread = null;
                     for (StartStopListener startStopListener : startStopListeners) {
@@ -73,11 +67,38 @@ public class Interpreter {
                 }
             }
         });
-
         for (StartStopListener startStopListener : startStopListeners) {
-            startStopListener.programStarted();
+                startStopListener.programStarted();
         }
         interpreterThread.start();
+    }
+
+
+    public void runAsync(final int runLine) {
+            runAsync(new Runnable() {
+                @Override
+                public void run() {
+                    currentLine = runLine;
+                    runCallableUnit();
+                }
+            });
+    }
+
+    public GlobalSymbol.Scope getSymbolScope() {
+        return currentLine == -2 ? GlobalSymbol.Scope.PERSISTENT : GlobalSymbol.Scope.TRANSIENT;
+    }
+
+    public void runStatementsAsync(final List<? extends Node> statements, final Interpreter programInterpreter) {
+        runAsync(new Runnable() {
+            @Override
+            public void run() {
+                currentLine = -2;
+                runStatementsImpl(statements);
+                if (currentLine >= 0) {
+                    programInterpreter.runAsync(currentLine);
+                }
+            }
+        });
     }
 
     private void runStatementsImpl(List<? extends Node> statements) {
@@ -109,9 +130,7 @@ public class Interpreter {
     }
 
     public Object call(CallableUnit callableUnit, Object[] locals) {
-        Interpreter sub = new Interpreter(program);
-        sub.locals = locals;
-        sub.callableUnit = callableUnit;
+        Interpreter sub = new Interpreter(program, callableUnit, locals);
         sub.runCallableUnit();
         return sub.returnValue;
     }

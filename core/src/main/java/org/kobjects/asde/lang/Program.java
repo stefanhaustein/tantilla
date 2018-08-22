@@ -78,6 +78,8 @@ public class Program {
           }
           symbolMap = cleared;
       }
+      name = "Scatch";
+      console.programNameChangedTo(name);
       stopped = null;
   }
 

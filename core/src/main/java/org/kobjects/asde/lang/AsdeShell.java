@@ -34,7 +34,7 @@ public class AsdeShell {
                 return false;
             default:
                 List<? extends Node> statements = program.parser.parseStatementList(tokenizer);
-                interpreter.runStatementsAsync(statements, program.main);
+                interpreter.runStatementsAsync(statements, interpreter);
                 return true;
         }
     }
@@ -74,7 +74,7 @@ public class AsdeShell {
 
     boolean prompt = true;
 
-    Interpreter interpreter = new Interpreter(program);
+    Interpreter interpreter = new Interpreter(program, program.main, null);
     while (true) {
       if (prompt) {
         System.out.println("\nREADY.");

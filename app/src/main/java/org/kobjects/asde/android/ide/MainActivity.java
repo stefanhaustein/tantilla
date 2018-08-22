@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -32,7 +33,6 @@ import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.android.ide.widget.VariableView;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
-import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.StartStopListener;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Node;
@@ -43,7 +43,6 @@ import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Console;
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.typesystem.FunctionType;
 
 import java.io.File;
@@ -69,7 +68,8 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
   FrameLayout screenView;
   Screen screen;
   VariableView variableView;
-  Interpreter interpreter = new Interpreter(program);
+  Interpreter mainInterpreter = new Interpreter(program, program.main, null);
+  Interpreter shellInterpreter = new Interpreter(program, null, null);
   TreeMap<String,FunctionView> functionViews = new TreeMap<>();
   FunctionView currentFunctionView;
   SharedPreferences sharedPreferences;
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     });
 
     variableView = new VariableView(this, program);
-    mainView = new FunctionView(this, "Program \"" +program.getName() + "\"", program.main, interpreter);
+    mainView = new FunctionView(this, "Program \"" +program.getName() + "\"", program.main, mainInterpreter);
     mainView.addExpandListener(this);
     mainView.setVisibility(View.GONE);
     currentFunctionView = mainView;
@@ -143,11 +143,22 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
             PopupMenu popupMenu = new PopupMenu(MainActivity.this, v);
             Menu mainMenu = popupMenu.getMenu();
 
-            if (interpreter.isRunning()) {
+            mainMenu.add("New Program").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    mainInterpreter.stop();
+                    program.clearAll();
+                    mainView.setVisibility(View.GONE);
+                    sync(false);
+                    return true;
+                }
+            });
+
+            if (mainInterpreter.isRunning()) {
                 mainMenu.add("Stop").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        interpreter.stop();
+                        mainInterpreter.stop();
                         return true;
                     }
                 });
@@ -155,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
                 mainMenu.add("Run").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        interpreter.runAsync(interpreter.program.main);
+                        mainInterpreter.runAsync();
                         return true;
                     }
                 });
@@ -220,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
 
     setContentView(mainLayout);
 
-    interpreter.addStartStopListener(new StartStopListener() {
+    mainInterpreter.addStartStopListener(new StartStopListener() {
         @Override
         public void programStarted() {
             screen.clear();
@@ -268,11 +279,13 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
 
 
   void enter() {
-    if (interpreter.isRunning()) {
+        /*
+    if (mainInterpreter.isRunning()) {
       readLine = mainInput.getText().toString();
       mainInput.setText("");
       return;
     }
+    */
 
     errorView.setVisibility(View.GONE);
     errorView.setText("");
@@ -312,7 +325,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
           shellLayout.addView(inputView);
           inputPrinted = true;
 
-          interpreter.runStatementsAsync(statements, program.main);
+          shellInterpreter.runStatementsAsync(statements, mainInterpreter);
 
           break;
       }
@@ -393,7 +406,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
           if (symbol.scope == GlobalSymbol.Scope.PERSISTENT && symbol.value instanceof CallableUnit) {
               removeViews.remove(name);
               if (!functionViews.containsKey(name)) {
-                  FunctionView functionView = new FunctionView(this, name, (CallableUnit) symbol.value, interpreter);
+                  FunctionView functionView = new FunctionView(this, name, (CallableUnit) symbol.value, mainInterpreter);
                   functionView.addExpandListener(this);
                   contentLayout.addView(functionView, 1);
                   functionViews.put(name, functionView);
@@ -450,7 +463,8 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
 
     public void openExample(String name) {
       try {
-          program.load(name, getAssets().open("examples/" + name));
+          mainInterpreter.stop();
+          program.load("Scratch", getAssets().open("examples/" + name));
           sync(false);
       } catch (IOException e) {
           throw new RuntimeException(e);
