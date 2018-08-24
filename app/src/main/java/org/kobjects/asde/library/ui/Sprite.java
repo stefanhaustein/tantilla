@@ -50,7 +50,7 @@ public class Sprite extends Instance implements Runnable {
     void requestSync() {
         if (!syncRequested) {
             syncRequested = true;
-            ((Activity) screen.getView().getContext()).runOnUiThread(this);
+            screen.activity.runOnUiThread(this);
         }
     }
 

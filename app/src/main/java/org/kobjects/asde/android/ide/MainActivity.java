@@ -53,6 +53,8 @@ import java.util.Set;
 import java.util.TreeMap;
 
 public class MainActivity extends AppCompatActivity implements Console, ExpandableView.ExpandListener {
+  private final String PROGRAM_NAME_STORAGE_KEY = "ProgramName";
+
   LinearLayout contentLayout;
   LinearLayout mainLayout;
   ScrollView scrollView;
@@ -231,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     screenView = new FrameLayout(this);
     screenView.addView(scrollView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-    screen = new Screen(screenView);
+    screen = new Screen(this, screenView);
 
     mainLayout = new LinearLayout(this);
     mainLayout.setOrientation(LinearLayout.VERTICAL);
@@ -264,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     program.setSymbol("sprite", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen.spriteClassifier));
     program.setSymbol("screen", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen));
 
-    String programName = sharedPreferences.getString("ProgramName", "Scratch");
+    String programName = sharedPreferences.getString(PROGRAM_NAME_STORAGE_KEY, "Scratch");
     if (new File(getProgramStoragePath(), programName).exists()) {
         try {
             program.load(programName);
@@ -469,7 +471,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
             @Override
             public void run() {
                 mainView.setName("Program \"" + name + "\"");
-                sharedPreferences.edit().putString("ProgramName", name).commit();
+                sharedPreferences.edit().putString(PROGRAM_NAME_STORAGE_KEY, name).commit();
             }
         });
     }

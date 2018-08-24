@@ -1,5 +1,6 @@
 package org.kobjects.asde.library.ui;
 
+import android.app.Activity;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -13,6 +14,7 @@ import org.kobjects.typesystem.Type;
 
 public class Screen extends Instance implements View.OnLayoutChangeListener{
     private final FrameLayout view;
+    final Activity activity;
     private float scale;
 
     final PhysicalProperty<Double> width = new PhysicalProperty<>(0.0);
@@ -32,16 +34,22 @@ public class Screen extends Instance implements View.OnLayoutChangeListener{
         }
     };
 
-    public Screen(FrameLayout view) {
+    public Screen(Activity activity, FrameLayout view) {
         super(CLASSIFIER);
+        this.activity = activity;
         this.view = view;
+        view.setClipChildren(false);
+
         view.addOnLayoutChangeListener(this);
     }
 
     public void clear() {
-        while (view.getChildCount() > 1) {
-            view.removeViewAt(view.getChildCount() -1 );
-        }
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //view.removeAllViews();
+            }
+        });
     }
 
     @Override

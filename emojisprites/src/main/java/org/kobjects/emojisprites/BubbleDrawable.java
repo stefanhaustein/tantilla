@@ -13,13 +13,18 @@ import static android.graphics.PixelFormat.TRANSLUCENT;
 class BubbleDrawable extends Drawable {
 
     float cornerBox;
-    float arrowSize;
-    Paint paint = new Paint();
+    float arrowDx;
+    float arrowDy;
+    Paint backgroundPaint;
+    Paint strokePaint;
 
-    BubbleDrawable(float arrowSize, float cornerBox) {
-        this.arrowSize = arrowSize;
+    BubbleDrawable(float cornerBox, float arrowDx, float arrowDy, Paint background, Paint stroke) {
         this.cornerBox = cornerBox;
-        paint.setAntiAlias(true);
+        this.arrowDx = arrowDx;
+        this.arrowDy = arrowDy;
+        this.backgroundPaint = background;
+        this.strokePaint = stroke;
+
     }
 
 
@@ -30,30 +35,40 @@ class BubbleDrawable extends Drawable {
 
     @Override
     public void draw(Canvas canvas) {
-        paint.setStyle(Paint.Style.FILL);
+
         RectF bounds = new RectF(getBounds());
-        paint.setColor(0xffffffff);
-      //  canvas.drawRoundRect(bounds, 16, 16 , paint);
+        /*  canvas.drawRoundRect(bounds, 16, 16 , paint);
+*/
 
         Path path = new Path();
         RectF arcBox = new RectF();
 
-        path.moveTo(bounds.left, bounds.top);
+        // Top left
+        path.moveTo(bounds.left + cornerBox, bounds.top);
+
+        // top right corner
         arcBox.set(bounds.right - cornerBox, bounds.top, bounds.right, bounds.top + cornerBox);
         path.arcTo(arcBox, 270, 90, false);
+
+        // bottom right corner
         arcBox.set(bounds.right - cornerBox, bounds.bottom - cornerBox, bounds.right, bounds.bottom);
         path.arcTo(arcBox, 0, 90, false);
-        arcBox.set(bounds.left + arrowSize, bounds.bottom - cornerBox, bounds.left + cornerBox + arrowSize, bounds.bottom);
+
+        path.lineTo(bounds.centerX() + cornerBox/2, bounds.bottom);
+        path.lineTo(bounds.centerX() + arrowDx, bounds.bottom + arrowDy);
+        path.lineTo(bounds.centerX() - cornerBox/2, bounds.bottom);
+
+        // bottom left corner
+        arcBox.set(bounds.left, bounds.bottom - cornerBox, bounds.left + cornerBox, bounds.bottom);
         path.arcTo(arcBox, 90, 90, false);
-        path.lineTo(bounds.left + arrowSize, bounds.top + arrowSize);
+
+        arcBox.set(bounds.left, bounds.top, bounds.left + cornerBox, bounds.top + cornerBox);
+        path.arcTo(arcBox, 180, 90, false);
+
         path.close();
 
-        canvas.drawPath(path, paint);
-
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(0xffcccccc);
-     //   canvas.drawRoundRect(bounds, 16, 16 , paint);
-        canvas.drawPath(path, paint);
+        canvas.drawPath(path, backgroundPaint);
+        canvas.drawPath(path, strokePaint);
     }
 
     @Override

@@ -2,10 +2,8 @@ package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.expressionparser.ExpressionParser;
-import org.kobjects.typesystem.Classifier;
 import org.kobjects.asde.lang.parser.Parser;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
@@ -18,14 +16,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import sun.awt.Symbol;
 
 
 /**
@@ -83,7 +79,7 @@ public class Program {
           }
           symbolMap = cleared;
       }
-      name = "Scatch";
+      name = "Scratch";
       console.programNameChangedTo(name);
       stopped = null;
   }
@@ -251,10 +247,9 @@ public class Program {
 
     public void load(String programName, InputStream inputStream) {
       try {
+          clearAll();
           this.name = programName;
           console.programNameChangedTo(programName);
-
-          clearAll();
 
           BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "utf-8"));
           CallableUnit currentFunction = main;
