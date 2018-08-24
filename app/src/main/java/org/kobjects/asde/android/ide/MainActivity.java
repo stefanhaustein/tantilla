@@ -172,6 +172,19 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
                 });
             }
 
+            Menu loadMenu = mainMenu.addSubMenu("Load");
+            for (final String name : getProgramStoragePath().list()) {
+                loadMenu.add(name).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        mainInterpreter.stop();
+                        program.load(name);
+                        sync(false);
+                        return true;
+                    }
+                });
+            }
+
             Menu examplesMenu = mainMenu.addSubMenu("Examples");
             try {
                 for (final String example : MainActivity.this.getAssets().list("examples")) {

@@ -69,7 +69,7 @@ public class Parser {
 
         if ((expression instanceof Operator) && (expression.children[0] instanceof AssignableNode)
                 && ((Operator) expression).name.equals("=")) {
-          return new Statement(program, Statement.Kind.LET, new String[]{" = "}, expression.children);
+          return new Statement(program, Statement.Kind.LET, new String[]{" = "}, expression.children);
         }
         return new Statement(program, Statement.Kind.PRINT, new String[0], expression);
       }
@@ -171,7 +171,7 @@ public class Parser {
           throw tokenizer.exception("Unrecognized statement or illegal assignment: '"
               + assignment + "'.", null);
         }
-        return new Statement(program, kind, new String[]{" = "}, assignment.children);
+        return new Statement(program, kind, new String[]{" = "}, assignment.children);
       }
       case ON: {
         List<Node> expressions = new ArrayList<Node>();

@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.typesystem.Classifier;
@@ -19,8 +21,11 @@ import java.io.OutputStreamWriter;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import sun.awt.Symbol;
 
 
 /**
@@ -258,12 +263,19 @@ public class Program {
               if (line == null) {
                   break;
               }
+              System.out.println("Line: '" + line + "'");
+
               ExpressionParser.Tokenizer tokenizer = parser.createTokenizer(line);
               tokenizer.nextToken();
               if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.NUMBER) {
                   int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
                   tokenizer.nextToken();
-                  currentFunction.setLine(lineNumber, new CodeLine(parser.parseStatementList(tokenizer)));
+
+                  System.out.println("line number: " + lineNumber);
+
+                  List<? extends Node> statements = parser.parseStatementList(tokenizer);
+
+                  currentFunction.setLine(lineNumber, new CodeLine(statements));
               } else if (tokenizer.tryConsume("FUNCTION")) {
                   String functionName = tokenizer.consumeIdentifier();
                   ArrayList<String> parameterNames = new ArrayList();
