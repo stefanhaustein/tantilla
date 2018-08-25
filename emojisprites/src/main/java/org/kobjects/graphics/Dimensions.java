@@ -1,4 +1,4 @@
-package org.kobjects.emojisprites;
+package org.kobjects.graphics;
 
 import android.content.Context;
 

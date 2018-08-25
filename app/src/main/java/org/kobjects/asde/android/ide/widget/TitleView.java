@@ -21,9 +21,10 @@ public class TitleView extends LinearLayout {
         int padding = Dimensions.dpToPx(context, 6);
         textView.setPadding(padding, padding, padding, padding);
 
-
-        addView(textView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
-        textView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+        layoutParams.gravity = Gravity.CENTER_VERTICAL;
+        addView(textView, layoutParams);
+//        textView.setGravity(Gravity.CENTER_VERTICAL);
     }
 
     public void setTitle(String title) {

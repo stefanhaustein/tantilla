@@ -1,4 +1,4 @@
-package org.kobjects.emojisprites;
+package org.kobjects.graphics;
 
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import static android.graphics.PixelFormat.TRANSLUCENT;
 
 class BubbleDrawable extends Drawable {
-
     float cornerBox;
     float arrowDx;
     float arrowDy;

@@ -6,7 +6,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -21,7 +20,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.vanniktech.emoji.EmojiManager;
-import com.vanniktech.emoji.twitter.TwitterEmojiProvider;
+import com.vanniktech.emoji.one.EmojiOneProvider;
 
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.widget.Colors;
@@ -38,7 +37,8 @@ import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
-import org.kobjects.asde.library.ui.Screen;
+import org.kobjects.asde.library.ui.ScreenAdapter;
+import org.kobjects.graphics.Viewport;
 import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Console;
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
   LinearLayout shellLayout;
   String readLine;
   FrameLayout screenView;
-  Screen screen;
+  ScreenAdapter screen;
   VariableView variableView;
   Interpreter mainInterpreter = new Interpreter(program, program.main, null);
   Interpreter shellInterpreter = new Interpreter(program, null, null);
@@ -78,11 +78,12 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
   boolean autoScroll = true;
 
     private TitleView shellTitleView;
+    private Viewport viewport;
 
     @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    EmojiManager.install(new TwitterEmojiProvider());
+    EmojiManager.install(new EmojiOneProvider());
 
     sharedPreferences = getPreferences(MODE_PRIVATE);
 
@@ -230,10 +231,13 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     bottomAppBar.addView(errorView);
     bottomAppBar.addView(inputLayout);
 
+    viewport = new Viewport(this);
+
+    screen = new ScreenAdapter(viewport);
+
     screenView = new FrameLayout(this);
     screenView.addView(scrollView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-    screen = new Screen(this, screenView);
+    screenView.addView(viewport, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
     mainLayout = new LinearLayout(this);
     mainLayout.setOrientation(LinearLayout.VERTICAL);
@@ -263,8 +267,9 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
         }
     });
 
-    program.setSymbol("sprite", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen.spriteClassifier));
     program.setSymbol("screen", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen));
+    program.setSymbol("sprite", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen.spriteClassifier));
+    program.setSymbol("text", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen.textClassifier));
 
     String programName = sharedPreferences.getString(PROGRAM_NAME_STORAGE_KEY, "Scratch");
     if (new File(getProgramStoragePath(), programName).exists()) {
