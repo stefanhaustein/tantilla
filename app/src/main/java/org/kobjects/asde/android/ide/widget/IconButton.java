@@ -1,9 +1,9 @@
 package org.kobjects.asde.android.ide.widget;
 
 import android.content.Context;
-import android.widget.ImageView;
+import android.support.v7.widget.AppCompatImageView;
 
-public class IconButton extends ImageView {
+public class IconButton extends AppCompatImageView {
     public IconButton(Context context, int resId) {
         super(context);
         setImageResource(resId);

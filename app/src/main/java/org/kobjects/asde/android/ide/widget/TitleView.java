@@ -1,20 +1,20 @@
 package org.kobjects.asde.android.ide.widget;
 
 import android.content.Context;
+import android.support.v7.widget.AppCompatTextView;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 public class TitleView extends LinearLayout {
 
-    TextView textView;
+    AppCompatTextView textView;
 
     public TitleView(Context context) {
         super(context);
         setBackgroundColor(Colors.PRIMARY);
 
-        textView = new TextView(context);
+        textView = new AppCompatTextView(context);
         textView.setTextSize(20);
        // setTextColor(0x0ffffffff);
 
