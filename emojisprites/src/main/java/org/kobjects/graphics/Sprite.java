@@ -13,9 +13,8 @@ import com.vanniktech.emoji.EmojiRange;
 import com.vanniktech.emoji.EmojiUtils;
 import com.vanniktech.emoji.emoji.Emoji;
 
-import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class Sprite extends AbstractViewWrapper<ImageView> {
 
@@ -30,7 +29,7 @@ public class Sprite extends AbstractViewWrapper<ImageView> {
     private String label;
     private String text;
     private String face;
-    private float rotation;
+    private float angle;
 
     boolean textDirty;
 
@@ -64,15 +63,27 @@ public class Sprite extends AbstractViewWrapper<ImageView> {
 //        bubble.setClipToOutline(false);
 
     }
-
-
-
-    public void setSize(float size) {
-        if (size != this.size) {
-            this.size = size;
-            requestSync();
-        }
+    public String getLabel() {
+        return label;
     }
+
+    public String getText() {
+        return text;
+    }
+
+    public String getFace() {
+        return face;
+    }
+
+    public float getSize() {
+        return size;
+    }
+
+    public float getAngle() {
+        return size;
+    }
+
+
 
     public void run() {
         syncRequested = false;
@@ -120,7 +131,7 @@ public class Sprite extends AbstractViewWrapper<ImageView> {
         float imageScale = (viewport.scale * size) / intrinsicSize;
         view.setScaleX(imageScale);
         view.setScaleY(imageScale);
-        view.setRotation(rotation);
+        view.setRotation(angle);
 
         float width = intrinsicWidth * view.getScaleX();
         float screenX = x * viewport.scale;
@@ -135,33 +146,57 @@ public class Sprite extends AbstractViewWrapper<ImageView> {
         view.setTranslationY(scrY + (height - intrinsicHeight) / 2);
         labelView.setTranslationY(scrY + height);
         bubble.setTranslationY(scrY - bubble.getMeasuredHeight() - 20);
+        view.setTranslationZ(z);
+        labelView.setTranslationZ(z);
+        bubble.setTranslationZ(z);
     }
 
 
-
-    public void setLabel(String label) {
+    public boolean setSize(float size) {
+        if (size == this.size) {
+            return false;
+        }
+        this.size = size;
+        requestSync();
+        return true;
+    }
+    public boolean setLabel(String label) {
+        if (Objects.equals(label, this.label)) {
+            return false;
+        }
         this.label = label;
         textDirty = true;
         requestSync();
+        return true;
     }
 
-    public void setText(String text) {
+    public boolean setText(String text) {
+        if (Objects.equals(text, this.text)) {
+            return false;
+        }
         this.text = text;
         textDirty = true;
         requestSync();
+        return true;
     }
 
-    public void setFace(String face) {
+    public boolean setFace(String face) {
+        if (Objects.equals(face, this.face)) {
+            return false;
+        }
         this.face = face;
         textDirty = true;
         requestSync();
+        return true;
     }
 
-    public void setRotation(float rotation) {
-        if (rotation != this.rotation) {
-            this.rotation = rotation;
-            requestSync();
+    public boolean setAngle(float angle) {
+        if (angle == this.angle) {
+            return false;
         }
+        this.angle = angle;
+        requestSync();
+        return true;
     }
 
 

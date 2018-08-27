@@ -6,8 +6,9 @@ public abstract class AbstractViewWrapper<T extends View> implements Runnable {
     T view;
     boolean syncRequested;
     Viewport viewport;
-    float x;
-    float y;
+    protected float x;
+    protected float y;
+    protected float z;
 
     AbstractViewWrapper(Viewport viewport, T view) {
         this.viewport = viewport;
@@ -24,19 +25,44 @@ public abstract class AbstractViewWrapper<T extends View> implements Runnable {
         });
     }
 
-
-    public void setX(float x) {
-        if (x != this.x) {
-            this.x = x;
-            requestSync();
-        }
+    public float getX() {
+        return x;
     }
 
-    public void setY(float y) {
-        if (y != this.y) {
-            this.y = y;
-            requestSync();
+    public float getY() {
+        return y;
+    }
+
+    public float getZ() {
+        return z;
+    }
+
+    public boolean setX(float x) {
+        if (x == this.x) {
+            return false;
         }
+        this.x = x;
+        requestSync();
+        return true;
+    }
+
+    public boolean setY(float y) {
+        if (y == this.y) {
+            return false;
+        }
+         this.y = y;
+         requestSync();
+        return true;
+    }
+
+    public boolean setZ(float z) {
+        if (z == this.z) {
+            return false;
+        }
+            this.z = z;
+            requestSync();
+
+        return true;
     }
 
     void requestSync() {

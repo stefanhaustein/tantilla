@@ -12,13 +12,14 @@ import org.kobjects.graphics.Sprite;
 public class SpriteAdapter extends Instance {
     private final Sprite sprite;
 
-    final SyncProperty<Double> x = new SyncProperty<>(SpriteMetaProperty.x, 0.0);
-    final SyncProperty<Double> y = new SyncProperty<>(SpriteMetaProperty.y, 0.0);
-    final SyncProperty<Double> size = new SyncProperty<>(SpriteMetaProperty.size, 10.0);
-    final SyncProperty<Double> angle = new SyncProperty<>(SpriteMetaProperty.angle, 0.0);
-    final SyncProperty<String> text = new SyncProperty<>(SpriteMetaProperty.text, "");
-    final SyncProperty<String> label = new SyncProperty<>(SpriteMetaProperty.label, "");
-    final SyncProperty<String> face = new SyncProperty<>(SpriteMetaProperty.face, Sprite.DEFAULT_FACE);
+    final NumberProperty x = new NumberProperty(SpriteMetaProperty.x);
+    final NumberProperty y = new NumberProperty(SpriteMetaProperty.y);
+    final NumberProperty z = new NumberProperty(SpriteMetaProperty.z);
+    final NumberProperty size = new NumberProperty(SpriteMetaProperty.size);
+    final NumberProperty angle = new NumberProperty(SpriteMetaProperty.angle);
+    final StringProperty text = new StringProperty(SpriteMetaProperty.text);
+    final StringProperty label = new StringProperty(SpriteMetaProperty.label);
+    final StringProperty face = new StringProperty(SpriteMetaProperty.face);
 
     public SpriteAdapter(Classifier classifier, final ScreenAdapter screen) {
         super(classifier);
@@ -31,6 +32,7 @@ public class SpriteAdapter extends Instance {
         switch ((SpriteMetaProperty) property) {
             case x: return x;
             case y: return y;
+            case z: return z;
             case size: return size;
             case angle: return angle;
             case label: return label;
@@ -41,50 +43,81 @@ public class SpriteAdapter extends Instance {
     }
 
 
-    class SyncProperty<T> extends PhysicalProperty<T> {
+    class NumberProperty extends Property<Double> {
         private final SpriteMetaProperty target;
 
-        public SyncProperty(SpriteMetaProperty target, T initialValue) {
-            super(initialValue);
+        NumberProperty(SpriteMetaProperty target) {
             this.target = target;
         }
 
         @Override
-        public boolean set(T value) {
-            if (!super.set(value)) {
-                return false;
+        public Double get() {
+            switch (target) {
+                case x:
+                    return Double.valueOf(sprite.getX());
+                case y:
+                    return Double.valueOf(sprite.getY());
+                case z:
+                    return Double.valueOf(sprite.getZ());
+                case angle:
+                    return Double.valueOf(sprite.getAngle());
+                case size:
+                    return Double.valueOf(sprite.getSize());
             }
+            throw new RuntimeException();
+        }
+
+        @Override
+        public boolean set(Double value) {
             switch (target) {
                     case x:
-                        sprite.setX(((Double) value).floatValue());
-                        break;
+                        return sprite.setX(((Double) value).floatValue());
                     case y:
-                        sprite.setY(((Double) value).floatValue());
-                        break;
+                        return sprite.setY(((Double) value).floatValue());
+                    case z:
+                        return sprite.setZ(((Double) value).floatValue());
                     case angle:
-                        sprite.setRotation(((Double) value).floatValue());
-                        break;
+                        return sprite.setAngle(((Double) value).floatValue());
                     case size:
-                        sprite.setSize(((Double) value).floatValue());
-                        break;
-                    case text:
-                        sprite.setText((String) value);
-                        break;
-                    case label:
-                        sprite.setLabel((String) value);
-                        break;
-                    case face:
-                        sprite.setFace((String) value);
-                        break;
+                        return sprite.setSize(((Double) value).floatValue());
             }
-            return true;
+            throw new RuntimeException();
         }
 
     }
 
+    class StringProperty extends Property<String> {
+        private final SpriteMetaProperty target;
+
+        StringProperty(SpriteMetaProperty target) {
+            this.target = target;
+        }
+
+        public String get() {
+            switch (target) {
+                case text:
+                    return sprite.getText();
+                case face:
+                    return sprite.getFace();
+                case label:
+                    return sprite.getLabel();
+            }
+            throw new RuntimeException();
+        }
+
+        public boolean set(String value) {
+            switch (target) {
+                case text: return sprite.setText(value);
+                case label: return sprite.setLabel(value);
+                case face:return sprite.setFace(value);
+            }
+            throw new RuntimeException();
+        }
+    }
+
 
     enum SpriteMetaProperty implements PropertyDescriptor {
-        x(Types.NUMBER), y(Types.NUMBER), size(Types.NUMBER),
+        x(Types.NUMBER), y(Types.NUMBER), z(Types.NUMBER), size(Types.NUMBER),
         angle(Types.NUMBER), label(Types.STRING), text(Types.STRING), face(Types.STRING);
 
         private final Type type;
