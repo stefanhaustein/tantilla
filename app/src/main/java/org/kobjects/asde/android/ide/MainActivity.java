@@ -1,6 +1,7 @@
 package org.kobjects.asde.android.ide;
 
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -9,6 +10,7 @@ import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -71,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
   Drawable systemListDivider;
   LinearLayout shellView;
   String readLine;
-  FrameLayout screenView;
   ScreenAdapter screen;
   VariableView variableView;
   LinearLayout codeInputView;
@@ -169,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     codeEditText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
     codeEditText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 
-    emojiPopup = EmojiPopup.Builder.fromRootView(rootView).build(codeEditText);
+
 
 /*
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -218,19 +219,8 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
 
     screen = new ScreenAdapter(viewport);
 
-    screenView = new FrameLayout(this);
-    screenView.addView(scrollView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-    screenView.addView(viewport, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-    rootView.setOrientation(LinearLayout.VERTICAL);
-    rootView.setDividerDrawable(systemListDivider);
-    rootView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
 
-    rootView.addView(screenView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
-
-    rootView.addView(bottomAppBar);
-
-    setContentView(rootView);
 
     mainInterpreter.addStartStopListener(new StartStopListener() {
         @Override
@@ -252,6 +242,8 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     program.setSymbol("screen", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen));
     program.setSymbol("sprite", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen.spriteClassifier));
     program.setSymbol("text", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen.textClassifier));
+
+    arrangeUi();
 
     String programName = sharedPreferences.getString(PROGRAM_NAME_STORAGE_KEY, "Scratch");
     if (new File(getProgramStoragePath(), programName).exists()) {
@@ -438,6 +430,62 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
       */
   }
 
+
+  void removeFromParent(View view) {
+      if (view.getParent() instanceof ViewGroup) {
+          ((ViewGroup) view.getParent()).removeView(view);
+      }
+  }
+
+  public void onConfigurationChanged (Configuration newConfig) {
+      super.onConfigurationChanged(newConfig);
+    arrangeUi();
+  }
+
+  private void arrangeUi() {
+
+      if (emojiPopup != null && emojiPopup.isShowing()) {
+          emojiPopup.dismiss();
+          emojiPopup = null;
+      }
+
+      removeFromParent(scrollView);
+      removeFromParent(viewport);
+      removeFromParent(bottomAppBar);
+
+      Display display = getWindowManager().getDefaultDisplay();
+      int displayWidth = display.getWidth();
+      int displayHeight = display.getHeight();
+
+
+      rootView = new LinearLayout(this);
+      rootView.setDividerDrawable(systemListDivider);
+      rootView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+      if (displayHeight >= displayWidth) {
+        rootView.setOrientation(LinearLayout.VERTICAL);
+
+        FrameLayout overlay = new FrameLayout(this);
+        overlay.addView(scrollView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        overlay.addView(viewport, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        rootView.addView(overlay, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+        rootView.addView(bottomAppBar);
+      } else {
+        LinearLayout codingLayout = new LinearLayout(this);
+        codingLayout.setOrientation(LinearLayout.VERTICAL);
+          codingLayout.setDividerDrawable(systemListDivider);
+          codingLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+        codingLayout.addView(scrollView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
+        codingLayout.addView(bottomAppBar, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0));
+
+        rootView.addView(codingLayout, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
+        rootView.addView(viewport, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
+      }
+      setContentView(rootView);
+  }
+
+
+
   @Override
   public String read() {
     runOnUiThread(new Runnable() {
@@ -571,9 +619,12 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
             throw new RuntimeException(e);
         }
 
-        mainMenu.add(emojiPopup.isShowing() ? "Text Keyboard" : "Emoji Keyboard").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        mainMenu.add(emojiPopup != null && emojiPopup.isShowing() ? "Text Keyboard" : "Emoji Keyboard").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                if (emojiPopup == null) {
+                    emojiPopup = EmojiPopup.Builder.fromRootView(rootView).build(codeEditText);
+                }
                 emojiPopup.toggle();
                 return true;
             }
