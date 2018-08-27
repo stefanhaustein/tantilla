@@ -625,7 +625,20 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
                 if (emojiPopup == null) {
                     emojiPopup = EmojiPopup.Builder.fromRootView(rootView).build(codeEditText);
                 }
-                emojiPopup.toggle();
+                if (emojiPopup.isShowing()) {
+                    emojiPopup.dismiss();
+                } else {
+                    emojiPopup.toggle();
+                    // Needed sometimes when the keyboard is not showing in the first place.
+                    codeEditText.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (emojiPopup != null && !emojiPopup.isShowing()) {
+                                emojiPopup.toggle();
+                            }
+                        }
+                    });
+                }
                 return true;
             }
         });

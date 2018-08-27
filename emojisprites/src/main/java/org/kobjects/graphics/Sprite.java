@@ -80,7 +80,7 @@ public class Sprite extends AbstractViewWrapper<ImageView> {
     }
 
     public float getAngle() {
-        return size;
+        return angle;
     }
 
 

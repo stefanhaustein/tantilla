@@ -71,15 +71,15 @@ public class SpriteAdapter extends Instance {
         public boolean set(Double value) {
             switch (target) {
                     case x:
-                        return sprite.setX(((Double) value).floatValue());
+                        return sprite.setX(value.floatValue());
                     case y:
-                        return sprite.setY(((Double) value).floatValue());
+                        return sprite.setY(value.floatValue());
                     case z:
-                        return sprite.setZ(((Double) value).floatValue());
+                        return sprite.setZ(value.floatValue());
                     case angle:
-                        return sprite.setAngle(((Double) value).floatValue());
+                        return sprite.setAngle(value.floatValue());
                     case size:
-                        return sprite.setSize(((Double) value).floatValue());
+                        return sprite.setSize(value.floatValue());
             }
             throw new RuntimeException();
         }
