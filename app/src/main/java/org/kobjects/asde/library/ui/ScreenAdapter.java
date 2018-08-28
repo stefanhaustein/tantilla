@@ -15,8 +15,12 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
     private final Viewport viewport;
     private float scale;
 
-    final PhysicalProperty<Double> width = new PhysicalProperty<>(0.0);
-    final PhysicalProperty<Double> height = new PhysicalProperty<>(0.0);
+    // Hack; access from viewport instead.
+    float width;
+    float height;
+
+    final PhysicalProperty<Double> widthProperty = new PhysicalProperty<>(0.0);
+    final PhysicalProperty<Double> heightProperty = new PhysicalProperty<>(0.0);
 
     public static Classifier CLASSIFIER = new Classifier(ScreenMetaProperty.values()) {
         @Override
@@ -58,8 +62,8 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
     @Override
     public Property getProperty(PropertyDescriptor property) {
         switch ((ScreenMetaProperty) property) {
-            case width: return width;
-            case height: return height;
+            case width: return widthProperty;
+            case height: return heightProperty;
         }
         throw new IllegalArgumentException();
     }
@@ -71,8 +75,11 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
 
         scale = Math.min(widthPx, heightPx) / 100f;
 
-        width.set(Double.valueOf(widthPx / scale));
-        height.set(Double.valueOf(heightPx / scale));
+        width = widthPx / scale;
+        height = heightPx / scale;
+
+        widthProperty.set(Double.valueOf(width));
+        heightProperty.set(Double.valueOf(height));
 
     }
 

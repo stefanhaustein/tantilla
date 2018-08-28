@@ -2,15 +2,17 @@ package org.kobjects.asde.android.ide.widget;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.v7.widget.AppCompatTextView;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.vanniktech.emoji.EmojiTextView;
+
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.node.Statement;
 
 import java.util.Collections;
 
@@ -24,11 +26,11 @@ public class CodeLineView extends LinearLayout {
     public CodeLineView(Context context) {
         super(context);
 
-        lineNumberView = new TextView(context);
+        lineNumberView = new AppCompatTextView(context);
         lineNumberView.setGravity(Gravity.TOP | Gravity.RIGHT);
         lineNumberView.setTypeface(Typeface.MONOSPACE);
 
-        statementView = new TextView(context);
+        statementView = new EmojiTextView(context);
         statementView.setTypeface(Typeface.MONOSPACE);
 
         addView(lineNumberView, new LayoutParams(Math.round(lineNumberView.getTextSize() * 3f), ViewGroup.LayoutParams.MATCH_PARENT));

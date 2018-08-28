@@ -11,18 +11,24 @@ import org.kobjects.graphics.Sprite;
 
 public class SpriteAdapter extends Instance {
     private final Sprite sprite;
+    private ScreenAdapter screen;
 
     final NumberProperty x = new NumberProperty(SpriteMetaProperty.x);
     final NumberProperty y = new NumberProperty(SpriteMetaProperty.y);
     final NumberProperty z = new NumberProperty(SpriteMetaProperty.z);
     final NumberProperty size = new NumberProperty(SpriteMetaProperty.size);
     final NumberProperty angle = new NumberProperty(SpriteMetaProperty.angle);
+    final NumberProperty left = new NumberProperty(SpriteMetaProperty.left);
+    final NumberProperty right = new NumberProperty(SpriteMetaProperty.right);
+    final NumberProperty top = new NumberProperty(SpriteMetaProperty.top);
+    final NumberProperty bottom = new NumberProperty(SpriteMetaProperty.bottom);
     final StringProperty text = new StringProperty(SpriteMetaProperty.text);
     final StringProperty label = new StringProperty(SpriteMetaProperty.label);
     final StringProperty face = new StringProperty(SpriteMetaProperty.face);
 
     public SpriteAdapter(Classifier classifier, final ScreenAdapter screen) {
         super(classifier);
+        this.screen = screen;
         sprite = new Sprite(screen.getViewport());
         sprite.setSize(10);
     }
@@ -33,6 +39,10 @@ public class SpriteAdapter extends Instance {
             case x: return x;
             case y: return y;
             case z: return z;
+            case left: return left;
+            case right: return right;
+            case top: return top;
+            case bottom: return bottom;
             case size: return size;
             case angle: return angle;
             case label: return label;
@@ -63,6 +73,14 @@ public class SpriteAdapter extends Instance {
                     return Double.valueOf(sprite.getAngle());
                 case size:
                     return Double.valueOf(sprite.getSize());
+                case left:
+                    return Double.valueOf(sprite.getX() + (screen.width - sprite.getSize()) / 2);
+                case right:
+                    return Double.valueOf((screen.width - sprite.getSize()) / 2 - sprite.getX());
+                case top:
+                    return Double.valueOf((screen.height - sprite.getSize()) / 2 - sprite.getY());
+                case bottom:
+                    return Double.valueOf(sprite.getY() + (screen.height - sprite.getSize()) / 2);
             }
             throw new RuntimeException();
         }
@@ -80,6 +98,14 @@ public class SpriteAdapter extends Instance {
                         return sprite.setAngle(value.floatValue());
                     case size:
                         return sprite.setSize(value.floatValue());
+                case left:
+                    return sprite.setX(value.floatValue() + (sprite.getSize() - screen.width) / 2);
+                case right:
+                    return sprite.setX((screen.width - sprite.getSize()) / 2 - value.floatValue());
+                case top:
+                    return sprite.setY((screen.height - sprite.getSize()) / 2 - value.floatValue());
+                case bottom:
+                    return sprite.setY(value.floatValue() + (sprite.getSize() - screen.height) / 2);
             }
             throw new RuntimeException();
         }
@@ -118,6 +144,7 @@ public class SpriteAdapter extends Instance {
 
     enum SpriteMetaProperty implements PropertyDescriptor {
         x(Types.NUMBER), y(Types.NUMBER), z(Types.NUMBER), size(Types.NUMBER),
+        left(Types.NUMBER), right(Types.NUMBER), top(Types.NUMBER), bottom(Types.NUMBER),
         angle(Types.NUMBER), label(Types.STRING), text(Types.STRING), face(Types.STRING);
 
         private final Type type;

@@ -133,19 +133,19 @@ public class Sprite extends AbstractViewWrapper<ImageView> {
         view.setScaleY(imageScale);
         view.setRotation(angle);
 
-        float width = intrinsicWidth * view.getScaleX();
-        float screenX = x * viewport.scale;
+        float screenX = x * viewport.scale + viewport.getWidth() / 2;
 
-        view.setTranslationX(screenX + (width - intrinsicWidth) / 2);
-        labelView.setTranslationX(screenX + width / 2 - labelView.getPaint().measureText(labelView.getText().toString()) / 2);
-        bubble.setTranslationX(screenX + width / 2 - bubble.getMeasuredWidth() / 2);
+        view.setTranslationX(screenX - intrinsicWidth / 2);
+        labelView.setTranslationX(screenX - labelView.getPaint().measureText(labelView.getText().toString()) / 2);
+        bubble.setTranslationX(screenX - bubble.getMeasuredWidth() / 2);
 
-        float height = intrinsicHeight * view.getScaleY();
-        float scrY = y * viewport.scale;
+        float heightPx = intrinsicHeight * view.getScaleY();
+        float scrY = viewport.getHeight() / 2 - y * viewport.scale;
 
-        view.setTranslationY(scrY + (height - intrinsicHeight) / 2);
-        labelView.setTranslationY(scrY + height);
-        bubble.setTranslationY(scrY - bubble.getMeasuredHeight() - 20);
+        view.setTranslationY(scrY - intrinsicHeight / 2);
+
+        labelView.setTranslationY(scrY + heightPx / 2);
+        bubble.setTranslationY(scrY - bubble.getMeasuredHeight() - 20 - heightPx / 2);
         view.setTranslationZ(z);
         labelView.setTranslationZ(z);
         bubble.setTranslationZ(z);
