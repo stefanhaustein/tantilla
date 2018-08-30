@@ -7,6 +7,7 @@ public abstract class Instance implements Typed {
         this.classifier = classifier;
     }
 
+
     public abstract Property getProperty(PropertyDescriptor property);
 
 /*    public Classifier getClassifier() {

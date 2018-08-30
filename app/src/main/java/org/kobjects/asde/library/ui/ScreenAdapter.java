@@ -2,6 +2,7 @@ package org.kobjects.asde.library.ui;
 
 import android.view.View;
 
+import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.graphics.Viewport;
 import org.kobjects.typesystem.Classifier;
@@ -22,27 +23,29 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
     final PhysicalProperty<Double> widthProperty = new PhysicalProperty<>(0.0);
     final PhysicalProperty<Double> heightProperty = new PhysicalProperty<>(0.0);
 
-    public static Classifier CLASSIFIER = new Classifier(ScreenMetaProperty.values()) {
+    public static Classifier CLASSIFIER =
+            new Classifier(ScreenMetaProperty.values()) {
         @Override
-        public Object createInstance() {
+        public ScreenAdapter createInstance() {
             throw new RuntimeException("Singleton");
         }
     };
 
-    public final Classifier spriteClassifier = new Classifier(SpriteAdapter.SpriteMetaProperty.values()) {
+    public final Classifier spriteClassifier =
+            new Classifier(SpriteAdapter.SpriteMetaProperty.values()) {
         @Override
-        public Object createInstance() {
+        public SpriteAdapter createInstance() {
             return new SpriteAdapter(spriteClassifier, ScreenAdapter.this);
         }
     };
 
-    public final Classifier textClassifier = new Classifier(TextAdapter.TextMetaProperty.values()) {
+    public final Classifier textClassifier =
+            new Classifier(TextAdapter.TextMetaProperty.values()) {
         @Override
-        public Object createInstance() {
+        public TextAdapter createInstance() {
             return new TextAdapter(textClassifier, ScreenAdapter.this);
         }
     };
-
 
     public ScreenAdapter(Viewport viewport) {
         super(CLASSIFIER);

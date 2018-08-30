@@ -38,7 +38,7 @@ public class Path extends AssignableNode {
 
     @Override
     public Type returnType() {
-        return Types.VOID;
+        return null;
     }
 
     @Override

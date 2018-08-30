@@ -1,10 +1,12 @@
 package org.kobjects.asde.library.ui;
 
+import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.Method;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.typesystem.Classifier;
+import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Instance;
 import org.kobjects.typesystem.PropertyDescriptor;
-import org.kobjects.typesystem.PhysicalProperty;
 import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.Type;
 import org.kobjects.graphics.Sprite;
@@ -22,9 +24,9 @@ public class SpriteAdapter extends Instance {
     final NumberProperty right = new NumberProperty(SpriteMetaProperty.right);
     final NumberProperty top = new NumberProperty(SpriteMetaProperty.top);
     final NumberProperty bottom = new NumberProperty(SpriteMetaProperty.bottom);
-    final StringProperty text = new StringProperty(SpriteMetaProperty.text);
-    final StringProperty label = new StringProperty(SpriteMetaProperty.label);
-    final StringProperty face = new StringProperty(SpriteMetaProperty.face);
+    final ObjectProperty text = new ObjectProperty(SpriteMetaProperty.text);
+    final ObjectProperty label = new ObjectProperty(SpriteMetaProperty.label);
+    final ObjectProperty face = new ObjectProperty(SpriteMetaProperty.face);
 
     public SpriteAdapter(Classifier classifier, final ScreenAdapter screen) {
         super(classifier);
@@ -48,6 +50,13 @@ public class SpriteAdapter extends Instance {
             case label: return label;
             case text: return text;
             case face: return face;
+            case say: return new Method(SpriteMetaProperty.say) {
+                        @Override
+                        public Object eval(Interpreter interpreter, Object[] args) {
+                            text.set(args[0]);
+                            return null;
+                        }
+                };
         }
         throw new IllegalArgumentException();
     }
@@ -81,6 +90,7 @@ public class SpriteAdapter extends Instance {
                     return Double.valueOf((screen.height - sprite.getSize()) / 2 - sprite.getY());
                 case bottom:
                     return Double.valueOf(sprite.getY() + (screen.height - sprite.getSize()) / 2);
+
             }
             throw new RuntimeException();
         }
@@ -112,14 +122,14 @@ public class SpriteAdapter extends Instance {
 
     }
 
-    class StringProperty extends Property<String> {
+    class ObjectProperty extends Property<Object> {
         private final SpriteMetaProperty target;
 
-        StringProperty(SpriteMetaProperty target) {
+        ObjectProperty(SpriteMetaProperty target) {
             this.target = target;
         }
 
-        public String get() {
+        public Object get() {
             switch (target) {
                 case text:
                     return sprite.getText();
@@ -127,15 +137,17 @@ public class SpriteAdapter extends Instance {
                     return sprite.getFace();
                 case label:
                     return sprite.getLabel();
+
+
             }
             throw new RuntimeException();
         }
 
-        public boolean set(String value) {
+        public boolean set(Object value) {
             switch (target) {
-                case text: return sprite.setText(value);
-                case label: return sprite.setLabel(value);
-                case face:return sprite.setFace(value);
+                case text: return sprite.setText((String) value);
+                case label: return sprite.setLabel((String) value);
+                case face:return sprite.setFace((String) value);
             }
             throw new RuntimeException();
         }
@@ -145,9 +157,10 @@ public class SpriteAdapter extends Instance {
     enum SpriteMetaProperty implements PropertyDescriptor {
         x(Types.NUMBER), y(Types.NUMBER), z(Types.NUMBER), size(Types.NUMBER),
         left(Types.NUMBER), right(Types.NUMBER), top(Types.NUMBER), bottom(Types.NUMBER),
-        angle(Types.NUMBER), label(Types.STRING), text(Types.STRING), face(Types.STRING);
+        angle(Types.NUMBER), label(Types.STRING), text(Types.STRING), face(Types.STRING),
+        say(new FunctionType(Types.VOID, Types.STRING));
 
-        private final Type type;
+        final Type type;
 
         SpriteMetaProperty(Type type) {
             this.type = type;
