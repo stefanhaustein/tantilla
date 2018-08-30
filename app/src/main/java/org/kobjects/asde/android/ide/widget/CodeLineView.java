@@ -17,11 +17,8 @@ import org.kobjects.asde.lang.node.Node;
 import java.util.Collections;
 
 public class CodeLineView extends LinearLayout {
-
-
     TextView lineNumberView;
     TextView statementView;
-    CodeLine codeLine;
 
     public CodeLineView(Context context) {
         super(context);
@@ -48,4 +45,8 @@ public class CodeLineView extends LinearLayout {
         statementView.setText(codeLine.toString());
     }
 
+    @Override
+    public String toString() {
+        return lineNumberView.getText().toString().trim() + " " + statementView.getText().toString().trim();
+    }
 }

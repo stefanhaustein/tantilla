@@ -12,7 +12,7 @@
 320 kaka = new sprite
 330 kaka.face = "💩"
 340 kaka.angle = 180
-350 FOR i = -8 TO -11 STEP -0.01
+350 FOR i = -7 TO -11 STEP -0.01
 360   kaka.y = i
 370   PAUSE 15
 380 NEXT i

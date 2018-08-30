@@ -34,6 +34,7 @@ import org.kobjects.asde.android.ide.widget.Dimensions;
 import org.kobjects.asde.android.ide.widget.ExpandableView;
 import org.kobjects.asde.android.ide.widget.FunctionView;
 import org.kobjects.asde.android.ide.widget.IconButton;
+import org.kobjects.asde.android.ide.widget.LineEditor;
 import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.android.ide.widget.VariableView;
 import org.kobjects.asde.lang.CallableUnit;
@@ -58,7 +59,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class MainActivity extends AppCompatActivity implements Console, ExpandableView.ExpandListener {
+public class MainActivity extends AppCompatActivity implements Console, ExpandableView.ExpandListener, LineEditor {
   private final String PROGRAM_NAME_STORAGE_KEY = "ProgramName";
 
   LinearLayout scrollContentView;
@@ -119,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     });
 
     variableView = new VariableView(this, program);
-    mainFunctionView = new FunctionView(this, "Program \"" +program.getName() + "\"", program.main, mainInterpreter);
+    mainFunctionView = new FunctionView(this, "Program \"" +program.getName() + "\"", program.main, mainInterpreter, this);
     mainFunctionView.addExpandListener(this);
     mainFunctionView.setVisibility(View.GONE);
     currentFunctionView = mainFunctionView;
@@ -393,7 +394,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
           if (symbol.scope == GlobalSymbol.Scope.PERSISTENT && symbol.value instanceof CallableUnit) {
               removeViews.remove(name);
               if (!functionViews.containsKey(name)) {
-                  FunctionView functionView = new FunctionView(this, name, (CallableUnit) symbol.value, mainInterpreter);
+                  FunctionView functionView = new FunctionView(this, name, (CallableUnit) symbol.value, mainInterpreter, this);
                   functionView.addExpandListener(this);
                   scrollContentView.addView(functionView, 1);
                   functionViews.put(name, functionView);
@@ -645,5 +646,10 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
 
         popupMenu.show();
 
+    }
+
+    @Override
+    public void edit(String line) {
+        codeEditText.setText(line);
     }
 }

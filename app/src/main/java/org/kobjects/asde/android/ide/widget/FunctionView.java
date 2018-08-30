@@ -21,8 +21,10 @@ public class FunctionView extends ExpandableView<LinearLayout> {
     public CallableUnit callableUnit;
     IconButton startStopIcon;
     Interpreter interpreter;
+    LineEditor lineEditor;
+    OnLongClickListener lineClickListener;
 
-    public FunctionView(final Activity context, String name, final CallableUnit callableUnit, final Interpreter interpreter) {
+    public FunctionView(final Activity context, String name, final CallableUnit callableUnit, final Interpreter interpreter, final LineEditor lineEditor) {
         super(context, new LinearLayout(context));
         contentView.setOrientation(VERTICAL);
         this.callableUnit = callableUnit;
@@ -71,6 +73,14 @@ public class FunctionView extends ExpandableView<LinearLayout> {
             }
         });
 
+        lineClickListener = new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                lineEditor.edit(((CodeLineView) v).toString());
+                return true;
+            }
+        };
+
         syncContent();
     }
 
@@ -108,6 +118,7 @@ public class FunctionView extends ExpandableView<LinearLayout> {
             }
             codeLineView.setLineNumber(entry.getKey());
             codeLineView.setCodeLine(entry.getValue());
+            codeLineView.setOnLongClickListener(lineClickListener);
             index++;
         }
         while (index < contentView.getChildCount()) {
