@@ -73,23 +73,23 @@ public class SpriteAdapter extends Instance {
         public Double get() {
             switch (target) {
                 case x:
-                    return Double.valueOf(sprite.getX());
+                    return (double) sprite.getX();
                 case y:
-                    return Double.valueOf(sprite.getY());
+                    return (double) sprite.getY();
                 case z:
-                    return Double.valueOf(sprite.getZ());
+                    return (double) sprite.getZ();
                 case angle:
-                    return Double.valueOf(sprite.getAngle());
+                    return (double) sprite.getAngle();
                 case size:
-                    return Double.valueOf(sprite.getSize());
+                    return (double) sprite.getSize();
                 case left:
-                    return Double.valueOf(sprite.getX() + (screen.width - sprite.getSize()) / 2);
+                    return sprite.getX() + (screen.width - sprite.getSize()) / 2.0;
                 case right:
-                    return Double.valueOf((screen.width - sprite.getSize()) / 2 - sprite.getX());
+                    return (screen.width - sprite.getSize()) / 2.0 - sprite.getX();
                 case top:
-                    return Double.valueOf((screen.height - sprite.getSize()) / 2 - sprite.getY());
+                    return (screen.height - sprite.getSize()) / 2.0 - sprite.getY();
                 case bottom:
-                    return Double.valueOf(sprite.getY() + (screen.height - sprite.getSize()) / 2);
+                    return sprite.getY() + (screen.height - sprite.getSize()) / 2.0;
 
             }
             throw new RuntimeException();
