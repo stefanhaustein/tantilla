@@ -7,8 +7,8 @@ import org.kobjects.typesystem.PropertyDescriptor;
 public abstract class Method extends Property implements Function {
     final FunctionType type;
 
-    public Method(PropertyDescriptor descriptor) {
-        type = (FunctionType) descriptor.type();
+    public Method(FunctionType type) {
+        this.type = type;
     }
 
     @Override

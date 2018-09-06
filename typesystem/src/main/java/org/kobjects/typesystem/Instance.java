@@ -8,6 +8,7 @@ public abstract class Instance implements Typed {
     }
 
 
+
     public abstract Property getProperty(PropertyDescriptor property);
 
 /*    public Classifier getClassifier() {

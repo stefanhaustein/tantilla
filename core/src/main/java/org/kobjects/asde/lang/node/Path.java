@@ -28,6 +28,9 @@ public class Path extends AssignableNode {
         }
         Instance instance = (Instance) base;
         PropertyDescriptor propertyDescriptor = instance.getType().getPropertyDescriptor(pathName);
+        if (propertyDescriptor == null) {
+            throw new RuntimeException("Property '" + pathName + "' does not exist.");
+        }
         return instance.getProperty(propertyDescriptor);
     }
 

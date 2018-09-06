@@ -3,9 +3,12 @@ package org.kobjects.asde.library.ui;
 import android.view.View;
 
 import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.Method;
 import org.kobjects.asde.lang.Types;
+import org.kobjects.graphics.Pen;
 import org.kobjects.graphics.Viewport;
 import org.kobjects.typesystem.Classifier;
+import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Instance;
 import org.kobjects.typesystem.PhysicalProperty;
 import org.kobjects.typesystem.PropertyDescriptor;
@@ -67,6 +70,12 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
         switch ((ScreenMetaProperty) property) {
             case width: return widthProperty;
             case height: return heightProperty;
+            case createpen: return new Method((FunctionType) ScreenMetaProperty.createpen.type) {
+                @Override
+                public Object eval(Interpreter interpreter, Object[] args) {
+                    return new PenAdapter(new Pen(viewport));
+                }
+            };
         }
         throw new IllegalArgumentException();
     }
@@ -90,8 +99,8 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
         return viewport;
     }
 
-    enum ScreenMetaProperty implements PropertyDescriptor {
-        width(Types.NUMBER), height(Types.NUMBER);
+    private enum ScreenMetaProperty implements PropertyDescriptor {
+        width(Types.NUMBER), height(Types.NUMBER), createpen(new FunctionType(PenAdapter.CLASSIFIER));
 
         private final Type type;
 

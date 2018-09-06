@@ -50,7 +50,7 @@ public class SpriteAdapter extends Instance {
             case label: return label;
             case text: return text;
             case face: return face;
-            case say: return new Method(SpriteMetaProperty.say) {
+            case say: return new Method((FunctionType) SpriteMetaProperty.say.type()) {
                         @Override
                         public Object eval(Interpreter interpreter, Object[] args) {
                             text.set(args[0]);
