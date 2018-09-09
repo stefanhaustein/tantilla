@@ -4,6 +4,7 @@ import android.content.Context;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.kobjects.asde.lang.Array;
 import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
@@ -32,7 +33,8 @@ public class VariableView extends LinearLayout {
         TreeMap<String, GlobalSymbol> symbolMap = program.getSymbolMap();
         for (Map.Entry<String,GlobalSymbol> entry : symbolMap.entrySet()) {
             GlobalSymbol symbol = entry.getValue();
-            if (symbol == null || symbol.scope != GlobalSymbol.Scope.PERSISTENT || symbol.value instanceof Function) {
+            if (symbol == null || symbol.scope != GlobalSymbol.Scope.PERSISTENT ||
+                    (symbol.value instanceof Function && !(symbol.value instanceof Array))) {
                  continue;
             }
             TextView textView;

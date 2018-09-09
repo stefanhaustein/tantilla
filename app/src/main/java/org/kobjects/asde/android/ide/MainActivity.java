@@ -221,12 +221,10 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     screen = new ScreenAdapter(viewport);
 
 
-
-
-    mainInterpreter.addStartStopListener(new StartStopListener() {
+    shellInterpreter.addStartStopListener(new StartStopListener() {
         @Override
         public void programStarted() {
-            screen.clear();
+            // screen.clear();
         }
 
         @Override
@@ -243,6 +241,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     program.setSymbol("screen", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen));
     program.setSymbol("sprite", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen.spriteClassifier));
     program.setSymbol("text", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen.textClassifier));
+    program.setSymbol("pen", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen.penClassifier));
 
     arrangeUi();
 
@@ -314,6 +313,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
           inputPrinted = true;
 
           shellInterpreter.runStatementsAsync(statements, mainInterpreter);
+
 
           break;
       }

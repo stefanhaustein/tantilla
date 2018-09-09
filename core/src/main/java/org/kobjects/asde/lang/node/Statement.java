@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.Array;
 import org.kobjects.asde.lang.AsdeShell;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
@@ -102,10 +103,27 @@ public class Statement extends Node {
         break;
       }
       case DATA:
-      case DIM:   // We just do dynamic expansion as needed.
       case REM:
         break;
 
+      case DIM: {
+        for (Node expr : children) {
+          if (!(expr instanceof Apply)) {
+            throw new RuntimeException("DIM Syntax error");
+          }
+          if (!(expr.children[0] instanceof Identifier)) {
+            throw new RuntimeException("DIM identifier expected");
+          }
+          String name = ((Identifier) expr.children[0]).name;
+          int[] dims = new int[expr.children.length - 1];
+          for (int i = 0; i < dims.length; i++) {
+            // TODO: evalInt
+            dims[i] = ((Number) expr.children[i + 1].eval(interpreter)).intValue();
+          }
+          program.setSymbol(name, new GlobalSymbol(interpreter.getSymbolScope(), new Array(name.endsWith("$") ? Types.STRING : Types.NUMBER, dims)));
+        }
+        break;
+      }
       case DUMP:
         if (program.lastException != null) {
           program.lastException.printStackTrace();

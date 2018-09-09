@@ -14,16 +14,9 @@ import org.kobjects.typesystem.Type;
 public class PenAdapter extends Instance {
     private final Pen pen;
 
-    public static Classifier CLASSIFIER =
-            new Classifier(PenPropertyDescriptor.values()) {
-                @Override
-                public ScreenAdapter createInstance() {
-                    throw new RuntimeException("Use screen.createPen().");
-                }
-            };
 
-    PenAdapter(Pen pen) {
-        super(CLASSIFIER);
+    PenAdapter(Classifier classifier, Pen pen) {
+        super(classifier);
         this.pen = pen;
     }
 

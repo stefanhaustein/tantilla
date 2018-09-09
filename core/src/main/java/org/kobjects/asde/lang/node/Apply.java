@@ -1,15 +1,14 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.Array;
 import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Types;
-import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
-import java.util.TreeMap;
 
 // Not static for access to the variables.
 public class Apply extends AssignableNode {
@@ -21,58 +20,29 @@ public class Apply extends AssignableNode {
   }
 
   public void set(Interpreter interpreter, Object value) {
-    if (!(children[0] instanceof Identifier)) {
-        throw new RuntimeException("Not assignable");
+    Object base = children[0].evalRaw(interpreter);
+    if (!(base instanceof Array)) {
+      throw new RuntimeException("Can't set inexed value to non-array" + value);
     }
-    String name = ((Identifier) children[0]).name;
-
-    GlobalSymbol symbol = program.getSymbol(name);
-    if (symbol == null) {
-      symbol = new GlobalSymbol(interpreter.getSymbolScope(), null);
-      program.setSymbol(name, symbol);
+    Array array = (Array) base;
+    int[] indices = new int[array.getLocalVariableCount()];
+    for (int i = 1; i < children.length; i++) {
+      indices[i - 1] = evalInt(interpreter, i);
     }
-
-    TreeMap<Integer, Object> target = (TreeMap<Integer, Object>) symbol.value;
-    if (target == null) {
-      target = new TreeMap<>();
-      symbol.value = target;
-    }
-    for (int i = 1; i < children.length - 1; i++) {
-      int index = evalInt(interpreter, i);
-      TreeMap<Integer, Object> sub = (TreeMap<Integer, Object>) target.get(index);
-      if (sub == null) {
-        sub = new TreeMap<>();
-        target.put(index, sub);
-      }
-      target = sub;
-    }
-    target.put(evalInt(interpreter, children.length - 1), value);
+    array.setAt(value, indices);
   }
 
   public Object eval(Interpreter interpreter) {
-    Object value = children[0].evalRaw(interpreter);
-    Object result;
-    if (value == null) {
-      result = null;
-    } else {
-      if (value instanceof Function) {
-        Function function = (Function) value;
-        Object[] locals = new Object[function.getLocalVariableCount()];
-        for (int i = 1; i < children.length; i++) {
-          locals[i - 1] = children[i].eval(interpreter);
-        }
-        result = ((Function) value).eval(interpreter, locals);
-      } else if (children.length == 1) {
-        result = value;
-      } else {
-        TreeMap<Integer, Object> arr = (TreeMap<Integer, Object>) value;
-        for (int i = 1; i < children.length - 1 && arr != null; i++) {
-          arr = (TreeMap<Integer, Object>) arr.get(evalInt(interpreter, i));
-        }
-        result = arr == null ? null : arr.get((int) evalInt(interpreter, children.length - 1));
-      }
+    Object base = children[0].evalRaw(interpreter);
+    if (!(base instanceof Function)) {
+      throw new RuntimeException("Can't apply parameters to " + base);
     }
-    return result == null ? children[0].toString().endsWith("$") ? "" : 0.0 : result;
+    Function function = (Function) base;
+    Object[] locals = new Object[function.getLocalVariableCount()];
+    for (int i = 1; i < children.length; i++) {
+      locals[i - 1] = children[i].eval(interpreter);
+    }
+    return  function.eval(interpreter, locals);
   }
 
   public Type returnType() {
