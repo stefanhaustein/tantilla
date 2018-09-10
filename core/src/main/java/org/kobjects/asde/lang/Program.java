@@ -63,7 +63,7 @@ public class Program {
     clear();
 
     for (Builtin builtin : Builtin.values()) {
-        setSymbol(builtin.name().toLowerCase(), new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, builtin));
+        setValue(GlobalSymbol.Scope.BUILTIN, builtin.name().toLowerCase(), builtin);
     }
   }
 
@@ -141,8 +141,7 @@ public class Program {
       }
   }
 
-  // Remove?
-  public void setSymbol(String name, GlobalSymbol symbol) {
+  private void setSymbol(String name, GlobalSymbol symbol) {
       synchronized (symbolMap) {
           symbolMap.put(name, symbol);
       }
@@ -276,7 +275,7 @@ public class Program {
                   ArrayList<String> parameterNames = new ArrayList();
                   FunctionType functionType = parseSignature(tokenizer, parameterNames);
                   currentFunction = new CallableUnit(this, functionType, parameterNames.toArray(new String[0]));
-                  setSymbol(functionName, new GlobalSymbol(GlobalSymbol.Scope.PERSISTENT, currentFunction));
+                  setValue(GlobalSymbol.Scope.PERSISTENT, functionName, currentFunction);
               } else if (tokenizer.tryConsume("END")) {
                   currentFunction = main;
               } else if (!tokenizer.tryConsume("")) {
@@ -286,5 +285,24 @@ public class Program {
       } catch (IOException e) {
           throw new RuntimeException(e);
       }
+    }
+
+    public void setValue(GlobalSymbol.Scope scope, String name, Object value) {
+        GlobalSymbol symbol = getSymbol(name);
+        if (symbol == null) {
+            symbol = new GlobalSymbol(scope, value);
+            setSymbol(name, symbol);
+        } else {
+            symbol.value = value;
+        }
+    }
+
+    public void setInitializer(GlobalSymbol.Scope scope, String name, Node expr) {
+      GlobalSymbol symbol = getSymbol(name);
+      if (symbol == null) {
+          symbol = new GlobalSymbol(scope, null);
+          setSymbol(name, symbol);
+      }
+      symbol.initializer = expr;
     }
 }

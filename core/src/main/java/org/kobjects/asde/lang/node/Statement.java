@@ -99,7 +99,7 @@ public class Statement extends Node {
         }
         CallableUnit fn = new CallableUnit(program, new FunctionType(name.endsWith("$") ? Types.STRING : Types.NUMBER, parameterTypes), parameterNames);
         fn.setLine(10, new CodeLine(Collections.singletonList(new Statement(program, Kind.RETURN, assignment.children[1]))));
-        program.setSymbol(name, new GlobalSymbol(interpreter.getSymbolScope(), fn));
+        program.setValue(interpreter.getSymbolScope(), name, fn);
         break;
       }
       case DATA:
@@ -120,7 +120,7 @@ public class Statement extends Node {
             // TODO: evalInt
             dims[i] = ((Number) expr.children[i + 1].eval(interpreter)).intValue();
           }
-          program.setSymbol(name, new GlobalSymbol(interpreter.getSymbolScope(), new Array(name.endsWith("$") ? Types.STRING : Types.NUMBER, dims)));
+          program.setValue(interpreter.getSymbolScope(), name, new Array(name.endsWith("$") ? Types.STRING : Types.NUMBER, dims));
         }
         break;
       }

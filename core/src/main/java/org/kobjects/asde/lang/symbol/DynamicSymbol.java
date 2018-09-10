@@ -21,14 +21,8 @@ public class DynamicSymbol implements ResolvedSymbol {
 
     @Override
     public void set(Interpreter interpreter, Object value) {
-        GlobalSymbol symbol = interpreter.program.getSymbol(name);
-        if (symbol == null) {
-            symbol = new GlobalSymbol(mode == ResolutionContext.ResolutionMode.SHELL
-                    ? GlobalSymbol.Scope.PERSISTENT : GlobalSymbol.Scope.TRANSIENT, value);
-            interpreter.program.setSymbol(name, symbol);
-        }
-        // TODO: Check type match and assignability if the target is persistent and the mode is transient
-        symbol.value = value;
+        interpreter.program.setValue(mode == ResolutionContext.ResolutionMode.SHELL
+                ? GlobalSymbol.Scope.PERSISTENT : GlobalSymbol.Scope.TRANSIENT, name, value);
     }
 
     @Override

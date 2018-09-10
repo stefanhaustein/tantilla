@@ -41,7 +41,9 @@ import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.StartStopListener;
 import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.asde.library.ui.ScreenAdapter;
@@ -54,6 +56,7 @@ import org.kobjects.typesystem.FunctionType;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -238,10 +241,10 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
         }
     });
 
-    program.setSymbol("screen", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen));
-    program.setSymbol("sprite", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen.spriteClassifier));
-    program.setSymbol("text", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen.textClassifier));
-    program.setSymbol("pen", new GlobalSymbol(GlobalSymbol.Scope.BUILTIN, screen.penClassifier));
+    program.setValue(GlobalSymbol.Scope.BUILTIN,"screen", screen);
+    program.setValue(GlobalSymbol.Scope.BUILTIN,"sprite", screen.spriteClassifier);
+    program.setValue(GlobalSymbol.Scope.BUILTIN, "text", screen.textClassifier);
+    program.setValue(GlobalSymbol.Scope.BUILTIN,"pen", screen.penClassifier);
 
     arrangeUi();
 
@@ -300,8 +303,27 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
         default:
           List<? extends Node> statements = program.parser.parseStatementList(tokenizer);
           ResolutionContext resolutionContext = new ResolutionContext(program, ResolutionContext.ResolutionMode.SHELL, new FunctionType(Types.VOID));
-          for (Node statement : statements) {
-              statement.resolve(resolutionContext);
+          for (Node node : statements) {
+              node.resolve(resolutionContext);
+              if (node instanceof Statement) {
+                  Statement statement = (Statement) node;
+                  switch (statement.kind) {
+                      case DIM:
+                          for (Node child: statement.children) {
+                              String name = ((Identifier) child.children[0]).name;
+                              program.setInitializer(GlobalSymbol.Scope.PERSISTENT, name, new Statement(program, Statement.Kind.DIM, child));
+                          }
+                          break;
+                      case LET: {
+                          if (statement.children[0] instanceof Identifier) {
+                              String name = ((Identifier) statement.children[0]).name;
+                              program.setInitializer(GlobalSymbol.Scope.PERSISTENT, name, statement);
+                          }
+                          break;
+                      }
+
+                  }
+              }
           }
           TextView inputView = new EmojiTextView(this);
           inputView.setText(new CodeLine(statements).toString());
@@ -384,7 +406,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
   void sync(boolean expandNew) {
       variableView.sync();
 
-      Set<String> removeViews = functionViews.keySet();
+      Set<String> removeViews = new HashSet<String>(functionViews.keySet());
       for (Map.Entry<String, GlobalSymbol> entry : program.getSymbolMap().entrySet()) {
           GlobalSymbol symbol = entry.getValue();
           if (symbol == null) {

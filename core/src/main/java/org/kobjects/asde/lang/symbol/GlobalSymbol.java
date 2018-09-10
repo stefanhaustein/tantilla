@@ -1,9 +1,12 @@
 package org.kobjects.asde.lang.symbol;
 
 import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.node.Node;
 import org.kobjects.typesystem.Type;
 
 public class GlobalSymbol implements ResolvedSymbol {
+
+    public Node initializer;
 
     @Override
     public Object get(Interpreter interpreter) {

@@ -44,7 +44,11 @@ public class VariableView extends LinearLayout {
               textView = new TextView(getContext());
               addView(textView);
             }
-            textView.setText(" " + entry.getKey() + ": " + entry.getValue().value);
+            if (entry.getValue().initializer == null) {
+                textView.setText(" " + entry.getKey() + " = " + entry.getValue().value);
+            } else {
+                textView.setText(" " + entry.getValue().initializer + " ' " + entry.getValue().value);
+            }
             index++;
         }
         while (getChildCount() > index) {

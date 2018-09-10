@@ -33,7 +33,7 @@ public class Declaration extends Node {
         } else {
             throw new RuntimeException("Unrecognized type: " + typeName);
         }
-        interpreter.program.setSymbol(variableName, new GlobalSymbol(interpreter.getSymbolScope(), value));
+        interpreter.program.setValue(interpreter.getSymbolScope(), variableName, value);
         return null;
     }
 
