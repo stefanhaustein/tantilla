@@ -302,29 +302,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
           // Fall-through intended
         default:
           List<? extends Node> statements = program.parser.parseStatementList(tokenizer);
-          ResolutionContext resolutionContext = new ResolutionContext(program, ResolutionContext.ResolutionMode.SHELL, new FunctionType(Types.VOID));
-          for (Node node : statements) {
-              node.resolve(resolutionContext);
-              if (node instanceof Statement) {
-                  Statement statement = (Statement) node;
-                  switch (statement.kind) {
-                      case DIM:
-                          for (Node child: statement.children) {
-                              String name = ((Identifier) child.children[0]).name;
-                              program.setInitializer(GlobalSymbol.Scope.PERSISTENT, name, new Statement(program, Statement.Kind.DIM, child));
-                          }
-                          break;
-                      case LET: {
-                          if (statement.children[0] instanceof Identifier) {
-                              String name = ((Identifier) statement.children[0]).name;
-                              program.setInitializer(GlobalSymbol.Scope.PERSISTENT, name, statement);
-                          }
-                          break;
-                      }
-
-                  }
-              }
-          }
+          program.processDeclarations(statements);
           TextView inputView = new EmojiTextView(this);
           inputView.setText(new CodeLine(statements).toString());
           inputView.setTextColor(Colors.SECONDARY);

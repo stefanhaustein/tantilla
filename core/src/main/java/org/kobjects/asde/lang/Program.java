@@ -1,7 +1,10 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.node.Statement;
+import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.asde.lang.parser.Parser;
@@ -60,11 +63,23 @@ public class Program {
 
   public Program(Console console) {
     this.console = console;
-    clear();
+    // clear();
 
     for (Builtin builtin : Builtin.values()) {
         setValue(GlobalSymbol.Scope.BUILTIN, builtin.name().toLowerCase(), builtin);
     }
+  }
+
+  public void runInitializers(Interpreter interpreter) {
+
+      synchronized (symbolMap) {
+          for (GlobalSymbol symbol : symbolMap.values()) {
+              if (symbol.initializer != null) {
+                  symbol.initializer.eval(interpreter);
+              }
+          }
+      }
+
   }
 
   public void clearAll() {
@@ -85,7 +100,7 @@ public class Program {
   }
 
 
-  public void clear() {
+  public void clear(Interpreter interpreter) {
       TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
     synchronized (symbolMap) {
         for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
@@ -96,7 +111,10 @@ public class Program {
         }
         symbolMap = cleared;
     }
-    stopped = null;
+
+    runInitializers(interpreter);
+      Arrays.fill(interpreter.dataPosition, 0);
+      stopped = null;
   }
 
 
@@ -152,6 +170,15 @@ public class Program {
   }
 
   public void toString(AnnotatedStringBuilder sb) {
+      for (Map.Entry<String, GlobalSymbol> entry : getSymbolMap().entrySet()) {
+          GlobalSymbol symbol = entry.getValue();
+          if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
+              if (!(symbol.value instanceof CallableUnit)) {
+                sb.append(symbol.toString(entry.getKey(), false)).append('\n');
+              }
+          }
+      }
+
       for (Map.Entry<String, GlobalSymbol> entry : getSymbolMap().entrySet()) {
           GlobalSymbol symbol = entry.getValue();
           if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
@@ -244,6 +271,32 @@ public class Program {
       }
     }
 
+    public void processDeclarations(List<? extends Node> statements) {
+        ResolutionContext resolutionContext = new ResolutionContext(this, ResolutionContext.ResolutionMode.SHELL, new FunctionType(Types.VOID));
+        for (Node node : statements) {
+            node.resolve(resolutionContext);
+            if (node instanceof Statement) {
+                Statement statement = (Statement) node;
+                switch (statement.kind) {
+                    case DIM:
+                        for (Node child: statement.children) {
+                            String name = ((Identifier) child.children[0]).name;
+                            setInitializer(GlobalSymbol.Scope.PERSISTENT, name, new Statement(this, Statement.Kind.DIM, child));
+                        }
+                        break;
+                    case LET: {
+                        if (statement.children[0] instanceof Identifier) {
+                            String name = ((Identifier) statement.children[0]).name;
+                            setInitializer(GlobalSymbol.Scope.PERSISTENT, name, statement);
+                        }
+                        break;
+                    }
+
+                }
+            }
+        }
+    }
+
     public void load(String programName, InputStream inputStream) {
       try {
           clearAll();
@@ -279,7 +332,8 @@ public class Program {
               } else if (tokenizer.tryConsume("END")) {
                   currentFunction = main;
               } else if (!tokenizer.tryConsume("")) {
-                  throw new RuntimeException("Unrecognized token: " + tokenizer.toString());
+                  List<? extends Node> statements = parser.parseStatementList(tokenizer);
+                  processDeclarations(statements);
               }
           }
       } catch (IOException e) {

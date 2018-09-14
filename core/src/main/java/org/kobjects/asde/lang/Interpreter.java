@@ -50,6 +50,7 @@ public class Interpreter {
     }
 
     public void runAsync() {
+        program.clear(this);
         runAsync(0);
     }
 
@@ -93,7 +94,6 @@ public class Interpreter {
             @Override
             public void run() {
                 currentLine = -2;
-                runStatementsImpl(statements);
                 if (currentLine >= 0) {
                     programInterpreter.runAsync(currentLine);
                 }

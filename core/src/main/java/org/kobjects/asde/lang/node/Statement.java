@@ -77,7 +77,7 @@ public class Statement extends Node {
         break;
 
       case CLEAR:
-        program.clear();
+        program.clear(interpreter);
         break;
 
       case DEF: {
@@ -248,7 +248,7 @@ public class Statement extends Node {
               throw new RuntimeException("Out of data.");
             }
           }
-          ((Identifier) children[i]).set(interpreter, interpreter.dataStatement.children[interpreter.dataPosition[2]++].eval(interpreter));
+          ((AssignableNode) children[i]).set(interpreter, interpreter.dataStatement.children[interpreter.dataPosition[2]++].eval(interpreter));
         }
         break;
 
@@ -281,7 +281,8 @@ public class Statement extends Node {
         break;
 
       case RUN:
-        program.clear();
+        program.clear(interpreter);
+
         interpreter.currentLine = children.length == 0 ? 0 : (int) evalDouble(interpreter,0);
         interpreter.currentIndex = 0;
         break;

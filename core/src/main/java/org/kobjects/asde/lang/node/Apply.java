@@ -22,7 +22,7 @@ public class Apply extends AssignableNode {
   public void set(Interpreter interpreter, Object value) {
     Object base = children[0].evalRaw(interpreter);
     if (!(base instanceof Array)) {
-      throw new RuntimeException("Can't set inexed value to non-array" + value);
+      throw new RuntimeException("Can't set indexed value to non-array: " + value);
     }
     Array array = (Array) base;
     int[] indices = new int[array.getLocalVariableCount()];

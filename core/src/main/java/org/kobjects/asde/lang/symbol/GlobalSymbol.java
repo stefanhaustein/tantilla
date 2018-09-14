@@ -40,4 +40,12 @@ public class GlobalSymbol implements ResolvedSymbol {
         this.value = value;
     }
 
+
+    public String toString(String name, boolean showValue) {
+        if (initializer == null) {
+            return name+ " = " + value;
+        }
+        return initializer.toString() + (showValue && value != null ? (" ' " + value) : "");
+    }
+
 }
