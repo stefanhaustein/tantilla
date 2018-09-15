@@ -2,7 +2,6 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.StackEntry;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.parser.ResolutionContext;
@@ -20,7 +19,6 @@ public class ForStatement extends Node {
         this.varName = varName;
     }
 
-
     public void resolve(ResolutionContext resolutionContext) {
         super.resolve(resolutionContext);
         resolved = resolutionContext.resolve(varName);
@@ -28,7 +26,6 @@ public class ForStatement extends Node {
             throw new RuntimeException("Identifier not found: " + varName);
         }
     }
-
 
     @Override
     public Object eval(Interpreter interpreter) {
@@ -38,7 +35,7 @@ public class ForStatement extends Node {
             double step = children.length > 2 ? evalDouble(interpreter, 2) : 1.0;
             if (Math.signum(step) == Math.signum(Double.compare(current, end))) {
                 int nextPosition[] = new int[3];
-                if (interpreter.program.find(Statement.Kind.NEXT, children[0].toString(), nextPosition) == null) {
+                if (interpreter.callableUnit.find(Statement.Kind.NEXT, children[0].toString(), nextPosition) == null) {
                     throw new RuntimeException("FOR without NEXT");
                 }
                 interpreter.currentLine = nextPosition[0];
@@ -46,7 +43,8 @@ public class ForStatement extends Node {
                 interpreter.nextSubIndex = nextPosition[2] + 1;
             } else {
                 StackEntry entry = new StackEntry();
-                entry.forVariable = (Identifier) children[0];
+                entry.forVariable = resolved;
+                entry.forVariableName = varName;
                 entry.end = end;
                 entry.step = step;
                 entry.lineNumber = interpreter.currentLine;

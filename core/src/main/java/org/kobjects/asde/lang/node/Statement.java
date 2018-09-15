@@ -33,7 +33,7 @@ public class Statement extends Node {
     END,
     GOTO, GOSUB,
     IF, INPUT,
-    LET, LIST, LOAD,
+    LIST, LOAD,
     NEXT,
     ON,
     PRINT,
@@ -164,13 +164,6 @@ public class Statement extends Node {
         }
         break;
 
-      case LET: {
-        ((AssignableNode) children[0]).set(interpreter, children[1].eval(interpreter));
-        if (program.trace) {
-          program.print (" // " + children[0].eval(interpreter));
-        }
-        break;
-      }
       case LIST: {
         program.print(program.toString());
         break;
@@ -238,7 +231,7 @@ public class Statement extends Node {
             if (interpreter.dataStatement != null) {
               interpreter.dataPosition[1]++;
             }
-            interpreter.dataStatement = program.find(Kind.DATA, null, interpreter.dataPosition);
+            interpreter.dataStatement = program.main.find(Kind.DATA, null, interpreter.dataPosition);
             if (interpreter.dataStatement == null) {
               throw new RuntimeException("Out of data.");
             }
@@ -343,11 +336,11 @@ public class Statement extends Node {
           throw new RuntimeException("NEXT " + name + " without FOR.");
         }
         entry = interpreter.stack.remove(interpreter.stack.size() - 1);
-        if (name == null || entry.forVariable.name.equals(name)) {
+        if (name == null || entry.forVariableName.equals(name)) {
           break;
         }
       }
-      double current = ((Double) entry.forVariable.eval(interpreter)) + entry.step;
+      double current = ((Double) entry.forVariable.get(interpreter)) + entry.step;
       entry.forVariable.set(interpreter, current);
       if (Math.signum(entry.step) != Math.signum(Double.compare(current, entry.end))) {
         interpreter.stack.add(entry);
@@ -397,13 +390,9 @@ public class Statement extends Node {
     if (kind == null) {
       return;
     }
-    if (kind != Kind.LET) {
-      appendLinked(asb, kind.name(), errors);
-    }
+    appendLinked(asb, kind.name(), errors);
     if (children.length > 0) {
-      if (kind != Kind.LET) {
-        appendLinked(asb, " ", errors);
-      }
+      appendLinked(asb, " ", errors);
       children[0].toString(asb, errors);
       for (int i = 1; i < children.length; i++) {
         asb.append((delimiter == null || i > delimiter.length) ? ", " : delimiter[i - 1]);

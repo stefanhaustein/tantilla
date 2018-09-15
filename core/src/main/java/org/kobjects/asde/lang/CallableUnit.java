@@ -8,11 +8,12 @@ import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.FunctionType;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class CallableUnit implements Function {
-    final Program program;
+    public final Program program;
     FunctionType type;
     String[] parameterNames;
     private TreeMap<Integer, CodeLine> code = new TreeMap<>();
@@ -125,4 +126,32 @@ public class CallableUnit implements Function {
     public int getLineCount() {
         return code.size();
     }
+
+
+    public Statement find(Statement.Kind kind, String name, int[] position) {
+        Map.Entry<Integer, CodeLine> entry;
+        while (null != (entry = ceilingEntry(position[0]))) {
+            position[0] = entry.getKey();
+            List<Node> list = entry.getValue().statements;
+            while (position[1] < list.size()) {
+                Node statement = list.get(position[1]);
+                if (statement instanceof Statement && ((Statement) statement).kind == kind) {
+                    if (name == null || statement.children.length == 0) {
+                        return (Statement) statement;
+                    }
+                    for (int i = 0; i < statement.children.length; i++) {
+                        if (statement.children[i].toString().equalsIgnoreCase(name)) {
+                            position[2] = i;
+                            return (Statement) statement;
+                        }
+                    }
+                }
+                position[1]++;
+            }
+            position[0]++;
+            position[1] = 0;
+        }
+        return null;
+    }
+
 }

@@ -1,25 +1,24 @@
 package org.kobjects.asde.lang.parser;
 
 import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.node.AssignStatement;
 import org.kobjects.asde.lang.node.AssignableNode;
-import org.kobjects.asde.lang.node.Declaration;
 import org.kobjects.asde.lang.node.ForStatement;
+import org.kobjects.asde.lang.node.LetStatement;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Operator;
 import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.asde.lang.node.Identifier;
-import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.expressionparser.ExpressionParser;
-import org.kobjects.typesystem.Type;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Parser {
-  final Program program;
   final ExpressionParser<Node> expressionParser;
+  final Program program;
 
   public Parser(Program program) {
     this.program = program;
@@ -48,10 +47,14 @@ public class Parser {
   Node parseStatement(ExpressionParser.Tokenizer tokenizer) {
     String name = tokenizer.currentValue;
 
-    if (tryConsume(tokenizer, "FOR") || tryConsume(tokenizer, "for") || tryConsume(tokenizer, "For")) {
-      return parseFor(tokenizer);
+    switch (name.toUpperCase()) {
+      case "FOR":
+        tokenizer.nextToken();
+        return parseFor(tokenizer);
+      case "LET":
+        tokenizer.nextToken();
+        return parseLet(tokenizer);
     }
-
     if (tryConsume(tokenizer, "GO")) {  // GO TO, GO SUB -> GOTO, GOSUB
       name += tokenizer.currentValue;
     } else if (name.equals("?")) {
@@ -65,20 +68,13 @@ public class Parser {
       }
     }
     if (kind == null) {
-      GlobalSymbol symbol = program.getSymbol(name);
-      if (symbol != null && symbol.scope != GlobalSymbol.Scope.TRANSIENT && symbol.value instanceof Type) {
-        tokenizer.nextToken();
-        String varName = tokenizer.consumeIdentifier();
-        return new Declaration(name, varName);
-      } else {
-        Node expression = expressionParser.parse(tokenizer);
+      Node expression = expressionParser.parse(tokenizer);
 
-        if ((expression instanceof Operator) && (expression.children[0] instanceof AssignableNode)
-                && ((Operator) expression).name.equals("=")) {
-          return new Statement(program, Statement.Kind.LET, new String[]{" = "}, expression.children);
-        }
-        return new Statement(program, Statement.Kind.PRINT, new String[0], expression);
+      if ((expression instanceof Operator) && (expression.children[0] instanceof AssignableNode)
+              && ((Operator) expression).name.equals("=")) {
+        return new AssignStatement(expression.children[0], expression.children[1]);
       }
+      return new Statement(program, Statement.Kind.PRINT, new String[0], expression);
     }
     tokenizer.nextToken();
 
@@ -152,15 +148,6 @@ public class Parser {
         return new Statement(program, kind, delimiter.toArray(new String[delimiter.size()]),
             args.toArray(new Node[args.size()]));
 
-      case LET: {
-        Node assignment = expressionParser.parse(tokenizer);
-        if (!(assignment instanceof Operator) || !(assignment.children[0] instanceof AssignableNode)
-            || !((Operator) assignment).name.equals("=")) {
-          throw tokenizer.exception("Unrecognized statement or illegal assignment: '"
-              + assignment + "'.", null);
-        }
-        return new Statement(program, kind, new String[]{" = "}, assignment.children);
-      }
       case ON: {
         List<Node> expressions = new ArrayList<Node>();
         expressions.add(expressionParser.parse(tokenizer));
@@ -208,7 +195,21 @@ public class Parser {
       return new ForStatement(varName, assignment.children[1], end,
               expressionParser.parse(tokenizer));
     }
-    return new ForStatement(varName, assignment.children[0], assignment.children[1], end);
+    return new ForStatement(varName, assignment.children[1], end);
+  }
+
+  private Node parseLet(ExpressionParser.Tokenizer tokenizer) {
+    Node assignment = expressionParser.parse(tokenizer);
+    if (!(assignment instanceof Operator) || !(assignment.children[0] instanceof AssignableNode)
+            || !((Operator) assignment).name.equals("=")) {
+      throw tokenizer.exception("Unrecognized statement or illegal assignment: '"
+              + assignment + "'.", null);
+    }
+    if (assignment.children[0] instanceof Identifier) {
+      String varName = ((Identifier) assignment.children[0]).name;
+      return new LetStatement(varName, assignment.children[1]);
+    }
+    return new AssignStatement(assignment.children[0], assignment.children[1]);
   }
 
   public List<? extends Node> parseStatementList(ExpressionParser.Tokenizer tokenizer) {

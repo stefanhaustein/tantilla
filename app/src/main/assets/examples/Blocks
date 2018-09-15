@@ -8,14 +8,12 @@ pen = screen.createPen()
 pc = 0
 
 SUB drawPiece()
-100 For p=1 To 4
-110  x = px0 + piecex(p)
-120  y = py0 + piecey(p)
+100 FOR p=1 To 4
+110  LET x = px0 + piecex(p)
+120  LET y = py0 + piecey(p)
 130  grid(X,Y) = pc
-140  xt = x * 5
-150  yt = y * 5
-160  drawRect(xt, yt, 5, 5)
-170 next p
+140  drawRect(x * 5, y * 5, 5, 5)
+150 next p
 END SUB
 
 100 rem Piece data: J, S, L, Z, T, O, I

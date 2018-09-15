@@ -2,6 +2,7 @@ package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.node.Identifier;
+import org.kobjects.asde.lang.node.LetStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.asde.lang.parser.ResolutionContext;
@@ -49,10 +50,10 @@ public class Program {
     return o instanceof Number ? toString(((Number) o).doubleValue()) : String.valueOf(o);
   }
 
-  public Parser parser = new Parser(this);
-  public CallableUnit main = new CallableUnit(this, new FunctionType(Types.VOID));
+  public final Parser parser = new Parser(this);
+  public final CallableUnit main = new CallableUnit(this, new FunctionType(Types.VOID));
 
-  // Program state
+ // Program state
 
   private TreeMap<String, GlobalSymbol> symbolMap = new TreeMap<>();
   public Exception lastException;
@@ -287,7 +288,9 @@ public class Program {
         ResolutionContext resolutionContext = new ResolutionContext(this, ResolutionContext.ResolutionMode.SHELL, new FunctionType(Types.VOID));
         for (Node node : statements) {
             node.resolve(resolutionContext);
-            if (node instanceof Statement) {
+            if (node instanceof LetStatement) {
+                setInitializer(GlobalSymbol.Scope.PERSISTENT, ((LetStatement) node).varName, node);
+            } else if (node instanceof Statement) {
                 Statement statement = (Statement) node;
                 switch (statement.kind) {
                     case DIM:
@@ -296,14 +299,6 @@ public class Program {
                             setInitializer(GlobalSymbol.Scope.PERSISTENT, name, new Statement(this, Statement.Kind.DIM, child));
                         }
                         break;
-                    case LET: {
-                        if (statement.children[0] instanceof Identifier) {
-                            String name = ((Identifier) statement.children[0]).name;
-                            setInitializer(GlobalSymbol.Scope.PERSISTENT, name, statement);
-                        }
-                        break;
-                    }
-
                 }
             }
         }
@@ -379,31 +374,5 @@ public class Program {
     }
 
 
-
-    public Statement find(Statement.Kind kind, String name, int[] position) {
-        Map.Entry<Integer, CodeLine> entry;
-        while (null != (entry = main.ceilingEntry(position[0]))) {
-            position[0] = entry.getKey();
-            List<Node> list = entry.getValue().statements;
-            while (position[1] < list.size()) {
-                Node statement = list.get(position[1]);
-                if (statement instanceof Statement && ((Statement) statement).kind == kind) {
-                    if (name == null || statement.children.length == 0) {
-                        return (Statement) statement;
-                    }
-                    for (int i = 0; i < statement.children.length; i++) {
-                        if (statement.children[i].toString().equalsIgnoreCase(name)) {
-                            position[2] = i;
-                            return (Statement) statement;
-                        }
-                    }
-                }
-                position[1]++;
-            }
-            position[0]++;
-            position[1] = 0;
-        }
-        return null;
-    }
 
 }

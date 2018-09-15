@@ -1,11 +1,12 @@
 package org.kobjects.asde.lang;
 
-import org.kobjects.asde.lang.node.Identifier;
+import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 
 public class StackEntry {
   public int lineNumber;
   public int statementIndex;
-  public Identifier forVariable;
+  public ResolvedSymbol forVariable;
   public double step;
   public double end;
+  public String forVariableName;
 }
