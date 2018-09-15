@@ -26,7 +26,7 @@ public class CodeLine {
             if (i > 0) {
                 sb.append(i == 0 || (statements.get(i - 1) instanceof Statement &&  ((Statement) statements.get(i - 1)).kind == Statement.Kind.IF) ? " " : " : ");
             }
-            sb.append(statements.get(i).toString());
+            statements.get(i).toString(sb, errors);
         }
     }
 

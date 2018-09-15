@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     program.setValue(GlobalSymbol.Scope.BUILTIN,"screen", screen);
     program.setValue(GlobalSymbol.Scope.BUILTIN,"sprite", screen.spriteClassifier);
     program.setValue(GlobalSymbol.Scope.BUILTIN, "text", screen.textClassifier);
-    program.setValue(GlobalSymbol.Scope.BUILTIN,"pen", screen.penClassifier);
+//    program.setValue(GlobalSymbol.Scope.BUILTIN,"pen", screen.penClassifier);
 
     arrangeUi();
 

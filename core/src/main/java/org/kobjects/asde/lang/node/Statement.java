@@ -31,7 +31,6 @@ public class Statement extends Node {
     CLEAR, CONTINUE,
     DATA, DIM, DEF, DUMP,
     END,
-    FOR,
     GOTO, GOSUB,
     IF, INPUT,
     LET, LIST, LOAD,
@@ -144,10 +143,6 @@ public class Statement extends Node {
         interpreter.currentIndex = 0;
         break;
 
-      case FOR:
-        loopStart(interpreter);
-        break;
-
       case GOSUB: {
         StackEntry entry = new StackEntry();
         entry.lineNumber = interpreter.currentLine;
@@ -243,7 +238,7 @@ public class Statement extends Node {
             if (interpreter.dataStatement != null) {
               interpreter.dataPosition[1]++;
             }
-            interpreter.dataStatement = (Statement) find(Kind.DATA, null, interpreter.dataPosition);
+            interpreter.dataStatement = program.find(Kind.DATA, null, interpreter.dataPosition);
             if (interpreter.dataStatement == null) {
               throw new RuntimeException("Out of data.");
             }
@@ -313,31 +308,6 @@ public class Statement extends Node {
     return null;
   }
 
-  Node find(Kind kind, String name, int[] position) {
-    Map.Entry<Integer, CodeLine> entry;
-    while (null != (entry = program.main.ceilingEntry(position[0]))) {
-      position[0] = entry.getKey();
-      List<Node> list = entry.getValue().statements;
-      while (position[1] < list.size()) {
-        Node statement = list.get(position[1]);
-        if (statement instanceof Statement && ((Statement) statement).kind == kind) {
-          if (name == null || statement.children.length == 0) {
-            return statement;
-          }
-          for (int i = 0; i < statement.children.length; i++) {
-            if (statement.children[i].toString().equalsIgnoreCase(name)) {
-              position[2] = i;
-              return statement;
-            }
-          }
-        }
-        position[1]++;
-      }
-      position[0]++;
-      position[1] = 0;
-    }
-    return null;
-  }
 
 
   void load(Interpreter interpreter) {
@@ -362,29 +332,6 @@ public class Statement extends Node {
     }
   }
 
-  void loopStart(Interpreter interpreter) {
-    double current = evalDouble(interpreter,1);
-    ((Identifier) children[0]).set(interpreter, current);
-    double end = evalDouble(interpreter, 2);
-    double step = children.length > 3 ? evalDouble(interpreter, 3) : 1.0;
-    if (Math.signum(step) == Math.signum(Double.compare(current, end))) {
-      int nextPosition[] = new int[3];
-      if (find(Kind.NEXT, children[0].toString(), nextPosition) == null) {
-        throw new RuntimeException("FOR without NEXT");
-      }
-      interpreter.currentLine = nextPosition[0];
-      interpreter.currentIndex = nextPosition[1];
-      interpreter.nextSubIndex = nextPosition[2] + 1;
-    } else {
-      StackEntry entry = new StackEntry();
-      entry.forVariable = (Identifier) children[0];
-      entry.end = end;
-      entry.step = step;
-      entry.lineNumber = interpreter.currentLine;
-      entry.statementIndex = interpreter.currentIndex;
-      interpreter.stack.add(entry);
-    }
-  }
 
   void loopEnd(Interpreter interpreter) {
     for (int i = interpreter.nextSubIndex; i < Math.max(children.length, 1); i++) {

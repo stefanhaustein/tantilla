@@ -2,22 +2,30 @@ DIM grid(10, 20)
 DIM pieceX(4)
 DIM pieceY(4)
 DIM allPieces(7, 8)
+px0 = 0
+py0 = 0
+pen = screen.createPen()
+pc = 0
 
+SUB drawPiece()
+100 For p=1 To 4
+110  x = px0 + piecex(p)
+120  y = py0 + piecey(p)
+130  grid(X,Y) = pc
+140  xt = x * 5
+150  yt = y * 5
+160  drawRect(xt, yt, 5, 5)
+170 next p
+END SUB
 
-100 rem Blue J
+100 rem Piece data: J, S, L, Z, T, O, I
 105 data 5, 0, 5, 1, 5, 2, 4, 2
-110 rem Green S
-115 data 4, 0, 4, 1, 5, 1, 5, 2
-120 rem Cyan L
-125 data 4, 0, 4, 1, 4, 2, 5, 2
-130 rem Red Z
-135 data 5, 0, 5, 1, 4, 1, 4, 2
-140 rem Purple T
-145 data 5, 0, 4, 1, 5, 1, 6, 1
-150 rem Yellow O peice
-155 data 4, 0, 5, 0, 4, 1, 5, 1
-160 rem White I
-165 data 5, 0, 5, 1, 5, 2, 5, 3
+110 data 4, 0, 4, 1, 5, 1, 5, 2
+120 data 4, 0, 4, 1, 4, 2, 5, 2
+130 data 5, 0, 5, 1, 4, 1, 4, 2
+140 data 5, 0, 4, 1, 5, 1, 6, 1
+150 data 4, 0, 5, 0, 4, 1, 5, 1
+160 data 5, 0, 5, 1, 5, 2, 5, 3
 
 200 for p = 0 to 6
 210   for i = 0 to 7

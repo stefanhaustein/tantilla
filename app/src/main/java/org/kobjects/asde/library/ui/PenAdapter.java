@@ -12,11 +12,19 @@ import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
 
 public class PenAdapter extends Instance {
+
+    static final Classifier CLASSIFIER = new Classifier(PenAdapter.PenPropertyDescriptor.values()) {
+        @Override
+        public PenAdapter createInstance() {
+            throw new RuntimeException("Use screen.createPen()");
+        }
+    };
+
     private final Pen pen;
 
 
-    PenAdapter(Classifier classifier, Pen pen) {
-        super(classifier);
+    PenAdapter(Pen pen) {
+        super(CLASSIFIER);
         this.pen = pen;
     }
 

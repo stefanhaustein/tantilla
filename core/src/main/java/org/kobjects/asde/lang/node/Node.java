@@ -62,7 +62,7 @@ public abstract class Node {
   }
 
   protected void appendLinked(AnnotatedStringBuilder asb, String s, Map<Node, Exception> errors) {
-    asb.append(s);
+    asb.append(s, errors.get(this));
   }
 
   public final String toString() {

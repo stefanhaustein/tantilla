@@ -3,6 +3,7 @@ package org.kobjects.asde.lang.parser;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.node.Declaration;
+import org.kobjects.asde.lang.node.ForStatement;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Operator;
@@ -46,6 +47,11 @@ public class Parser {
 
   Node parseStatement(ExpressionParser.Tokenizer tokenizer) {
     String name = tokenizer.currentValue;
+
+    if (tryConsume(tokenizer, "FOR") || tryConsume(tokenizer, "for") || tryConsume(tokenizer, "For")) {
+      return parseFor(tokenizer);
+    }
+
     if (tryConsume(tokenizer, "GO")) {  // GO TO, GO SUB -> GOTO, GOSUB
       name += tokenizer.currentValue;
     } else if (name.equals("?")) {
@@ -112,24 +118,6 @@ public class Parser {
           expressions.add(expressionParser.parse(tokenizer));
         } while (tokenizer.tryConsume(","));
         return new Statement(program, kind, expressions.toArray(new Node[expressions.size()]));
-      }
-
-      case FOR: {
-        Node assignment = expressionParser.parse(tokenizer);
-        if (!(assignment instanceof Operator) || !(assignment.children[0] instanceof Identifier)
-            || assignment.children[0].children.length != 0
-            || !((Operator) assignment).name.equals("=")) {
-          throw new RuntimeException("LocalVariable assignment expected after FOR");
-        }
-        require(tokenizer, "TO");
-        Node end = expressionParser.parse(tokenizer);
-        if (tryConsume(tokenizer, "STEP")) {
-          return new Statement(program, kind, new String[]{" = ", " TO ", " STEP "},
-              assignment.children[0], assignment.children[1], end,
-              expressionParser.parse(tokenizer));
-        }
-        return new Statement(program, kind, new String[]{" = ", " TO "},
-            assignment.children[0], assignment.children[1], end);
       }
 
       case IF:
@@ -204,6 +192,23 @@ public class Parser {
       default:
         return new Statement(program, kind);
     }
+  }
+
+  private Node parseFor(ExpressionParser.Tokenizer tokenizer) {
+    Node assignment = expressionParser.parse(tokenizer);
+    if (!(assignment instanceof Operator) || !(assignment.children[0] instanceof Identifier)
+            || assignment.children[0].children.length != 0
+            || !((Operator) assignment).name.equals("=")) {
+      throw new RuntimeException("LocalVariable assignment expected after FOR");
+    }
+    String varName = ((Identifier) assignment.children[0]).name;
+    require(tokenizer, "TO");
+    Node end = expressionParser.parse(tokenizer);
+    if (tryConsume(tokenizer, "STEP")) {
+      return new ForStatement(varName, assignment.children[1], end,
+              expressionParser.parse(tokenizer));
+    }
+    return new ForStatement(varName, assignment.children[0], assignment.children[1], end);
   }
 
   public List<? extends Node> parseStatementList(ExpressionParser.Tokenizer tokenizer) {

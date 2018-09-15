@@ -59,7 +59,12 @@ public class Interpreter {
         interpreterThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                runnable.run();
+                try {
+                    runnable.run();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    program.console.print(e.toString());
+                }
                 if (interpreterThread != null) {
                     interpreterThread = null;
                     for (StartStopListener startStopListener : startStopListeners) {
@@ -94,6 +99,7 @@ public class Interpreter {
             @Override
             public void run() {
                 currentLine = -2;
+                runStatementsImpl(statements);
                 if (currentLine >= 0) {
                     programInterpreter.runAsync(currentLine);
                 }

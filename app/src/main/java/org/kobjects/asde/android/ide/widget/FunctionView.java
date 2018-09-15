@@ -99,7 +99,7 @@ public class FunctionView extends ExpandableView<LinearLayout> {
     }
 
     public void syncContent() {
-        titleView.setBackgroundColor(callableUnit.errors.size() > 0 ? Colors.SECONDARY : Colors.PRIMARY);
+        titleView.setBackgroundColor(callableUnit.errors.size() > 0 ? Colors.SECONDARY_LIGHT : Colors.PRIMARY);
         if (!expanded) {
             contentView.removeAllViews();
             return;
@@ -117,7 +117,7 @@ public class FunctionView extends ExpandableView<LinearLayout> {
                 contentView.addView(codeLineView);
             }
             codeLineView.setLineNumber(entry.getKey());
-            codeLineView.setCodeLine(entry.getValue());
+            codeLineView.setCodeLine(entry.getValue(), callableUnit.errors);
             codeLineView.setOnLongClickListener(lineClickListener);
             index++;
         }

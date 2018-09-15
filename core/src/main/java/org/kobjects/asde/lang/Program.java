@@ -238,27 +238,39 @@ public class Program {
        return  (Type) symbol.value;
    }
 
+   private Type[] parseParameterList(ExpressionParser.Tokenizer tokenizer, ArrayList<String> parameterNames) {
+       tokenizer.consume("(");
+       ArrayList<Type> parameterTypes = new ArrayList<>();
+       while (!tokenizer.tryConsume(")")) {
+           Type parameterType = parseType(tokenizer);
+           parameterTypes.add(parameterType);
+           String parameterName = tokenizer.consumeIdentifier();
+           parameterNames.add(parameterName);
+
+           if (!tokenizer.tryConsume(",")) {
+               if (tokenizer.tryConsume(")")) {
+                   break;
+               }
+               throw new RuntimeException("',' or ')' expected.");
+           }
+       }
+       return parameterTypes.toArray(Type.EMTPY_ARRAY);
+   }
+
    // move to parser
-    private FunctionType parseSignature(ExpressionParser.Tokenizer tokenizer, ArrayList<String> parameterNames) {
-        tokenizer.consume("(");
-        ArrayList<Type> parameterTypes = new ArrayList<>();
-        while (!tokenizer.tryConsume(")")) {
-            Type parameterType = parseType(tokenizer);
-            parameterTypes.add(parameterType);
-            String parameterName = tokenizer.consumeIdentifier();
-            parameterNames.add(parameterName);
+    private FunctionType parseFunctionSignature(ExpressionParser.Tokenizer tokenizer, ArrayList<String> parameterNames) {
+      Type[] parameterTypes = parseParameterList(tokenizer, parameterNames);
 
-            if (!tokenizer.tryConsume(",")) {
-                if (tokenizer.tryConsume(")")) {
-                    break;
-                }
-                throw new RuntimeException("',' or ')' expected.");
-            }
-        }
-        tokenizer.consume("->");
-        Type returnType = parseType(tokenizer);
+      tokenizer.consume("->");
+      Type returnType = parseType(tokenizer);
 
-        return new FunctionType(returnType, parameterTypes.toArray(new Type[0]));
+      return new FunctionType(returnType, parameterTypes);
+    }
+
+    // move to parser
+    private FunctionType parseSubroutineSignature(ExpressionParser.Tokenizer tokenizer, ArrayList<String> parameterNames) {
+        Type[] parameterTypes = parseParameterList(tokenizer, parameterNames);
+        return new FunctionType(Types.VOID, parameterTypes);
     }
 
 
@@ -326,7 +338,13 @@ public class Program {
               } else if (tokenizer.tryConsume("FUNCTION")) {
                   String functionName = tokenizer.consumeIdentifier();
                   ArrayList<String> parameterNames = new ArrayList();
-                  FunctionType functionType = parseSignature(tokenizer, parameterNames);
+                  FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames);
+                  currentFunction = new CallableUnit(this, functionType, parameterNames.toArray(new String[0]));
+                  setValue(GlobalSymbol.Scope.PERSISTENT, functionName, currentFunction);
+              } else if (tokenizer.tryConsume("SUB")) {
+                  String functionName = tokenizer.consumeIdentifier();
+                  ArrayList<String> parameterNames = new ArrayList();
+                  FunctionType functionType = parseSubroutineSignature(tokenizer, parameterNames);
                   currentFunction = new CallableUnit(this, functionType, parameterNames.toArray(new String[0]));
                   setValue(GlobalSymbol.Scope.PERSISTENT, functionName, currentFunction);
               } else if (tokenizer.tryConsume("END")) {
@@ -359,4 +377,33 @@ public class Program {
       }
       symbol.initializer = expr;
     }
+
+
+
+    public Statement find(Statement.Kind kind, String name, int[] position) {
+        Map.Entry<Integer, CodeLine> entry;
+        while (null != (entry = main.ceilingEntry(position[0]))) {
+            position[0] = entry.getKey();
+            List<Node> list = entry.getValue().statements;
+            while (position[1] < list.size()) {
+                Node statement = list.get(position[1]);
+                if (statement instanceof Statement && ((Statement) statement).kind == kind) {
+                    if (name == null || statement.children.length == 0) {
+                        return (Statement) statement;
+                    }
+                    for (int i = 0; i < statement.children.length; i++) {
+                        if (statement.children[i].toString().equalsIgnoreCase(name)) {
+                            position[2] = i;
+                            return (Statement) statement;
+                        }
+                    }
+                }
+                position[1]++;
+            }
+            position[0]++;
+            position[1] = 0;
+        }
+        return null;
+    }
+
 }

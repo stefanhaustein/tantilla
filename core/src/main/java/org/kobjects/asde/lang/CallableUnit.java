@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.node.ForStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.asde.lang.parser.ResolutionContext;
@@ -33,11 +34,10 @@ public class CallableUnit implements Function {
         for (CodeLine line : code.values()) {
             line.indent = indent;
             for (Node statement : line.statements) {
-                if (statement instanceof Statement) {
+                if (statement instanceof ForStatement) {
+                    indent++;
+                } else if (statement instanceof Statement) {
                     switch (((Statement) statement).kind) {
-                        case FOR:
-                            indent++;
-                            break;
                         case NEXT:
                             line.indent--;
                             indent--;
