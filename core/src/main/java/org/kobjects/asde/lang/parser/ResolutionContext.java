@@ -54,7 +54,10 @@ public class ResolutionContext {
                 return new DynamicSymbol(name, mode);
 
             default:
-                throw new RuntimeException("Variable not found: \"" + name + "\"");
+                if (symbol == null || symbol.scope == GlobalSymbol.Scope.TRANSIENT) {
+                    throw new RuntimeException("Variable not found: \"" + name + "\"");
+                }
+                return symbol;
         }
     }
 
