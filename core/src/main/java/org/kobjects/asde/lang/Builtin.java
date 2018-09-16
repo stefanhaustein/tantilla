@@ -31,7 +31,7 @@ public enum Builtin implements Function {
       for (int i = 0; i < parameters.length; i++) {
         parameters[i] = new Parameter(String.valueOf((char) ('a' + i)), parameterTypes[i]);
       }
-      this.signature = new FunctionType(name().endsWith("$") ? Types.STRING : Types.NUMBER);
+      this.signature = new FunctionType(name().endsWith("$") ? Types.STRING : Types.NUMBER, parameterTypes);
     }
 
   @Override
