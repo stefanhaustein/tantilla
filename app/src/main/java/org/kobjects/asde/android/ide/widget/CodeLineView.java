@@ -1,11 +1,15 @@
 package org.kobjects.asde.android.ide.widget;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
 import android.text.style.BackgroundColorSpan;
+import android.text.style.ClickableSpan;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -47,8 +51,18 @@ public class CodeLineView extends LinearLayout {
         codeLine.toString(asb, errors);
 
         SpannableString s = new SpannableString(asb.toString());
-        for (Span span : asb.spans()) {
+        for (final Span span : asb.spans()) {
             s.setSpan(new BackgroundColorSpan(Colors.SECONDARY_LIGHT), span.start, span.end, 0);
+            s.setSpan(new ClickableSpan() {
+                @Override
+                public void onClick(View widget) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle("Error");
+                    builder.setMessage(span.annotation.toString());
+                    builder.show();
+                }
+            }, span.start, span.end, 0);
+            statementView.setMovementMethod(LinkMovementMethod.getInstance());
         }
 
         statementView.setText(s);

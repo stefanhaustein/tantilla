@@ -21,10 +21,8 @@ public class ForStatement extends Node {
 
     public void resolve(ResolutionContext resolutionContext) {
         super.resolve(resolutionContext);
-        resolved = resolutionContext.resolve(varName);
-        if (resolved == null) {
-            throw new RuntimeException("Identifier not found: " + varName);
-        }
+        resolved = resolutionContext.declare(varName, Types.NUMBER);
+
     }
 
     @Override

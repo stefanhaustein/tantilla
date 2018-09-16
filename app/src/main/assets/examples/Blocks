@@ -1,18 +1,18 @@
+DIM allPieces(7, 8)
 DIM grid(10, 20)
+LET pc = 0
+LET pen = screen.createPen()
 DIM pieceX(4)
 DIM pieceY(4)
-DIM allPieces(7, 8)
-px0 = 0
-py0 = 0
-pen = screen.createPen()
-pc = 0
+LET px0 = 0
+LET py0 = 0
 
 SUB drawPiece()
 100 FOR p=1 To 4
 110  LET x = px0 + piecex(p)
 120  LET y = py0 + piecey(p)
 130  grid(X,Y) = pc
-140  drawRect(x * 5, y * 5, 5, 5)
+140  pen.drawRect(x * 5, y * 5, 5, 5)
 150 next p
 END SUB
 

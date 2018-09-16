@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
       public int getIntrinsicHeight() {
         return Dimensions.dpToPx(MainActivity.this, 6);
       }
-   };
+    };
 
 //    scrollContentView.setDividerPadding(Dimensions.dpToPx(this, 12));
     scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);

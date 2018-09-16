@@ -20,16 +20,13 @@ public class LetStatement extends Node {
 
     public void resolve(ResolutionContext resolutionContext) {
         super.resolve(resolutionContext);
-        resolved = resolutionContext.resolve(varName);
-        if (resolved == null) {
-            throw new RuntimeException("Identifier not found: " + varName);
-        }
+        resolved = resolutionContext.declare(varName, children[0].returnType());
     }
 
     @Override
     public Object eval(Interpreter interpreter) {
-        double current = evalDouble(interpreter,0);
-        resolved.set(interpreter, current);
+        Object value = children[0].eval(interpreter);
+        resolved.set(interpreter, value);
         return null;
     }
 

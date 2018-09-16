@@ -8,6 +8,7 @@ import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.asde.lang.symbol.LocalSymbol;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.typesystem.FunctionType;
+import org.kobjects.typesystem.Type;
 
 import java.util.HashMap;
 
@@ -27,6 +28,18 @@ public class ResolutionContext {
         }
     }
 
+    public ResolvedSymbol declare(String name, Type type) {
+        if (mode != ResolutionMode.FUNCTION) {
+            return resolve(name);
+        }
+        if (localSymbols.containsKey(name)) {
+            throw new RuntimeException("Local variable named '" + name + "' already exists");
+        }
+        LocalSymbol result = new LocalSymbol(localSymbols.size(), type);
+        localSymbols.put(name, result);
+        return result;
+    }
+
     public ResolvedSymbol resolve(String name) {
         ResolvedSymbol resolved = localSymbols.get(name);
         if (resolved != null) {
@@ -41,7 +54,7 @@ public class ResolutionContext {
                 return new DynamicSymbol(name, mode);
 
             default:
-                return null;
+                throw new RuntimeException("Variable not found: \"" + name + "\"");
         }
     }
 

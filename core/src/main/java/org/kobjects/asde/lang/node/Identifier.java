@@ -24,9 +24,6 @@ public class Identifier extends AssignableNode {
   public void resolve(ResolutionContext resolutionContext) {
       super.resolve(resolutionContext);
       resolved = resolutionContext.resolve(name);
-      if (resolved == null) {
-        throw new RuntimeException("Identifier not found: " + name);
-      }
   }
 
   public void set(Interpreter interpreter, Object value) {
@@ -45,7 +42,7 @@ public class Identifier extends AssignableNode {
   }
 
   public Type returnType() {
-    return resolved.getType();
+    return resolved == null ? null : resolved.getType();
   }
 
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
