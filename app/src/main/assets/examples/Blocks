@@ -33,14 +33,16 @@ SUB newpiece()
 140 NEXT i
 END SUB
 
-100 rem Piece data: J, S, L, Z, T, O, I
-105 data 5, 0, 5, 1, 5, 2, 4, 2
-110 data 4, 0, 4, 1, 5, 1, 5, 2
-120 data 4, 0, 4, 1, 4, 2, 5, 2
-130 data 5, 0, 5, 1, 4, 1, 4, 2
-140 data 5, 0, 4, 1, 5, 1, 6, 1
-150 data 4, 0, 5, 0, 4, 1, 5, 1
-160 data 5, 0, 5, 1, 5, 2, 5, 3
+100 rem based on David Murray's code:
+
+200 rem Piece data: J, S, L, Z, T, O, I
+210 data 5, 0, 5, 1, 5, 2, 4, 2
+220 data 4, 0, 4, 1, 5, 1, 5, 2
+230 data 4, 0, 4, 1, 4, 2, 5, 2
+240 data 5, 0, 5, 1, 4, 1, 4, 2
+250 data 5, 0, 4, 1, 5, 1, 6, 1
+260 data 4, 0, 5, 0, 4, 1, 5, 1
+270 data 5, 0, 5, 1, 5, 2, 5, 3
 
 200 for p = 0 to 6
 210   for i = 0 to 7
