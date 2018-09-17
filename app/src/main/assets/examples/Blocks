@@ -7,7 +7,7 @@ DIM pieceY(4)
 LET px0 = 0
 LET py0 = 0
 
-SUB drawPiece()
+SUB drawpiece()
 100 FOR i = 0 TO 3
 110  LET x = px0 + piecex(i)
 120  LET y = py0 + piecey(i)
@@ -16,7 +16,7 @@ SUB drawPiece()
 150 NEXT i
 END SUB
 
-SUB erasePiece()
+SUB erasepiece()
 100 FOR i = 0 TO 3
 110   LET x = px0 + piecex(i)
 120   LET y = py0 + piecey(i)
@@ -25,8 +25,8 @@ SUB erasePiece()
 150 NEXT i
 END SUB
 
-SUB newPiece()
-100 PC = int(rnd * 7) + 1
+SUB newpiece()
+100 PC = int(rnd() * 7) + 1
 110 FOR i = 0 TO 3
 120   piecex(i) = allPieces(pc - 1, i * 2)
 130   piecey(i) = allPieces(pc - 1, i * 2 + 1)
