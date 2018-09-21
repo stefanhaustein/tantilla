@@ -22,6 +22,30 @@ public class PenAdapter extends Instance {
 
     private final Pen pen;
 
+    private Property<Double> fillColor = new Property<Double>() {
+        @Override
+        public boolean set(Double argb) {
+            return pen.setFillColor((int) argb.longValue());
+        }
+
+        @Override
+        public Double get() {
+            return Double.valueOf(pen.getFillColor());
+        }
+    };
+
+    private Property<Double> strokeColor = new Property<Double>() {
+        @Override
+        public boolean set(Double argb) {
+            return pen.setStrokeColor((int) argb.longValue());
+        }
+
+        @Override
+        public Double get() {
+            return Double.valueOf(pen.getStrokeColor());
+        }
+    };
+
 
     PenAdapter(Pen pen) {
         super(CLASSIFIER);
@@ -31,11 +55,24 @@ public class PenAdapter extends Instance {
     @Override
     public Property getProperty(PropertyDescriptor property) {
         switch ((PenPropertyDescriptor) property) {
+            case fillcolor: return fillColor;
+            case strokecolor: return strokeColor;
             case drawrect:
                 return new Method((FunctionType) PenPropertyDescriptor.drawrect.type()) {
                     @Override
                     public Object eval(Interpreter interpreter, Object[] args) {
                         pen.drawRect(((Double) args[0]).floatValue(),
+                                ((Double) args[1]).floatValue(),
+                                ((Double) args[2]).floatValue(),
+                                ((Double) args[3]).floatValue());
+                        return null;
+                    }
+                };
+            case drawline:
+                return new Method((FunctionType) PenPropertyDescriptor.drawrect.type()) {
+                    @Override
+                    public Object eval(Interpreter interpreter, Object[] args) {
+                        pen.drawLine(((Double) args[0]).floatValue(),
                                 ((Double) args[1]).floatValue(),
                                 ((Double) args[2]).floatValue(),
                                 ((Double) args[3]).floatValue());
@@ -49,8 +86,10 @@ public class PenAdapter extends Instance {
 
 
     enum PenPropertyDescriptor implements PropertyDescriptor {
-        drawrect(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER))
-        ;
+        fillcolor(Types.NUMBER),
+        strokecolor(Types.NUMBER),
+        drawrect(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER)),
+        drawline(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER));
 
         private final Type type;
 

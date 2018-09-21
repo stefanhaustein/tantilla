@@ -1,29 +1,16 @@
 LET robot = new sprite
 DIM grid(12, 12)
 LET robotdir = 0
-LET robotx = 1
+LET robotx = 0
 LET roboty = 1
-
-SUB init()
-10 robot.face = "➡️"
-20 robot.x = -25
-30 robot.y = -25
-35 robot.size = 5
-40 FOR i = 0 to 11
-50   grid(i, 0) = 1
-60   grid(i, 11) = 1
-70   grid(0, i) = 1
-80   grid(11, i) = 1
-90 NEXT i
-END SUB
 
 SUB forward()
 20 if robotdir = 0 and grid(roboty, robotx + 1) = 0 then robotx = robotx + 1
 30 if robotdir = 1 and grid(roboty - 1, robotx) = 0 then roboty = roboty - 1
 40 if robotdir = 2 and grid(roboty, robotx - 1) = 0 then robotx = robotx - 1
 50 if robotdir = 3 and grid(roboty + 1, robotx) = 0 then roboty = roboty + 1
-60 robot.x = robotx * 5 - 50
-70 robot.y = roboty * 5 - 50
+60 robot.x = robotx * 10 - 50 - 5
+70 robot.y = roboty * 10 - 50 - 5
 END SUB
 
 SUB turnleft()
@@ -31,5 +18,34 @@ SUB turnleft()
 30 if robotdir = -1 then robotdir = 3
 40 robot.angle = robotdir * 90
 END sub
+
+SUB turnright()
+20 robotdir = robotdir + 1
+30 if robotdir = 4 then robotdir = 0
+40 robot.angle = robotdir * 90
+END sub
+
+SUB init()
+10 robot.face = "➡️"
+20 robot.size = 10
+30 LET pen = screen.createPen()
+40 pen.strokecolor = 0
+100 FOR i = 0 to 11
+110   grid(i, 0) = 1
+120   grid(i, 11) = 1
+130   grid(0, i) = 1
+140   grid(11, i) = 1
+150 NEXT i
+200 for y = 1 to 10
+210   for x = 1 to 10
+215     LET dark = ((x+y) and 1)
+220     if dark = 1 then pen.fillcolor = 255 * 256 * 65536 + 224 * 65536 + 224 * 256 + 224
+230     if dark = 0 then pen.fillcolor = 255 * 256 * 65536 + 192 * 65536 + 192 * 256 + 192
+240     pen.drawRect(x * 10 - 60, y * 10 - 60, 10, 10)
+250   next x
+260 next y
+300 forward()
+END SUB
+
 
 10 init()

@@ -15,6 +15,14 @@ public class Pen {
     Paint strokePaint = new Paint();
     Paint fillPaint = new Paint();
 
+    float sx(float x) {
+        return x + 50;
+    }
+
+    float sy(float y) {
+        return 50 - y;
+    }
+
     public Pen(Viewport viewport) {
         this.viewport = viewport;
 
@@ -37,8 +45,32 @@ public class Pen {
 
     public void drawRect(float  x, float y, float width, float height) {
         validate();
-        canvas.drawRect(x, y, x+ width, y + height, fillPaint);
-        canvas.drawRect(x, y, x+ width, y + height, strokePaint);
+        canvas.drawRect(sx(x), sy(y), sx(x+ width), sy(y + height), fillPaint);
+        canvas.drawRect(sx(x), sy(y), sx(x+ width), sy(y + height), strokePaint);
+    }
+
+    public boolean setFillColor(int argb) {
+        if (argb == fillPaint.getColor()) {
+            return false;
+        }
+        fillPaint.setColor(argb);
+        return true;
+    }
+
+    public int getFillColor() {
+        return fillPaint.getColor();
+    }
+
+    public boolean setStrokeColor(int argb) {
+        if (argb == strokePaint.getColor()) {
+            return false;
+        }
+        strokePaint.setColor(argb);
+        return true;
+    }
+
+    public int getStrokeColor() {
+        return strokePaint.getColor();
     }
 
 }
