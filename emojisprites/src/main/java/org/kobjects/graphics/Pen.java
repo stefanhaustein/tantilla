@@ -16,15 +16,18 @@ public class Pen {
     Paint fillPaint = new Paint();
 
     float sx(float x) {
-        return x + 50;
+        return (x + 50) * viewport.bitmapScale;
     }
 
     float sy(float y) {
-        return 50 - y;
+        return (50 - y) * viewport.bitmapScale;
     }
 
     public Pen(Viewport viewport) {
         this.viewport = viewport;
+
+        strokePaint.setAntiAlias(true);
+        fillPaint.setAntiAlias(true);
 
         strokePaint.setStyle(Paint.Style.STROKE);
         strokePaint.setColor(Color.BLACK);

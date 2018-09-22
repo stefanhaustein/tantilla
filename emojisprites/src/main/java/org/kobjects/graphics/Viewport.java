@@ -13,13 +13,17 @@ public class Viewport extends FrameLayout {
     public float scale;
     ImageView imageView;
     Bitmap bitmap;
+    float bitmapScale;
 
     public Viewport(@NonNull Activity activity) {
         super(activity);
         this.activity = activity;
         setClipChildren(false);
 
-        bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        int size = Dimensions.dpToPx(activity,100);
+
+        bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        bitmapScale = size / 100f;
 
         imageView = new ImageView(activity);
         imageView.setImageBitmap(bitmap);

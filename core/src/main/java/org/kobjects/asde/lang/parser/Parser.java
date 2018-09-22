@@ -74,7 +74,7 @@ public class Parser {
               && ((Operator) expression).name.equals("=")) {
         return new AssignStatement(expression.children[0], expression.children[1]);
       }
-      return new Statement(program, Statement.Kind.PRINT, new String[0], expression);
+      return expression;
     }
     tokenizer.nextToken();
 

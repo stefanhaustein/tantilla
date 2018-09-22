@@ -94,27 +94,32 @@ public class Interpreter {
         return currentLine == -2 ? GlobalSymbol.Scope.PERSISTENT : GlobalSymbol.Scope.TRANSIENT;
     }
 
+    // Called from the shell
     public void runStatementsAsync(final List<? extends Node> statements, final Interpreter programInterpreter) {
         runAsync(new Runnable() {
             @Override
             public void run() {
                 currentLine = -2;
-                runStatementsImpl(statements);
+                Object result = runStatementsImpl(statements);
                 if (currentLine >= 0) {
                     programInterpreter.runAsync(currentLine);
+                } else if (statements.size() == 0 || (!(statements.get(statements.size() - 1) instanceof Statement)
+                        || ((Statement) statements.get(statements.size() - 1)).kind != Statement.Kind.PRINT)) {
+                    programInterpreter.program.console.print(result == null ? "OK\n" : (String.valueOf(result) + "\n"));
                 }
+
             }
         });
     }
 
-    private void runStatementsImpl(List<? extends Node> statements) {
+    private Object runStatementsImpl(List<? extends Node> statements) {
         int line = currentLine;
-
+        Object result = null;
         while (currentIndex < statements.size() && !Thread.currentThread().isInterrupted()) {
             int index = currentIndex;
-            statements.get(index).eval(this);
+            result = statements.get(index).eval(this);
             if (currentLine != line) {
-                return;  // Goto or similar out of the current line
+                return result;  // Goto or similar out of the current line
             }
             if (currentIndex == index) {
                 currentIndex++;
@@ -122,6 +127,7 @@ public class Interpreter {
         }
         currentIndex = 0;
         currentLine++;
+        return result;
     }
 
     private void runCallableUnit() {
