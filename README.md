@@ -1,0 +1,3 @@
+# asde
+
+Aka "codechat 2.0". Less smalltalk, more basic...
