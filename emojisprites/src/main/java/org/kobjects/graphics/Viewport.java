@@ -3,6 +3,8 @@ package org.kobjects.graphics;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -14,6 +16,7 @@ public class Viewport extends FrameLayout {
     ImageView imageView;
     Bitmap bitmap;
     float bitmapScale;
+    public Dpad dpad;
 
     public Viewport(@NonNull Activity activity) {
         super(activity);
@@ -29,6 +32,8 @@ public class Viewport extends FrameLayout {
         imageView.setImageBitmap(bitmap);
         imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
+        dpad = new Dpad(activity);
+
         clear();
 
         addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
@@ -37,6 +42,10 @@ public class Viewport extends FrameLayout {
                 scale = Math.min(right - left, bottom - top) / 100f;
             }
         });
+
+        //setClickable(true);
+        //setFocusable(FOCUSABLE);
+        setFocusableInTouchMode(true);
     }
 
     public Pen createPen() {
@@ -44,9 +53,20 @@ public class Viewport extends FrameLayout {
     }
 
 
+    public boolean dispatchKeyEvent(android.view.KeyEvent keyEvent) {
+        System.out.println("KeyEvent: " + keyEvent);
+        return false;
+    }
+
+
+
     public void clear() {
         removeAllViews();
         bitmap.eraseColor(0);
         addView(imageView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        FrameLayout.LayoutParams dpadLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dpadLayoutParams.gravity = Gravity.BOTTOM;
+        addView(dpad, dpadLayoutParams);
     }
 }

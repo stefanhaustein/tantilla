@@ -46,6 +46,7 @@ import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
+import org.kobjects.asde.library.ui.DpadAdapter;
 import org.kobjects.asde.library.ui.ScreenAdapter;
 import org.kobjects.graphics.Viewport;
 import org.kobjects.expressionparser.ExpressionParser;
@@ -94,6 +95,16 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     private EmojiEditText consoleEditText;
     private IconButton consoleEnterButton;
     private LinearLayout consoleInputView;
+
+
+    @Override
+    public boolean dispatchKeyEvent(android.view.KeyEvent keyEvent) {
+        if (!viewport.dispatchKeyEvent(keyEvent)) {
+            return super.dispatchKeyEvent(keyEvent);
+        }
+        return true;
+    }
+
 
     @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -244,6 +255,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     program.setValue(GlobalSymbol.Scope.BUILTIN,"screen", screen);
     program.setValue(GlobalSymbol.Scope.BUILTIN,"sprite", screen.spriteClassifier);
     program.setValue(GlobalSymbol.Scope.BUILTIN, "text", screen.textClassifier);
+    program.setValue(GlobalSymbol.Scope.BUILTIN, "dpad", new DpadAdapter(viewport.dpad));
 //    program.setValue(GlobalSymbol.Scope.BUILTIN,"pen", screen.penClassifier);
 
     arrangeUi();

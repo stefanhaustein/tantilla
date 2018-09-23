@@ -116,12 +116,7 @@ public class Sprite extends AbstractViewWrapper<ImageView> {
                 bubble.measure(View.MeasureSpec.AT_MOST | Dimensions.dpToPx(bubble.getContext(), 160), View.MeasureSpec.UNSPECIFIED);
                 bubble.getLayoutParams().width = bubble.getMeasuredWidth();
             }
-
-            List<EmojiRange> emojis = EmojiUtils.emojis(face);
-            if (emojis.size() > 0) {
-                Emoji emoji = emojis.get(0).emoji;
-                view.setImageDrawable(emoji.getDrawable(viewport.getContext()));
-            }
+            view.setImageDrawable(Emojis.getDrawable(view.getContext(), face));
         }
 
         int intrinsicWidth = view.getDrawable().getIntrinsicWidth();
