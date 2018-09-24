@@ -41,13 +41,12 @@ public class DpadAdapter extends Instance {
         visible = new Property<Number>() {
             @Override
             public boolean set(Number number) {
-                return false;
+                return dpad.setVisible(number.doubleValue() != 0);
             }
 
             @Override
             public Number get() {
-                // TBD: needs to be thread safe...
-                return 0;
+                return dpad.getVisible() ? 1.0 : 0.0;
             }
         };
     }
@@ -60,6 +59,7 @@ public class DpadAdapter extends Instance {
             case right: return right;
             case down: return down;
             case fire: return fire;
+            case visible: return visible;
         }
         throw new RuntimeException("Unrecognized property: " + property);
     }
@@ -69,7 +69,8 @@ public class DpadAdapter extends Instance {
         right(Types.NUMBER),
         up(Types.NUMBER),
         down(Types.NUMBER),
-        fire(Types.NUMBER);
+        fire(Types.NUMBER),
+        visible(Types.NUMBER);
 
         private final Type type;
 

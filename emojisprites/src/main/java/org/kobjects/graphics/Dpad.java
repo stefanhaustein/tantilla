@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-public class Dpad extends LinearLayout {
+public class Dpad extends ViewHolder<LinearLayout> {
 
     static LinearLayout.LayoutParams createLayoutParams() {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -15,6 +15,8 @@ public class Dpad extends LinearLayout {
         return layoutParams;
     }
 
+    private boolean syncRequested;
+    private boolean visible;
 
     public ImageView up;
     public ImageView down;
@@ -23,8 +25,9 @@ public class Dpad extends LinearLayout {
     public ImageView fire;
 
 
-    public Dpad(Context context) {
-        super(context);
+    public Dpad(Viewport viewport) {
+        super(viewport, new LinearLayout(viewport.getContext()));
+        Context context = viewport.getContext();
 
 
         left = new ImageView(context);
@@ -39,19 +42,46 @@ public class Dpad extends LinearLayout {
         fire.setImageDrawable(Emojis.getDrawable(context, "\u23FA️"));
 
         LinearLayout updown = new LinearLayout(context);
-        updown.setOrientation(VERTICAL);
+        updown.setOrientation(LinearLayout.VERTICAL);
         updown.addView(up);
         updown.addView(down);
 
-        addView(left, createLayoutParams());
-        addView(updown, createLayoutParams());
-        addView(right, createLayoutParams());
+        view.addView(left, createLayoutParams());
+        view.addView(updown, createLayoutParams());
+        view.addView(right, createLayoutParams());
 
-        addView(new View(context), new LinearLayout.LayoutParams(0, 0, 1));
+        view.addView(new View(context), new LinearLayout.LayoutParams(0, 0, 1));
 
-        addView(fire, createLayoutParams());
+        view.addView(fire, createLayoutParams());
+
+        view.setVisibility(View.GONE);
+    }
+
+    public boolean setVisible(boolean visible) {
+        if (this.visible == visible) {
+            return false;
+        }
+        this.visible = visible;
+        requestSync();
+        return true;
     }
 
 
+    void requestSync() {
+        if (!syncRequested) {
+            syncRequested = true;
+            viewport.activity.runOnUiThread(this);
+        }
+    }
 
+    public boolean getVisible() {
+        return visible;
+    }
+
+
+    @Override
+    public void run() {
+        syncRequested = false;
+        view.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
 }

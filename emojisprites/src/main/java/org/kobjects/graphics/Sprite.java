@@ -9,14 +9,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.vanniktech.emoji.EmojiRange;
-import com.vanniktech.emoji.EmojiUtils;
-import com.vanniktech.emoji.emoji.Emoji;
-
-import java.util.List;
 import java.util.Objects;
 
-public class Sprite extends AbstractViewWrapper<ImageView> {
+public class Sprite extends PositionedViewHolder<ImageView> {
 
     public static final String DEFAULT_FACE = "\ud83d\ude03";
 

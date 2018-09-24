@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import java.util.Objects;
 
-public class Text extends AbstractViewWrapper<TextView> {
+public class Text extends PositionedViewHolder<TextView> {
 
     private boolean textDirty;
     private String text;

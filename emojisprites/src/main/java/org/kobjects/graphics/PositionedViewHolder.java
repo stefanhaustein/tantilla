@@ -2,23 +2,18 @@ package org.kobjects.graphics;
 
 import android.view.View;
 
-public abstract class AbstractViewWrapper<T extends View> implements Runnable {
-    T view;
-    boolean syncRequested;
-    Viewport viewport;
+public abstract class PositionedViewHolder<T extends View> extends ViewHolder<T> {
     protected float x;
     protected float y;
     protected float z;
 
-    AbstractViewWrapper(Viewport viewport, T view) {
-        this.viewport = viewport;
-        this.view = view;
+    PositionedViewHolder(Viewport viewport, T view) {
+        super(viewport, view);
         view.setTag(this);
-
         viewport.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if (AbstractViewWrapper.this.view.getParent() != null) {
+                if (PositionedViewHolder.this.view.getParent() != null) {
                     requestSync();
                 }
             }
@@ -63,12 +58,5 @@ public abstract class AbstractViewWrapper<T extends View> implements Runnable {
             requestSync();
 
         return true;
-    }
-
-    void requestSync() {
-        if (!syncRequested) {
-            syncRequested = true;
-            viewport.activity.runOnUiThread(this);
-        }
     }
 }

@@ -32,7 +32,7 @@ public class Viewport extends FrameLayout {
         imageView.setImageBitmap(bitmap);
         imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
-        dpad = new Dpad(activity);
+        dpad = new Dpad(this);
 
         clear();
 
@@ -67,6 +67,6 @@ public class Viewport extends FrameLayout {
 
         FrameLayout.LayoutParams dpadLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dpadLayoutParams.gravity = Gravity.BOTTOM;
-        addView(dpad, dpadLayoutParams);
+        addView(dpad.getView(), dpadLayoutParams);
     }
 }
