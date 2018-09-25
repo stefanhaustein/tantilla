@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -14,6 +16,7 @@ public class Pen {
     Canvas canvas;
     Paint strokePaint = new Paint();
     Paint fillPaint = new Paint();
+    Paint clearPaint;
 
     float sx(float x) {
         return (x + 50) * viewport.bitmapScale;
@@ -50,6 +53,15 @@ public class Pen {
         validate();
         canvas.drawRect(sx(x), sy(y), sx(x+ width), sy(y + height), fillPaint);
         canvas.drawRect(sx(x), sy(y), sx(x+ width), sy(y + height), strokePaint);
+    }
+
+    public void clearRect(float  x, float y, float width, float height) {
+        validate();
+        if (clearPaint == null) {
+            clearPaint = new Paint();
+            clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        }
+        canvas.drawRect(sx(x), sy(y), sx(x+ width), sy(y + height), clearPaint);
     }
 
     public boolean setFillColor(int argb) {

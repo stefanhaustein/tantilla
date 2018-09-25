@@ -33,6 +33,12 @@ SUB newpiece()
 140 NEXT i
 END SUB
 
+SUB movedown()
+100 erasepiece()
+110 py0 = py0 + 1
+120 drawpiece()
+END SUB
+
 100 rem based on David Murray's code:
 120 dpad.visible = 1
 130 pen.fillcolor = 255*256*65536 + 255
@@ -54,3 +60,8 @@ END SUB
 
 400 newPiece()
 412 drawPiece()
+
+500 if dpad.down then movedown()
+
+580 pause 15
+590 goto 500

@@ -57,6 +57,17 @@ public class PenAdapter extends Instance {
         switch ((PenPropertyDescriptor) property) {
             case fillcolor: return fillColor;
             case strokecolor: return strokeColor;
+            case clearrect:
+                return new Method((FunctionType) PenPropertyDescriptor.clearrect.type()) {
+                    @Override
+                    public Object eval(Interpreter interpreter, Object[] args) {
+                        pen.clearRect(((Double) args[0]).floatValue(),
+                                ((Double) args[1]).floatValue(),
+                                ((Double) args[2]).floatValue(),
+                                ((Double) args[3]).floatValue());
+                        return null;
+                    }
+                };
             case drawrect:
                 return new Method((FunctionType) PenPropertyDescriptor.drawrect.type()) {
                     @Override
@@ -88,6 +99,7 @@ public class PenAdapter extends Instance {
     enum PenPropertyDescriptor implements PropertyDescriptor {
         fillcolor(Types.NUMBER),
         strokecolor(Types.NUMBER),
+        clearrect(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER)),
         drawrect(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER)),
         drawline(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER));
 
