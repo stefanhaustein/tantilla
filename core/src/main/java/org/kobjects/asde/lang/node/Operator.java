@@ -22,6 +22,7 @@ public class Operator extends Node {
     if (children.length == 1) {
       switch (name.charAt(0)) {
         case '-': return -(Double) lVal;
+        case 'N':
         case 'n': return Double.valueOf(~(Builtin.asInt(lVal)));
         default:
           throw new RuntimeException("Unsupported unary operator: " + name);

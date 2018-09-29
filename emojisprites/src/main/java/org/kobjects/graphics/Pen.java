@@ -42,6 +42,7 @@ public class Pen {
        if (canvas == null) {
            canvas = new Canvas(viewport.bitmap);
        }
+       viewport.postInvalidate();
     }
 
     public void drawLine(float x0, float y0, float x1, float y1) {
@@ -60,6 +61,8 @@ public class Pen {
         if (clearPaint == null) {
             clearPaint = new Paint();
             clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+            clearPaint.setColor(Color.TRANSPARENT);
+            clearPaint.setStyle(Paint.Style.FILL);
         }
         canvas.drawRect(sx(x), sy(y), sx(x+ width), sy(y + height), clearPaint);
     }

@@ -1,19 +1,41 @@
 DIM allPieces(7, 8)
-DIM grid(10, 20)
+DIM grid(21, 21)
 LET pc = 0
+LET pp = 0
 LET pen = screen.createPen()
 DIM pieceX(4)
 DIM pieceY(4)
-LET px0 = 0
+DIM previewX(4)
+DIM previewY(4)
+LET px0 = 1
 LET py0 = 0
 
-SUB drawpiece()
+FUNCTION checkposition(Number x, Number y) -> Number
 100 FOR i = 0 TO 3
-110  LET x = px0 + piecex(i)
-120  LET y = py0 + piecey(i)
-130  grid(X,Y) = pc
-140  pen.drawRect(x * 5 - 50, 50 - y * 5, 5, 5)
-150 NEXT i
+110   IF grid(x + piecex(i), y + piecey(i)) <> 0 THEN RETURN 0
+120 NEXT i
+130 RETURN 1
+END FUNCTION
+
+SUB setcolor(Number c)
+10 if c = 1 then pen.fillcolor = 255*256*65536 + 255
+20 if c = 2 then pen.fillcolor = 255*256*65536 + 255 * 256
+30 if c = 3 then pen.fillcolor = 255*256*65536 + 255 * 65536
+40 if c = 4 then pen.fillcolor = 255*256*65536 + 255 + 255 * 256
+50 if c = 5 then pen.fillcolor = 255*256*65536 + 255 + 255 * 65536
+60 if c = 6 then pen.fillcolor = 255*256*65536 + 255 * 256 + 255 * 65536
+70 if c = 7 then pen.fillcolor = 255*256*65536 + 128 + 255 * 256
+80 if c = 8 then pen.fillcolor = 255*256*65536
+END SUB
+
+SUB drawpiece()
+100 setcolor(pc)
+110 FOR i = 0 TO 3
+120  LET x = px0 + piecex(i)
+130  LET y = py0 + piecey(i)
+140  grid(X,Y) = pc
+150  pen.drawRect(x * 5 - 50, 50 - y * 5, 5, 5)
+160 NEXT i
 END SUB
 
 SUB erasepiece()
@@ -21,36 +43,112 @@ SUB erasepiece()
 110   LET x = px0 + piecex(i)
 120   LET y = py0 + piecey(i)
 130   grid(x, y) = 0
-140   pen.clearRect(x * 5 - 50, 50 - y * 5 - 50, 5, 5)
+140   pen.clearRect(x * 5 - 50, 50 - y * 5, 5, 5)
 150 NEXT i
 END SUB
 
+SUB definepiece()
+210 FOR i = 0 TO 3
+220   piecex(i) = allPieces(pc - 1, i * 2)
+230   piecey(i) = allPieces(pc - 1, i * 2 + 1)
+240 NEXT i
+END SUB
+
+SUB drawall()
+100 for y = 0 to 20
+120  for x = 0 to 11
+130    let c = grid(x, y)
+140    if c then setcolor(c) : pen.drawRect(x * 5 - 50, 50 - y * 5, 5, 5)
+145    if c = 0 then pen.clearRect(x * 5 - 50, 50 - y * 5, 5, 5)
+150  next x
+160 next y
+END SUB
+
+SUB dropgrid(Number cy)
+100 for x = 1 to 10
+110   for y = cy to 2 step -1
+120     grid(x, y) = grid(x, y -1)
+130   next y
+140 next x
+150 drawall()
+END SUB
+
+SUB checkgrid()
+100 for cy = 0 to 19
+120   LET row = 0
+130   FOR x = 1 to 10
+140     IF grid(x,cy) <> 0 then ROW = ROW + 1
+150   NEXT x
+160   IF row = 10 then dropgrid(cy)
+170 next cy
+END SUB
+
 SUB newpiece()
-100 PC = int(rnd() * 7) + 1
-110 FOR i = 0 TO 3
-120   piecex(i) = allPieces(pc - 1, i * 2)
-130   piecey(i) = allPieces(pc - 1, i * 2 + 1)
-140 NEXT i
+10 checkgrid()
+100 px0 = 15
+110 py0 = 5
+120 pc = pp
+125 definepiece()
+130 erasepiece()
+140 LET savepc = pc
+200 PP = int(rnd() * 7) + 1
+210 PC = PP
+220 definepiece()
+230 drawpiece()
+240 PC = savepc
+250 definepiece()
+260 px0 = 5
+270 py0 = 0
+END SUB
+
+SUB moveright()
+110 erasepiece()
+120 if checkposition(px0 + 1, py0) then px0 = px0 + 1
+130 drawpiece()
+END SUB
+
+SUB moveleft()
+110 erasepiece()
+120 if checkposition(px0 - 1, py0) then px0 = px0 - 1
+130 drawpiece()
 END SUB
 
 SUB movedown()
+110 erasepiece()
+120 LET ok = checkposition(px0, py0 + 1)
+125 IF ok THEN py0 = py0 + 1
+130 drawpiece()
+140 IF ok = 0 THEN newpiece() : drawpiece()
+END SUB
+
+SUB rotate()
 100 erasepiece()
-110 py0 = py0 + 1
-120 drawpiece()
+110 FOR i = 0 to 3
+120  LET x = piecex(i)
+130  piecex(i) = 3 - piecey(i)
+140  piecey(i) = x
+150 NEXT i
+160 if checkposition(px0, py0) then drawpiece() : RETURN 0
+200 FOR j = 0 to 3
+210   LET xx = piecex(j)
+220   piecex(j) = piecey(j)
+230   piecey(j) = 3 - xx
+240 NEXT j
 END SUB
 
 100 rem based on David Murray's code:
 120 dpad.visible = 1
-130 pen.fillcolor = 255*256*65536 + 255
+140 pen.strokecolor = 0
+150 PP = 1
 
 200 rem Piece data: J, S, L, Z, T, O, I
-210 data 5, 0, 5, 1, 5, 2, 4, 2
-220 data 4, 0, 4, 1, 5, 1, 5, 2
-230 data 4, 0, 4, 1, 4, 2, 5, 2
-240 data 5, 0, 5, 1, 4, 1, 4, 2
-250 data 5, 0, 4, 1, 5, 1, 6, 1
-260 data 4, 0, 5, 0, 4, 1, 5, 1
-270 data 5, 0, 5, 1, 5, 2, 5, 3
+210 data 2, 0, 2, 1, 2, 2, 1, 2
+220 data 1, 0, 1, 1, 2, 1, 2, 2
+230 data 1, 0, 1, 1, 1, 2, 2, 2
+240 data 2, 0, 2, 1, 1, 1, 1, 2
+250 data 2, 0, 1, 1, 2, 1, 3, 1
+260 data 1, 0, 2, 0, 1, 1, 2, 1
+270 data 2, 0, 2, 1, 2, 2, 2, 3
 
 300 for p = 0 to 6
 310   for i = 0 to 7
@@ -58,10 +156,26 @@ END SUB
 330   next i
 340 next p
 
-400 newPiece()
-412 drawPiece()
+400 for i = 0 to 20
+410   grid(0, i) = 8
+420   grid(11, i) = 8
+430 next i
 
-500 if dpad.down then movedown()
+450 for i = 0 to 11
+460   grid(i, 20) = 8
+470 next i
 
-580 pause 15
-590 goto 500
+500 drawall()
+510 newPiece()
+520 newPiece()
+530 drawpiece()
+540 let timer = 0
+
+600 if dpad.left then moveleft()
+610 if dpad.right then moveright()
+620 if dpad.down or timer = 10 then movedown() : timer = 0
+630 if dpad.up then rotate()
+640 timer = timer + 1
+
+680 pause 100
+690 goto 600
