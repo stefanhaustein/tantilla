@@ -1,39 +1,33 @@
-package org.kobjects.asde.lang.node;
+package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Array;
-import org.kobjects.asde.lang.AsdeShell;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.StackEntry;
 import org.kobjects.asde.lang.Types;
-import org.kobjects.asde.lang.symbol.GlobalSymbol;
+import org.kobjects.asde.lang.node.Apply;
+import org.kobjects.asde.lang.node.AssignableNode;
+import org.kobjects.asde.lang.node.Identifier;
+import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.node.Operator;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
-import javax.swing.plaf.nimbus.State;
 
-
-public class Statement extends Node {
+public class SimpleStatement extends Node {
 
   public enum Kind {
     DATA, DIM, DEF, DUMP,
     END,
     GOTO, GOSUB,
-    IF, INPUT,
+    INPUT,
     ON,
     PRINT,
     READ, REM, RESTORE, RETURN,
@@ -45,14 +39,14 @@ public class Statement extends Node {
   public final Kind kind;
   final String[] delimiter;
 
-  public Statement(Program program, Kind kind, String[] delimiter, Node... children) {
+  public SimpleStatement(Program program, Kind kind, String[] delimiter, Node... children) {
     super(children);
     this.program = program;
     this.kind = kind;
     this.delimiter = delimiter;
   }
 
-  public Statement(Program program, Kind kind, Node... children) {
+  public SimpleStatement(Program program, Kind kind, Node... children) {
     this(program, kind, null, children);
   }
 
@@ -85,7 +79,7 @@ public class Statement extends Node {
           parameterTypes[i] = parameterNode.name.endsWith("$") ? Types.STRING : Types.NUMBER;
         }
         CallableUnit fn = new CallableUnit(program, new FunctionType(name.endsWith("$") ? Types.STRING : Types.NUMBER, parameterTypes), parameterNames);
-        fn.setLine(10, new CodeLine(Collections.singletonList(new Statement(program, Kind.RETURN, assignment.children[1]))));
+        fn.setLine(10, new CodeLine(Collections.singletonList(new SimpleStatement(program, Kind.RETURN, assignment.children[1]))));
         program.setValue(interpreter.getSymbolScope(), name, fn);
         break;
       }
@@ -126,16 +120,6 @@ public class Statement extends Node {
       case GOTO:
         interpreter.currentLine = (int) evalDouble(interpreter,0);
         interpreter.currentIndex = 0;
-        break;
-
-      case IF:
-        if (evalDouble(interpreter, 0) == 0.0) {
-          interpreter.currentLine++;
-          interpreter.currentIndex = 0;
-        } else if (children.length == 2) {
-          interpreter.currentLine = (int) evalDouble(interpreter, 1);
-          interpreter.currentIndex = 0;
-        }
         break;
 
       case INPUT:
@@ -192,7 +176,7 @@ public class Statement extends Node {
             if (interpreter.dataStatement != null) {
               interpreter.dataPosition[1]++;
             }
-            interpreter.dataStatement = program.main.find((Node statement)->(statement instanceof Statement && ((Statement) statement).kind == Kind.DATA), null, interpreter.dataPosition);
+            interpreter.dataStatement = (SimpleStatement) program.main.find((Node statement)->(statement instanceof SimpleStatement && ((SimpleStatement) statement).kind == Kind.DATA), interpreter.dataPosition);
             if (interpreter.dataStatement == null) {
               throw new RuntimeException("Out of data.");
             }

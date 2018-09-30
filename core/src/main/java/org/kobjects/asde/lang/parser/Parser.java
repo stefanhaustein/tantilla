@@ -1,16 +1,17 @@
 package org.kobjects.asde.lang.parser;
 
 import org.kobjects.asde.lang.Program;
-import org.kobjects.asde.lang.node.AssignStatement;
+import org.kobjects.asde.lang.statement.AssignStatement;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.node.Command;
-import org.kobjects.asde.lang.node.ForStatement;
-import org.kobjects.asde.lang.node.LetStatement;
+import org.kobjects.asde.lang.statement.ForStatement;
+import org.kobjects.asde.lang.statement.IfStatement;
+import org.kobjects.asde.lang.statement.LetStatement;
 import org.kobjects.asde.lang.node.Literal;
-import org.kobjects.asde.lang.node.NextStatement;
+import org.kobjects.asde.lang.statement.NextStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Operator;
-import org.kobjects.asde.lang.node.Statement;
+import org.kobjects.asde.lang.statement.SimpleStatement;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.expressionparser.ExpressionParser;
 
@@ -46,20 +47,27 @@ public class Parser {
   }
 
 
-  Node parseStatement(ExpressionParser.Tokenizer tokenizer) {
+  void parseStatement(ExpressionParser.Tokenizer tokenizer, List<Node> result) {
     String name = tokenizer.currentValue;
 
     switch (name.toUpperCase()) {
       case "FOR":
-        return parseFor(tokenizer);
+        result.add(parseFor(tokenizer));
+        return;
       case "LET":
-        return parseLet(tokenizer);
+        result.add(parseLet(tokenizer));
+        return;
+      case "IF":
+        parseIf(tokenizer, result);
+        return;
       case "NEXT":
-        return parseNext(tokenizer);
+        parseNext(tokenizer, result);
+        return;
     }
     for (Command.Kind kind : Command.Kind.values()) {
       if (name.equalsIgnoreCase(kind.name())) {
-        return parseCommand(tokenizer, kind);
+        result.add(parseCommand(tokenizer, kind));
+        return;
       }
     }
 
@@ -69,36 +77,38 @@ public class Parser {
       name = "PRINT";
     }
 
-    for (Statement.Kind kind : Statement.Kind.values()) {
+    for (SimpleStatement.Kind kind : SimpleStatement.Kind.values()) {
       if (name.equalsIgnoreCase(kind.name())) {
-        return parseStatement(tokenizer, kind);
+        result.add(parseStatement(tokenizer, kind));
+        return;
       }
     }
 
     Node expression = expressionParser.parse(tokenizer);
     if ((expression instanceof Operator) && (expression.children[0] instanceof AssignableNode)
              && ((Operator) expression).name.equals("=")) {
-      return new AssignStatement(expression.children[0], expression.children[1]);
+      result.add(new AssignStatement(expression.children[0], expression.children[1]));
+    } else {
+      result.add(expression);
     }
-    return expression;
   }
 
-  Statement parseStatement(ExpressionParser.Tokenizer tokenizer, Statement.Kind kind) {
+  SimpleStatement parseStatement(ExpressionParser.Tokenizer tokenizer, SimpleStatement.Kind kind) {
     tokenizer.nextToken();
     switch (kind) {
       case RESTORE: // 0 or 1 param; Default is 0
       case RETURN:
         if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF &&
             !tokenizer.currentValue.equals(":")) {
-          return new Statement(program, kind, expressionParser.parse(tokenizer));
+          return new SimpleStatement(program, kind, expressionParser.parse(tokenizer));
         }
-        return new Statement(program, kind);
+        return new SimpleStatement(program, kind);
 
       case DEF:  // Exactly one param
       case GOTO:
       case GOSUB:
       case PAUSE:
-        return new Statement(program, kind, expressionParser.parse(tokenizer));
+        return new SimpleStatement(program, kind, expressionParser.parse(tokenizer));
 
 
       case DATA:  // One or more params
@@ -108,21 +118,8 @@ public class Parser {
         do {
           expressions.add(expressionParser.parse(tokenizer));
         } while (tokenizer.tryConsume(","));
-        return new Statement(program, kind, expressions.toArray(new Node[expressions.size()]));
+        return new SimpleStatement(program, kind, expressions.toArray(new Node[expressions.size()]));
       }
-
-      case IF:
-        Node condition = expressionParser.parse(tokenizer);
-        if (!tryConsume(tokenizer, "THEN") && !tryConsume(tokenizer, "GOTO")) {
-          throw tokenizer.exception("'THEN expected after IF-condition.'", null);
-        }
-        if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.NUMBER) {
-          double target = (int) Double.parseDouble(tokenizer.currentValue);
-          tokenizer.nextToken();
-          return new Statement(program, kind, new String[]{" THEN "}, condition,
-              new Literal(target));
-        }
-        return new Statement(program, kind, new String[]{" THEN"}, condition);
 
       case INPUT:
       case PRINT:
@@ -140,7 +137,7 @@ public class Parser {
             args.add(expressionParser.parse(tokenizer));
           }
         }
-        return new Statement(program, kind, delimiter.toArray(new String[delimiter.size()]),
+        return new SimpleStatement(program, kind, delimiter.toArray(new String[delimiter.size()]),
             args.toArray(new Node[args.size()]));
 
       case ON: {
@@ -157,7 +154,7 @@ public class Parser {
         do {
           expressions.add(expressionParser.parse(tokenizer));
         } while (tokenizer.tryConsume(","));
-        return new Statement(program, kind, suffix,
+        return new SimpleStatement(program, kind, suffix,
             expressions.toArray(new Node[expressions.size()]));
       }
       case REM: {
@@ -169,10 +166,10 @@ public class Parser {
         if (sb.length() > 0 && sb.charAt(0) == ' ') {
           sb.deleteCharAt(0);
         }
-        return new Statement(program, kind, new Identifier(program, sb.toString()));
+        return new SimpleStatement(program, kind, new Identifier(program, sb.toString()));
       }
       default:
-        return new Statement(program, kind);
+        return new SimpleStatement(program, kind);
     }
   }
 
@@ -192,6 +189,19 @@ public class Parser {
 
       default:
         return new Command(kind);
+    }
+  }
+
+  private void parseIf(ExpressionParser.Tokenizer tokenizer, List<Node> result) {
+    tokenizer.nextToken();
+    result.add(new IfStatement(expressionParser.parse(tokenizer)));
+    if (!tryConsume(tokenizer, "THEN") && !tryConsume(tokenizer, "GOTO")) {
+      throw tokenizer.exception("'THEN expected after IF-condition.'", null);
+    }
+    if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.NUMBER) {
+      double target = (int) Double.parseDouble(tokenizer.currentValue);
+      tokenizer.nextToken();
+      result.add(new SimpleStatement(program, SimpleStatement.Kind.GOTO, new Literal(target)));
     }
   }
 
@@ -228,17 +238,15 @@ public class Parser {
     return new AssignStatement(assignment.children[0], assignment.children[1]);
   }
 
-  private NextStatement parseNext(ExpressionParser.Tokenizer tokenizer) {
+  private void parseNext(ExpressionParser.Tokenizer tokenizer, List<Node> result) {
     tokenizer.nextToken();
-    ArrayList<Node> vars = new ArrayList<>();
-    if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF &&
-            !tokenizer.currentValue.equals(":")) {
+    if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER) {
       do {
-        vars.add(expressionParser.parse(tokenizer));
+        result.add(new NextStatement(tokenizer.consumeIdentifier()));
       } while (tokenizer.tryConsume(","));
+    } else {
+      result.add(new NextStatement(null));
     }
-    return new NextStatement(vars.toArray(new Node[vars.size()]));
-
   }
 
   public List<? extends Node> parseStatementList(ExpressionParser.Tokenizer tokenizer) {
@@ -246,15 +254,14 @@ public class Parser {
     Node statement;
     do {
       while (tokenizer.tryConsume(":")) {
-        result.add(new Statement(program, null));
+        result.add(new SimpleStatement(program, null));
       }
       if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.EOF) {
         break;
       }
-      statement = parseStatement(tokenizer);
-      result.add(statement);
-    } while (statement instanceof Statement && ((Statement) statement).kind == Statement.Kind.IF ? statement.children.length == 1
-        : tokenizer.tryConsume(":"));
+      parseStatement(tokenizer, result);
+      statement = result.get(result.size() - 1);
+    } while (statement instanceof IfStatement || tokenizer.tryConsume(":"));
     if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF) {
       throw tokenizer.exception("Leftover input.", null);
     }

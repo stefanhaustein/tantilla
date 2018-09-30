@@ -2,7 +2,8 @@ package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.node.Statement;
+import org.kobjects.asde.lang.statement.IfStatement;
+import org.kobjects.asde.lang.statement.SimpleStatement;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,7 +25,7 @@ public class CodeLine {
         }
         for (int i = 0; i < statements.size(); i++) {
             if (i > 0) {
-                sb.append(i == 0 || (statements.get(i - 1) instanceof Statement &&  ((Statement) statements.get(i - 1)).kind == Statement.Kind.IF) ? " " : " : ");
+                sb.append((i == 0 || statements.get(i - 1) instanceof IfStatement) ? "" : " : ");
             }
             statements.get(i).toString(sb, errors);
         }

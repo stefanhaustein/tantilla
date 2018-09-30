@@ -35,7 +35,7 @@ public abstract class Node {
     return eval(interpreter);
   }
 
-  double evalDouble(Interpreter interpreter, int i) {
+  public double evalDouble(Interpreter interpreter, int i) {
     Object o = children[i].eval(interpreter);
     if (!(o instanceof Number)) {
       throw new RuntimeException("Number expected in " + this.toString());
@@ -43,7 +43,7 @@ public abstract class Node {
     return ((Number) o).doubleValue();
   }
 
-  int evalInt(Interpreter interpreter, int i) {
+  public int evalInt(Interpreter interpreter, int i) {
     return (int) evalDouble(interpreter, i);
   }
 

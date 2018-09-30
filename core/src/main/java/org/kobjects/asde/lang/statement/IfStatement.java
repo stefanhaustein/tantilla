@@ -1,20 +1,25 @@
-package org.kobjects.asde.lang.node;
+package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.node.Node;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
-public class AssignStatement extends Node {
-    public AssignStatement(Node target, Node value) {
-        super(target, value);
+public class IfStatement extends Node {
+
+    public IfStatement(Node condition) {
+        super(condition);
     }
 
     @Override
     public Object eval(Interpreter interpreter) {
-        ((AssignableNode) children[0]).set(interpreter, children[1].eval(interpreter));
+        if (evalDouble(interpreter, 0) == 0.0) {
+            interpreter.currentLine++;
+            interpreter.currentIndex = 0;
+        }
         return null;
     }
 
@@ -25,8 +30,8 @@ public class AssignStatement extends Node {
 
     @Override
     public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+        appendLinked(asb, "IF ", errors);
         children[0].toString(asb, errors);
-        appendLinked(asb, " = ", errors);
-        children[1].toString(asb, errors);
+        asb.append(" THEN ");
     }
 }

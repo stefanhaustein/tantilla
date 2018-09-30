@@ -1,16 +1,15 @@
-package org.kobjects.asde.lang.node;
+package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.StackEntry;
 import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
-
-import javax.swing.plaf.nimbus.State;
 
 public class ForStatement extends Node {
     private final String varName;
@@ -35,7 +34,8 @@ public class ForStatement extends Node {
             double step = children.length > 2 ? evalDouble(interpreter, 2) : 1.0;
             if (Math.signum(step) == Math.signum(Double.compare(current, end))) {
                 int nextPosition[] = new int[3];
-                if (interpreter.callableUnit.find((Node statement) -> (statement instanceof NextStatement), children[0].toString(), nextPosition) == null) {
+                if (interpreter.callableUnit.find((Node statement) -> (statement instanceof NextStatement
+                        && (((NextStatement) statement).varName == null || ((NextStatement) statement).varName.equalsIgnoreCase(varName))), nextPosition) == null) {
                     throw new RuntimeException("FOR without NEXT");
                 }
                 interpreter.currentLine = nextPosition[0];

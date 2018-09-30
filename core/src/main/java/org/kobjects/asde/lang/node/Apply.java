@@ -42,7 +42,11 @@ public class Apply extends AssignableNode {
     for (int i = 1; i < children.length; i++) {
       locals[i - 1] = children[i].eval(interpreter);
     }
-    return  function.eval(interpreter, locals);
+    try {
+        return function.eval(interpreter, locals);
+    } catch (Exception e) {
+        throw new RuntimeException(e.getMessage() + " in " + children[0]);
+    }
   }
 
   public Type returnType() {

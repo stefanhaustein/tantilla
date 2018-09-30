@@ -1,10 +1,10 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.node.ForStatement;
-import org.kobjects.asde.lang.node.NextStatement;
+import org.kobjects.asde.lang.statement.ForStatement;
+import org.kobjects.asde.lang.statement.NextStatement;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.node.Statement;
+import org.kobjects.asde.lang.statement.SimpleStatement;
 import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.FunctionType;
 
@@ -125,7 +125,7 @@ public class CallableUnit implements Function {
     }
 
 
-    public Statement find(StatementMatcher matcher, String name, int[] position) {
+    public Node find(StatementMatcher matcher, int[] position) {
         Map.Entry<Integer, CodeLine> entry;
         while (null != (entry = ceilingEntry(position[0]))) {
             position[0] = entry.getKey();
@@ -133,15 +133,7 @@ public class CallableUnit implements Function {
             while (position[1] < list.size()) {
                 Node statement = list.get(position[1]);
                 if (matcher.statementMatches(statement)) {
-                    if (name == null || statement.children.length == 0) {
-                        return (Statement) statement;
-                    }
-                    for (int i = 0; i < statement.children.length; i++) {
-                        if (statement.children[i].toString().equalsIgnoreCase(name)) {
-                            position[2] = i;
-                            return (Statement) statement;
-                        }
-                    }
+                        return statement;
                 }
                 position[1]++;
             }

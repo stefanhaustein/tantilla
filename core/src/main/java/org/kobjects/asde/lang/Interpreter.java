@@ -1,11 +1,10 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.node.Statement;
+import org.kobjects.asde.lang.statement.SimpleStatement;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +18,7 @@ public class Interpreter {
     public ArrayList<StackEntry> stack = new ArrayList<>();
 
     public int[] dataPosition = new int[3];
-    public Statement dataStatement;
+    public SimpleStatement dataStatement;
     public Object returnValue;
 
     public Interpreter(Program program, CallableUnit callableUnit, Object[] locals) {
@@ -103,8 +102,8 @@ public class Interpreter {
                 Object result = runStatementsImpl(statements);
                 if (currentLine >= 0) {
                     programInterpreter.runAsync(currentLine);
-                } else if (statements.size() == 0 || (!(statements.get(statements.size() - 1) instanceof Statement)
-                        || ((Statement) statements.get(statements.size() - 1)).kind != Statement.Kind.PRINT)) {
+                } else if (statements.size() == 0 || (!(statements.get(statements.size() - 1) instanceof SimpleStatement)
+                        || ((SimpleStatement) statements.get(statements.size() - 1)).kind != SimpleStatement.Kind.PRINT)) {
                     programInterpreter.program.console.print(result == null ? "OK\n" : (String.valueOf(result) + "\n"));
                 }
 
@@ -142,9 +141,10 @@ public class Interpreter {
     }
 
     public Object call(CallableUnit callableUnit, Object[] locals) {
-        Interpreter sub = new Interpreter(program, callableUnit, locals);
-        sub.runCallableUnit();
-        return sub.returnValue;
+            Interpreter sub = new Interpreter(program, callableUnit, locals);
+            sub.runCallableUnit();
+            return sub.returnValue;
+
     }
 
 }
