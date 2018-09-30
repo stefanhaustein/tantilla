@@ -4,7 +4,6 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.statement.ForStatement;
 import org.kobjects.asde.lang.statement.NextStatement;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.statement.SimpleStatement;
 import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.FunctionType;
 

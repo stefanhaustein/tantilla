@@ -3,7 +3,6 @@ package org.kobjects.asde.lang;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.IfStatement;
-import org.kobjects.asde.lang.statement.SimpleStatement;
 
 import java.util.ArrayList;
 import java.util.Collections;

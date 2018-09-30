@@ -4,14 +4,18 @@ import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.statement.AssignStatement;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.node.Command;
+import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.ForStatement;
 import org.kobjects.asde.lang.statement.IfStatement;
+import org.kobjects.asde.lang.statement.IoStatement;
 import org.kobjects.asde.lang.statement.LetStatement;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.statement.NextStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Operator;
-import org.kobjects.asde.lang.statement.SimpleStatement;
+import org.kobjects.asde.lang.statement.RemStatement;
+import org.kobjects.asde.lang.statement.ReturnStatement;
+import org.kobjects.asde.lang.statement.LegacyStatement;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.expressionparser.ExpressionParser;
 
@@ -51,8 +55,14 @@ public class Parser {
     String name = tokenizer.currentValue;
 
     switch (name.toUpperCase()) {
+      case "DIM":
+        parseDim(tokenizer, result);
+        return;
       case "FOR":
         result.add(parseFor(tokenizer));
+        return;
+      case "INPUT":
+        result.add(parseIo(IoStatement.Kind.INPUT, tokenizer));
         return;
       case "LET":
         result.add(parseLet(tokenizer));
@@ -62,6 +72,15 @@ public class Parser {
         return;
       case "NEXT":
         parseNext(tokenizer, result);
+        return;
+      case "PRINT":
+        result.add(parseIo(IoStatement.Kind.PRINT, tokenizer));
+        return;
+      case "REM":
+        result.add(parseRem(tokenizer));
+        return;
+      case "RETURN":
+        result.add(parseReturn(tokenizer));
         return;
     }
     for (Command.Kind kind : Command.Kind.values()) {
@@ -77,7 +96,7 @@ public class Parser {
       name = "PRINT";
     }
 
-    for (SimpleStatement.Kind kind : SimpleStatement.Kind.values()) {
+    for (LegacyStatement.Kind kind : LegacyStatement.Kind.values()) {
       if (name.equalsIgnoreCase(kind.name())) {
         result.add(parseStatement(tokenizer, kind));
         return;
@@ -93,52 +112,31 @@ public class Parser {
     }
   }
 
-  SimpleStatement parseStatement(ExpressionParser.Tokenizer tokenizer, SimpleStatement.Kind kind) {
+  LegacyStatement parseStatement(ExpressionParser.Tokenizer tokenizer, LegacyStatement.Kind kind) {
     tokenizer.nextToken();
     switch (kind) {
       case RESTORE: // 0 or 1 param; Default is 0
-      case RETURN:
         if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF &&
             !tokenizer.currentValue.equals(":")) {
-          return new SimpleStatement(program, kind, expressionParser.parse(tokenizer));
+          return new LegacyStatement(program, kind, expressionParser.parse(tokenizer));
         }
-        return new SimpleStatement(program, kind);
+        return new LegacyStatement(program, kind);
 
       case DEF:  // Exactly one param
       case GOTO:
       case GOSUB:
       case PAUSE:
-        return new SimpleStatement(program, kind, expressionParser.parse(tokenizer));
+        return new LegacyStatement(program, kind, expressionParser.parse(tokenizer));
 
 
       case DATA:  // One or more params
-      case DIM:
       case READ: {
         ArrayList<Node> expressions = new ArrayList<>();
         do {
           expressions.add(expressionParser.parse(tokenizer));
         } while (tokenizer.tryConsume(","));
-        return new SimpleStatement(program, kind, expressions.toArray(new Node[expressions.size()]));
+        return new LegacyStatement(program, kind, expressions.toArray(new Node[expressions.size()]));
       }
-
-      case INPUT:
-      case PRINT:
-        List<Node> args = new ArrayList<>();
-        List<String> delimiter = new ArrayList<>();
-        while (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF
-            && !tokenizer.currentValue.equals(":")) {
-          if (tokenizer.currentValue.equals(",") || tokenizer.currentValue.equals(";")) {
-            delimiter.add(tokenizer.currentValue + " ");
-            tokenizer.nextToken();
-            if (delimiter.size() > args.size()) {
-              args.add(new Literal(Program.INVISIBLE_STRING));
-            }
-          } else {
-            args.add(expressionParser.parse(tokenizer));
-          }
-        }
-        return new SimpleStatement(program, kind, delimiter.toArray(new String[delimiter.size()]),
-            args.toArray(new Node[args.size()]));
 
       case ON: {
         List<Node> expressions = new ArrayList<Node>();
@@ -154,22 +152,11 @@ public class Parser {
         do {
           expressions.add(expressionParser.parse(tokenizer));
         } while (tokenizer.tryConsume(","));
-        return new SimpleStatement(program, kind, suffix,
+        return new LegacyStatement(program, kind, suffix,
             expressions.toArray(new Node[expressions.size()]));
       }
-      case REM: {
-        StringBuilder sb = new StringBuilder();
-        while (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF) {
-          sb.append(tokenizer.leadingWhitespace).append(tokenizer.currentValue);
-          tokenizer.nextToken();
-        }
-        if (sb.length() > 0 && sb.charAt(0) == ' ') {
-          sb.deleteCharAt(0);
-        }
-        return new SimpleStatement(program, kind, new Identifier(program, sb.toString()));
-      }
       default:
-        return new SimpleStatement(program, kind);
+        return new LegacyStatement(program, kind);
     }
   }
 
@@ -192,6 +179,15 @@ public class Parser {
     }
   }
 
+  private void parseDim(ExpressionParser.Tokenizer tokenizer, List<Node> result) {
+    tokenizer.nextToken();
+    ArrayList<Node> expressions = new ArrayList<>();
+    do {
+      expressions.add(expressionParser.parse(tokenizer));
+    } while (tokenizer.tryConsume(","));
+    result.add(new DimStatement(expressions.toArray(new Node[expressions.size()])));
+  }
+
   private void parseIf(ExpressionParser.Tokenizer tokenizer, List<Node> result) {
     tokenizer.nextToken();
     result.add(new IfStatement(expressionParser.parse(tokenizer)));
@@ -201,8 +197,28 @@ public class Parser {
     if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.NUMBER) {
       double target = (int) Double.parseDouble(tokenizer.currentValue);
       tokenizer.nextToken();
-      result.add(new SimpleStatement(program, SimpleStatement.Kind.GOTO, new Literal(target)));
+      result.add(new LegacyStatement(program, LegacyStatement.Kind.GOTO, new Literal(target)));
     }
+  }
+
+  private IoStatement parseIo(IoStatement.Kind kind, ExpressionParser.Tokenizer tokenizer) {
+    tokenizer.nextToken();
+    List<Node> args = new ArrayList<>();
+    List<String> delimiter = new ArrayList<>();
+    while (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF
+            && !tokenizer.currentValue.equals(":")) {
+      if (tokenizer.currentValue.equals(",") || tokenizer.currentValue.equals(";")) {
+        delimiter.add(tokenizer.currentValue + " ");
+        tokenizer.nextToken();
+        if (delimiter.size() > args.size()) {
+          args.add(new Literal(Program.INVISIBLE_STRING));
+        }
+      } else {
+        args.add(expressionParser.parse(tokenizer));
+      }
+    }
+    return new IoStatement(kind, delimiter.toArray(new String[delimiter.size()]),
+            args.toArray(new Node[args.size()]));
   }
 
   private Node parseFor(ExpressionParser.Tokenizer tokenizer) {
@@ -249,12 +265,34 @@ public class Parser {
     }
   }
 
+  private RemStatement parseRem(ExpressionParser.Tokenizer tokenizer) {
+    tokenizer.nextToken();
+    StringBuilder sb = new StringBuilder();
+    while (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF) {
+      sb.append(tokenizer.leadingWhitespace).append(tokenizer.currentValue);
+      tokenizer.nextToken();
+    }
+    if (sb.length() > 0 && sb.charAt(0) == ' ') {
+      sb.deleteCharAt(0);
+    }
+    return new RemStatement(sb.toString());
+  }
+
+  private ReturnStatement parseReturn(ExpressionParser.Tokenizer tokenizer) {
+    tokenizer.nextToken();
+    if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF &&
+            !tokenizer.currentValue.equals(":")) {
+      return new ReturnStatement(expressionParser.parse(tokenizer));
+    }
+    return new ReturnStatement();
+  }
+
   public List<? extends Node> parseStatementList(ExpressionParser.Tokenizer tokenizer) {
     ArrayList<Node> result = new ArrayList<>();
     Node statement;
     do {
       while (tokenizer.tryConsume(":")) {
-        result.add(new SimpleStatement(program, null));
+        result.add(new LegacyStatement(program, null));
       }
       if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.EOF) {
         break;

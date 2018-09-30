@@ -1,7 +1,6 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Array;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Program;
@@ -21,32 +20,30 @@ import java.util.Collections;
 import java.util.Map;
 
 
-public class SimpleStatement extends Node {
+public class LegacyStatement extends Node {
 
   public enum Kind {
-    DATA, DIM, DEF, DUMP,
+    DATA, DEF, DUMP,
     END,
     GOTO, GOSUB,
-    INPUT,
     ON,
-    PRINT,
-    READ, REM, RESTORE, RETURN,
-     STOP,
-    PAUSE,
+    PAUSE, // TODO: Turn into builtin
+    READ, RESTORE,
+    STOP,
   }
 
   final Program program;
   public final Kind kind;
   final String[] delimiter;
 
-  public SimpleStatement(Program program, Kind kind, String[] delimiter, Node... children) {
+  public LegacyStatement(Program program, Kind kind, String[] delimiter, Node... children) {
     super(children);
     this.program = program;
     this.kind = kind;
     this.delimiter = delimiter;
   }
 
-  public SimpleStatement(Program program, Kind kind, Node... children) {
+  public LegacyStatement(Program program, Kind kind, Node... children) {
     this(program, kind, null, children);
   }
 
@@ -60,7 +57,6 @@ public class SimpleStatement extends Node {
     }
 
     switch (kind) {
-
       case DEF: {
         Node assignment = children[0];
         if (!(assignment instanceof Operator)
@@ -79,32 +75,12 @@ public class SimpleStatement extends Node {
           parameterTypes[i] = parameterNode.name.endsWith("$") ? Types.STRING : Types.NUMBER;
         }
         CallableUnit fn = new CallableUnit(program, new FunctionType(name.endsWith("$") ? Types.STRING : Types.NUMBER, parameterTypes), parameterNames);
-        fn.setLine(10, new CodeLine(Collections.singletonList(new SimpleStatement(program, Kind.RETURN, assignment.children[1]))));
+        fn.setLine(10, new CodeLine(Collections.singletonList(new ReturnStatement(assignment.children[1]))));
         program.setValue(interpreter.getSymbolScope(), name, fn);
         break;
       }
       case DATA:
-      case REM:
         break;
-
-      case DIM: {
-        for (Node expr : children) {
-          if (!(expr instanceof Apply)) {
-            throw new RuntimeException("DIM Syntax error");
-          }
-          if (!(expr.children[0] instanceof Identifier)) {
-            throw new RuntimeException("DIM identifier expected");
-          }
-          String name = ((Identifier) expr.children[0]).name;
-          int[] dims = new int[expr.children.length - 1];
-          for (int i = 0; i < dims.length; i++) {
-            // TODO: evalInt
-            dims[i] = ((Number) expr.children[i + 1].eval(interpreter)).intValue();
-          }
-          program.setValue(interpreter.getSymbolScope(), name, new Array(name.endsWith("$") ? Types.STRING : Types.NUMBER, dims));
-        }
-        break;
-      }
 
       case END:
         interpreter.currentLine = Integer.MAX_VALUE;
@@ -122,35 +98,11 @@ public class SimpleStatement extends Node {
         interpreter.currentIndex = 0;
         break;
 
-      case INPUT:
-        input(interpreter);
-        break;
-
       case PAUSE:
         try {
           Thread.sleep(evalInt(interpreter, 0));
         } catch (InterruptedException e) {
           Thread.currentThread().interrupt();
-        }
-        break;
-
-      case PRINT:
-        for (int i = 0; i < children.length; i++) {
-          Object val = children[i].eval(interpreter);
-          if (val instanceof Double) {
-            double d = (Double) val;
-            program.print((d < 0 ? "" : " ") + Program.toString(d) + " ");
-          } else {
-            program.print(Program.toString(val));
-          }
-          if (i < delimiter.length && delimiter[i].equals(", ")) {
-            program.print(
-                "                    ".substring(0, 14 - (program.tabPos % 14)));
-          }
-        }
-        if (delimiter.length < children.length &&
-            (children.length == 0 || !children[children.length - 1].toString().startsWith("TAB"))) {
-          program.print("\n");
         }
         break;
 
@@ -176,7 +128,7 @@ public class SimpleStatement extends Node {
             if (interpreter.dataStatement != null) {
               interpreter.dataPosition[1]++;
             }
-            interpreter.dataStatement = (SimpleStatement) program.main.find((Node statement)->(statement instanceof SimpleStatement && ((SimpleStatement) statement).kind == Kind.DATA), interpreter.dataPosition);
+            interpreter.dataStatement = (LegacyStatement) program.main.find((Node statement)->(statement instanceof LegacyStatement && ((LegacyStatement) statement).kind == Kind.DATA), interpreter.dataPosition);
             if (interpreter.dataStatement == null) {
               throw new RuntimeException("Out of data.");
             }
@@ -193,25 +145,6 @@ public class SimpleStatement extends Node {
         }
         break;
 
-      case RETURN:
-        if (children.length > 0) {
-          interpreter.returnValue = children[0].eval(interpreter);
-          interpreter.currentLine = Integer.MAX_VALUE;
-          interpreter.currentIndex = 0;
-        } else {
-          while (true) {
-            if (interpreter.stack.isEmpty()) {
-              throw new RuntimeException("RETURN without GOSUB.");
-            }
-            StackEntry entry = interpreter.stack.remove(interpreter.stack.size() - 1);
-            if (entry.forVariable == null) {
-              interpreter.currentLine = entry.lineNumber;
-              interpreter.currentIndex = entry.statementIndex + 1;
-              break;
-            }
-          }
-        }
-        break;
       case STOP:
         program.stopped = new int[]{interpreter.currentLine, interpreter.currentIndex};
         program.println("\nSTOPPED in " + interpreter.currentLine + ":" + interpreter.currentIndex);
@@ -230,34 +163,6 @@ public class SimpleStatement extends Node {
 
 
 
-
-  void input(Interpreter interpreter) {
-    for (int i = 0; i < children.length; i++) {
-      Node child = children[i];
-      if (kind == Kind.INPUT && child instanceof Identifier) {
-        if (i <= 0 || i > delimiter.length || !delimiter[i-1].equals(", ")) {
-          program.print("? ");
-        }
-        Identifier variable = (Identifier) child;
-        Object value;
-        while(true) {
-          value = program.console.read();
-          if (variable.name.endsWith("$")) {
-            break;
-          }
-          try {
-            value = Double.parseDouble((String) value);
-            break;
-          } catch (NumberFormatException e) {
-            program.print("Not a number. Please enter a number: ");
-          }
-        }
-        variable.set(interpreter, value);
-      } else {
-        program.print(Program.toString(child.eval(interpreter)));
-      }
-    }
-  }
 
   @Override
   public Type returnType() {

@@ -2,9 +2,9 @@ package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.node.Identifier;
+import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.LetStatement;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.statement.SimpleStatement;
 import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.expressionparser.ExpressionParser;
@@ -290,15 +290,10 @@ public class Program {
             node.resolve(resolutionContext);
             if (node instanceof LetStatement) {
                 setInitializer(GlobalSymbol.Scope.PERSISTENT, ((LetStatement) node).varName, node);
-            } else if (node instanceof SimpleStatement) {
-                SimpleStatement statement = (SimpleStatement) node;
-                switch (statement.kind) {
-                    case DIM:
-                        for (Node child: statement.children) {
-                            String name = ((Identifier) child.children[0]).name;
-                            setInitializer(GlobalSymbol.Scope.PERSISTENT, name, new SimpleStatement(this, SimpleStatement.Kind.DIM, child));
-                        }
-                        break;
+            } else if (node instanceof DimStatement) {
+                for (Node child: node.children) {
+                    String name = ((Identifier) child.children[0]).name;
+                    setInitializer(GlobalSymbol.Scope.PERSISTENT, name, new DimStatement(child));
                 }
             }
         }

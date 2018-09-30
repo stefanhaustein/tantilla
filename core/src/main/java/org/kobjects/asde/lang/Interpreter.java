@@ -1,7 +1,8 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.statement.SimpleStatement;
+import org.kobjects.asde.lang.statement.IoStatement;
+import org.kobjects.asde.lang.statement.LegacyStatement;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class Interpreter {
     public ArrayList<StackEntry> stack = new ArrayList<>();
 
     public int[] dataPosition = new int[3];
-    public SimpleStatement dataStatement;
+    public LegacyStatement dataStatement;
     public Object returnValue;
 
     public Interpreter(Program program, CallableUnit callableUnit, Object[] locals) {
@@ -102,8 +103,8 @@ public class Interpreter {
                 Object result = runStatementsImpl(statements);
                 if (currentLine >= 0) {
                     programInterpreter.runAsync(currentLine);
-                } else if (statements.size() == 0 || (!(statements.get(statements.size() - 1) instanceof SimpleStatement)
-                        || ((SimpleStatement) statements.get(statements.size() - 1)).kind != SimpleStatement.Kind.PRINT)) {
+                } else if (statements.size() == 0 || (!(statements.get(statements.size() - 1) instanceof IoStatement)
+                        || ((IoStatement) statements.get(statements.size() - 1)).kind != IoStatement.Kind.PRINT)) {
                     programInterpreter.program.console.print(result == null ? "OK\n" : (String.valueOf(result) + "\n"));
                 }
 
