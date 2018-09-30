@@ -24,22 +24,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.plaf.nimbus.State;
+
 
 public class Statement extends Node {
 
   public enum Kind {
-    CLEAR, CONTINUE,
     DATA, DIM, DEF, DUMP,
     END,
     GOTO, GOSUB,
     IF, INPUT,
-    LIST, LOAD,
-    NEXT,
     ON,
     PRINT,
-    READ, REM, RESTORE, RETURN, RUN,
-    SAVE, STOP,
-    TRON, PAUSE, TROFF
+    READ, REM, RESTORE, RETURN,
+     STOP,
+    PAUSE,
   }
 
   final Program program;
@@ -67,17 +66,6 @@ public class Statement extends Node {
     }
 
     switch (kind) {
-      case CONTINUE:
-        if (program.stopped == null) {
-          throw new RuntimeException("Not stopped.");
-        }
-        interpreter.currentLine = program.stopped[0];
-        interpreter.currentIndex = program.stopped[1] + 1;
-        break;
-
-      case CLEAR:
-        program.clear(interpreter);
-        break;
 
       case DEF: {
         Node assignment = children[0];
@@ -123,20 +111,6 @@ public class Statement extends Node {
         }
         break;
       }
-      case DUMP:
-        if (program.lastException != null) {
-          program.lastException.printStackTrace();
-          program.lastException = null;
-        } else {
-            program.println("\n" + program.getSymbolMap());
-
-        /*  for (int i = 0; i < program.arrays.length; i++) {
-            if (!program.arrays[i].isEmpty()) {
-              program.println((i + 1) + ": " + program.arrays[i]);
-            }
-          } */
-        }
-        break;
 
       case END:
         interpreter.currentLine = Integer.MAX_VALUE;
@@ -162,19 +136,6 @@ public class Statement extends Node {
           interpreter.currentLine = (int) evalDouble(interpreter, 1);
           interpreter.currentIndex = 0;
         }
-        break;
-
-      case LIST: {
-        program.print(program.toString());
-        break;
-      }
-
-      case LOAD:
-        load(interpreter);
-        break;
-
-      case NEXT:
-        loopEnd(interpreter);
         break;
 
       case INPUT:
@@ -231,7 +192,7 @@ public class Statement extends Node {
             if (interpreter.dataStatement != null) {
               interpreter.dataPosition[1]++;
             }
-            interpreter.dataStatement = program.main.find(Kind.DATA, null, interpreter.dataPosition);
+            interpreter.dataStatement = program.main.find((Node statement)->(statement instanceof Statement && ((Statement) statement).kind == Kind.DATA), null, interpreter.dataPosition);
             if (interpreter.dataStatement == null) {
               throw new RuntimeException("Out of data.");
             }
@@ -267,29 +228,11 @@ public class Statement extends Node {
           }
         }
         break;
-
-      case RUN:
-        program.clear(interpreter);
-
-        interpreter.currentLine = children.length == 0 ? 0 : (int) evalDouble(interpreter,0);
-        interpreter.currentIndex = 0;
-        break;
-
-      case SAVE:
-        program.save(children.length == 0 ? null : evalString(interpreter,0));
-        break;
-
       case STOP:
         program.stopped = new int[]{interpreter.currentLine, interpreter.currentIndex};
         program.println("\nSTOPPED in " + interpreter.currentLine + ":" + interpreter.currentIndex);
         interpreter.currentLine = Integer.MAX_VALUE;
         interpreter.currentIndex = 0;
-        break;
-      case TRON:
-        program.trace = true;
-        break;
-      case TROFF:
-        program.trace = false;
         break;
 
       default:
@@ -303,54 +246,6 @@ public class Statement extends Node {
 
 
 
-  void load(Interpreter interpreter) {
-    String line = null;
-    try {
-      URLConnection connection = new URL(evalString(interpreter, 0)).openConnection();
-      connection.setDoInput(true);
-      InputStream is = connection.getInputStream();
-      BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-      while (null != (line = reader.readLine())) {
-        try {
-          AsdeShell.processInputLine(interpreter, line);
-        } catch (Exception e) {
-          program.println(line);
-          program.println(e.getMessage());
-        }
-      }
-      reader.close();
-      is.close();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-
-  void loopEnd(Interpreter interpreter) {
-    for (int i = interpreter.nextSubIndex; i < Math.max(children.length, 1); i++) {
-      String name = children.length == 0 ? null : children[i].toString();
-      StackEntry entry;
-      while (true) {
-        if (interpreter.stack.isEmpty()
-            || interpreter.stack.get(interpreter.stack.size() - 1).forVariable == null) {
-          throw new RuntimeException("NEXT " + name + " without FOR.");
-        }
-        entry = interpreter.stack.remove(interpreter.stack.size() - 1);
-        if (name == null || entry.forVariableName.equals(name)) {
-          break;
-        }
-      }
-      double current = ((Double) entry.forVariable.get(interpreter)) + entry.step;
-      entry.forVariable.set(interpreter, current);
-      if (Math.signum(entry.step) != Math.signum(Double.compare(current, entry.end))) {
-        interpreter.stack.add(entry);
-        interpreter.currentLine = entry.lineNumber;
-        interpreter.currentIndex = entry.statementIndex + 1;
-        break;
-      }
-    }
-    interpreter.nextSubIndex = 0;
-  }
 
   void input(Interpreter interpreter) {
     for (int i = 0; i < children.length; i++) {

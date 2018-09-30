@@ -3,9 +3,11 @@ package org.kobjects.asde.lang.parser;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.AssignStatement;
 import org.kobjects.asde.lang.node.AssignableNode;
+import org.kobjects.asde.lang.node.Command;
 import org.kobjects.asde.lang.node.ForStatement;
 import org.kobjects.asde.lang.node.LetStatement;
 import org.kobjects.asde.lang.node.Literal;
+import org.kobjects.asde.lang.node.NextStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Operator;
 import org.kobjects.asde.lang.node.Statement;
@@ -49,40 +51,43 @@ public class Parser {
 
     switch (name.toUpperCase()) {
       case "FOR":
-        tokenizer.nextToken();
         return parseFor(tokenizer);
       case "LET":
-        tokenizer.nextToken();
         return parseLet(tokenizer);
+      case "NEXT":
+        return parseNext(tokenizer);
     }
+    for (Command.Kind kind : Command.Kind.values()) {
+      if (name.equalsIgnoreCase(kind.name())) {
+        return parseCommand(tokenizer, kind);
+      }
+    }
+
     if (tryConsume(tokenizer, "GO")) {  // GO TO, GO SUB -> GOTO, GOSUB
       name += tokenizer.currentValue;
     } else if (name.equals("?")) {
       name = "PRINT";
     }
-    Statement.Kind kind = null;
-    for (Statement.Kind t : Statement.Kind.values()) {
-      if (name.equalsIgnoreCase(t.name())) {
-        kind = t;
-        break;
-      }
-    }
-    if (kind == null) {
-      Node expression = expressionParser.parse(tokenizer);
 
-      if ((expression instanceof Operator) && (expression.children[0] instanceof AssignableNode)
-              && ((Operator) expression).name.equals("=")) {
-        return new AssignStatement(expression.children[0], expression.children[1]);
+    for (Statement.Kind kind : Statement.Kind.values()) {
+      if (name.equalsIgnoreCase(kind.name())) {
+        return parseStatement(tokenizer, kind);
       }
-      return expression;
     }
+
+    Node expression = expressionParser.parse(tokenizer);
+    if ((expression instanceof Operator) && (expression.children[0] instanceof AssignableNode)
+             && ((Operator) expression).name.equals("=")) {
+      return new AssignStatement(expression.children[0], expression.children[1]);
+    }
+    return expression;
+  }
+
+  Statement parseStatement(ExpressionParser.Tokenizer tokenizer, Statement.Kind kind) {
     tokenizer.nextToken();
-
     switch (kind) {
-      case RUN:  // 0 or 1 param; Default is 0
-      case RESTORE:
+      case RESTORE: // 0 or 1 param; Default is 0
       case RETURN:
-      case SAVE:
         if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF &&
             !tokenizer.currentValue.equals(":")) {
           return new Statement(program, kind, expressionParser.parse(tokenizer));
@@ -92,19 +97,9 @@ public class Parser {
       case DEF:  // Exactly one param
       case GOTO:
       case GOSUB:
-      case LOAD:
       case PAUSE:
         return new Statement(program, kind, expressionParser.parse(tokenizer));
 
-      case NEXT:   // Zero of more
-        ArrayList<Node> vars = new ArrayList<>();
-        if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF &&
-            !tokenizer.currentValue.equals(":")) {
-          do {
-            vars.add(expressionParser.parse(tokenizer));
-          } while (tokenizer.tryConsume(","));
-        }
-        return new Statement(program, kind, vars.toArray(new Node[vars.size()]));
 
       case DATA:  // One or more params
       case DIM:
@@ -181,7 +176,27 @@ public class Parser {
     }
   }
 
+  Command parseCommand(ExpressionParser.Tokenizer tokenizer, Command.Kind kind) {
+    tokenizer.nextToken();
+    switch (kind) {
+      case RUN:  // 0 or 1 param; Default is 0
+      case SAVE:
+        if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF &&
+                !tokenizer.currentValue.equals(":")) {
+          return new Command(kind, expressionParser.parse(tokenizer));
+        }
+        return new Command(kind);
+
+      case LOAD: // Exactly one param
+        return new Command(kind, expressionParser.parse(tokenizer));
+
+      default:
+        return new Command(kind);
+    }
+  }
+
   private Node parseFor(ExpressionParser.Tokenizer tokenizer) {
+    tokenizer.nextToken();
     Node assignment = expressionParser.parse(tokenizer);
     if (!(assignment instanceof Operator) || !(assignment.children[0] instanceof Identifier)
             || assignment.children[0].children.length != 0
@@ -199,6 +214,7 @@ public class Parser {
   }
 
   private Node parseLet(ExpressionParser.Tokenizer tokenizer) {
+    tokenizer.nextToken();
     Node assignment = expressionParser.parse(tokenizer);
     if (!(assignment instanceof Operator) || !(assignment.children[0] instanceof AssignableNode)
             || !((Operator) assignment).name.equals("=")) {
@@ -210,6 +226,19 @@ public class Parser {
       return new LetStatement(varName, assignment.children[1]);
     }
     return new AssignStatement(assignment.children[0], assignment.children[1]);
+  }
+
+  private NextStatement parseNext(ExpressionParser.Tokenizer tokenizer) {
+    tokenizer.nextToken();
+    ArrayList<Node> vars = new ArrayList<>();
+    if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF &&
+            !tokenizer.currentValue.equals(":")) {
+      do {
+        vars.add(expressionParser.parse(tokenizer));
+      } while (tokenizer.tryConsume(","));
+    }
+    return new NextStatement(vars.toArray(new Node[vars.size()]));
+
   }
 
   public List<? extends Node> parseStatementList(ExpressionParser.Tokenizer tokenizer) {

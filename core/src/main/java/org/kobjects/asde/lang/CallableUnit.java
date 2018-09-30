@@ -2,6 +2,7 @@ package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.node.ForStatement;
+import org.kobjects.asde.lang.node.NextStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Statement;
 import org.kobjects.asde.lang.parser.ResolutionContext;
@@ -37,13 +38,9 @@ public class CallableUnit implements Function {
             for (Node statement : line.statements) {
                 if (statement instanceof ForStatement) {
                     indent++;
-                } else if (statement instanceof Statement) {
-                    switch (((Statement) statement).kind) {
-                        case NEXT:
+                } else if (statement instanceof NextStatement) {
                             line.indent--;
                             indent--;
-                            break;
-                    }
                 }
                 try {
                     statement.resolve(resolutionContext);
@@ -128,14 +125,14 @@ public class CallableUnit implements Function {
     }
 
 
-    public Statement find(Statement.Kind kind, String name, int[] position) {
+    public Statement find(StatementMatcher matcher, String name, int[] position) {
         Map.Entry<Integer, CodeLine> entry;
         while (null != (entry = ceilingEntry(position[0]))) {
             position[0] = entry.getKey();
             List<Node> list = entry.getValue().statements;
             while (position[1] < list.size()) {
                 Node statement = list.get(position[1]);
-                if (statement instanceof Statement && ((Statement) statement).kind == kind) {
+                if (matcher.statementMatches(statement)) {
                     if (name == null || statement.children.length == 0) {
                         return (Statement) statement;
                     }
@@ -152,6 +149,10 @@ public class CallableUnit implements Function {
             position[1] = 0;
         }
         return null;
+    }
+
+    public interface StatementMatcher {
+        boolean statementMatches(Node statement);
     }
 
 }

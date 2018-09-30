@@ -10,6 +10,8 @@ import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
+import javax.swing.plaf.nimbus.State;
+
 public class ForStatement extends Node {
     private final String varName;
     ResolvedSymbol resolved;
@@ -33,7 +35,7 @@ public class ForStatement extends Node {
             double step = children.length > 2 ? evalDouble(interpreter, 2) : 1.0;
             if (Math.signum(step) == Math.signum(Double.compare(current, end))) {
                 int nextPosition[] = new int[3];
-                if (interpreter.callableUnit.find(Statement.Kind.NEXT, children[0].toString(), nextPosition) == null) {
+                if (interpreter.callableUnit.find((Node statement) -> (statement instanceof NextStatement), children[0].toString(), nextPosition) == null) {
                     throw new RuntimeException("FOR without NEXT");
                 }
                 interpreter.currentLine = nextPosition[0];
