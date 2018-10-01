@@ -12,11 +12,12 @@ import java.util.Map;
 
 // Not static for access to the variables.
 public class Apply extends AssignableNode {
-  final Program program;
 
-  public Apply(Program program, Node... children) {
+  private final boolean parentesis;
+
+  public Apply(boolean parentesis, Node... children) {
     super(children);
-    this.program = program;
+    this.parentesis = parentesis;
   }
 
   public void set(Interpreter interpreter, Object value) {
@@ -56,13 +57,15 @@ public class Apply extends AssignableNode {
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
      children[0].toString(asb, errors);
-     asb.append('(');
+     asb.append(parentesis ? '(' : ' ');
      for (int i = 1; i < children.length; i++) {
           if (i > 1) {
               asb.append(", ");
           }
           children[i].toString(asb, errors);
       }
-      asb.append(')');
+      if (parentesis) {
+          asb.append(')');
+      }
   }
 }

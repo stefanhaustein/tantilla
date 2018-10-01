@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang.parser;
 
 import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.node.Apply;
+import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.statement.AssignStatement;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.node.Command;
@@ -107,6 +109,26 @@ public class Parser {
     if ((expression instanceof Operator) && (expression.children[0] instanceof AssignableNode)
              && ((Operator) expression).name.equals("=")) {
       result.add(new AssignStatement(expression.children[0], expression.children[1]));
+    } else if (!tokenizer.currentValue.equals(":") && !tokenizer.currentValue.equals("")) {
+      List<Node> params = new ArrayList<>();
+      if (tokenizer.tryConsume(",")) {
+        if (expression instanceof Operator && ((Operator) expression).name.equals("-")) {
+          params.add(expression.children[0]);
+          params.add(new Group(new Operator("-", expression.children[1])));
+        } else if (expression instanceof Apply  && expression.children.length == 2) {
+          params.add(expression.children[0]);
+          params.add(new Group(expression.children[1]));
+        } else {
+          throw new RuntimeException("Unexpected comma");
+        }
+      } else {
+        params.add(expression);
+      }
+      do {
+        params.add(expressionParser.parse(tokenizer));
+      } while (tokenizer.tryConsume(","));
+
+      result.add(new Apply(false, params.toArray(Node.EMPTY_ARRAY)));
     } else {
       result.add(expression);
     }
@@ -181,11 +203,21 @@ public class Parser {
 
   private void parseDim(ExpressionParser.Tokenizer tokenizer, List<Node> result) {
     tokenizer.nextToken();
-    ArrayList<Node> expressions = new ArrayList<>();
     do {
-      expressions.add(expressionParser.parse(tokenizer));
+      Node dimExpr = expressionParser.parse(tokenizer);
+      if (!(dimExpr instanceof Apply)) {
+        throw new RuntimeException("DIM: Apply expected, got: " + dimExpr);
+      }
+      if (!(dimExpr.children[0] instanceof Identifier)) {
+        throw new RuntimeException("DIM: Identifier expected, got: " + dimExpr.children[0]);
+      }
+      if (dimExpr.children.length < 2) {
+        throw new RuntimeException("DIM: At least one dimension expected");
+      }
+      Node[] dimensions = new Node[dimExpr.children.length - 1];
+      System.arraycopy(dimExpr.children, 1, dimensions, 0, dimensions.length);
+      result.add(new DimStatement(((Identifier) dimExpr.children[0]).name, dimensions));
     } while (tokenizer.tryConsume(","));
-    result.add(new DimStatement(expressions.toArray(new Node[expressions.size()])));
   }
 
   private void parseIf(ExpressionParser.Tokenizer tokenizer, List<Node> result) {

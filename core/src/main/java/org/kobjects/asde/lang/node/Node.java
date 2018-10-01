@@ -11,12 +11,12 @@ import java.util.Map;
 
 public abstract class Node {
 
-  static final Node[] EMPTY_NODE_ARRAY = new Node[0];
+  public static final Node[] EMPTY_ARRAY = new Node[0];
 
   public Node[] children;
 
   protected Node(Node... children) {
-    this.children = children == null || children.length == 0 ? EMPTY_NODE_ARRAY : children;
+    this.children = children == null || children.length == 0 ? EMPTY_ARRAY : children;
   }
 
   public void resolve(ResolutionContext resolutionContext) {

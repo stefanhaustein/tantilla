@@ -33,7 +33,7 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
     for (int i = 0; i < arguments.size(); i++) {
       children[i + 1] = arguments.get(i);
     }
-    return new Apply(program, children);
+    return new Apply(true, children);
   }
 
   @Override

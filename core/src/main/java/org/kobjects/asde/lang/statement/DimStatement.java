@@ -4,35 +4,27 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Array;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
-import org.kobjects.asde.lang.node.Apply;
-import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
 public class DimStatement extends Node {
-    public DimStatement(Node... children) {
+    public final String varName;
+
+    public DimStatement(String varName, Node... children) {
         super(children);
+        this.varName = varName;
     }
 
     @Override
     public Object eval(Interpreter interpreter) {
-        for (Node expr : children) {
-            if (!(expr instanceof Apply)) {
-                throw new RuntimeException("DIM Syntax error");
-            }
-            if (!(expr.children[0] instanceof Identifier)) {
-                throw new RuntimeException("DIM identifier expected");
-            }
-            String name = ((Identifier) expr.children[0]).name;
-            int[] dims = new int[expr.children.length - 1];
-            for (int i = 0; i < dims.length; i++) {
-                // TODO: evalInt
-                dims[i] = ((Number) expr.children[i + 1].eval(interpreter)).intValue();
-            }
-            interpreter.program.setValue(interpreter.getSymbolScope(), name, new Array(name.endsWith("$") ? Types.STRING : Types.NUMBER, dims));
+        int[] dims = new int[children.length];
+        for (int i = 0; i < children.length; i++) {
+             // TODO: evalInt
+             dims[i] = evalInt(interpreter, i);
         }
+        interpreter.program.setValue(interpreter.getSymbolScope(), varName, new Array(varName.endsWith("$") ? Types.STRING : Types.NUMBER, dims));
         return null;
     }
 

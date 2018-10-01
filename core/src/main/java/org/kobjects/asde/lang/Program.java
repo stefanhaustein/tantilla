@@ -291,10 +291,8 @@ public class Program {
             if (node instanceof LetStatement) {
                 setInitializer(GlobalSymbol.Scope.PERSISTENT, ((LetStatement) node).varName, node);
             } else if (node instanceof DimStatement) {
-                for (Node child: node.children) {
-                    String name = ((Identifier) child.children[0]).name;
-                    setInitializer(GlobalSymbol.Scope.PERSISTENT, name, new DimStatement(child));
-                }
+                DimStatement dim = (DimStatement) node;
+                setInitializer(GlobalSymbol.Scope.PERSISTENT, dim.varName, new DimStatement(dim.varName, dim.children));
             }
         }
     }
