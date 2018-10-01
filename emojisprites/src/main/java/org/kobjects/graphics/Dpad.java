@@ -70,9 +70,13 @@ public class Dpad extends ViewHolder<LinearLayout> {
 
     void adjustSize(ImageView view) {
         int imageSize = Math.round(viewport.scale * BUTTON_SIZE);
-        view.getLayoutParams().width = imageSize;
-        view.getLayoutParams().height = imageSize;
-        view.requestLayout();
+        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+        if (layoutParams.width != imageSize || layoutParams.height != imageSize) {
+            layoutParams.width = imageSize;
+            layoutParams.height = imageSize;
+            view.setLayoutParams(layoutParams);
+            view.requestLayout();
+        }
     }
 
     void requestSync() {
