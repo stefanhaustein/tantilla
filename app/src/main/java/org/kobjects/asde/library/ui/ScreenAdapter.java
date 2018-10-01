@@ -5,7 +5,6 @@ import android.view.View;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Method;
 import org.kobjects.asde.lang.Types;
-import org.kobjects.graphics.Pen;
 import org.kobjects.graphics.Viewport;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.FunctionType;
@@ -72,7 +71,7 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
         viewport.activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                viewport.clear();
+                viewport.cls();
             }
         });
     }

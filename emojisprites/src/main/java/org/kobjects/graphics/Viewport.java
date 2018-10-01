@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -34,14 +33,16 @@ public class Viewport extends FrameLayout {
 
         dpad = new Dpad(this);
 
-        clear();
+        cls();
 
         addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 scale = Math.min(right - left, bottom - top) / 100f;
+                dpad.requestSync();
             }
         });
+
 
         //setClickable(true);
         //setFocusable(FOCUSABLE);
@@ -58,9 +59,7 @@ public class Viewport extends FrameLayout {
         return false;
     }
 
-
-
-    public void clear() {
+    public void cls() {
         removeAllViews();
         bitmap.eraseColor(0);
         addView(imageView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -68,5 +67,6 @@ public class Viewport extends FrameLayout {
         FrameLayout.LayoutParams dpadLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dpadLayoutParams.gravity = Gravity.BOTTOM;
         addView(dpad.getView(), dpadLayoutParams);
+        dpad.setVisible(false);
     }
 }

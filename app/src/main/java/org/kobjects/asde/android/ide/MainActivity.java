@@ -233,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     shellInterpreter.addStartStopListener(new StartStopListener() {
         @Override
         public void programStarted() {
-            // screen.clear();
+            // screen.cls();
         }
 
         @Override

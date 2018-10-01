@@ -9,6 +9,8 @@ import android.widget.LinearLayout;
 
 public class Dpad extends ViewHolder<LinearLayout> {
 
+    static final int BUTTON_SIZE = 10;
+
     static LinearLayout.LayoutParams createLayoutParams() {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.gravity = Gravity.BOTTOM;
@@ -28,7 +30,6 @@ public class Dpad extends ViewHolder<LinearLayout> {
     public Dpad(Viewport viewport) {
         super(viewport, new LinearLayout(viewport.getContext()));
         Context context = viewport.getContext();
-
 
         left = new ImageView(context);
         left.setImageDrawable(Emojis.getDrawable(context, "◀️"));
@@ -67,11 +68,19 @@ public class Dpad extends ViewHolder<LinearLayout> {
     }
 
 
+    void adjustSize(ImageView view) {
+        int imageSize = Math.round(viewport.scale * BUTTON_SIZE);
+        view.getLayoutParams().width = imageSize;
+        view.getLayoutParams().height = imageSize;
+        view.requestLayout();
+    }
+
     void requestSync() {
         if (!syncRequested) {
             syncRequested = true;
             viewport.activity.runOnUiThread(this);
         }
+
     }
 
     public boolean getVisible() {
@@ -83,5 +92,12 @@ public class Dpad extends ViewHolder<LinearLayout> {
     public void run() {
         syncRequested = false;
         view.setVisibility(visible ? View.VISIBLE : View.GONE);
+        adjustSize(left);
+        adjustSize(up);
+        adjustSize(down);
+        adjustSize(right);
+        adjustSize(fire);
+
+
     }
 }
