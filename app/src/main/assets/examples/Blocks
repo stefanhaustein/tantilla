@@ -19,14 +19,14 @@ END FUNCTION
 
 SUB setcolor(Number c)
 5 REM Store in array?
-10 if c = 1 then pen.fillcolor = 255*256*65536 + 255
-20 if c = 2 then pen.fillcolor = 255*256*65536 + 255 * 256
-30 if c = 3 then pen.fillcolor = 255*256*65536 + 255 * 65536
-40 if c = 4 then pen.fillcolor = 255*256*65536 + 255 + 255 * 256
-50 if c = 5 then pen.fillcolor = 255*256*65536 + 255 + 255 * 65536
-60 if c = 6 then pen.fillcolor = 255*256*65536 + 255 * 256 + 255 * 65536
-70 if c = 7 then pen.fillcolor = 255*256*65536 + 128 + 255 * 256
-80 if c = 8 then pen.fillcolor = 255*256*65536
+10 if c = 1 then pen.fillcolor = 255*256*65536 + 255 : REM blue J
+20 if c = 2 then pen.fillcolor = 255*256*65536 + 255 * 256 : REM green S
+30 if c = 3 then pen.fillcolor = 255*256*65536 + 255 * 65536 + 128 * 256 : REM orange L
+40 if c = 4 then pen.fillcolor = 255*256*65536 + 255 * 65536 : REM red Z
+50 if c = 5 then pen.fillcolor = 255*256*65536 + 255 + 255 * 65536 : REM violet T
+60 if c = 6 then pen.fillcolor = 255*256*65536 + 255 * 65536  + 255 * 256 : REM yellow O
+70 if c = 7 then pen.fillcolor = 255*256*65536 + 255 * 256 + 255  : REM cyan I
+80 if c = 8 then pen.fillcolor = 255*256*65536 : REM black border
 END SUB
 
 SUB drawpiece()
@@ -35,7 +35,7 @@ SUB drawpiece()
 120  LET x = px0 + piecex(i)
 130  LET y = py0 + piecey(i)
 140  grid(X,Y) = pc
-150  pen.drawRect(x * 4 - 34.75, 45.25 - y * 4, 3.5, 3.5)
+150  pen.drawRect x * 4 - 34.75, 45.25 - y * 4, 3.5, 3.5
 160 NEXT i
 END SUB
 
@@ -44,7 +44,7 @@ SUB erasepiece()
 110   LET x = px0 + piecex(i)
 120   LET y = py0 + piecey(i)
 130   grid(x, y) = 0
-140   pen.clearRect(x * 4 - 34.75, 45.25 - y * 4, 4, 4)
+140   pen.clearRect x * 4 - 35, 45 - y * 4, 4, 4
 150 NEXT i
 END SUB
 
@@ -59,8 +59,8 @@ SUB drawall()
 100 for y = 0 to 20
 120  for x = 1 to 12
 130    let c = grid(x, y)
-140    if c then setcolor(c) : pen.drawRect(x * 4 - 34.75, 45.25 - y * 4, 3.5, 3.5)
-145    if c = 0 then pen.clearRect(x * 4 - 35, 45 - y * 4, 4, 4)
+140    if c then setcolor c  : pen.drawRect x * 4 - 34.75, 45.25 - y * 4, 3.5, 3.5
+145    if c = 0 then pen.clearRect x * 4 - 35, 45 - y * 4, 4, 4
 150  next x
 160 next y
 END SUB
@@ -80,7 +80,7 @@ SUB checkgrid()
 130   FOR x = 2 to 11
 140     IF grid(x,cy) <> 0 then ROW = ROW + 1
 150   NEXT x
-160   IF row = 10 then dropgrid(cy)
+160   IF row = 10 then dropgrid cy
 170 next cy
 END SUB
 
@@ -124,16 +124,18 @@ END SUB
 
 SUB rotate()
 100 erasepiece()
+105 LET mx = 2
+107 IF pc > 5 THEN mx = 3
 110 FOR i = 0 to 3
 120  LET x = piecex(i)
-130  piecex(i) = 3 - piecey(i)
+130  piecex(i) = mx - piecey(i)
 140  piecey(i) = x
 150 NEXT i
 160 if checkposition(px0, py0) then drawpiece() : RETURN 0
 200 FOR j = 0 to 3
 210   LET xx = piecex(j)
 220   piecex(j) = piecey(j)
-230   piecey(j) = 3 - xx
+230   piecey(j) = mx - xx
 240 NEXT j
 END SUB
 
@@ -148,7 +150,7 @@ END SUB
 220 data 1, 0, 1, 1, 2, 1, 2, 2
 230 data 1, 0, 1, 1, 1, 2, 2, 2
 240 data 2, 0, 2, 1, 1, 1, 1, 2
-250 data 2, 0, 1, 1, 2, 1, 3, 1
+250 data 1, 0, 0, 1, 1, 1, 2, 1
 260 data 1, 0, 2, 0, 1, 1, 2, 1
 270 data 2, 0, 2, 1, 2, 2, 2, 3
 
