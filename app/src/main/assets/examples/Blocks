@@ -86,7 +86,7 @@ END SUB
 
 SUB newpiece()
 10 checkgrid()
-100 px0 = 13
+100 px0 = 14
 110 py0 = 1
 120 pc = pp
 125 definepiece()
@@ -146,7 +146,7 @@ END SUB
 150 PP = 1
 
 200 rem Piece data: J, S, L, Z, T, O, I
-210 data 2, 0, 2, 1, 2, 2, 1, 2
+210 data 1, 0, 1, 1, 1, 2, 0, 2
 220 data 1, 0, 1, 1, 2, 1, 2, 2
 230 data 1, 0, 1, 1, 1, 2, 2, 2
 240 data 2, 0, 2, 1, 1, 1, 1, 2
