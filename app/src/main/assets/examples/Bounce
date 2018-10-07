@@ -1,12 +1,12 @@
 10 bob = new sprite
-20 bob.size = 30
+20 bob.size = 50
 30 dx = 0.5
-100 if bob.right < 0 then dx = -0.5
-110 if bob.left < 0 then dx = 0.5
-120 if bob.bottom < 0 then dy = 2
+100 if bob.right < 0 then dx = -1
+110 if bob.left < 0 then dx = 1
+120 if bob.bottom < 0 then dy = 4
 130 bob.x = bob.x + dx
 140 bob.y = bob.y + dy
-150 bob.angle = bob.angle + 3.14 * dx
-160 dy = dy - 0.04
+150 bob.angle = bob.angle + 2 * dx
+160 dy = dy - 0.1
 170 pause 15
 180 goto 100

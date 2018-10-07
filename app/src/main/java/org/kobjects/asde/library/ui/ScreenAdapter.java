@@ -96,7 +96,7 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
         int widthPx = right - left;
         int heightPx = bottom - top;
 
-        scale = Math.min(widthPx, heightPx) / 100f;
+        scale = Math.min(widthPx, heightPx) / 200f;
 
         width = widthPx / scale;
         height = heightPx / scale;

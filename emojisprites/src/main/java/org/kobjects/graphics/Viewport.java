@@ -22,10 +22,10 @@ public class Viewport extends FrameLayout {
         this.activity = activity;
         setClipChildren(false);
 
-        int size = Dimensions.dpToPx(activity,100);
+        int size = Dimensions.dpToPx(activity,200);
 
         bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-        bitmapScale = size / 100f;
+        bitmapScale = size / 200f;
 
         imageView = new ImageView(activity);
         imageView.setImageBitmap(bitmap);
@@ -38,7 +38,7 @@ public class Viewport extends FrameLayout {
         addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                scale = Math.min(right - left, bottom - top) / 100f;
+                scale = Math.min(right - left, bottom - top) / 200f;
                 dpad.requestSync();
             }
         });

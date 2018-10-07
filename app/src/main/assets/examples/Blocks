@@ -35,7 +35,7 @@ SUB drawpiece()
 120  LET x = px0 + piecex(i)
 130  LET y = py0 + piecey(i)
 140  grid(X,Y) = pc
-150  pen.drawRect x * 4 - 34.75, 45.25 - y * 4, 3.5, 3.5
+150  pen.drawRect x * 8 - 69, 91 - y * 8, 7, 7
 160 NEXT i
 END SUB
 
@@ -44,7 +44,7 @@ SUB erasepiece()
 110   LET x = px0 + piecex(i)
 120   LET y = py0 + piecey(i)
 130   grid(x, y) = 0
-140   pen.clearRect x * 4 - 35, 45 - y * 4, 4, 4
+140   pen.clearRect x * 8 - 70, 90 - y * 8, 8, 8
 150 NEXT i
 END SUB
 
@@ -56,13 +56,13 @@ SUB definepiece()
 END SUB
 
 SUB drawall()
-100 for y = 0 to 20
-120  for x = 1 to 12
-130    let c = grid(x, y)
-140    if c then setcolor c  : pen.drawRect x * 4 - 34.75, 45.25 - y * 4, 3.5, 3.5
-145    if c = 0 then pen.clearRect x * 4 - 35, 45 - y * 4, 4, 4
-150  next x
-160 next y
+100 FOR y = 0 to 20
+120  FOR x = 1 to 12
+130    LET c = grid(x, y)
+140    IF c THEN setcolor c  : pen.drawRect x * 8 - 69, 91 - y * 8, 7, 7
+145    IF c = 0 THEN pen.clearRect x * 8 - 70, 90 - y * 8, 8, 8
+150  NEXT x
+160 NEXT y
 END SUB
 
 SUB dropgrid(Number cy)

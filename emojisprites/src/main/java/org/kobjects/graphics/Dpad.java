@@ -9,7 +9,7 @@ import android.widget.LinearLayout;
 
 public class Dpad extends ViewHolder<LinearLayout> {
 
-    static final int BUTTON_SIZE = 10;
+    static final int BUTTON_SIZE = 20;
 
     static LinearLayout.LayoutParams createLayoutParams() {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);

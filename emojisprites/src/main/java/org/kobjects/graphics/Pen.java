@@ -19,11 +19,11 @@ public class Pen {
     Paint clearPaint;
 
     float sx(float x) {
-        return (x + 50) * viewport.bitmapScale;
+        return (x + 100) * viewport.bitmapScale;
     }
 
     float sy(float y) {
-        return (50 - y) * viewport.bitmapScale;
+        return (100 - y) * viewport.bitmapScale;
     }
 
     public Pen(Viewport viewport) {
