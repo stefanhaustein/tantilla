@@ -66,6 +66,11 @@ public class AsdeShell {
             // Ignore
         }
 
+        @Override
+        public void clearScreen() {
+
+        }
+
     });
 
     System.out.println("  **** EXPRESSION PARSER BASIC DEMO V1 ****\n");

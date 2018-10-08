@@ -30,7 +30,7 @@ SUB setcolor(Number c)
 END SUB
 
 SUB drawpiece()
-100 setcolor(pc)
+100 setcolor pc
 110 FOR i = 0 TO 3
 120  LET x = px0 + piecex(i)
 130  LET y = py0 + piecey(i)
@@ -71,7 +71,7 @@ SUB dropgrid(Number cy)
 120     grid(x, y) = grid(x, y -1)
 130   next y
 140 next x
-150 drawall()
+150 drawall
 END SUB
 
 SUB checkgrid()
@@ -85,45 +85,45 @@ SUB checkgrid()
 END SUB
 
 SUB newpiece()
-10 checkgrid()
+10 checkgrid
 100 px0 = 14
 110 py0 = 1
 120 pc = pp
-125 definepiece()
-130 erasepiece()
+125 definepiece
+130 erasepiece
 140 LET savepc = pc
 200 PP = int(rnd() * 7) + 1
 210 PC = PP
-220 definepiece()
-230 drawpiece()
+220 definepiece
+230 drawpiece
 240 PC = savepc
-250 definepiece()
+250 definepiece
 260 px0 = 5
 270 py0 = 0
 END SUB
 
 SUB moveright()
-110 erasepiece()
+110 erasepiece
 120 if checkposition(px0 + 1, py0) then px0 = px0 + 1
-130 drawpiece()
+130 drawpiece
 END SUB
 
 SUB moveleft()
-110 erasepiece()
+110 erasepiece
 120 if checkposition(px0 - 1, py0) then px0 = px0 - 1
-130 drawpiece()
+130 drawpiece
 END SUB
 
 SUB movedown()
-110 erasepiece()
+110 erasepiece
 120 LET ok = checkposition(px0, py0 + 1)
 125 IF ok THEN py0 = py0 + 1
-130 drawpiece()
+130 drawpiece
 140 IF ok = 0 THEN newpiece() : drawpiece()
 END SUB
 
 SUB rotate()
-100 erasepiece()
+100 erasepiece
 105 LET mx = 2
 107 IF pc > 5 THEN mx = 3
 110 FOR i = 0 to 3
@@ -169,16 +169,16 @@ END SUB
 460   grid(i, 20) = 8
 470 next i
 
-500 drawall()
-510 newPiece()
-520 newPiece()
-530 drawpiece()
+500 drawall
+510 newPiece
+520 newPiece
+530 drawpiece
 540 let timer = 0
 
-600 if dpad.left then moveleft()
-610 if dpad.right then moveright()
-620 if dpad.down or timer = 10 then movedown() : timer = 0
-630 if dpad.up then rotate()
+600 if dpad.left then moveleft
+610 if dpad.right then moveright
+620 if dpad.down or timer = 10 then movedown : timer = 0
+630 if dpad.up then rotate
 640 timer = timer + 1
 
 680 pause 100

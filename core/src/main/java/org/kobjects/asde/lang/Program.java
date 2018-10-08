@@ -102,6 +102,7 @@ public class Program {
 
 
   public void clear(Interpreter interpreter) {
+      console.clearScreen();
       TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
     synchronized (symbolMap) {
         for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {

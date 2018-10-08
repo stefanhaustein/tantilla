@@ -9,4 +9,6 @@ public interface Console {
     File getProgramStoragePath();
 
     void programNameChangedTo(String name);
+
+    void clearScreen();
 }

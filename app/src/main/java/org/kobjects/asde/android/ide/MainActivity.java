@@ -13,6 +13,7 @@ import android.text.InputType;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
   private final String PROGRAM_NAME_STORAGE_KEY = "ProgramName";
 
   LinearLayout scrollContentView;
-  LinearLayout rootView;
+  View rootView;
   ScrollView scrollView;
   LinearLayout bottomAppBar;
   EmojiEditText codeEditText;
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
   SharedPreferences sharedPreferences;
   boolean autoScroll = true;
   IconButton menuButton;
+  boolean fullScreenMode;
 
     private TitleView shellTitleView;
     private Viewport viewport;
@@ -114,17 +116,11 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     ta.recycle();
     final int iconPadding = Dimensions.dpToPx(this, 12);
 
-        rootView = new LinearLayout(this);
-
-
         IconButton clearButton = new IconButton(this, R.drawable.baseline_delete_black_24);
     clearButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        screen.clear();
-        for (int i = shellView.getChildCount() -1; i > 0; i--) {
-          shellView.removeViewAt(i);
-        }
+        clearScreen();
       }
     });
 
@@ -465,34 +461,49 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
       int displayWidth = display.getWidth();
       int displayHeight = display.getHeight();
 
+      if (fullScreenMode) {
+         rootView = viewport;
+//         setContentView(viewport, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+  //       rootView = null;
 
-      rootView = new LinearLayout(this);
-      rootView.setDividerDrawable(systemListDivider);
-      rootView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
-      if (displayHeight >= displayWidth) {
-        rootView.setOrientation(LinearLayout.VERTICAL);
-
-        FrameLayout overlay = new FrameLayout(this);
-        overlay.addView(scrollView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        overlay.addView(viewport, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        rootView.addView(overlay, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
-        rootView.addView(bottomAppBar);
       } else {
-        LinearLayout codingLayout = new LinearLayout(this);
-        codingLayout.setOrientation(LinearLayout.VERTICAL);
-          codingLayout.setDividerDrawable(systemListDivider);
-          codingLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
-        codingLayout.addView(scrollView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
-        codingLayout.addView(bottomAppBar, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0));
+          LinearLayout rootLayout = new LinearLayout(this);
+        rootLayout = new LinearLayout(this);
+        rootLayout.setDividerDrawable(systemListDivider);
+        rootLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+        if (displayHeight >= displayWidth) {
+            rootLayout.setOrientation(LinearLayout.VERTICAL);
 
-        rootView.addView(codingLayout, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
-        rootView.addView(viewport, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
-      }
-      setContentView(rootView);
+            FrameLayout overlay = new FrameLayout(this);
+            overlay.addView(scrollView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            overlay.addView(viewport, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+            rootLayout.addView(overlay, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+            rootLayout.addView(bottomAppBar);
+        } else {
+            LinearLayout codingLayout = new LinearLayout(this);
+            codingLayout.setOrientation(LinearLayout.VERTICAL);
+            codingLayout.setDividerDrawable(systemListDivider);
+            codingLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+            codingLayout.addView(scrollView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
+            codingLayout.addView(bottomAppBar, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0));
+
+            rootLayout.addView(codingLayout, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
+            rootLayout.addView(viewport, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
+        }
+        rootView = rootLayout;
+     }
+      setContentView(rootView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
   }
 
-
+    public void onBackPressed () {
+      if (fullScreenMode) {
+          fullScreenMode = false;
+          arrangeUi();
+      } else {
+          super.onBackPressed();
+      }
+    }
 
   @Override
   public String read() {
@@ -545,6 +556,18 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
         });
     }
 
+    @Override
+    public void clearScreen() {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                screen.clear();
+                for (int i = shellView.getChildCount() - 1; i > 0; i--) {
+                    shellView.removeViewAt(i);
+                }
+            }
+        });
+    }
+
     public void openExample(String name) {
       try {
           mainInterpreter.stop();
@@ -570,17 +593,6 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
         PopupMenu popupMenu = new PopupMenu(MainActivity.this, menuButton);
         Menu mainMenu = popupMenu.getMenu();
 
-        mainMenu.add("New Program").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                mainInterpreter.stop();
-                program.clearAll();
-                mainFunctionView.setVisibility(View.GONE);
-                sync(false);
-                return true;
-            }
-        });
-
         if (mainInterpreter.isRunning()) {
             mainMenu.add("Stop").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
@@ -599,7 +611,38 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
             });
         }
 
+
+        mainMenu.add("Fullscreen mode").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                fullScreenMode = true;
+                arrangeUi();
+                return true;
+            }
+        });
+
+        SubMenu clearMenu = mainMenu.addSubMenu("Clear");
+        clearMenu.add("Clear Screen").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                clearScreen();
+                return true;
+            }
+        });
+        clearMenu.add("Erase program").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                mainInterpreter.stop();
+                program.clearAll();
+                mainFunctionView.setVisibility(View.GONE);
+                sync(false);
+                return true;
+            }
+        });
+
+
         Menu loadMenu = mainMenu.addSubMenu("Load");
+        Menu examplesMenu = loadMenu.addSubMenu("Examples");
         for (final String name : getProgramStoragePath().list()) {
             loadMenu.add(name).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
@@ -611,8 +654,6 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
                 }
             });
         }
-
-        Menu examplesMenu = mainMenu.addSubMenu("Examples");
         try {
             for (final String example : MainActivity.this.getAssets().list("examples")) {
                 examplesMenu.add(example).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {

@@ -1,10 +1,11 @@
-package org.kobjects.asde.lang.node;
+package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.AsdeShell;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.node.Node;
 import org.kobjects.typesystem.Type;
 
 import java.io.BufferedReader;

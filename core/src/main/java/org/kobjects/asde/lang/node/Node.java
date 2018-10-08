@@ -47,7 +47,7 @@ public abstract class Node {
     return (int) evalDouble(interpreter, i);
   }
 
-  String evalString(Interpreter interpreter, int i) {
+  public String evalString(Interpreter interpreter, int i) {
     return Program.toString(children[i].eval(interpreter));
   }
 

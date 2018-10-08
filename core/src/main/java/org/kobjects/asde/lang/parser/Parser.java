@@ -3,9 +3,10 @@ package org.kobjects.asde.lang.parser;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Group;
+import org.kobjects.asde.lang.node.Path;
 import org.kobjects.asde.lang.statement.AssignStatement;
 import org.kobjects.asde.lang.node.AssignableNode;
-import org.kobjects.asde.lang.node.Command;
+import org.kobjects.asde.lang.statement.Command;
 import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.ForStatement;
 import org.kobjects.asde.lang.statement.IfStatement;
@@ -19,6 +20,7 @@ import org.kobjects.asde.lang.statement.RemStatement;
 import org.kobjects.asde.lang.statement.ReturnStatement;
 import org.kobjects.asde.lang.statement.LegacyStatement;
 import org.kobjects.asde.lang.node.Identifier;
+import org.kobjects.asde.lang.statement.VoidStatement;
 import org.kobjects.expressionparser.ExpressionParser;
 
 import java.util.ArrayList;
@@ -129,6 +131,8 @@ public class Parser {
       } while (tokenizer.tryConsume(","));
 
       result.add(new Apply(false, params.toArray(Node.EMPTY_ARRAY)));
+    } else if (expression instanceof Path || expression instanceof Identifier){
+      result.add(new VoidStatement(expression));
     } else {
       result.add(expression);
     }
