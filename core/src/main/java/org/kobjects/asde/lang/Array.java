@@ -8,12 +8,13 @@ import java.util.Arrays;
 public class Array implements Function {
 
     private final ArrayType arrayType;
-
     private final Object[] data;
+    private int[] dimensionalities;
 
     public Array(Type elementType, int... dimensionalities) {
-        this.arrayType = new ArrayType(elementType, dimensionalities);
+        this.arrayType = new ArrayType(elementType, dimensionalities.length);
         int size = 1;
+        this.dimensionalities = dimensionalities;
         for (int d : dimensionalities) {
             size *= d;
         }
@@ -38,18 +39,18 @@ public class Array implements Function {
 
     @Override
     public int getLocalVariableCount() {
-        return arrayType.dimensionality.length;
+        return arrayType.dimensionality;
     }
 
     @Override
     public Object eval(Interpreter interpreter, Object[] args) {
-        if (args.length != arrayType.dimensionality.length) {
+        if (args.length != arrayType.dimensionality) {
             throw new RuntimeException("Dimensionality mismatch");
         }
 
         int index = 0;
         for (int i = 0; i < args.length; i++) {
-            index = index * arrayType.dimensionality[i] + ((Number) args[i]).intValue();
+            index = index * dimensionalities[i] + ((Number) args[i]).intValue();
         }
         return data[index];
     }
@@ -57,7 +58,7 @@ public class Array implements Function {
     public void setAt(Object value, int... indices) {
         int index = 0;
         for (int i = 0; i < indices.length; i++) {
-            index = index * arrayType.dimensionality[i] + indices[i];
+            index = index * dimensionalities[i] + indices[i];
         }
         data[index] = value;
     }

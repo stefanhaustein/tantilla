@@ -612,15 +612,6 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
         }
 
 
-        mainMenu.add("Fullscreen mode").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                fullScreenMode = true;
-                arrangeUi();
-                return true;
-            }
-        });
-
         SubMenu clearMenu = mainMenu.addSubMenu("Clear");
         clearMenu.add("Clear Screen").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -667,6 +658,15 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
         }catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        mainMenu.add("Fullscreen mode").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                fullScreenMode = true;
+                arrangeUi();
+                return true;
+            }
+        });
 
         mainMenu.add(emojiPopup != null && emojiPopup.isShowing() ? "Text Keyboard" : "Emoji Keyboard").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override

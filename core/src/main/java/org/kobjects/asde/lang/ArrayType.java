@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 public class ArrayType extends FunctionType{
 
-    int[] dimensionality;
+    int dimensionality;
 
     static Type[] createParameterTypes(int count) {
         Type[] result = new Type[count];
@@ -16,8 +16,8 @@ public class ArrayType extends FunctionType{
         return result;
     }
 
-    public ArrayType(Type elementType, int... dimensionality) {
-        super(elementType, createParameterTypes(dimensionality.length));
+    public ArrayType(Type elementType, int dimensionality) {
+        super(elementType, createParameterTypes(dimensionality));
         this.dimensionality = dimensionality;
     }
 }

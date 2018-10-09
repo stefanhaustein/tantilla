@@ -33,13 +33,16 @@ public class CallableUnit implements Function {
 
         int indent = 0;
         for (CodeLine line : code.values()) {
-            line.indent = indent;
+            int addLater = 0;
             for (Node statement : line.statements) {
                 if (statement instanceof ForStatement) {
-                    indent++;
+                    addLater++;
                 } else if (statement instanceof NextStatement) {
-                            line.indent--;
-                            indent--;
+                    if (addLater > 0) {
+                        addLater--;
+                    } else {
+                        indent--;
+                    }
                 }
                 try {
                     statement.resolve(resolutionContext);
@@ -47,6 +50,8 @@ public class CallableUnit implements Function {
                     resolutionContext.addError(statement, e);
                 }
             }
+            line.indent = indent;
+            indent += addLater;
         }
 
         errors = resolutionContext.errors;
