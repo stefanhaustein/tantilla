@@ -7,7 +7,8 @@ public interface Function extends Typed {
 
     FunctionType getType();
 
-    int getLocalVariableCount();
-
-    Object eval(Interpreter interpreter, Object[] args);
+    /**
+     * Calls this function with the given number of parameters on the stack.
+     */
+    Object call(Interpreter interpreter, int paramCount);
 }

@@ -52,8 +52,8 @@ public class SpriteAdapter extends Instance {
             case face: return face;
             case say: return new Method((FunctionType) SpriteMetaProperty.say.type()) {
                         @Override
-                        public Object eval(Interpreter interpreter, Object[] args) {
-                            text.set(args[0]);
+                        public Object call(Interpreter interpreter, int paramCount) {
+                            text.set(interpreter.localStack.getLocal(0));
                             return null;
                         }
                 };

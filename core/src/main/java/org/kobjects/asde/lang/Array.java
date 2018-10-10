@@ -33,29 +33,29 @@ public class Array implements Function {
     }
 
     @Override
-    public FunctionType getType() {
+    public ArrayType getType() {
         return arrayType;
     }
 
-    @Override
-    public int getLocalVariableCount() {
-        return arrayType.dimensionality;
-    }
 
     @Override
-    public Object eval(Interpreter interpreter, Object[] args) {
-        if (args.length != arrayType.dimensionality) {
+    public Object call(Interpreter interpreter, int paramCount) {
+        if (paramCount != arrayType.dimensionality) {
             throw new RuntimeException("Dimensionality mismatch");
         }
 
+        LocalStack localStack = interpreter.localStack;
         int index = 0;
-        for (int i = 0; i < args.length; i++) {
-            index = index * dimensionalities[i] + ((Number) args[i]).intValue();
+        for (int i = 0; i < paramCount; i++) {
+            index = index * dimensionalities[i] + ((Number) localStack.getParameter(i, paramCount)).intValue();
         }
         return data[index];
     }
 
-    public void setAt(Object value, int... indices) {
+    public void setValueAt(Object value, int... indices) {
+        if (indices.length != dimensionalities.length) {
+            throw new RuntimeException("Dimensionality mismatch");
+        }
         int index = 0;
         for (int i = 0; i < indices.length; i++) {
             index = index * dimensionalities[i] + indices[i];

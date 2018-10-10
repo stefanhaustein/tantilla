@@ -66,14 +66,20 @@ public class CallableUnit implements Function {
         return type;
     }
 
-    @Override
-    public int getLocalVariableCount() {
-        return localVariableCount;
-    }
 
+    /**
+     * Calls this method with a new interpreter.
+     */
     @Override
-    public Object eval(Interpreter interpreter, Object[] parameterValues) {
-        return interpreter.call(this, parameterValues);
+    public Object call(Interpreter interpreter, int paramCount) {
+        int oldFrameStart = interpreter.localStack.frame(paramCount, localVariableCount);
+        try {
+            Interpreter sub = new Interpreter(program, this, interpreter.localStack);
+            sub.runCallableUnit();
+            return sub.returnValue;
+        } finally {
+            interpreter.localStack.release(oldFrameStart, paramCount);
+        }
     }
 
     public void toString(AnnotatedStringBuilder sb, String name) {

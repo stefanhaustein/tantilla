@@ -4,7 +4,6 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Array;
 import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.typesystem.Type;
 
@@ -26,11 +25,11 @@ public class Apply extends AssignableNode {
       throw new RuntimeException("Can't set indexed value to non-array: " + value);
     }
     Array array = (Array) base;
-    int[] indices = new int[array.getLocalVariableCount()];
+    int[] indices = new int[array.getType().dimensionality];
     for (int i = 1; i < children.length; i++) {
       indices[i - 1] = evalInt(interpreter, i);
     }
-    array.setAt(value, indices);
+    array.setValueAt(value, indices);
   }
 
   public Object eval(Interpreter interpreter) {
@@ -39,14 +38,15 @@ public class Apply extends AssignableNode {
       throw new RuntimeException("Can't apply parameters to " + base);
     }
     Function function = (Function) base;
-    Object[] locals = new Object[function.getLocalVariableCount()];
     for (int i = 1; i < children.length; i++) {
-      locals[i - 1] = children[i].eval(interpreter);
+      interpreter.localStack.push(children[i].eval(interpreter));
     }
     try {
-        return function.eval(interpreter, locals);
+        return function.call(interpreter, children.length - 1);
     } catch (Exception e) {
         throw new RuntimeException(e.getMessage() + " in " + children[0]);
+    } finally {
+        interpreter.localStack.drop(children.length - 1);
     }
   }
 

@@ -17,8 +17,8 @@ public class VoidStatement extends Node {
     @Override
     public Object eval(Interpreter interpreter) {
         Object result = children[0].eval(interpreter);
-        if (result instanceof CallableUnit) {
-            ((CallableUnit) result).eval(interpreter, new Object[((CallableUnit) result).getLocalVariableCount()]);
+        if (result instanceof Function) {
+            ((Function) result).call(interpreter, 0);
         }
         return result;
     }

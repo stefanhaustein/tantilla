@@ -43,45 +43,46 @@ public enum Builtin implements Function {
       return signature.getParameterCount();
   }
 
-  public Object eval(Interpreter interpreter, Object[] params) {
+  public Object call(Interpreter interpreter, int paramCount) {
+    LocalStack localStack = interpreter.localStack;
     switch (this) {
-      case ABS: return Math.abs((Double) params[0]);
+      case ABS: return Math.abs((Double) localStack.getParameter(0, paramCount));
       case ASC: {
-        String s = (String) params[0];
+        String s = (String) localStack.getParameter(0, paramCount);
         return s.length() == 0 ? 0.0 : (double) s.charAt(0);
       }
-      case CHR$: return String.valueOf((char) ((Double)(params[0])).intValue());
-      case COS: return Math.cos((Double) params[0]);
-      case EXP: return Math.exp((Double) params[0]);
-      case INT: return Math.floor((Double) params[0]);
+      case CHR$: return String.valueOf((char) ((Double)(localStack.getParameter(0, paramCount))).intValue());
+      case COS: return Math.cos((Double) localStack.getParameter(0, paramCount));
+      case EXP: return Math.exp((Double) localStack.getParameter(0, paramCount));
+      case INT: return Math.floor((Double) localStack.getParameter(0, paramCount));
       case LEFT$: {
-        String s = (String) params[0];
-        return s.substring(0, Math.min(s.length(), asInt(params[1])));
+        String s = (String) localStack.getParameter(0, paramCount);
+        return s.substring(0, Math.min(s.length(), asInt(localStack.getParameter(1, paramCount))));
       }
-      case LEN: return (double) ((String) params[0]).length();
-      case LOG: return Math.log((Double) params[0]);
+      case LEN: return (double) ((String) localStack.getParameter(0, paramCount)).length();
+      case LOG: return Math.log((Double) localStack.getParameter(0, paramCount));
       case MID$: {
-        String s = (String) params[0];
-        int start = Math.max(0, Math.min(asInt(params[1]) - 1, s.length()));
-        if (params.length == 2) {
+        String s = (String) localStack.getParameter(0, paramCount);
+        int start = Math.max(0, Math.min(asInt(localStack.getParameter(1, paramCount)) - 1, s.length()));
+        if (paramCount == 2) {
           return s.substring(start);
         }
-        int count = asInt(params[2]);
+        int count = asInt(localStack.getParameter(2, paramCount));
         int end = Math.min(s.length(), start + count);
         return s.substring(start, end);
       }
-      case SGN: return Math.signum((Double) params[0]);
-      case SIN: return Math.sin((Double) params[0]);
-      case SQR: return Math.sqrt((Double) params[0]);
-      case STR$: return Program.toString(params[0]);
+      case SGN: return Math.signum((Double) localStack.getParameter(0, paramCount));
+      case SIN: return Math.sin((Double) localStack.getParameter(0, paramCount));
+      case SQR: return Math.sqrt((Double) localStack.getParameter(0, paramCount));
+      case STR$: return Program.toString(localStack.getParameter(0, paramCount));
       case RIGHT$: {
-        String s = (String) params[0];
-        return s.substring(Math.min(s.length(), s.length() - asInt(params[1])));
+        String s = (String) localStack.getParameter(0, paramCount);
+        return s.substring(Math.min(s.length(), s.length() - asInt(localStack.getParameter(1, paramCount))));
       }
       case RND: return Math.random();
-      case TAB: return interpreter.program.tab(asInt(params[1]));
-      case TAN: return Math.tan((Double) params[0]);
-      case VAL: return Double.parseDouble((String) params[0]);
+      case TAB: return interpreter.program.tab(asInt(localStack.getParameter(1, paramCount)));
+      case TAN: return Math.tan((Double) localStack.getParameter(0, paramCount));
+      case VAL: return Double.parseDouble((String) localStack.getParameter(0, paramCount));
       default:
         throw new IllegalArgumentException("NYI: " + name());
     }

@@ -12,7 +12,6 @@ import java.util.Map;
 public class Interpreter {
     public final CallableUnit callableUnit;
     public final Program program;
-    public final Object[] locals;
     public int currentLine;
     public int currentIndex;
     public int nextSubIndex;  // index within next when skipping a for loop; reset in next
@@ -21,11 +20,12 @@ public class Interpreter {
     public int[] dataPosition = new int[3];
     public LegacyStatement dataStatement;
     public Object returnValue;
+    public final LocalStack localStack;
 
-    public Interpreter(Program program, CallableUnit callableUnit, Object[] locals) {
+    public Interpreter(Program program, CallableUnit callableUnit, LocalStack localStack) {
         this.program = program;
         this.callableUnit = callableUnit;
-        this.locals = locals;
+        this.localStack = localStack;
     }
 
     Thread interpreterThread;
@@ -130,7 +130,7 @@ public class Interpreter {
         return result;
     }
 
-    private void runCallableUnit() {
+    public void runCallableUnit() {
         if (currentLine > -1) {
             Map.Entry<Integer, CodeLine> entry;
             while (null != (entry = callableUnit.ceilingEntry(currentLine)) && !Thread.currentThread().isInterrupted()) {
@@ -138,13 +138,6 @@ public class Interpreter {
                 runStatementsImpl(entry.getValue().statements);
             }
         }
-
-    }
-
-    public Object call(CallableUnit callableUnit, Object[] locals) {
-            Interpreter sub = new Interpreter(program, callableUnit, locals);
-            sub.runCallableUnit();
-            return sub.returnValue;
 
     }
 

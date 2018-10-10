@@ -79,7 +79,7 @@ public class AsdeShell {
 
     boolean prompt = true;
 
-    Interpreter interpreter = new Interpreter(program, program.main, null);
+    Interpreter interpreter = new Interpreter(program, program.main, new LocalStack());
     while (true) {
       if (prompt) {
         System.out.println("\nREADY.");

@@ -40,6 +40,7 @@ import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.android.ide.widget.VariableView;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
+import org.kobjects.asde.lang.LocalStack;
 import org.kobjects.asde.lang.StartStopListener;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
@@ -77,8 +78,8 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
   ScreenAdapter screen;
   VariableView variableView;
   LinearLayout codeInputView;
-  Interpreter mainInterpreter = new Interpreter(program, program.main, null);
-  Interpreter shellInterpreter = new Interpreter(program, null, null);
+  Interpreter mainInterpreter = new Interpreter(program, program.main, new LocalStack());
+  Interpreter shellInterpreter = new Interpreter(program, null, new LocalStack());
   TreeMap<String,FunctionView> functionViews = new TreeMap<>();
   FunctionView currentFunctionView;
   SharedPreferences sharedPreferences;

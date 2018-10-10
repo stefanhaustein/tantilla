@@ -1,6 +1,7 @@
 package org.kobjects.asde.library.ui;
 
 import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.LocalStack;
 import org.kobjects.asde.lang.Method;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.graphics.Pen;
@@ -60,33 +61,39 @@ public class PenAdapter extends Instance {
             case clearrect:
                 return new Method((FunctionType) PenPropertyDescriptor.clearrect.type()) {
                     @Override
-                    public Object eval(Interpreter interpreter, Object[] args) {
-                        pen.clearRect(((Double) args[0]).floatValue(),
-                                ((Double) args[1]).floatValue(),
-                                ((Double) args[2]).floatValue(),
-                                ((Double) args[3]).floatValue());
+                    public Object call(Interpreter interpreter, int paramCount) {
+                        LocalStack localStack = interpreter.localStack;
+                        pen.clearRect(
+                                ((Number) localStack.getParameter(0, paramCount)).floatValue(),
+                                ((Number) localStack.getParameter(1, paramCount)).floatValue(),
+                                ((Number) localStack.getParameter(2, paramCount)).floatValue(),
+                                ((Number) localStack.getParameter(3, paramCount)).floatValue());
                         return null;
                     }
                 };
             case drawrect:
                 return new Method((FunctionType) PenPropertyDescriptor.drawrect.type()) {
                     @Override
-                    public Object eval(Interpreter interpreter, Object[] args) {
-                        pen.drawRect(((Double) args[0]).floatValue(),
-                                ((Double) args[1]).floatValue(),
-                                ((Double) args[2]).floatValue(),
-                                ((Double) args[3]).floatValue());
+                    public Object call(Interpreter interpreter, int paramCount) {
+                        LocalStack localStack = interpreter.localStack;
+                        pen.drawRect(
+                                ((Number) localStack.getParameter(0, paramCount)).floatValue(),
+                                ((Number) localStack.getParameter(1, paramCount)).floatValue(),
+                                ((Number) localStack.getParameter(2, paramCount)).floatValue(),
+                                ((Number) localStack.getParameter(3, paramCount)).floatValue());
                         return null;
                     }
                 };
             case drawline:
                 return new Method((FunctionType) PenPropertyDescriptor.drawrect.type()) {
                     @Override
-                    public Object eval(Interpreter interpreter, Object[] args) {
-                        pen.drawLine(((Double) args[0]).floatValue(),
-                                ((Double) args[1]).floatValue(),
-                                ((Double) args[2]).floatValue(),
-                                ((Double) args[3]).floatValue());
+                    public Object call(Interpreter interpreter, int paramCount) {
+                        LocalStack localStack = interpreter.localStack;
+                        pen.drawLine(
+                                ((Number) localStack.getParameter(0, paramCount)).floatValue(),
+                                ((Number) localStack.getParameter(1, paramCount)).floatValue(),
+                                ((Number) localStack.getParameter(2, paramCount)).floatValue(),
+                                ((Number) localStack.getParameter(3, paramCount)).floatValue());
                         return null;
                     }
                 };

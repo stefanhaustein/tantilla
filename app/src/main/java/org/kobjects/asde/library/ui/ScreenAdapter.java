@@ -83,7 +83,7 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
             case height: return heightProperty;
             case createpen: return new Method((FunctionType) ScreenMetaProperty.createpen.type) {
                 @Override
-                public Object eval(Interpreter interpreter, Object[] args) {
+                public Object call(Interpreter interpreter, int paramCount) {
                     return new PenAdapter(viewport.createPen());
                 }
             };

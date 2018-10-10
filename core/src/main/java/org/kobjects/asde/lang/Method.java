@@ -17,11 +17,6 @@ public abstract class Method extends Property implements Function {
     }
 
     @Override
-    public int getLocalVariableCount() {
-        return type.getParameterCount();
-    }
-
-    @Override
     public boolean set(Object o) {
         throw new RuntimeException();
     }

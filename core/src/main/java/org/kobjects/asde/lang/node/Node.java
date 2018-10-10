@@ -31,6 +31,7 @@ public abstract class Node {
 
   public abstract Object eval(Interpreter interpreter);
 
+  /** eval without null substitution */
   public Object evalRaw(Interpreter interpreter) {
     return eval(interpreter);
   }

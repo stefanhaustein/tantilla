@@ -14,12 +14,12 @@ public class LocalSymbol implements ResolvedSymbol {
 
     @Override
     public Object get(Interpreter interpreter) {
-        return interpreter.locals[index];
+        return interpreter.localStack.getLocal(index);
     }
 
     @Override
     public void set(Interpreter interpreter, Object value) {
-        interpreter.locals[index] = value;
+        interpreter.localStack.setLocal(index, value);
     }
 
     @Override
