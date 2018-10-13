@@ -23,6 +23,7 @@ import java.util.Map;
 public class LegacyStatement extends Node {
 
   public enum Kind {
+    CLS,
     DATA, DEF, DUMP,
     END,
     GOTO, GOSUB,
@@ -79,6 +80,10 @@ public class LegacyStatement extends Node {
         program.setValue(interpreter.getSymbolScope(), name, fn);
         break;
       }
+      case CLS:
+        interpreter.program.console.clearScreen();
+        break;
+
       case DATA:
         break;
 

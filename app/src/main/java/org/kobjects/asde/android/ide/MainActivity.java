@@ -9,28 +9,21 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.Display;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiManager;
-import com.vanniktech.emoji.EmojiPopup;
 import com.vanniktech.emoji.EmojiTextView;
 import com.vanniktech.emoji.one.EmojiOneProvider;
 
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.widget.Colors;
+import org.kobjects.asde.android.ide.widget.ControlView;
 import org.kobjects.asde.android.ide.widget.Dimensions;
 import org.kobjects.asde.android.ide.widget.ExpandableView;
 import org.kobjects.asde.android.ide.widget.FunctionView;
@@ -64,47 +57,38 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
   private final String PROGRAM_NAME_STORAGE_KEY = "ProgramName";
 
   LinearLayout scrollContentView;
-  View rootView;
+  public View rootView;
   ScrollView scrollView;
-  LinearLayout bottomAppBar;
-  EmojiEditText codeEditText;
-  TextView errorView;
-  IconButton codeEnterButton;
+  ControlView controlView;
   FunctionView mainFunctionView;
   Program program = new Program(this);
   Drawable systemListDivider;
   LinearLayout shellView;
-  String readLine;
+  public String readLine;
   ScreenAdapter screen;
   VariableView variableView;
-  LinearLayout codeInputView;
-  Interpreter mainInterpreter = new Interpreter(program, program.main, new LocalStack());
+  public Interpreter mainInterpreter = new Interpreter(program, program.main, new LocalStack());
   Interpreter shellInterpreter = new Interpreter(program, null, new LocalStack());
   TreeMap<String,FunctionView> functionViews = new TreeMap<>();
   FunctionView currentFunctionView;
   SharedPreferences sharedPreferences;
   boolean autoScroll = true;
-  IconButton menuButton;
-  boolean fullScreenMode;
+  public boolean fullScreenMode;
 
-    private TitleView shellTitleView;
-    private Viewport viewport;
-    private EmojiPopup emojiPopup;
-    private EmojiEditText consoleEditText;
-    private IconButton consoleEnterButton;
-    private LinearLayout consoleInputView;
+  private TitleView shellTitleView;
+  private Viewport viewport;
+  private boolean lineFeedPending;
 
-
-    @Override
-    public boolean dispatchKeyEvent(android.view.KeyEvent keyEvent) {
-        if (!viewport.dispatchKeyEvent(keyEvent)) {
-            return super.dispatchKeyEvent(keyEvent);
-        }
-        return true;
+  @Override
+  public boolean dispatchKeyEvent(android.view.KeyEvent keyEvent) {
+    if (!viewport.dispatchKeyEvent(keyEvent)) {
+      return super.dispatchKeyEvent(keyEvent);
     }
+    return true;
+  }
 
 
-    @Override
+  @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     EmojiManager.install(new EmojiOneProvider());
@@ -158,69 +142,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     scrollView = new ScrollView(this);
     scrollView.addView(scrollContentView);
 
-    // Input Layout
-
-    menuButton = new IconButton(this, R.drawable.baseline_menu_black_24);
-    menuButton.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            showMenu();
-        }
-    });
-
-
-    errorView = new TextView(this);
-    errorView.setVisibility(View.GONE);
-    errorView.setTypeface(Typeface.MONOSPACE);
-
-    codeEditText = new EmojiEditText(this);
-    codeEditText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-    codeEditText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-
-
-
-/*
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line, new ArrayList<String>());
-
-        ((AutoCompleteTextView) codeEditText).setAdapter(adapter);
-*/
-
-    codeEnterButton = new IconButton(this, R.drawable.baseline_send_black_24);
-    codeEnterButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        enter();
-      }
-    });
-
-    codeInputView = new LinearLayout(this);
-    codeInputView.addView(codeEditText, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
-    codeInputView.addView(codeEnterButton);
-
-    consoleEditText = new EmojiEditText(this);
-    consoleEnterButton = new IconButton(this, R.drawable.baseline_send_black_24);
-    consoleEnterButton.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            readLine = consoleEditText.getText().toString();
-            consoleEditText.setText("");
-        }
-    });
-    consoleInputView = new LinearLayout(this);
-    consoleInputView.addView(consoleEditText, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
-    consoleInputView.addView(consoleEnterButton);
-    consoleInputView.setVisibility(View.GONE);
-
-    LinearLayout inputLayout = new LinearLayout(this);
-    inputLayout.addView(menuButton);
-    inputLayout.addView(codeInputView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
-    inputLayout.addView(consoleInputView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
-
-    bottomAppBar = new LinearLayout(this);
-    bottomAppBar.setOrientation(LinearLayout.VERTICAL);
-    bottomAppBar.addView(errorView);
-    bottomAppBar.addView(inputLayout);
+    controlView = new ControlView(this);
 
     viewport = new Viewport(this);
 
@@ -279,11 +201,20 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     }
 
 
-  void enter() {
-    errorView.setVisibility(View.GONE);
-    errorView.setText("");
+  private LinearLayout createBottomAppBar() {
+      // Left button bar
 
-    String line = codeEditText.getText().toString();
+
+      return controlView;
+  }
+
+
+  public void enter() {
+    String line = controlView.codeEditText.getText().toString();
+    if (line.isEmpty()) {
+        print("\n");
+        return;
+    }
     ExpressionParser.Tokenizer tokenizer = program.parser.createTokenizer(line);
     boolean inputPrinted = false;
     try {
@@ -312,20 +243,25 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
           inputView.setTextColor(Colors.SECONDARY);
           inputView.setTypeface(Typeface.MONOSPACE);
 
-          postScrollIfAtEnd();
+
+          if (lineFeedPending) {
+              print("");
+          }
+
           shellView.addView(inputView);
           inputPrinted = true;
+            postScrollIfAtEnd();
+
 
           shellInterpreter.runStatementsAsync(statements, mainInterpreter);
 
 
           break;
       }
-        codeEditText.setText("");
+        controlView.codeEditText.setText("");
       } catch (Exception e) {
         e.printStackTrace();
-        errorView.setText(e.getMessage());
-        errorView.setVisibility(View.VISIBLE);
+        print(e.getMessage() + "\n");
     }
   }
 
@@ -356,30 +292,32 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
   public void print(final String s) {
     runOnUiThread(new Runnable() {
       public void run() {
-        int cut = s.indexOf('\n');
 
-        if (cut == -1) {
-          errorView.setVisibility(View.VISIBLE);
-          errorView.setText(errorView.getText() + s);
-        } else {
+        if (lineFeedPending) {
           TextView textView = new EmojiTextView(MainActivity.this);
-          textView.setText(errorView.getText() + s.substring(0, cut));
+          textView.setText(controlView.resultView.getText());
           textView.setTypeface(Typeface.MONOSPACE);
-
-          postScrollIfAtEnd();
           shellView.addView(textView);
+            postScrollIfAtEnd();
+          lineFeedPending = false;
+          lineCount++;
+          controlView.resultView.setText("");
+        }
 
-          errorView.setText("");
-          errorView.setVisibility(View.GONE);
-          lineCount = shellView.getChildCount();
+        int cut = s.indexOf('\n');
+        if (cut == -1) {
+          controlView.resultView.setText(controlView.resultView.getText() + s);
+        }  else {
+          controlView.resultView.setText(controlView.resultView.getText() + s.substring(0, cut));
+          lineFeedPending = true;
           if (cut < s.length() - 1) {
-            print(s.substring(cut + 1));
+              print(s.substring(cut + 1));
           }
         }
       }
     });
     try {
-      Thread.sleep(Math.round(Math.log(lineCount)));
+      Thread.sleep(Math.round(Math.log(lineCount + 1)));
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
@@ -436,7 +374,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
   }
 
 
-  void removeFromParent(View view) {
+  public static void removeFromParent(View view) {
       if (view.getParent() instanceof ViewGroup) {
           ((ViewGroup) view.getParent()).removeView(view);
       }
@@ -447,16 +385,14 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     arrangeUi();
   }
 
-  private void arrangeUi() {
+  public void arrangeUi() {
 
-      if (emojiPopup != null && emojiPopup.isShowing()) {
-          emojiPopup.dismiss();
-          emojiPopup = null;
-      }
+      controlView.dismissEmojiPopup();
+
 
       removeFromParent(scrollView);
       removeFromParent(viewport);
-      removeFromParent(bottomAppBar);
+      removeFromParent(controlView);
 
       Display display = getWindowManager().getDefaultDisplay();
       int displayWidth = display.getWidth();
@@ -472,16 +408,23 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
         rootLayout = new LinearLayout(this);
         rootLayout.setDividerDrawable(systemListDivider);
         rootLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+
+        FrameLayout overlay = new FrameLayout(this);
+        overlay.addView(scrollView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        overlay.addView(viewport, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
         if (displayHeight >= displayWidth) {
             rootLayout.setOrientation(LinearLayout.VERTICAL);
-
-            FrameLayout overlay = new FrameLayout(this);
-            overlay.addView(scrollView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            overlay.addView(viewport, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
             rootLayout.addView(overlay, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
-            rootLayout.addView(bottomAppBar);
+            rootLayout.addView(controlView,  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            controlView.arrangeButtons(false);
         } else {
+            rootLayout.addView(overlay, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
+            rootLayout.addView(controlView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
+            controlView.arrangeButtons(true);
+        }
+
+        /*}  else {
             LinearLayout codingLayout = new LinearLayout(this);
             codingLayout.setOrientation(LinearLayout.VERTICAL);
             codingLayout.setDividerDrawable(systemListDivider);
@@ -491,7 +434,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
 
             rootLayout.addView(codingLayout, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
             rootLayout.addView(viewport, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
-        }
+        } */
         rootView = rootLayout;
      }
       setContentView(rootView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -511,8 +454,8 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     runOnUiThread(new Runnable() {
         @Override
         public void run() {
-            codeInputView.setVisibility(View.GONE);
-            consoleInputView.setVisibility(View.VISIBLE);
+            controlView.codeEditText.setVisibility(View.GONE);
+            controlView.consoleEditText.setVisibility(View.VISIBLE);
         }
     });
 
@@ -531,8 +474,8 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
       runOnUiThread(new Runnable() {
           @Override
           public void run() {
-              codeInputView.setVisibility(View.VISIBLE);
-              consoleInputView.setVisibility(View.GONE);
+              controlView.codeEditText.setVisibility(View.VISIBLE);
+              controlView.consoleEditText.setVisibility(View.GONE);
           }
       });
 
@@ -561,10 +504,12 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     public void clearScreen() {
         runOnUiThread(new Runnable() {
             public void run() {
-                screen.clear();
                 for (int i = shellView.getChildCount() - 1; i > 0; i--) {
                     shellView.removeViewAt(i);
                 }
+                controlView.resultView.setText("");
+                lineFeedPending = false;
+                screen.clear();
             }
         });
     }
@@ -590,115 +535,21 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     }
 
 
-    void showMenu() {
-        PopupMenu popupMenu = new PopupMenu(MainActivity.this, menuButton);
-        Menu mainMenu = popupMenu.getMenu();
-
-        if (mainInterpreter.isRunning()) {
-            mainMenu.add("Stop").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    mainInterpreter.stop();
-                    return true;
-                }
-            });
-        } else {
-            mainMenu.add("Run").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    mainInterpreter.runAsync();
-                    return true;
-                }
-            });
-        }
-
-
-        SubMenu clearMenu = mainMenu.addSubMenu("Clear");
-        clearMenu.add("Clear Screen").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                clearScreen();
-                return true;
-            }
-        });
-        clearMenu.add("Erase program").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                mainInterpreter.stop();
-                program.clearAll();
-                mainFunctionView.setVisibility(View.GONE);
-                sync(false);
-                return true;
-            }
-        });
-
-
-        Menu loadMenu = mainMenu.addSubMenu("Load");
-        Menu examplesMenu = loadMenu.addSubMenu("Examples");
-        for (final String name : getProgramStoragePath().list()) {
-            loadMenu.add(name).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    mainInterpreter.stop();
-                    program.load(name);
-                    sync(false);
-                    return true;
-                }
-            });
-        }
-        try {
-            for (final String example : MainActivity.this.getAssets().list("examples")) {
-                examplesMenu.add(example).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        openExample(example);
-                        return true;
-                    }
-                });
-            }
-        }catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        mainMenu.add("Fullscreen mode").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                fullScreenMode = true;
-                arrangeUi();
-                return true;
-            }
-        });
-
-        mainMenu.add(emojiPopup != null && emojiPopup.isShowing() ? "Text Keyboard" : "Emoji Keyboard").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if (emojiPopup == null) {
-                    emojiPopup = EmojiPopup.Builder.fromRootView(rootView).build(codeEditText);
-                }
-                if (emojiPopup.isShowing()) {
-                    emojiPopup.dismiss();
-                } else {
-                    emojiPopup.toggle();
-                    // Needed sometimes when the keyboard is not showing in the first place.
-                    codeEditText.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (emojiPopup != null && !emojiPopup.isShowing()) {
-                                emojiPopup.toggle();
-                            }
-                        }
-                    });
-                }
-                return true;
-            }
-        });
-
-        popupMenu.show();
-
-    }
-
     @Override
     public void edit(String line) {
-        codeEditText.setText(line);
+        controlView.codeEditText.setText(line);
+    }
+
+    public void eraseProgram() {
+        mainInterpreter.stop();
+        program.clearAll();
+        mainFunctionView.setVisibility(View.GONE);
+        sync(false);
+    }
+
+    public void load(String name) {
+        mainInterpreter.stop();
+        program.load(name);
+        sync(false);
     }
 }
