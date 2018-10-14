@@ -37,7 +37,7 @@ public abstract class ExpandableView<T extends View> extends LinearLayout {
 
         if (expand) {
             syncContent();
-            for (FunctionView.ExpandListener expandListener : expandListeners) {
+            for (ExpandListener expandListener : expandListeners) {
                 expandListener.notifyExpanding(this, animated);
             }
         } else {
@@ -94,6 +94,10 @@ public abstract class ExpandableView<T extends View> extends LinearLayout {
 
     public void addExpandListener(ExpandListener expandListener) {
         expandListeners.add(expandListener);
+    }
+
+    public void onMeasure(int widthSpec, int heightSpec) {
+        super.onMeasure(widthSpec, heightSpec);
     }
 
 

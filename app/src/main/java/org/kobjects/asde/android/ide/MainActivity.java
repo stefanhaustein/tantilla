@@ -22,10 +22,10 @@ import com.vanniktech.emoji.EmojiTextView;
 import com.vanniktech.emoji.one.EmojiOneProvider;
 
 import org.kobjects.asde.R;
+import org.kobjects.asde.android.ide.widget.CodeView;
 import org.kobjects.asde.android.ide.widget.Colors;
 import org.kobjects.asde.android.ide.widget.ControlView;
 import org.kobjects.asde.android.ide.widget.Dimensions;
-import org.kobjects.asde.android.ide.widget.ExpandableView;
 import org.kobjects.asde.android.ide.widget.FunctionView;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.LineEditor;
@@ -53,7 +53,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class MainActivity extends AppCompatActivity implements Console, ExpandableView.ExpandListener, LineEditor {
+public class MainActivity extends AppCompatActivity implements Console, FunctionView.ExpandListener, LineEditor {
   private final String PROGRAM_NAME_STORAGE_KEY = "ProgramName";
 
   LinearLayout scrollContentView;
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
   FunctionView mainFunctionView;
   Program program = new Program(this);
   Drawable systemListDivider;
-  LinearLayout shellView;
+  LinearLayout outputView;
   public String readLine;
   ScreenAdapter screen;
   VariableView variableView;
@@ -74,8 +74,9 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
   SharedPreferences sharedPreferences;
   boolean autoScroll = true;
   public boolean fullScreenMode;
+  CodeView codeView;
 
-  private TitleView shellTitleView;
+  private TitleView outputTitleView;
   private Viewport viewport;
   private boolean lineFeedPending;
 
@@ -109,18 +110,20 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
       }
     });
 
+
     variableView = new VariableView(this, program);
-    mainFunctionView = new FunctionView(this, "Program \"" +program.getName() + "\"", program.main, mainInterpreter, this);
+    codeView = new CodeView(this, program);
+    mainFunctionView = new FunctionView(this, "Main Block", program.main, mainInterpreter, this);
     mainFunctionView.addExpandListener(this);
     mainFunctionView.setVisibility(View.GONE);
     currentFunctionView = mainFunctionView;
 
-    shellTitleView = new TitleView(this);
-    shellTitleView.setTitle("Shell");
-    shellTitleView.addView(clearButton);
-    shellView = new LinearLayout(this);
-    shellView.setOrientation(LinearLayout.VERTICAL);
-    shellView.addView(shellTitleView);
+    outputTitleView = new TitleView(this);
+    outputTitleView.setTitle("Output");
+    outputTitleView.addView(clearButton);
+    outputView = new LinearLayout(this);
+    outputView.setOrientation(LinearLayout.VERTICAL);
+    outputView.addView(outputTitleView);
 
     scrollContentView = new LinearLayout(this);
     scrollContentView.setOrientation(LinearLayout.VERTICAL);
@@ -136,8 +139,9 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
     scrollContentView.setDividerDrawable(divider);
     scrollContentView.addView(variableView);
+    scrollContentView.addView(codeView);
     scrollContentView.addView(mainFunctionView);
-    scrollContentView.addView(shellView);
+    scrollContentView.addView(outputView);
 
     scrollView = new ScrollView(this);
     scrollView.addView(scrollContentView);
@@ -248,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
               print("");
           }
 
-          shellView.addView(inputView);
+          outputView.addView(inputView);
           inputPrinted = true;
             postScrollIfAtEnd();
 
@@ -297,7 +301,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
           TextView textView = new EmojiTextView(MainActivity.this);
           textView.setText(controlView.resultView.getText());
           textView.setTypeface(Typeface.MONOSPACE);
-          shellView.addView(textView);
+          outputView.addView(textView);
             postScrollIfAtEnd();
           lineFeedPending = false;
           lineCount++;
@@ -338,10 +342,10 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
               if (!functionViews.containsKey(name)) {
                   FunctionView functionView = new FunctionView(this, name, (CallableUnit) symbol.value, mainInterpreter, this);
                   functionView.addExpandListener(this);
-                  scrollContentView.addView(functionView, 1);
+                  scrollContentView.addView(functionView, 2);
                   functionViews.put(name, functionView);
                   if (expandNew) {
-                      functionView.setExpanded(true, false);
+                 //     functionView.setExpanded(true, false);
                   }
               }
           }
@@ -353,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
 
       if (program.main.getLineCount() > 0 && mainFunctionView.getVisibility() == View.GONE) {
           mainFunctionView.setVisibility(View.VISIBLE);
-          mainFunctionView.setExpanded(true, false);
+          //mainFunctionView.setExpanded(true, false);
       }
       mainFunctionView.syncContent();
 
@@ -494,7 +498,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mainFunctionView.setName("Program \"" + name + "\"");
+              //  mainFunctionView.setName("Program \"" + name + "\"");
                 sharedPreferences.edit().putString(PROGRAM_NAME_STORAGE_KEY, name).commit();
             }
         });
@@ -504,8 +508,8 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     public void clearScreen() {
         runOnUiThread(new Runnable() {
             public void run() {
-                for (int i = shellView.getChildCount() - 1; i > 0; i--) {
-                    shellView.removeViewAt(i);
+                for (int i = outputView.getChildCount() - 1; i > 0; i--) {
+                    outputView.removeViewAt(i);
                 }
                 controlView.resultView.setText("");
                 lineFeedPending = false;
@@ -525,7 +529,7 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
     }
 
     @Override
-    public void notifyExpanding(ExpandableView functionView, boolean animated) {
+    public void notifyExpanding(FunctionView functionView, boolean animated) {
       if (functionView != currentFunctionView && functionView instanceof FunctionView) {
           if (currentFunctionView != null) {
               currentFunctionView.setExpanded(false, animated);
@@ -533,7 +537,6 @@ public class MainActivity extends AppCompatActivity implements Console, Expandab
           currentFunctionView = (FunctionView) functionView;
       }
     }
-
 
     @Override
     public void edit(String line) {

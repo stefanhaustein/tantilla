@@ -4,32 +4,48 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import org.kobjects.asde.R;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.StartStopListener;
-import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Node;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class FunctionView extends ExpandableView<LinearLayout> {
+public class FunctionView extends LinearLayout {
 
     public CallableUnit callableUnit;
     IconButton startStopIcon;
     Interpreter interpreter;
     LineEditor lineEditor;
     OnLongClickListener lineClickListener;
+    FunctionTitleView titleView;
+    ExpandableList contentView;
+    boolean expanded;
+    List<ExpandListener> expandListeners = new ArrayList<>();
 
     public FunctionView(final Activity context, String name, final CallableUnit callableUnit, final Interpreter interpreter, final LineEditor lineEditor) {
-        super(context, new LinearLayout(context));
-        contentView.setOrientation(VERTICAL);
+        super(context);
+        setOrientation(VERTICAL);
         this.callableUnit = callableUnit;
         this.interpreter = interpreter;
-        setName(name);
+        this.titleView = new FunctionTitleView(context, name, callableUnit);
+        addView(titleView);
+        contentView = new ExpandableList(context);
+        addView(contentView);
 
+
+        titleView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setExpanded(!expanded, true);
+            }
+        });
+
+        titleView.setType('F');
+
+        /*
         if (interpreter != null) {
             startStopIcon = new IconButton(context, R.drawable.baseline_play_arrow_black_24);
             interpreter.addStartStopListener(new StartStopListener() {
@@ -80,9 +96,12 @@ public class FunctionView extends ExpandableView<LinearLayout> {
             }
         };
 
-        syncContent();
-    }
+        syncContent(); */
 
+
+
+    }
+/*
     public void setName(String name) {
         StringBuilder sb = new StringBuilder(name);
         if (callableUnit.getType().getReturnType() != Types.VOID) {
@@ -90,15 +109,32 @@ public class FunctionView extends ExpandableView<LinearLayout> {
         }
         titleView.setTitle(sb.toString());
     }
-
+*/
 
     public void put(int lineNumber, List<? extends Node> statementList) {
         callableUnit.setLine(lineNumber, new CodeLine(statementList));
         syncContent();
     }
 
+    public void setExpanded(final boolean expand, boolean animated) {
+        if (expanded == expand) {
+            return;
+        }
+        expanded = expand;
+        for (ExpandListener expandListener : expandListeners) {
+            expandListener.notifyExpanding(this, animated);
+        }
+        syncContent();
+    }
+
+
+
+    public void addExpandListener(ExpandListener expandListener) {
+        expandListeners.add(expandListener);
+    }
+
     public void syncContent() {
-        titleView.setBackgroundColor(callableUnit.errors.size() > 0 ? Colors.SECONDARY_LIGHT : Colors.PRIMARY);
+        titleView.setBackgroundColor(callableUnit.errors.size() > 0 ? Colors.SECONDARY_LIGHT : expanded ? Colors.PRIMARY_LIGHT : 0);
         if (!expanded) {
             contentView.removeAllViews();
             return;
@@ -129,4 +165,10 @@ public class FunctionView extends ExpandableView<LinearLayout> {
         callableUnit.setLine(lineNumber, null);
         syncContent();
     }
+
+
+    public interface ExpandListener {
+        void notifyExpanding(FunctionView expandableView, boolean animated);
+    }
+
 }

@@ -1,7 +1,6 @@
 package org.kobjects.asde.android.ide.widget;
 
 import android.graphics.Typeface;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.Menu;
@@ -12,10 +11,10 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.TextView;
 
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
+import com.vanniktech.emoji.EmojiTextView;
 
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.MainActivity;
@@ -28,7 +27,7 @@ public class ControlView extends LinearLayout  {
 
 
     public EmojiEditText codeEditText;
-    public TextView resultView;
+    public EmojiTextView resultView;
     IconButton enterButton;
     public IconButton menuButton;
     public EmojiEditText consoleEditText;
@@ -105,7 +104,7 @@ public class ControlView extends LinearLayout  {
 
         // Main area
 
-        resultView = new TextView(mainActivity);
+        resultView = new EmojiTextView(mainActivity);
         resultView.setTypeface(Typeface.MONOSPACE);
 
         codeEditText = new EmojiEditText(mainActivity);
