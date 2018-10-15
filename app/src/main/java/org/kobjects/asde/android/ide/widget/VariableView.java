@@ -46,6 +46,7 @@ public class VariableView extends LinearLayout {
     void expand(boolean expand) {
         if (this.expanded != expand) {
             this.expanded = expand;
+            listView.animateNextChanges();
             sync();
         }
     }

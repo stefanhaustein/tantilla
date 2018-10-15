@@ -13,6 +13,7 @@ public class ExpandableList extends LinearLayout {
     int currentHeight;
     int targetHeight;
     boolean removeAllPending;
+    boolean animate;
 
     public ExpandableList(Context context) {
         super(context);
@@ -26,9 +27,12 @@ public class ExpandableList extends LinearLayout {
             setMeasuredDimension(getMeasuredWidth(), currentHeight);
         } else {
             super.onMeasure(widthSpec, heightSpec);
-            targetHeight = getMeasuredHeight();
-            if (targetHeight != currentHeight) {
-                startAnimation();
+            if (animate) {
+                animate = false;
+                targetHeight = getMeasuredHeight();
+                if (targetHeight != currentHeight) {
+                    startAnimation();
+                }
             }
         }
     }
@@ -53,12 +57,19 @@ public class ExpandableList extends LinearLayout {
     @Override
     public void removeAllViews() {
         if (getChildCount() != 0) {
-            targetHeight = 0;
-            removeAllPending = true;
-            startAnimation();
+            if (animate) {
+                targetHeight = 0;
+                removeAllPending = true;
+                startAnimation();
+            } else {
+                super.removeAllViews();
+            }
         }
     }
 
+    void animateNextChanges() {
+        animate = true;
+    }
 
     void startAnimation() {
         if (animator != null) {
@@ -83,8 +94,8 @@ public class ExpandableList extends LinearLayout {
             public void onAnimationEnd(Animator animation) {
                 animator = null;
                 if (removeAllPending) {
-                    ExpandableList.super.removeAllViews();
                     removeAllPending = false;
+                    ExpandableList.super.removeAllViews();
                 }
             }
 
@@ -92,8 +103,8 @@ public class ExpandableList extends LinearLayout {
             public void onAnimationCancel(Animator animation) {
                 animator = null;
                 if (removeAllPending) {
-                    ExpandableList.super.removeAllViews();
                     removeAllPending = false;
+                    ExpandableList.super.removeAllViews();
                 }
             }
 

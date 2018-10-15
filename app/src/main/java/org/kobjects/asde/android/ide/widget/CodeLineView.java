@@ -39,7 +39,6 @@ public class CodeLineView extends LinearLayout {
 
         addView(lineNumberView, new LayoutParams(Math.round(lineNumberView.getTextSize() * 3f), ViewGroup.LayoutParams.MATCH_PARENT));
         addView(statementView, new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT, 1));
-
     }
 
     void setLineNumber(int lineNumber) {

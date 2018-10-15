@@ -120,6 +120,9 @@ public class FunctionView extends LinearLayout {
         if (expanded == expand) {
             return;
         }
+        if (animated) {
+            contentView.animateNextChanges();
+        }
         expanded = expand;
         for (ExpandListener expandListener : expandListeners) {
             expandListener.notifyExpanding(this, animated);

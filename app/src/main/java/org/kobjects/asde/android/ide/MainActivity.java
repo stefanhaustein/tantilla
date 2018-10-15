@@ -22,16 +22,14 @@ import com.vanniktech.emoji.EmojiTextView;
 import com.vanniktech.emoji.one.EmojiOneProvider;
 
 import org.kobjects.asde.R;
-import org.kobjects.asde.android.ide.widget.CodeView;
+import org.kobjects.asde.android.ide.widget.ProgramView;
 import org.kobjects.asde.android.ide.widget.Colors;
 import org.kobjects.asde.android.ide.widget.ControlView;
 import org.kobjects.asde.android.ide.widget.Dimensions;
-import org.kobjects.asde.android.ide.widget.FunctionView;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.LineEditor;
 import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.android.ide.widget.VariableView;
-import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.LocalStack;
 import org.kobjects.asde.lang.StartStopListener;
@@ -47,20 +45,15 @@ import org.kobjects.asde.lang.Interpreter;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
-public class MainActivity extends AppCompatActivity implements Console, FunctionView.ExpandListener, LineEditor {
+public class MainActivity extends AppCompatActivity implements Console, LineEditor {
   private final String PROGRAM_NAME_STORAGE_KEY = "ProgramName";
 
   LinearLayout scrollContentView;
   public View rootView;
   ScrollView scrollView;
   ControlView controlView;
-  FunctionView mainFunctionView;
   Program program = new Program(this);
   Drawable systemListDivider;
   LinearLayout outputView;
@@ -69,12 +62,10 @@ public class MainActivity extends AppCompatActivity implements Console, Function
   VariableView variableView;
   public Interpreter mainInterpreter = new Interpreter(program, program.main, new LocalStack());
   Interpreter shellInterpreter = new Interpreter(program, null, new LocalStack());
-  TreeMap<String,FunctionView> functionViews = new TreeMap<>();
-  FunctionView currentFunctionView;
   SharedPreferences sharedPreferences;
   boolean autoScroll = true;
   public boolean fullScreenMode;
-  CodeView codeView;
+  ProgramView programView;
 
   private TitleView outputTitleView;
   private Viewport viewport;
@@ -112,11 +103,8 @@ public class MainActivity extends AppCompatActivity implements Console, Function
 
 
     variableView = new VariableView(this, program);
-    codeView = new CodeView(this, program);
-    mainFunctionView = new FunctionView(this, "Main Block", program.main, mainInterpreter, this);
-    mainFunctionView.addExpandListener(this);
-    mainFunctionView.setVisibility(View.GONE);
-    currentFunctionView = mainFunctionView;
+    programView = new ProgramView(this, program, mainInterpreter, this);
+
 
     outputTitleView = new TitleView(this);
     outputTitleView.setTitle("Output");
@@ -139,8 +127,7 @@ public class MainActivity extends AppCompatActivity implements Console, Function
     scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
     scrollContentView.setDividerDrawable(divider);
     scrollContentView.addView(variableView);
-    scrollContentView.addView(codeView);
-    scrollContentView.addView(mainFunctionView);
+    scrollContentView.addView(programView);
     scrollContentView.addView(outputView);
 
     scrollView = new ScrollView(this);
@@ -230,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements Console, Function
           int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
           tokenizer.nextToken();
           if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER || "?".equals(tokenizer.currentValue)) {
-            currentFunctionView.put(lineNumber, program.parser.parseStatementList(tokenizer));
+            programView.currentFunctionView.put(lineNumber, program.parser.parseStatementList(tokenizer));
             sync(true);
             program.save(null);
             break;
@@ -329,37 +316,7 @@ public class MainActivity extends AppCompatActivity implements Console, Function
 
   void sync(boolean expandNew) {
       variableView.sync();
-
-      Set<String> removeViews = new HashSet<String>(functionViews.keySet());
-      for (Map.Entry<String, GlobalSymbol> entry : program.getSymbolMap().entrySet()) {
-          GlobalSymbol symbol = entry.getValue();
-          if (symbol == null) {
-              continue;
-          }
-          String name = entry.getKey();
-          if (symbol.scope == GlobalSymbol.Scope.PERSISTENT && symbol.value instanceof CallableUnit) {
-              removeViews.remove(name);
-              if (!functionViews.containsKey(name)) {
-                  FunctionView functionView = new FunctionView(this, name, (CallableUnit) symbol.value, mainInterpreter, this);
-                  functionView.addExpandListener(this);
-                  scrollContentView.addView(functionView, 2);
-                  functionViews.put(name, functionView);
-                  if (expandNew) {
-                 //     functionView.setExpanded(true, false);
-                  }
-              }
-          }
-      }
-      for (String remove : removeViews) {
-          scrollContentView.removeView(functionViews.get(remove));
-          functionViews.remove(remove);
-      }
-
-      if (program.main.getLineCount() > 0 && mainFunctionView.getVisibility() == View.GONE) {
-          mainFunctionView.setVisibility(View.VISIBLE);
-          //mainFunctionView.setExpanded(true, false);
-      }
-      mainFunctionView.syncContent();
+      programView.sync();
 
 /*
       if (!expandNew) {
@@ -528,15 +485,7 @@ public class MainActivity extends AppCompatActivity implements Console, Function
       }
     }
 
-    @Override
-    public void notifyExpanding(FunctionView functionView, boolean animated) {
-      if (functionView != currentFunctionView && functionView instanceof FunctionView) {
-          if (currentFunctionView != null) {
-              currentFunctionView.setExpanded(false, animated);
-          }
-          currentFunctionView = (FunctionView) functionView;
-      }
-    }
+
 
     @Override
     public void edit(String line) {
@@ -546,7 +495,7 @@ public class MainActivity extends AppCompatActivity implements Console, Function
     public void eraseProgram() {
         mainInterpreter.stop();
         program.clearAll();
-        mainFunctionView.setVisibility(View.GONE);
+        programView.mainFunctionView.setVisibility(View.GONE);
         sync(false);
     }
 
