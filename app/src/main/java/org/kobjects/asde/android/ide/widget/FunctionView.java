@@ -1,12 +1,15 @@
 package org.kobjects.asde.android.ide.widget;
 
 import android.app.Activity;
+import android.graphics.Typeface;
+import android.support.v7.widget.AppCompatTextView;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Node;
 
 import java.util.ArrayList;
@@ -20,7 +23,7 @@ public class FunctionView extends LinearLayout {
     Interpreter interpreter;
     LineEditor lineEditor;
     OnLongClickListener lineClickListener;
-    FunctionTitleView titleView;
+    SymbolTitleView titleView;
     ExpandableList contentView;
     boolean expanded;
     List<ExpandListener> expandListeners = new ArrayList<>();
@@ -30,7 +33,21 @@ public class FunctionView extends LinearLayout {
         setOrientation(VERTICAL);
         this.callableUnit = callableUnit;
         this.interpreter = interpreter;
-        this.titleView = new FunctionTitleView(context, name, callableUnit);
+
+        boolean isMain = callableUnit == callableUnit.program.main;
+        boolean isVoid = callableUnit.getType().getReturnType() == Types.VOID;
+        int color = isMain ? Colors.PRIMARY_DARK : isVoid ? Colors.DEEP_PURPLE : Colors.BLUE;
+        char c = isMain ? 'M' : isVoid ? 'S' : 'F';
+
+        ArrayList<String> subtitles = new ArrayList<>();
+        for (int i = 0; i < callableUnit.getType().getParameterCount(); i++) {
+            subtitles.add("" + i + ": " + callableUnit.getType().getParameterType(i));
+        }
+        if (!isVoid) {
+            subtitles.add("-> " + callableUnit.getType().getReturnType());
+        }
+
+        this.titleView = new SymbolTitleView(context, color, c, name, subtitles);
         addView(titleView);
         contentView = new ExpandableList(context);
         addView(contentView);
@@ -42,8 +59,6 @@ public class FunctionView extends LinearLayout {
                 setExpanded(!expanded, true);
             }
         });
-
-        titleView.setType('F');
 
         /*
         if (interpreter != null) {

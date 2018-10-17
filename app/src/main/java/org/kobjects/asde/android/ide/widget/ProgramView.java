@@ -1,19 +1,17 @@
 package org.kobjects.asde.android.ide.widget;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import org.kobjects.asde.lang.CallableUnit;
+import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 public class ProgramView extends LinearLayout implements FunctionView.ExpandListener {
 
@@ -21,11 +19,11 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
     private ExpandableList symbolList;
     public final FunctionView mainFunctionView;
     private final Program program;
-    private final TreeMap<String,FunctionView> functionViews = new TreeMap<>();
     private final Interpreter mainInterpreter;
     private final Activity context;
     private final LineEditor lineEditor;
 
+    private HashMap<String, View> symbolViewMap = new HashMap<>();
     public FunctionView currentFunctionView;
 
     public ProgramView(Activity context, Program program, Interpreter mainInterpreter, LineEditor lineEditor) {
@@ -69,45 +67,52 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
 
 
     public void sync() {
+        symbolList.removeAllViews();
         if (!expanded) {
-            symbolList.removeAllViews();
-            functionViews.clear();
+            symbolViewMap.clear();
             return;
         }
 
-        if (mainFunctionView.getParent() == null) {
-            symbolList.addView(mainFunctionView);
-        }
+        int varCount = 0;
 
-        Set<String> removeViews = new HashSet<String>(functionViews.keySet());
+        HashMap<String, View> newSymbolViewMap = new HashMap<>();
         for (Map.Entry<String, GlobalSymbol> entry : program.getSymbolMap().entrySet()) {
             GlobalSymbol symbol = entry.getValue();
-            if (symbol == null) {
+            if (symbol == null || symbol.scope != GlobalSymbol.Scope.PERSISTENT) {
                 continue;
             }
             String name = entry.getKey();
-            if (symbol.scope == GlobalSymbol.Scope.PERSISTENT && symbol.value instanceof CallableUnit) {
-                removeViews.remove(name);
-                if (!functionViews.containsKey(name)) {
+            View symbolView = symbolViewMap.get(name);
+            int index;
+            if (symbol.value instanceof CallableUnit) {
+                if (!(symbolView instanceof FunctionView)) {
                     FunctionView functionView = new FunctionView(context, name, (CallableUnit) symbol.value, mainInterpreter, lineEditor);
+                    symbolView = functionView;
                     functionView.addExpandListener(this);
-                    symbolList.addView(functionView, symbolList.getChildCount() - 1);
-                    functionViews.put(name, functionView);
+
                   //  if (expandNew) {
                         //     functionView.setExpanded(true, false);
                  //   }
                 }
+                index = symbolList.getChildCount();
+            } else {
+                if (!(symbolView instanceof VariableView)) {
+                    VariableView variableView = new VariableView(context, name, symbol);
+                    symbolView = variableView;
+                }
+                index = varCount++;
             }
+            symbolList.addView(symbolView, index);
+            newSymbolViewMap.put(name, symbolView);
         }
-        for (String remove : removeViews) {
-            symbolList.removeView(functionViews.get(remove));
-            functionViews.remove(remove);
-        }
+        symbolViewMap = newSymbolViewMap;
+        symbolList.addView(mainFunctionView);
 
         if (program.main.getLineCount() > 0 && mainFunctionView.getVisibility() == View.GONE) {
             mainFunctionView.setVisibility(View.VISIBLE);
             //mainFunctionView.setExpanded(true, false);
         }
+
         mainFunctionView.syncContent();
     }
 

@@ -29,7 +29,6 @@ import org.kobjects.asde.android.ide.widget.Dimensions;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.LineEditor;
 import org.kobjects.asde.android.ide.widget.TitleView;
-import org.kobjects.asde.android.ide.widget.VariableView;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.LocalStack;
 import org.kobjects.asde.lang.StartStopListener;
@@ -59,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements Console, LineEdit
   LinearLayout outputView;
   public String readLine;
   ScreenAdapter screen;
-  VariableView variableView;
   public Interpreter mainInterpreter = new Interpreter(program, program.main, new LocalStack());
   Interpreter shellInterpreter = new Interpreter(program, null, new LocalStack());
   SharedPreferences sharedPreferences;
@@ -102,9 +100,7 @@ public class MainActivity extends AppCompatActivity implements Console, LineEdit
     });
 
 
-    variableView = new VariableView(this, program);
     programView = new ProgramView(this, program, mainInterpreter, this);
-
 
     outputTitleView = new TitleView(this);
     outputTitleView.setTitle("Output");
@@ -126,7 +122,6 @@ public class MainActivity extends AppCompatActivity implements Console, LineEdit
 //    scrollContentView.setDividerPadding(Dimensions.dpToPx(this, 12));
     scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
     scrollContentView.setDividerDrawable(divider);
-    scrollContentView.addView(variableView);
     scrollContentView.addView(programView);
     scrollContentView.addView(outputView);
 
@@ -315,7 +310,6 @@ public class MainActivity extends AppCompatActivity implements Console, LineEdit
   }
 
   void sync(boolean expandNew) {
-      variableView.sync();
       programView.sync();
 
 /*
