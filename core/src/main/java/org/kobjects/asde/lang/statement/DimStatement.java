@@ -24,7 +24,7 @@ public class DimStatement extends Node {
              // TODO: evalInt
              dims[i] = evalInt(interpreter, i);
         }
-        interpreter.program.setValue(interpreter.getSymbolScope(), varName, new Array(varName.endsWith("$") ? Types.STRING : Types.NUMBER, dims));
+        interpreter.control.program.setValue(interpreter.getSymbolScope(), varName, new Array(varName.endsWith("$") ? Types.STRING : Types.NUMBER, dims));
         return null;
     }
 

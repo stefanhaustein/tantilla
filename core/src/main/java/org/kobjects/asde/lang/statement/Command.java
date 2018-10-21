@@ -33,15 +33,10 @@ public class Command extends Node {
 
     @Override
     public Object eval(Interpreter interpreter) {
-        Program program = interpreter.program;
+        Program program = interpreter.control.program;
         switch (kind) {
             case CONTINUE:
-                if (program.stopped == null) {
-                    throw new RuntimeException("Not stopped.");
-                }
-                interpreter.currentLine = program.stopped[0];
-                interpreter.currentIndex = program.stopped[1] + 1;
-                break;
+                interpreter.control.setPaused(false);
 
             case CLEAR:
                 program.clear(interpreter);
@@ -67,7 +62,7 @@ public class Command extends Node {
             }
 
             case LOAD:
-                load(interpreter);
+                program.load(evalString(interpreter, 0));
                 break;
 
 
@@ -83,36 +78,14 @@ public class Command extends Node {
                 break;
 
             case TRON:
-                program.trace = true;
+                interpreter.control.setTrace(true);
                 break;
             case TROFF:
-                program.trace = false;
+                interpreter.control.setTrace(false);
                 break;
 
         }
         return null;
-    }
-
-    void load(Interpreter interpreter) {
-        String line = null;
-        try {
-            URLConnection connection = new URL(evalString(interpreter, 0)).openConnection();
-            connection.setDoInput(true);
-            InputStream is = connection.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-            while (null != (line = reader.readLine())) {
-                try {
-                    AsdeShell.processInputLine(interpreter, line);
-                } catch (Exception e) {
-                    interpreter.program.println(line);
-                    interpreter.program.println(e.getMessage());
-                }
-            }
-            reader.close();
-            is.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override

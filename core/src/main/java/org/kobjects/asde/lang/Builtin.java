@@ -80,7 +80,7 @@ public enum Builtin implements Function {
         return s.substring(Math.min(s.length(), s.length() - asInt(localStack.getParameter(1, paramCount))));
       }
       case RND: return Math.random();
-      case TAB: return interpreter.program.tab(asInt(localStack.getParameter(1, paramCount)));
+      case TAB: return interpreter.control.program.tab(asInt(localStack.getParameter(1, paramCount)));
       case TAN: return Math.tan((Double) localStack.getParameter(0, paramCount));
       case VAL: return Double.parseDouble((String) localStack.getParameter(0, paramCount));
       default:

@@ -67,7 +67,7 @@ public class ExpandableList extends LinearLayout {
         }
     }
 
-    void animateNextChanges() {
+    public void animateNextChanges() {
         animate = true;
     }
 

@@ -22,15 +22,11 @@ import com.vanniktech.emoji.EmojiTextView;
 import com.vanniktech.emoji.one.EmojiOneProvider;
 
 import org.kobjects.asde.R;
-import org.kobjects.asde.android.ide.widget.ProgramView;
-import org.kobjects.asde.android.ide.widget.Colors;
-import org.kobjects.asde.android.ide.widget.ControlView;
 import org.kobjects.asde.android.ide.widget.Dimensions;
 import org.kobjects.asde.android.ide.widget.IconButton;
-import org.kobjects.asde.android.ide.widget.LineEditor;
 import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.lang.CodeLine;
-import org.kobjects.asde.lang.LocalStack;
+import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.StartStopListener;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
@@ -40,7 +36,6 @@ import org.kobjects.graphics.Viewport;
 import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Console;
-import org.kobjects.asde.lang.Interpreter;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,8 +53,8 @@ public class MainActivity extends AppCompatActivity implements Console, LineEdit
   LinearLayout outputView;
   public String readLine;
   ScreenAdapter screen;
-  public Interpreter mainInterpreter = new Interpreter(program, program.main, new LocalStack());
-  Interpreter shellInterpreter = new Interpreter(program, null, new LocalStack());
+  public ProgramControl mainInterpreter = new ProgramControl(program);
+  ProgramControl shellInterpreter = new ProgramControl(program);
   SharedPreferences sharedPreferences;
   boolean autoScroll = true;
   public boolean fullScreenMode;
@@ -100,9 +95,9 @@ public class MainActivity extends AppCompatActivity implements Console, LineEdit
     });
 
 
-    programView = new ProgramView(this, program, mainInterpreter, this);
+    programView = new ProgramView(this, program);
 
-    outputTitleView = new TitleView(this);
+    outputTitleView = new TitleView(this, Colors.PRIMARY);
     outputTitleView.setTitle("Output");
     outputTitleView.addView(clearButton);
     outputView = new LinearLayout(this);
@@ -471,7 +466,7 @@ public class MainActivity extends AppCompatActivity implements Console, LineEdit
 
     public void openExample(String name) {
       try {
-          mainInterpreter.stop();
+          mainInterpreter.terminate();
           program.load("Scratch", getAssets().open("examples/" + name));
           sync(false);
       } catch (IOException e) {
@@ -487,14 +482,14 @@ public class MainActivity extends AppCompatActivity implements Console, LineEdit
     }
 
     public void eraseProgram() {
-        mainInterpreter.stop();
+        mainInterpreter.terminate();
         program.clearAll();
         programView.mainFunctionView.setVisibility(View.GONE);
         sync(false);
     }
 
     public void load(String name) {
-        mainInterpreter.stop();
+        mainInterpreter.terminate();
         program.load(name);
         sync(false);
     }

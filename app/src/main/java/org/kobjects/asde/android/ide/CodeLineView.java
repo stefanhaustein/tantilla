@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide.widget;
+package org.kobjects.asde.android.ide;
 
 import android.app.AlertDialog;
 import android.content.Context;

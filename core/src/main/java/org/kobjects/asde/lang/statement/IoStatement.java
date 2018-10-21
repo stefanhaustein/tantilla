@@ -44,7 +44,7 @@ public class IoStatement extends Node {
     }
 
     void input(Interpreter interpreter) {
-        Program program = interpreter.program;
+        Program program = interpreter.control.program;
         for (int i = 0; i < children.length; i++) {
             Node child = children[i];
             if (child instanceof Identifier) {
@@ -73,7 +73,7 @@ public class IoStatement extends Node {
     }
 
     void print(Interpreter interpreter) {
-        Program program = interpreter.program;
+        Program program = interpreter.control.program;
         for (int i = 0; i < children.length; i++) {
             Object val = children[i].eval(interpreter);
             if (val instanceof Double) {

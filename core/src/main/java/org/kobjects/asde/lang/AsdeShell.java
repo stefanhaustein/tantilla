@@ -15,10 +15,10 @@ public class AsdeShell {
     /**
      * Returns true if the line was "interactive" and a "ready" prompt should be displayed.
      */
-    public static boolean processInputLine(Interpreter interpreter, String line) {
-        ExpressionParser.Tokenizer tokenizer = interpreter.program.parser.createTokenizer(line);
+    public static boolean processInputLine(ProgramControl control, String line) {
+        Program program = control.program;
+        ExpressionParser.Tokenizer tokenizer = program.parser.createTokenizer(line);
 
-        Program program = interpreter.program;
         tokenizer.nextToken();
         switch (tokenizer.currentType) {
             case EOF:
@@ -34,7 +34,7 @@ public class AsdeShell {
                 return false;
             default:
                 List<? extends Node> statements = program.parser.parseStatementList(tokenizer);
-                interpreter.runStatementsAsync(statements, interpreter);
+                control.runStatementsAsync(statements, control);
                 return true;
         }
     }
@@ -79,7 +79,7 @@ public class AsdeShell {
 
     boolean prompt = true;
 
-    Interpreter interpreter = new Interpreter(program, program.main, new LocalStack());
+    ProgramControl control = new ProgramControl(program);
     while (true) {
       if (prompt) {
         System.out.println("\nREADY.");
@@ -90,7 +90,7 @@ public class AsdeShell {
       }
       prompt = true;
       try {
-        prompt = processInputLine(interpreter, line);
+        prompt = processInputLine(control, line);
       } catch (ExpressionParser.ParsingException e) {
         char[] fill = new char[e.start + 1];
         Arrays.fill(fill, ' ');
@@ -98,8 +98,8 @@ public class AsdeShell {
         System.out.println("?SYNTAX ERROR: " + e.getMessage());
         program.lastException = e;
       } catch (Exception e) {
-        System.out.println("\nERROR in " + interpreter.currentLine + ':'
-            + interpreter.currentIndex + ": " + e.getMessage());
+        System.out.println("\nERROR in " + control.rootInterprter.currentLine + ':'
+            + control.rootInterprter.currentIndex + ": " + e.getMessage());
         System.out.println("\nREADY.");
         program.lastException = e;
       }

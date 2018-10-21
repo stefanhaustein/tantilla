@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide.widget;
+package org.kobjects.asde.android.ide;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.kobjects.asde.android.ide.widget.Dimensions;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.Types;
 

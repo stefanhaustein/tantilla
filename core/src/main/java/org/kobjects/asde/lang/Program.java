@@ -57,10 +57,9 @@ public class Program {
 
   private TreeMap<String, GlobalSymbol> symbolMap = new TreeMap<>();
   public Exception lastException;
-  public int[] stopped;
   public int tabPos;
-  public boolean trace;
   public final Console console;
+
 
   public Program(Console console) {
     this.console = console;
@@ -97,7 +96,6 @@ public class Program {
       }
       name = "Scratch";
       console.programNameChangedTo(name);
-      stopped = null;
   }
 
 
@@ -116,7 +114,6 @@ public class Program {
 
     runInitializers(interpreter);
       Arrays.fill(interpreter.dataPosition, 0);
-      stopped = null;
   }
 
 

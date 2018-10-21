@@ -15,13 +15,13 @@ public class DynamicSymbol implements ResolvedSymbol {
 
     @Override
     public Object get(Interpreter interpreter) {
-        GlobalSymbol symbol = interpreter.program.getSymbol(name);
+        GlobalSymbol symbol = interpreter.control.program.getSymbol(name);
         return symbol == null ? null : symbol.value;
     }
 
     @Override
     public void set(Interpreter interpreter, Object value) {
-        interpreter.program.setValue(mode == ResolutionContext.ResolutionMode.SHELL
+        interpreter.control.program.setValue(mode == ResolutionContext.ResolutionMode.SHELL
                 ? GlobalSymbol.Scope.PERSISTENT : GlobalSymbol.Scope.TRANSIENT, name, value);
     }
 

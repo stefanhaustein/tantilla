@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide.widget;
+package org.kobjects.asde.android.ide;
 
 import android.graphics.Typeface;
 import android.text.InputType;
@@ -18,10 +18,10 @@ import com.vanniktech.emoji.EmojiTextView;
 
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.MainActivity;
+import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.lang.StartStopListener;
 
 import java.io.IOException;
-import java.util.MissingFormatArgumentException;
 
 public class ControlView extends LinearLayout  {
 
@@ -35,6 +35,7 @@ public class ControlView extends LinearLayout  {
     private IconButton startStopButton;
     private IconButton emojiButton;
     private LinearLayout inputLayout;
+    private boolean cleared = true;
 
     MainActivity mainActivity;
 
@@ -56,7 +57,12 @@ public class ControlView extends LinearLayout  {
             @Override
             public void onClick(View v) {
                 if (mainActivity.mainInterpreter.isRunning()) {
-                    mainActivity.mainInterpreter.stop();
+                    mainActivity.mainInterpreter.terminate();
+                    cleared = false;
+                } else if (!cleared) {
+                    mainActivity.clearScreen();
+                    cleared = true;
+                    startStopButton.setImageResource(R.drawable.baseline_play_arrow_black_24);
                 } else {
                     mainActivity.mainInterpreter.runAsync();
                 }
@@ -121,16 +127,7 @@ public class ControlView extends LinearLayout  {
         inputLayout.addView(consoleEditText);
         inputLayout.addView(codeEditText);
 
-/*
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line, new ArrayList<String>());
-        ((AutoCompleteTextView) codeEditText).setAdapter(adapter);
-*/
-
-
         // Right button bar
-
-
 
         mainActivity.mainInterpreter.addStartStopListener(new StartStopListener() {
             @Override
@@ -138,8 +135,8 @@ public class ControlView extends LinearLayout  {
                 mainActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        startStopButton.setImageResource(R.drawable.baseline_stop_black_24);
-
+                        startStopButton.setImageResource(R.drawable.baseline_pause_black_24);
+                        cleared = false;
                     }
                 });
             }
@@ -149,7 +146,7 @@ public class ControlView extends LinearLayout  {
                 mainActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        startStopButton.setImageResource(R.drawable.baseline_play_arrow_black_24);
+                        startStopButton.setImageResource(R.drawable.baseline_stop_black_24);
                         consoleEditText.setVisibility(GONE);
                         codeEditText.setVisibility(VISIBLE);
                     }
@@ -228,27 +225,6 @@ public class ControlView extends LinearLayout  {
         PopupMenu popupMenu = new PopupMenu(mainActivity, menuButton);
         Menu mainMenu = popupMenu.getMenu();
 
-        /*
-        if (mainInterpreter.isRunning()) {
-            mainMenu.add("Stop").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    mainInterpreter.stop();
-                    return true;
-                }
-            });
-        } else {
-            mainMenu.add("Run").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    mainInterpreter.runAsync();
-                    return true;
-                }
-            });
-        }
-
-*/
-
         SubMenu clearMenu = mainMenu.addSubMenu("Clear");
         clearMenu.add("Clear Screen").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -279,13 +255,11 @@ public class ControlView extends LinearLayout  {
         }
         try {
             for (final String example : mainActivity.getAssets().list("examples")) {
-                examplesMenu.add(example).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
+                examplesMenu.add(example).setOnMenuItemClickListener( item -> {
                         mainActivity.openExample(example);
                         return true;
                     }
-                });
+                );
             }
         }catch (IOException e) {
             throw new RuntimeException(e);

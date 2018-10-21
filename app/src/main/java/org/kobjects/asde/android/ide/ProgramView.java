@@ -1,12 +1,11 @@
-package org.kobjects.asde.android.ide.widget;
+package org.kobjects.asde.android.ide;
 
-import android.app.Activity;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import org.kobjects.asde.android.ide.widget.ExpandableList;
+import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.lang.CallableUnit;
-import org.kobjects.asde.lang.Function;
-import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 
@@ -19,23 +18,19 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
     private ExpandableList symbolList;
     public final FunctionView mainFunctionView;
     private final Program program;
-    private final Interpreter mainInterpreter;
-    private final Activity context;
-    private final LineEditor lineEditor;
+    private final MainActivity context;
 
     private HashMap<String, View> symbolViewMap = new HashMap<>();
     public FunctionView currentFunctionView;
 
-    public ProgramView(Activity context, Program program, Interpreter mainInterpreter, LineEditor lineEditor) {
+    public ProgramView(MainActivity context, Program program) {
         super(context);
         setOrientation(VERTICAL);
 
         this.context = context;
         this.program = program;
-        this.mainInterpreter = mainInterpreter;
-        this.lineEditor = lineEditor;
 
-        TitleView titleView = new TitleView(context);
+        TitleView titleView = new TitleView(context, Colors.PRIMARY);
         titleView.setTitle("Unnamed Program");
         addView(titleView);
         titleView.setOnClickListener(new OnClickListener() {
@@ -48,7 +43,7 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
         symbolList = new ExpandableList(context);
         addView(symbolList);
 
-        mainFunctionView = new FunctionView(context, "Main", program.main, mainInterpreter, lineEditor);
+        mainFunctionView = new FunctionView(context, "Main", program.main);
         mainFunctionView.addExpandListener(this);
         mainFunctionView.setVisibility(View.GONE);
         currentFunctionView = mainFunctionView;
@@ -86,7 +81,7 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
             int index;
             if (symbol.value instanceof CallableUnit) {
                 if (!(symbolView instanceof FunctionView)) {
-                    FunctionView functionView = new FunctionView(context, name, (CallableUnit) symbol.value, mainInterpreter, lineEditor);
+                    FunctionView functionView = new FunctionView(context, name, (CallableUnit) symbol.value);
                     symbolView = functionView;
                     functionView.addExpandListener(this);
 

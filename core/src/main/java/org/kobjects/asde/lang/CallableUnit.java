@@ -15,7 +15,7 @@ import java.util.TreeMap;
 public class CallableUnit implements Function {
     public final Program program;
     FunctionType type;
-    String[] parameterNames;
+    public String[] parameterNames;
     private TreeMap<Integer, CodeLine> code = new TreeMap<>();
     public HashMap<Node, Exception> errors = new HashMap<>();
     private int localVariableCount;
@@ -74,7 +74,9 @@ public class CallableUnit implements Function {
     public Object call(Interpreter interpreter, int paramCount) {
         int oldFrameStart = interpreter.localStack.frame(paramCount, localVariableCount);
         try {
-            Interpreter sub = new Interpreter(program, this, interpreter.localStack);
+            // This is called from inside ast evaluation, we can't push interpreter state
+            // and keep
+            Interpreter sub = new Interpreter(interpreter.control, this, interpreter.localStack);
             sub.runCallableUnit();
             return sub.returnValue;
         } finally {

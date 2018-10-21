@@ -53,10 +53,6 @@ public class LegacyStatement extends Node {
       return null;
     }
 
-    if (program.trace) {
-      program.print(interpreter.currentLine + ":" + interpreter.currentIndex + ": " + this);
-    }
-
     switch (kind) {
       case DEF: {
         Node assignment = children[0];
@@ -81,7 +77,7 @@ public class LegacyStatement extends Node {
         break;
       }
       case CLS:
-        interpreter.program.console.clearScreen();
+        interpreter.control.program.console.clearScreen();
         break;
 
       case DATA:
@@ -151,17 +147,11 @@ public class LegacyStatement extends Node {
         break;
 
       case STOP:
-        program.stopped = new int[]{interpreter.currentLine, interpreter.currentIndex};
-        program.println("\nSTOPPED in " + interpreter.currentLine + ":" + interpreter.currentIndex);
-        interpreter.currentLine = Integer.MAX_VALUE;
-        interpreter.currentIndex = 0;
+        interpreter.control.setPaused(true);
         break;
 
       default:
         throw new RuntimeException("Unimplemented statement: " + kind);
-    }
-    if (program.trace) {
-      program.println();
     }
     return null;
   }

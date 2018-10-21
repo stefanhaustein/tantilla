@@ -1,14 +1,11 @@
-package org.kobjects.asde.android.ide.widget;
+package org.kobjects.asde.android.ide;
 
-import android.app.Activity;
-import android.graphics.Typeface;
-import android.support.v7.widget.AppCompatTextView;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
-import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Node;
 
@@ -17,22 +14,17 @@ import java.util.List;
 import java.util.Map;
 
 public class FunctionView extends LinearLayout {
-
     public CallableUnit callableUnit;
-    IconButton startStopIcon;
-    Interpreter interpreter;
-    LineEditor lineEditor;
     OnLongClickListener lineClickListener;
     SymbolTitleView titleView;
     ExpandableList contentView;
     boolean expanded;
     List<ExpandListener> expandListeners = new ArrayList<>();
 
-    public FunctionView(final Activity context, String name, final CallableUnit callableUnit, final Interpreter interpreter, final LineEditor lineEditor) {
+    public FunctionView(final MainActivity context, String name, final CallableUnit callableUnit) {
         super(context);
         setOrientation(VERTICAL);
         this.callableUnit = callableUnit;
-        this.interpreter = interpreter;
 
         boolean isMain = callableUnit == callableUnit.program.main;
         boolean isVoid = callableUnit.getType().getReturnType() == Types.VOID;
@@ -41,7 +33,7 @@ public class FunctionView extends LinearLayout {
 
         ArrayList<String> subtitles = new ArrayList<>();
         for (int i = 0; i < callableUnit.getType().getParameterCount(); i++) {
-            subtitles.add("" + i + ": " + callableUnit.getType().getParameterType(i));
+            subtitles.add(" " + callableUnit.parameterNames[i] + ": " + callableUnit.getType().getParameterType(i));
         }
         if (!isVoid) {
             subtitles.add("-> " + callableUnit.getType().getReturnType());
@@ -87,7 +79,7 @@ public class FunctionView extends LinearLayout {
                 @Override
                 public void onClick(View v) {
                     if (interpreter.isRunning()) {
-                        interpreter.stop();
+                        interpreter.terminate();
                     } else {
                         interpreter.runAsync();
                     }
