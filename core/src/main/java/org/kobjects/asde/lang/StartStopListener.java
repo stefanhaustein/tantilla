@@ -2,5 +2,7 @@ package org.kobjects.asde.lang;
 
 public interface StartStopListener {
     void programStarted();
-    void programStopped();
+    void programTerminated();
+    void programPaused();
+
 }

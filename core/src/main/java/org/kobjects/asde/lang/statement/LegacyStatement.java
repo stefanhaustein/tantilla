@@ -147,7 +147,7 @@ public class LegacyStatement extends Node {
         break;
 
       case STOP:
-        interpreter.control.setPaused(true);
+        interpreter.control.pause();
         break;
 
       default:

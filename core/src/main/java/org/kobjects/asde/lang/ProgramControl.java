@@ -12,7 +12,11 @@ public class ProgramControl {
     public Program program;
     Interpreter rootInterprter;
 
-    boolean stopped;
+    public enum State {
+        PAUSED, TERMINATING, TERMINATED, RUNNING,
+    }
+
+    State state = State.TERMINATED;
     boolean trace;
 
     public ProgramControl(Program program) {
@@ -25,22 +29,24 @@ public class ProgramControl {
     }
 
 
-    public boolean isRunning() {
-        return interpreterThread != null;
+    public State getState() {
+        return state;
     }
 
-    public void terminate() {
+    public synchronized void terminate() {
+        if (state == State.TERMINATED || state == State.TERMINATING) {
+           return;
+        }
+        state = State.TERMINATING;
         if (interpreterThread != null) {
-            interpreterThread.interrupt();
-            interpreterThread = null;
-            for (StartStopListener startStopListener : startStopListeners) {
-                startStopListener.programStopped();
-            }
+          interpreterThread.interrupt();
         }
     }
 
-    public void runAsync(final Runnable runnable) {
-        terminate();
+    private void runAsync(final Runnable runnable) {
+        if (state != State.TERMINATED) {
+            throw new IllegalStateException("Can't start in state " + state);
+        }
         interpreterThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -50,14 +56,13 @@ public class ProgramControl {
                     e.printStackTrace();
                     program.console.print(e.toString());
                 }
-                if (interpreterThread != null) {
-                    interpreterThread = null;
-                    for (StartStopListener startStopListener : startStopListeners) {
-                        startStopListener.programStopped();
-                    }
+                state = State.TERMINATED;
+                for (StartStopListener startStopListener : startStopListeners) {
+                   startStopListener.programTerminated();
                 }
             }
         });
+        state = State.RUNNING;
         for (StartStopListener startStopListener : startStopListeners) {
             startStopListener.programStarted();
         }
@@ -65,9 +70,8 @@ public class ProgramControl {
     }
 
 
-    public void runAsync() {
+    public void start() {
         program.clear(rootInterprter);
-        stopped = false;
         runAsync(0);
     }
 
@@ -90,9 +94,7 @@ public class ProgramControl {
         });
     }
 
-
-
-    public void runAsync(final int runLine) {
+    private void runAsync(final int runLine) {
         runAsync(new Runnable() {
             @Override
             public void run() {
@@ -102,8 +104,24 @@ public class ProgramControl {
         });
     }
 
-    public void setPaused(boolean paused) {
-        this.stopped = paused;
+    public synchronized void pause() {
+        if (state != State.RUNNING) {
+           throw new IllegalStateException("Can't pause in state " + state);
+        }
+        this.state = State.PAUSED;
+        for (StartStopListener startStopListener : startStopListeners) {
+           startStopListener.programPaused();
+        }
+    }
+
+    public synchronized void resume() {
+        if (state != State.PAUSED) {
+            throw new IllegalStateException("Can't resume in state " + state);
+        }
+        this.state = State.RUNNING;
+        for (StartStopListener startStopListener : startStopListeners) {
+            startStopListener.programStarted();
+        }
     }
 
     public void setTrace(boolean trace) {

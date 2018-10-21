@@ -17,8 +17,8 @@ import com.vanniktech.emoji.EmojiPopup;
 import com.vanniktech.emoji.EmojiTextView;
 
 import org.kobjects.asde.R;
-import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.IconButton;
+import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.StartStopListener;
 
 import java.io.IOException;
@@ -32,16 +32,21 @@ public class ControlView extends LinearLayout  {
     public IconButton menuButton;
     public EmojiEditText consoleEditText;
     private EmojiPopup emojiPopup;
-    private IconButton startStopButton;
+    private IconButton startButton;
+    private IconButton pauseButton;
+    private IconButton resumeButton;
     private IconButton emojiButton;
+    private IconButton stopButton;
+    private IconButton stepButton;
     private LinearLayout inputLayout;
-    private boolean cleared = true;
 
     MainActivity mainActivity;
+    boolean clearScreenOnTermination;
 
 
     public ControlView(MainActivity mainActivity) {
         super(mainActivity);
+        setOrientation(VERTICAL);
         this.mainActivity = mainActivity;
 
         menuButton = new IconButton(mainActivity, R.drawable.baseline_menu_black_24);
@@ -52,22 +57,43 @@ public class ControlView extends LinearLayout  {
             }
         });
 
-        startStopButton = new IconButton(mainActivity, R.drawable.baseline_play_arrow_black_24);
-        startStopButton.setOnClickListener(new OnClickListener() {
+        startButton = new IconButton(mainActivity, R.drawable.baseline_play_arrow_black_24);
+        startButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mainActivity.mainInterpreter.isRunning()) {
-                    mainActivity.mainInterpreter.terminate();
-                    cleared = false;
-                } else if (!cleared) {
-                    mainActivity.clearScreen();
-                    cleared = true;
-                    startStopButton.setImageResource(R.drawable.baseline_play_arrow_black_24);
-                } else {
-                    mainActivity.mainInterpreter.runAsync();
-                }
+                hideControlButtons();
+                mainActivity.mainInterpreter.start();
             }
         });
+        stopButton = new IconButton(mainActivity, R.drawable.baseline_stop_black_24);
+        stopButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideControlButtons();
+                clearScreenOnTermination = true;
+                mainActivity.mainInterpreter.terminate();
+            }
+        });
+        pauseButton = new IconButton(mainActivity, R.drawable.baseline_pause_black_24);
+        pauseButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideControlButtons();
+                mainActivity.mainInterpreter.pause();
+            }
+        });
+        resumeButton = new IconButton(mainActivity, R.drawable.baseline_play_arrow_black_24);
+        resumeButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hideControlButtons();
+                mainActivity.mainInterpreter.resume();
+            }
+        });
+
+        stepButton = new IconButton(mainActivity, R.drawable.baseline_skip_next_black_24);
+        hideControlButtons();
+        startButton.setVisibility(VISIBLE);
 
         emojiButton = new IconButton(mainActivity, R.drawable.baseline_tag_faces_black_24);
         emojiButton.setOnClickListener(new OnClickListener() {
@@ -112,6 +138,7 @@ public class ControlView extends LinearLayout  {
 
         resultView = new EmojiTextView(mainActivity);
         resultView.setTypeface(Typeface.MONOSPACE);
+        resultView.setGravity(Gravity.BOTTOM);
 
         codeEditText = new EmojiEditText(mainActivity);
         codeEditText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
@@ -123,7 +150,6 @@ public class ControlView extends LinearLayout  {
         inputLayout = new LinearLayout(mainActivity);
         inputLayout.setOrientation(LinearLayout.VERTICAL);
 
-        inputLayout.addView(resultView);
         inputLayout.addView(consoleEditText);
         inputLayout.addView(codeEditText);
 
@@ -135,89 +161,116 @@ public class ControlView extends LinearLayout  {
                 mainActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        startStopButton.setImageResource(R.drawable.baseline_pause_black_24);
-                        cleared = false;
+                        hideControlButtons();
+                        clearScreenOnTermination = false;
+                        pauseButton.setVisibility(VISIBLE);
                     }
                 });
             }
 
             @Override
-            public void programStopped() {
+            public void programTerminated() {
                 mainActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        startStopButton.setImageResource(R.drawable.baseline_stop_black_24);
                         consoleEditText.setVisibility(GONE);
                         codeEditText.setVisibility(VISIBLE);
+
+                        hideControlButtons();
+                        startButton.setVisibility(VISIBLE);
+
+                        if (clearScreenOnTermination) {
+                            mainActivity.clearScreen();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void programPaused() {
+                mainActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        consoleEditText.setVisibility(GONE);
+                        codeEditText.setVisibility(VISIBLE);
+
+                        hideControlButtons();
+                        resumeButton.setVisibility(VISIBLE);
+                        stopButton.setVisibility(VISIBLE);
                     }
                 });
             }
         });
 
-
         arrangeButtons(false);
     }
 
 
-    public void arrangeButtons(boolean landscape) {
+    private void hideControlButtons() {
+        pauseButton.setVisibility(GONE);
+        resumeButton.setVisibility(GONE);
+        startButton.setVisibility(GONE);
+        stepButton.setVisibility(GONE);
+        stopButton.setVisibility(GONE);
+    }
 
-        MainActivity.removeFromParent(startStopButton);
+    public void arrangeButtons(boolean landscape) {
+        MainActivity.removeFromParent(resultView);
+        MainActivity.removeFromParent(inputLayout);
+
+        MainActivity.removeFromParent(startButton);
         MainActivity.removeFromParent(emojiButton);
         MainActivity.removeFromParent(menuButton);
         MainActivity.removeFromParent(enterButton);
-        MainActivity.removeFromParent(inputLayout);
+        MainActivity.removeFromParent(stopButton);
+        MainActivity.removeFromParent(stepButton);
+        MainActivity.removeFromParent(pauseButton);
+        MainActivity.removeFromParent(resumeButton);
 
         removeAllViews();
 
         if (landscape) {
-            setOrientation(VERTICAL);
-            LinearLayout topButtonBar = new LinearLayout(mainActivity);
-            topButtonBar.addView(emojiButton);
-            topButtonBar.addView(startStopButton);
-            topButtonBar.addView(menuButton);
-            LinearLayout.LayoutParams topLayoutParams = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0);
-            topLayoutParams.gravity = Gravity.RIGHT;
-            addView(topButtonBar, topLayoutParams);
-
-            LinearLayout mainLayout = new LinearLayout(mainActivity);
-            LinearLayout.LayoutParams inputParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
-            inputParams.gravity = Gravity.BOTTOM;
-            mainLayout.addView(inputLayout, inputParams);
-
-            LinearLayout.LayoutParams enterParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0);
-            enterParams.gravity = Gravity.BOTTOM;
-            mainLayout.addView(enterButton, enterParams);
-
-            addView(mainLayout, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
-
-
-        } else {
-            setOrientation(HORIZONTAL);
-            LinearLayout leftButtonBar = new LinearLayout(mainActivity);
-            leftButtonBar.setOrientation(LinearLayout.VERTICAL);
-            leftButtonBar.addView(menuButton);
-            leftButtonBar.addView(emojiButton);
-            LinearLayout.LayoutParams leftLayoutParams = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            leftLayoutParams.gravity = Gravity.BOTTOM;
-            addView(leftButtonBar, leftLayoutParams);
-
-            LinearLayout.LayoutParams inputLayoutParams = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
-            inputLayoutParams.gravity = Gravity.BOTTOM;
-            addView(inputLayout, inputLayoutParams);
-
-            LinearLayout rightButtonBar = new LinearLayout(mainActivity);
-            rightButtonBar.setOrientation(LinearLayout.VERTICAL);
-            rightButtonBar.addView(startStopButton);
-            rightButtonBar.addView(enterButton);
-            LinearLayout.LayoutParams rightLayoutParams = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            rightLayoutParams.gravity = Gravity.BOTTOM;
-            addView(rightButtonBar, rightLayoutParams);
+            LinearLayout.LayoutParams resultLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1);
+            resultLayoutParams.gravity = Gravity.BOTTOM;
+            addView(new View(mainActivity), resultLayoutParams);
         }
 
+
+        LinearLayout topBar = new LinearLayout(mainActivity);
+        if(!landscape) {
+            topBar.addView(menuButton);
+        }
+        LinearLayout.LayoutParams resultLayoutParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+        resultLayoutParams.gravity = Gravity.BOTTOM;
+        topBar.addView(resultView, resultLayoutParams);
+        if (landscape) {
+            topBar.addView(emojiButton);
+        }
+        topBar.addView(stepButton);
+        topBar.addView(resumeButton);
+        topBar.addView(stopButton);
+        topBar.addView(pauseButton);
+        topBar.addView(startButton);
+        if (landscape) {
+            topBar.addView(menuButton);
+        }
+        LinearLayout.LayoutParams topLayoutParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        topLayoutParams.gravity = Gravity.BOTTOM;
+        addView(topBar, topLayoutParams);
+
+
+        LinearLayout bottomBar = new LinearLayout(mainActivity);
+        if (!landscape) {
+            bottomBar.addView(emojiButton);
+        }
+        LinearLayout.LayoutParams inputLayoutParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+        inputLayoutParams.gravity = Gravity.BOTTOM;
+        bottomBar.addView(inputLayout, inputLayoutParams);
+        bottomBar.addView(enterButton);
+
+        addView(bottomBar);
     }
 
 

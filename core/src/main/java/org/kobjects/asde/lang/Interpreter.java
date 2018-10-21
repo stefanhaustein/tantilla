@@ -32,12 +32,10 @@ public class Interpreter {
         return currentLine == -2 ? GlobalSymbol.Scope.PERSISTENT : GlobalSymbol.Scope.TRANSIENT;
     }
 
-
-
     Object runStatementsImpl(List<? extends Node> statements) {
         int line = currentLine;
         Object result = null;
-        while (currentIndex < statements.size() && !Thread.currentThread().isInterrupted()) {
+        while (currentIndex < statements.size() && control.state != ProgramControl.State.TERMINATING) {
             int index = currentIndex;
             result = statements.get(index).eval(this);
             if (currentLine != line) {
@@ -51,11 +49,11 @@ public class Interpreter {
             if (control.trace) {
                 // program.console.trace()
             }
-            if (control.stopped) {
+            if (control.state == ProgramControl.State.PAUSED) {
 
                 control.program.println("\nSTOPPED in " + currentLine + ":" + currentIndex);
 
-                while (control.stopped && !Thread.currentThread().isInterrupted()) {
+                while (control.state == ProgramControl.State.PAUSED) {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException e) {

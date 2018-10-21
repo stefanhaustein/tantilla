@@ -66,7 +66,7 @@ public class FunctionView extends LinearLayout {
                 }
 
                 @Override
-                public void programStopped() {
+                public void programTerminated() {
                     context.runOnUiThread(new Runnable() {
                         public void run() {
                             startStopIcon.setImageResource(R.drawable.baseline_play_arrow_black_24);
@@ -81,7 +81,7 @@ public class FunctionView extends LinearLayout {
                     if (interpreter.isRunning()) {
                         interpreter.terminate();
                     } else {
-                        interpreter.runAsync();
+                        interpreter.start();
                     }
                     ;
                 }

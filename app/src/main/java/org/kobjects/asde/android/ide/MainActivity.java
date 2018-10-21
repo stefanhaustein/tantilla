@@ -41,7 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements Console, LineEditor {
+public class MainActivity extends AppCompatActivity implements Console {
   private final String PROGRAM_NAME_STORAGE_KEY = "ProgramName";
 
   LinearLayout scrollContentView;
@@ -137,13 +137,18 @@ public class MainActivity extends AppCompatActivity implements Console, LineEdit
         }
 
         @Override
-        public void programStopped() {
+        public void programTerminated() {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     sync(true);
                 }
             });
+        }
+
+        @Override
+        public void programPaused() {
+            // TBD
         }
     });
 
@@ -474,12 +479,6 @@ public class MainActivity extends AppCompatActivity implements Console, LineEdit
       }
     }
 
-
-
-    @Override
-    public void edit(String line) {
-        controlView.codeEditText.setText(line);
-    }
 
     public void eraseProgram() {
         mainInterpreter.terminate();

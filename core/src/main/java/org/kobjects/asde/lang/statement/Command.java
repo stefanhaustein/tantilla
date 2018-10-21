@@ -36,7 +36,8 @@ public class Command extends Node {
         Program program = interpreter.control.program;
         switch (kind) {
             case CONTINUE:
-                interpreter.control.setPaused(false);
+                // This needs to go to the main control!!
+                interpreter.control.resume();
 
             case CLEAR:
                 program.clear(interpreter);
