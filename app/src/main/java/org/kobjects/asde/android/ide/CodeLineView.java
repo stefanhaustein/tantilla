@@ -26,9 +26,13 @@ import java.util.HashMap;
 public class CodeLineView extends LinearLayout {
     TextView lineNumberView;
     TextView statementView;
+    boolean odd;
+    boolean highlighted;
+    int lineNumber;
 
-    public CodeLineView(Context context) {
+    public CodeLineView(Context context, boolean odd) {
         super(context);
+        this.odd = odd;
 
         lineNumberView = new AppCompatTextView(context);
         lineNumberView.setGravity(Gravity.TOP | Gravity.RIGHT);
@@ -39,9 +43,12 @@ public class CodeLineView extends LinearLayout {
 
         addView(lineNumberView, new LayoutParams(Math.round(lineNumberView.getTextSize() * 3f), ViewGroup.LayoutParams.MATCH_PARENT));
         addView(statementView, new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT, 1));
+
+        updateColor();
     }
 
     void setLineNumber(int lineNumber) {
+        this.lineNumber = lineNumber;
         lineNumberView.setText(lineNumber + " ");
     }
 
@@ -65,6 +72,24 @@ public class CodeLineView extends LinearLayout {
         }
 
         statementView.setText(s);
+    }
+
+    void setHighlighted(boolean highlighted) {
+        if (highlighted != this.highlighted) {
+            this.highlighted = highlighted;
+            updateColor();
+        }
+    }
+
+    void updateColor() {
+        if (highlighted) {
+            setBackgroundColor(Colors.SECONDARY_LIGHT);
+        } else if (odd) {
+            setBackgroundColor(Colors.PRIMARY_LIGHT);
+        } else {
+            setBackgroundColor(0);
+        }
+
     }
 
     @Override

@@ -71,6 +71,10 @@ public class AsdeShell {
 
         }
 
+        @Override
+        public void trace(CallableUnit function, int lineNumber) {
+            // TBD
+        }
     });
 
     System.out.println("  **** EXPRESSION PARSER BASIC DEMO V1 ****\n");

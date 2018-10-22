@@ -25,6 +25,7 @@ import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.widget.Dimensions;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.TitleView;
+import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.StartStopListener;
@@ -467,6 +468,11 @@ public class MainActivity extends AppCompatActivity implements Console {
                 screen.clear();
             }
         });
+    }
+
+    @Override
+    public void trace(CallableUnit function, int lineNumber) {
+      runOnUiThread(() -> programView.trace(function, lineNumber));
     }
 
     public void openExample(String name) {

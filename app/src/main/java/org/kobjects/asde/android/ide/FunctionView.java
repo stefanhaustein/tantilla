@@ -155,10 +155,7 @@ public class FunctionView extends LinearLayout {
             if (index < contentView.getChildCount()) {
                 codeLineView = (CodeLineView) contentView.getChildAt(index);
             } else {
-                codeLineView = new CodeLineView(getContext());
-                if (index % 2 == 1) {
-                    codeLineView.setBackgroundColor(Colors.PRIMARY_LIGHT);
-                }
+                codeLineView = new CodeLineView(getContext(), index % 2 == 1);
                 contentView.addView(codeLineView);
             }
             codeLineView.setLineNumber(entry.getKey());
@@ -179,6 +176,16 @@ public class FunctionView extends LinearLayout {
 
     public interface ExpandListener {
         void notifyExpanding(FunctionView expandableView, boolean animated);
+    }
+
+    CodeLineView findLine(int lineNumber) {
+        for (int i = 0; i < contentView.getChildCount(); i++) {
+            CodeLineView codeLineView = (CodeLineView) contentView.getChildAt(i);
+            if (codeLineView.lineNumber == lineNumber) {
+                return codeLineView;
+            }
+        }
+        return null;
     }
 
 }

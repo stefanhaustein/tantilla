@@ -13,7 +13,7 @@ public class ProgramControl {
     Interpreter rootInterprter;
 
     public enum State {
-        PAUSED, TERMINATING, TERMINATED, RUNNING,
+        PAUSED, TERMINATING, TERMINATED, RUNNING, STEP
     }
 
     State state = State.TERMINATED;
@@ -112,6 +112,13 @@ public class ProgramControl {
         for (StartStopListener startStopListener : startStopListeners) {
            startStopListener.programPaused();
         }
+    }
+
+    public synchronized void step() {
+        if (state != State.PAUSED) {
+            throw new IllegalStateException("Can't step in state " + state);
+        }
+        this.state = State.STEP;
     }
 
     public synchronized void resume() {

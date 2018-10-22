@@ -1,11 +1,13 @@
 package org.kobjects.asde.android.ide;
 
 import android.view.View;
+import android.view.ViewParent;
 import android.widget.LinearLayout;
 
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.lang.CallableUnit;
+import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 
@@ -19,6 +21,7 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
     public final FunctionView mainFunctionView;
     private final Program program;
     private final MainActivity context;
+    private CodeLineView highlightedLine;
 
     private HashMap<String, View> symbolViewMap = new HashMap<>();
     public FunctionView currentFunctionView;
@@ -122,4 +125,51 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
                 currentFunctionView = (FunctionView) functionView;
             }
            }
+
+    public void trace(CallableUnit function, int lineNumber) {
+        unHighlight();
+        FunctionView targetView = null;
+        if (currentFunctionView != null && currentFunctionView.callableUnit == function) {
+            targetView = currentFunctionView;
+        } else {
+            for (int i = 0; i < symbolList.getChildCount(); i++) {
+                if (symbolList.getChildAt(i) instanceof FunctionView) {
+                    FunctionView functionView = (FunctionView) symbolList.getChildAt(i);
+                    if (functionView.callableUnit == function) {
+                        targetView = functionView;
+                        break;
+                    }
+                }
+            }
+        }
+        if (targetView != null) {
+            boolean exapnded = targetView.expanded;
+            if (!exapnded) {
+                targetView.setExpanded(true, true);
+            }
+            highlightedLine = targetView.findLine(lineNumber);
+            if (highlightedLine != null) {
+                highlightedLine.setHighlighted(true);
+                if (!exapnded) {
+                    // TODO(hausteint): Build into expandableView?
+                    final View toFocus = highlightedLine;
+                    postDelayed(() -> {
+                        ViewParent parent = toFocus.getParent();
+                        if (parent != null) {
+                            parent.requestChildFocus(toFocus, toFocus);
+                        }
+                    }, 400);
+                } else {
+                    highlightedLine.getParent().requestChildFocus(highlightedLine, highlightedLine);
+                }
+            }
+        }
+    }
+
+    public void unHighlight() {
+        if (highlightedLine != null) {
+            highlightedLine.setHighlighted(false);
+            highlightedLine = null;
+        }
+    }
 }

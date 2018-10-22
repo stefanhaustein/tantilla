@@ -44,25 +44,6 @@ public class Interpreter {
             if (currentIndex == index) {
                 currentIndex++;
             }
-
-            // Check for paused state etc.
-            if (control.trace) {
-                // program.console.trace()
-            }
-            if (control.state == ProgramControl.State.PAUSED) {
-
-                control.program.println("\nSTOPPED in " + currentLine + ":" + currentIndex);
-
-                while (control.state == ProgramControl.State.PAUSED) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        break;
-                    }
-                }
-
-            }
-
         }
         currentIndex = 0;
         currentLine++;
@@ -74,7 +55,27 @@ public class Interpreter {
             Map.Entry<Integer, CodeLine> entry;
             while (null != (entry = callableUnit.ceilingEntry(currentLine)) && !Thread.currentThread().isInterrupted()) {
                 currentLine = entry.getKey();
-                runStatementsImpl(entry.getValue().statements);
+                if (control.state != ProgramControl.State.PAUSED) {
+                    runStatementsImpl(entry.getValue().statements);
+                } else {
+                    control.program.console.trace(callableUnit, currentLine);
+
+                    while (control.state == ProgramControl.State.PAUSED) {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            break;
+                        }
+                    }
+
+                    if (control.state == ProgramControl.State.STEP) {
+                        control.state = ProgramControl.State.PAUSED;
+                    }
+
+                    if (control.state != ProgramControl.State.TERMINATING && control.state != ProgramControl.State.TERMINATED) {
+                        runStatementsImpl(entry.getValue().statements);
+                    }
+                }
             }
         }
 

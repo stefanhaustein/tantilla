@@ -18,7 +18,6 @@ import com.vanniktech.emoji.EmojiTextView;
 
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.widget.IconButton;
-import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.StartStopListener;
 
 import java.io.IOException;
@@ -92,6 +91,12 @@ public class ControlView extends LinearLayout  {
         });
 
         stepButton = new IconButton(mainActivity, R.drawable.baseline_skip_next_black_24);
+        stepButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mainActivity.mainInterpreter.step();
+            }
+        });
         hideControlButtons();
         startButton.setVisibility(VISIBLE);
 
@@ -197,6 +202,7 @@ public class ControlView extends LinearLayout  {
                         hideControlButtons();
                         resumeButton.setVisibility(VISIBLE);
                         stopButton.setVisibility(VISIBLE);
+                        stepButton.setVisibility(VISIBLE);
                     }
                 });
             }
@@ -212,6 +218,7 @@ public class ControlView extends LinearLayout  {
         startButton.setVisibility(GONE);
         stepButton.setVisibility(GONE);
         stopButton.setVisibility(GONE);
+        mainActivity.programView.unHighlight();
     }
 
     public void arrangeButtons(boolean landscape) {

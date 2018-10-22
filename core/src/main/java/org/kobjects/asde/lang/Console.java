@@ -11,4 +11,6 @@ public interface Console {
     void programNameChangedTo(String name);
 
     void clearScreen();
+
+    void trace(CallableUnit function, int lineNumber);
 }
