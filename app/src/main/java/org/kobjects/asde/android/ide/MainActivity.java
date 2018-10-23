@@ -399,6 +399,8 @@ public class MainActivity extends AppCompatActivity implements Console {
             scrollContentView.addView(codeView, 0);
             LinearLayout mainView = new LinearLayout(this);
             mainView.setOrientation(LinearLayout.VERTICAL);
+            mainView.setDividerDrawable(systemListDivider);
+            mainView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
             mainView.addView(overlay, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
             mainView.addView(controlView,  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             controlView.arrangeButtons(true);
