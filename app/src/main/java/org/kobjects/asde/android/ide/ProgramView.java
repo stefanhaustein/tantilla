@@ -146,6 +146,7 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
             boolean exapnded = targetView.expanded;
             if (!exapnded) {
                 targetView.setExpanded(true, true);
+                targetView.requestChildFocus(targetView.titleView, targetView.titleView);
             }
             highlightedLine = targetView.findLine(lineNumber);
             if (highlightedLine != null) {

@@ -23,6 +23,7 @@ import com.vanniktech.emoji.one.EmojiOneProvider;
 
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.widget.Dimensions;
+import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.lang.CallableUnit;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   LinearLayout scrollContentView;
   public View rootView;
   ScrollView scrollView;
+  ScrollView leftScrollView;
   ControlView controlView;
   Program program = new Program(this);
   Drawable systemListDivider;
@@ -60,6 +62,9 @@ public class MainActivity extends AppCompatActivity implements Console {
   boolean autoScroll = true;
   public boolean fullScreenMode;
   ProgramView programView;
+
+  /** The view that displays the code in landscape mode */
+  ExpandableList codeView;
 
   private TitleView outputTitleView;
   private Viewport viewport;
@@ -108,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     scrollContentView = new LinearLayout(this);
     scrollContentView.setOrientation(LinearLayout.VERTICAL);
 
+    /*
     ColorDrawable divider = new ColorDrawable(0x0) {
       @Override
       public int getIntrinsicHeight() {
@@ -118,11 +124,14 @@ public class MainActivity extends AppCompatActivity implements Console {
 //    scrollContentView.setDividerPadding(Dimensions.dpToPx(this, 12));
     scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
     scrollContentView.setDividerDrawable(divider);
+    */
     scrollContentView.addView(programView);
     scrollContentView.addView(outputView);
 
     scrollView = new ScrollView(this);
     scrollView.addView(scrollContentView);
+
+    leftScrollView = new ScrollView(this);
 
     controlView = new ControlView(this);
 
@@ -331,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
 
   public static void removeFromParent(View view) {
-      if (view.getParent() instanceof ViewGroup) {
+      if (view != null && view.getParent() instanceof ViewGroup) {
           ((ViewGroup) view.getParent()).removeView(view);
       }
   }
@@ -345,14 +354,20 @@ public class MainActivity extends AppCompatActivity implements Console {
 
       controlView.dismissEmojiPopup();
 
-
+      removeFromParent(leftScrollView);
       removeFromParent(scrollView);
       removeFromParent(viewport);
       removeFromParent(controlView);
+      removeFromParent(programView);
+      removeFromParent(codeView);
 
       Display display = getWindowManager().getDefaultDisplay();
       int displayWidth = display.getWidth();
       int displayHeight = display.getHeight();
+
+      if (programView.currentFunctionView != null) {
+          programView.currentFunctionView.setExpanded(false, false);
+      }
 
       if (fullScreenMode) {
          rootView = viewport;
@@ -371,13 +386,23 @@ public class MainActivity extends AppCompatActivity implements Console {
 
         if (displayHeight >= displayWidth) {
             rootLayout.setOrientation(LinearLayout.VERTICAL);
-            rootLayout.addView(overlay, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+            rootLayout.addView(overlay, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
+            scrollContentView.addView(programView, 0);
             rootLayout.addView(controlView,  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             controlView.arrangeButtons(false);
+            codeView = null;
         } else {
-            rootLayout.addView(overlay, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
-            rootLayout.addView(controlView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
+            rootLayout.addView(leftScrollView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
+            leftScrollView.addView(programView);
+
+            codeView = new ExpandableList(this);
+            scrollContentView.addView(codeView, 0);
+            LinearLayout mainView = new LinearLayout(this);
+            mainView.setOrientation(LinearLayout.VERTICAL);
+            mainView.addView(overlay, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
+            mainView.addView(controlView,  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             controlView.arrangeButtons(true);
+            rootLayout.addView(mainView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 2));
         }
 
         /*}  else {

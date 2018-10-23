@@ -1,6 +1,7 @@
 package org.kobjects.asde.android.ide;
 
 import android.view.View;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 
 import org.kobjects.asde.android.ide.widget.ExpandableList;
@@ -20,9 +21,11 @@ public class FunctionView extends LinearLayout {
     ExpandableList contentView;
     boolean expanded;
     List<ExpandListener> expandListeners = new ArrayList<>();
+    MainActivity mainActivity;
 
     public FunctionView(final MainActivity context, String name, final CallableUnit callableUnit) {
         super(context);
+        this.mainActivity = context;
         setOrientation(VERTICAL);
         this.callableUnit = callableUnit;
 
@@ -144,27 +147,30 @@ public class FunctionView extends LinearLayout {
     }
 
     public void syncContent() {
-        titleView.setBackgroundColor(callableUnit.errors.size() > 0 ? Colors.SECONDARY_LIGHT : expanded ? Colors.PRIMARY_LIGHT : 0);
+        titleView.setBackgroundColor(callableUnit.errors.size() > 0 ? Colors.SECONDARY_LIGHT : expanded ? Colors.PRIMARY_MEDIUM : 0);
+
+        ExpandableList codeView = mainActivity.codeView == null ? contentView : mainActivity.codeView;
+
         if (!expanded) {
-            contentView.removeAllViews();
+            codeView.removeAllViews();
             return;
         }
         int index = 0;
         for (Map.Entry<Integer, CodeLine> entry : callableUnit.entrySet()) {
             CodeLineView codeLineView;
-            if (index < contentView.getChildCount()) {
-                codeLineView = (CodeLineView) contentView.getChildAt(index);
+            if (index < codeView.getChildCount()) {
+                codeLineView = (CodeLineView) codeView.getChildAt(index);
             } else {
                 codeLineView = new CodeLineView(getContext(), index % 2 == 1);
-                contentView.addView(codeLineView);
+                codeView.addView(codeLineView);
             }
             codeLineView.setLineNumber(entry.getKey());
             codeLineView.setCodeLine(entry.getValue(), callableUnit.errors);
             codeLineView.setOnLongClickListener(lineClickListener);
             index++;
         }
-        while (index < contentView.getChildCount()) {
-            contentView.removeViewAt(contentView.getChildCount() - 1);
+        while (index < codeView.getChildCount()) {
+            codeView.removeViewAt(codeView.getChildCount() - 1);
         }
     }
 
@@ -179,8 +185,9 @@ public class FunctionView extends LinearLayout {
     }
 
     CodeLineView findLine(int lineNumber) {
-        for (int i = 0; i < contentView.getChildCount(); i++) {
-            CodeLineView codeLineView = (CodeLineView) contentView.getChildAt(i);
+        ExpandableList codeView = mainActivity.codeView == null ? contentView : mainActivity.codeView;
+        for (int i = 0; i < codeView.getChildCount(); i++) {
+            CodeLineView codeLineView = (CodeLineView) codeView.getChildAt(i);
             if (codeLineView.lineNumber == lineNumber) {
                 return codeLineView;
             }

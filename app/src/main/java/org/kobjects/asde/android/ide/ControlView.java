@@ -236,11 +236,13 @@ public class ControlView extends LinearLayout  {
 
         removeAllViews();
 
+        /*
         if (landscape) {
             LinearLayout.LayoutParams resultLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1);
             resultLayoutParams.gravity = Gravity.BOTTOM;
             addView(new View(mainActivity), resultLayoutParams);
         }
+        */
 
 
         LinearLayout topBar = new LinearLayout(mainActivity);
