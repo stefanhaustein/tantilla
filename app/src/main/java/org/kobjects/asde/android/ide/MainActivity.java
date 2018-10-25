@@ -379,32 +379,34 @@ public class MainActivity extends AppCompatActivity implements Console {
         rootLayout = new LinearLayout(this);
         rootLayout.setDividerDrawable(systemListDivider);
         rootLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+        rootLayout.setOrientation(LinearLayout.VERTICAL);
 
         FrameLayout overlay = new FrameLayout(this);
         overlay.addView(scrollView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         overlay.addView(viewport, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         if (displayHeight >= displayWidth) {
-            rootLayout.setOrientation(LinearLayout.VERTICAL);
             rootLayout.addView(overlay, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
             scrollContentView.addView(programView, 0);
             rootLayout.addView(controlView,  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             controlView.arrangeButtons(false);
             codeView = null;
         } else {
-            rootLayout.addView(leftScrollView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
             leftScrollView.addView(programView);
 
             codeView = new ExpandableList(this);
             scrollContentView.addView(codeView, 0);
-            LinearLayout mainView = new LinearLayout(this);
-            mainView.setOrientation(LinearLayout.VERTICAL);
-            mainView.setDividerDrawable(systemListDivider);
-            mainView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
-            mainView.addView(overlay, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
-            mainView.addView(controlView,  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
             controlView.arrangeButtons(true);
-            rootLayout.addView(mainView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 2));
+
+            LinearLayout contentView = new LinearLayout(this);
+            contentView.setDividerDrawable(systemListDivider);
+            contentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+            contentView.addView(leftScrollView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
+            contentView.addView(overlay, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 2));
+
+            rootLayout.addView(contentView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
+            rootLayout.addView(controlView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0));
         }
 
         /*}  else {

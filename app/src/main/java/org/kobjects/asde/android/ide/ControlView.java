@@ -1,8 +1,10 @@
 package org.kobjects.asde.android.ide;
 
 import android.graphics.Typeface;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.text.InputType;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -148,6 +150,16 @@ public class ControlView extends LinearLayout  {
         codeEditText = new EmojiEditText(mainActivity);
         codeEditText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         codeEditText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+        // codeEditText.setImeActionLabel("Done", EditorInfo.IME_ACTION_SEND);
+        codeEditText.setOnEditorActionListener((view, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED
+                    && event.getAction() == KeyEvent.ACTION_DOWN) {
+                mainActivity.enter();
+                return true;
+            }
+            return false;
+        });
+
 
         consoleEditText = new EmojiEditText(mainActivity);
         consoleEditText.setVisibility(View.GONE);
@@ -236,50 +248,57 @@ public class ControlView extends LinearLayout  {
 
         removeAllViews();
 
-        /*
+
         if (landscape) {
-            LinearLayout.LayoutParams resultLayoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1);
+            setOrientation(HORIZONTAL);
+            LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            addView(menuButton, buttonParams);
+            addView(emojiButton, buttonParams);
+
+            LinearLayout ioView = new LinearLayout(mainActivity);
+            ioView.setOrientation(VERTICAL);
+
+            ioView.addView(resultView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            ioView.addView(inputLayout, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            addView(ioView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+
+            buttonParams.gravity = Gravity.CENTER_VERTICAL;
+            addView(enterButton, buttonParams);
+            addView(stepButton, buttonParams);
+            addView(resumeButton, buttonParams);
+            addView(stopButton, buttonParams);
+            addView(pauseButton, buttonParams);
+            addView(startButton, buttonParams);
+
+        } else {
+            setOrientation(VERTICAL);
+            LinearLayout topBar = new LinearLayout(mainActivity);
+            topBar.addView(menuButton);
+
+            LinearLayout.LayoutParams resultLayoutParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
             resultLayoutParams.gravity = Gravity.BOTTOM;
-            addView(new View(mainActivity), resultLayoutParams);
-        }
-        */
+            topBar.addView(resultView, resultLayoutParams);
+            topBar.addView(stepButton);
+            topBar.addView(resumeButton);
+            topBar.addView(stopButton);
+            topBar.addView(pauseButton);
+            topBar.addView(startButton);
+            LinearLayout.LayoutParams topLayoutParams = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            topLayoutParams.gravity = Gravity.BOTTOM;
+            addView(topBar, topLayoutParams);
 
 
-        LinearLayout topBar = new LinearLayout(mainActivity);
-        if(!landscape) {
-            topBar.addView(menuButton);
-        }
-        LinearLayout.LayoutParams resultLayoutParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
-        resultLayoutParams.gravity = Gravity.BOTTOM;
-        topBar.addView(resultView, resultLayoutParams);
-        if (landscape) {
-            topBar.addView(emojiButton);
-        }
-        topBar.addView(stepButton);
-        topBar.addView(resumeButton);
-        topBar.addView(stopButton);
-        topBar.addView(pauseButton);
-        topBar.addView(startButton);
-        if (landscape) {
-            topBar.addView(menuButton);
-        }
-        LinearLayout.LayoutParams topLayoutParams = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        topLayoutParams.gravity = Gravity.BOTTOM;
-        addView(topBar, topLayoutParams);
-
-
-        LinearLayout bottomBar = new LinearLayout(mainActivity);
-        if (!landscape) {
+            LinearLayout bottomBar = new LinearLayout(mainActivity);
             bottomBar.addView(emojiButton);
-        }
-        LinearLayout.LayoutParams inputLayoutParams = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
-        inputLayoutParams.gravity = Gravity.BOTTOM;
-        bottomBar.addView(inputLayout, inputLayoutParams);
-        bottomBar.addView(enterButton);
+            LinearLayout.LayoutParams inputLayoutParams = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+            inputLayoutParams.gravity = Gravity.BOTTOM;
+            bottomBar.addView(inputLayout, inputLayoutParams);
+            bottomBar.addView(enterButton);
 
-        addView(bottomBar);
+            addView(bottomBar);
+        }
     }
 
 
