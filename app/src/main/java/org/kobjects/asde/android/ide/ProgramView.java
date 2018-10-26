@@ -7,7 +7,6 @@ import android.widget.LinearLayout;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.lang.CallableUnit;
-import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 

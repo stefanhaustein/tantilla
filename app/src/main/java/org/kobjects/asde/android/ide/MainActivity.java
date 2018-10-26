@@ -10,6 +10,7 @@ import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   boolean autoScroll = true;
   public boolean fullScreenMode;
   ProgramView programView;
+  IconButton exitFullscreenButton;
 
   /** The view that displays the code in landscape mode */
   ExpandableList codeView;
@@ -132,12 +134,14 @@ public class MainActivity extends AppCompatActivity implements Console {
     scrollView.addView(scrollContentView);
 
     leftScrollView = new ScrollView(this);
-
     controlView = new ControlView(this);
-
     viewport = new Viewport(this);
-
     screen = new ScreenAdapter(viewport);
+    exitFullscreenButton = new IconButton(this, R.drawable.baseline_fullscreen_exit_24, icon -> {
+        fullScreenMode = false;
+        arrangeUi();
+    });
+
 
 
     shellInterpreter.addStartStopListener(new StartStopListener() {
@@ -360,6 +364,7 @@ public class MainActivity extends AppCompatActivity implements Console {
       removeFromParent(controlView);
       removeFromParent(programView);
       removeFromParent(codeView);
+      removeFromParent(exitFullscreenButton);
 
       Display display = getWindowManager().getDefaultDisplay();
       int displayWidth = display.getWidth();
@@ -373,7 +378,9 @@ public class MainActivity extends AppCompatActivity implements Console {
          rootView = viewport;
 //         setContentView(viewport, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
   //       rootView = null;
-
+          FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+          layoutParams.gravity = Gravity.TOP | Gravity.RIGHT;
+          viewport.addView(exitFullscreenButton, layoutParams);
       } else {
         LinearLayout rootLayout = new LinearLayout(this);
         rootLayout.setDividerDrawable(systemListDivider);
