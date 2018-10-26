@@ -67,9 +67,15 @@ public class AsdeShell {
         }
 
         @Override
-        public void clearScreen() {
+        public void clearOutput() {
 
         }
+
+        @Override
+        public void clearCanvas() {
+
+        }
+
 
         @Override
         public void trace(CallableUnit function, int lineNumber) {

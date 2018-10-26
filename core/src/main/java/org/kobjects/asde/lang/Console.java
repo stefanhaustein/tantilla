@@ -10,7 +10,9 @@ public interface Console {
 
     void programNameChangedTo(String name);
 
-    void clearScreen();
+    void clearOutput();
+
+    void clearCanvas();
 
     void trace(CallableUnit function, int lineNumber);
 }

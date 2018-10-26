@@ -22,7 +22,7 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
     private final Program program;
     private final MainActivity context;
     private CodeLineView highlightedLine;
-
+    TitleView titleView;
     private HashMap<String, View> symbolViewMap = new HashMap<>();
     public FunctionView currentFunctionView;
 
@@ -33,7 +33,7 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
         this.context = context;
         this.program = program;
 
-        TitleView titleView = new TitleView(context, Colors.PRIMARY);
+        titleView = new TitleView(context, Colors.PRIMARY);
         titleView.setTitle("Unnamed Program");
         addView(titleView);
         titleView.setOnClickListener(new OnClickListener() {
@@ -63,6 +63,9 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
         }
     }
 
+    void setName(String name) {
+        titleView.setTitle(name.equals("Scratch") ? "Unnamed Program" : name);
+    }
 
     public void sync() {
         symbolList.removeAllViews();

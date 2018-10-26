@@ -77,7 +77,8 @@ public class LegacyStatement extends Node {
         break;
       }
       case CLS:
-        interpreter.control.program.console.clearScreen();
+        interpreter.control.program.console.clearOutput();
+        interpreter.control.program.console.clearCanvas();
         break;
 
       case DATA:

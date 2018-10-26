@@ -72,8 +72,6 @@ public class SymbolTitleView extends LinearLayout {
         layoutParams.gravity = Gravity.CENTER_VERTICAL;
         addView(vertical, layoutParams);
 //        textView.setGravity(Gravity.CENTER_VERTICAL);
-
-
     }
 
 }

@@ -44,7 +44,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements Console {
-  private final String PROGRAM_NAME_STORAGE_KEY = "ProgramName";
+  static final String PROGRAM_NAME_STORAGE_KEY = "ProgramName";
 
   LinearLayout scrollContentView;
   public View rootView;
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     clearButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        clearScreen();
+        clearOutput();
       }
     });
 
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     scrollContentView = new LinearLayout(this);
     scrollContentView.setOrientation(LinearLayout.VERTICAL);
 
-    /*
+
     ColorDrawable divider = new ColorDrawable(0x0) {
       @Override
       public int getIntrinsicHeight() {
@@ -121,10 +121,10 @@ public class MainActivity extends AppCompatActivity implements Console {
       }
     };
 
-//    scrollContentView.setDividerPadding(Dimensions.dpToPx(this, 12));
+    //scrollContentView.setDividerPadding(Dimensions.dpToPx(this, 12));
     scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
     scrollContentView.setDividerDrawable(divider);
-    */
+
     scrollContentView.addView(programView);
     scrollContentView.addView(outputView);
 
@@ -375,8 +375,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   //       rootView = null;
 
       } else {
-          LinearLayout rootLayout = new LinearLayout(this);
-        rootLayout = new LinearLayout(this);
+        LinearLayout rootLayout = new LinearLayout(this);
         rootLayout.setDividerDrawable(systemListDivider);
         rootLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
         rootLayout.setOrientation(LinearLayout.VERTICAL);
@@ -388,6 +387,7 @@ public class MainActivity extends AppCompatActivity implements Console {
         if (displayHeight >= displayWidth) {
             rootLayout.addView(overlay, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
             scrollContentView.addView(programView, 0);
+            scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
             rootLayout.addView(controlView,  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             controlView.arrangeButtons(false);
             codeView = null;
@@ -396,6 +396,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
             codeView = new ExpandableList(this);
             scrollContentView.addView(codeView, 0);
+            scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
 
             controlView.arrangeButtons(true);
 
@@ -479,14 +480,14 @@ public class MainActivity extends AppCompatActivity implements Console {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-              //  mainFunctionView.setName("Program \"" + name + "\"");
+                programView.setName(name);
                 sharedPreferences.edit().putString(PROGRAM_NAME_STORAGE_KEY, name).commit();
             }
         });
     }
 
     @Override
-    public void clearScreen() {
+    public void clearOutput() {
         runOnUiThread(new Runnable() {
             public void run() {
                 for (int i = outputView.getChildCount() - 1; i > 0; i--) {
@@ -494,10 +495,20 @@ public class MainActivity extends AppCompatActivity implements Console {
                 }
                 controlView.resultView.setText("");
                 lineFeedPending = false;
-                screen.clear();
             }
         });
     }
+
+    @Override
+    public void clearCanvas() {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                screen.clear();
+
+            };
+        });
+    }
+
 
     @Override
     public void trace(CallableUnit function, int lineNumber) {

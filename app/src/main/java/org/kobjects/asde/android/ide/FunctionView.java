@@ -111,15 +111,6 @@ public class FunctionView extends LinearLayout {
 
 
     }
-/*
-    public void setName(String name) {
-        StringBuilder sb = new StringBuilder(name);
-        if (callableUnit.getType().getReturnType() != Types.VOID) {
-            sb.append("(" + callableUnit.getType().getParameterCount() + ")");
-        }
-        titleView.setTitle(sb.toString());
-    }
-*/
 
     public void put(int lineNumber, List<? extends Node> statementList) {
         callableUnit.setLine(lineNumber, new CodeLine(statementList));

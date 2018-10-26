@@ -1,5 +1,7 @@
 package org.kobjects.asde.android.ide;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.text.InputType;
@@ -11,9 +13,13 @@ import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
+import com.github.angads25.filepicker.model.DialogConfigs;
+import com.github.angads25.filepicker.model.DialogProperties;
+import com.github.angads25.filepicker.view.FilePickerDialog;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
 import com.vanniktech.emoji.EmojiTextView;
@@ -197,7 +203,7 @@ public class ControlView extends LinearLayout  {
                         startButton.setVisibility(VISIBLE);
 
                         if (clearScreenOnTermination) {
-                            mainActivity.clearScreen();
+                            mainActivity.clearCanvas();
                         }
                     }
                 });
@@ -306,34 +312,49 @@ public class ControlView extends LinearLayout  {
         PopupMenu popupMenu = new PopupMenu(mainActivity, menuButton);
         Menu mainMenu = popupMenu.getMenu();
 
-        SubMenu clearMenu = mainMenu.addSubMenu("Clear");
-        clearMenu.add("Clear Screen").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                mainActivity.clearScreen();
-                return true;
-            }
-        });
-        clearMenu.add("Erase program").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
+        mainMenu.add("Erase Program").setOnMenuItemClickListener(item -> {
                mainActivity.eraseProgram();
                 return true;
-            }
         });
 
 
-        Menu loadMenu = mainMenu.addSubMenu("Load");
-        Menu examplesMenu = loadMenu.addSubMenu("Examples");
-        for (final String name : mainActivity.getProgramStoragePath().list()) {
-            loadMenu.add(name).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    mainActivity.load(name);
-                    return true;
+        mainMenu.add("Save as...").setOnMenuItemClickListener(item -> {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(mainActivity);
+            EditText fileNameInput = new EditText(mainActivity);
+            fileNameInput.setText(mainActivity.sharedPreferences.getString(MainActivity.PROGRAM_NAME_STORAGE_KEY, ""));
+            dialog.setTitle("Save as...");
+            dialog.setMessage("File name");
+            dialog.setView(fileNameInput);
+            dialog.setPositiveButton("Save", (dlg, btn) -> {
+                String name = fileNameInput.getText().toString();
+                if (!name.isEmpty()) {
+                    mainActivity.program.save(fileNameInput.getText().toString());
                 }
             });
-        }
+            dialog.show();
+            return true;
+        });
+        Menu loadMenu = mainMenu.addSubMenu("Load");
+        loadMenu.add("File").setOnMenuItemClickListener(item -> {
+            DialogProperties properties = new DialogProperties();
+            properties.root = mainActivity.getProgramStoragePath();
+            properties.error_dir = mainActivity.getProgramStoragePath();
+            properties.offset = mainActivity.getProgramStoragePath();
+            properties.selection_mode = DialogConfigs.SINGLE_MODE;
+            properties.selection_type = DialogConfigs.FILE_SELECT;
+
+            // TODO: new String[] {".bas", ".asde", ""};
+            properties.extensions = null;
+
+            FilePickerDialog dialog = new FilePickerDialog(mainActivity, properties);
+            dialog.setTitle("Select Program File");
+            dialog.show();
+            dialog.setDialogSelectionListener(files -> {
+                mainActivity.load(files[0]);
+            });
+            return true;
+        });
+        Menu examplesMenu = loadMenu.addSubMenu("Examples");
         try {
             for (final String example : mainActivity.getAssets().list("examples")) {
                 examplesMenu.add(example).setOnMenuItemClickListener( item -> {
@@ -346,15 +367,17 @@ public class ControlView extends LinearLayout  {
             throw new RuntimeException(e);
         }
 
-        mainMenu.add("Fullscreen mode").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
+
+        SubMenu displayMenu = mainMenu.addSubMenu("Display");
+        displayMenu.add("Clear Ouput").setOnMenuItemClickListener(item -> {
+                mainActivity.clearOutput();
+                return true;
+        });
+        displayMenu.add("Fullscreen mode").setOnMenuItemClickListener(item -> {
                 mainActivity.fullScreenMode = true;
                 mainActivity.arrangeUi();
                 return true;
-            }
         });
-
         popupMenu.show();
 
     }

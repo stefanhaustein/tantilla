@@ -100,7 +100,8 @@ public class Program {
 
 
   public void clear(Interpreter interpreter) {
-      console.clearScreen();
+      console.clearOutput();
+      console.clearCanvas();
       TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
     synchronized (symbolMap) {
         for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
@@ -274,9 +275,15 @@ public class Program {
 
 
     public void load(String programName) {
-      File programFile = new File(console.getProgramStoragePath(), programName);
+      File programFile = programName.startsWith("/") ? new File(programName) : new File(console.getProgramStoragePath(), programName);
       try {
-          load(programName, new FileInputStream(programFile));
+          int cut = programName.lastIndexOf("/");
+          String displayName = programName.substring(cut + 1);
+          cut = displayName.lastIndexOf(".");
+          if (cut != -1) {
+              displayName = displayName.substring(0, cut);
+          }
+          load(displayName, new FileInputStream(programFile));
       } catch (IOException e) {
           throw new RuntimeException(e);
       }
