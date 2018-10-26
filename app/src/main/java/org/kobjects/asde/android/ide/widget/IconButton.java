@@ -9,6 +9,6 @@ public class IconButton extends AppCompatImageView {
         setImageResource(resId);
         int padding = Dimensions.dpToPx(context, 12);
         setPadding(padding, padding, padding, padding);
-        setAlpha(138);
+       // setAlpha(138);
     }
 }

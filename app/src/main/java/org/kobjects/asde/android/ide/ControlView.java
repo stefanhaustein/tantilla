@@ -50,7 +50,7 @@ public class ControlView extends LinearLayout  {
         setOrientation(VERTICAL);
         this.mainActivity = mainActivity;
 
-        menuButton = new IconButton(mainActivity, R.drawable.baseline_menu_black_24);
+        menuButton = new IconButton(mainActivity, R.drawable.baseline_menu_24);
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,7 +58,7 @@ public class ControlView extends LinearLayout  {
             }
         });
 
-        startButton = new IconButton(mainActivity, R.drawable.baseline_play_arrow_black_24);
+        startButton = new IconButton(mainActivity, R.drawable.baseline_play_arrow_24);
         startButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,7 +66,7 @@ public class ControlView extends LinearLayout  {
                 mainActivity.mainInterpreter.start();
             }
         });
-        stopButton = new IconButton(mainActivity, R.drawable.baseline_stop_black_24);
+        stopButton = new IconButton(mainActivity, R.drawable.baseline_stop_24);
         stopButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,7 +75,7 @@ public class ControlView extends LinearLayout  {
                 mainActivity.mainInterpreter.terminate();
             }
         });
-        pauseButton = new IconButton(mainActivity, R.drawable.baseline_pause_black_24);
+        pauseButton = new IconButton(mainActivity, R.drawable.baseline_pause_24);
         pauseButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,7 +83,7 @@ public class ControlView extends LinearLayout  {
                 mainActivity.mainInterpreter.pause();
             }
         });
-        resumeButton = new IconButton(mainActivity, R.drawable.baseline_play_arrow_black_24);
+        resumeButton = new IconButton(mainActivity, R.drawable.baseline_play_arrow_24);
         resumeButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,7 +92,7 @@ public class ControlView extends LinearLayout  {
             }
         });
 
-        stepButton = new IconButton(mainActivity, R.drawable.baseline_skip_next_black_24);
+        stepButton = new IconButton(mainActivity, R.drawable.baseline_skip_next_24);
         stepButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -102,7 +102,7 @@ public class ControlView extends LinearLayout  {
         hideControlButtons();
         startButton.setVisibility(VISIBLE);
 
-        emojiButton = new IconButton(mainActivity, R.drawable.baseline_tag_faces_black_24);
+        emojiButton = new IconButton(mainActivity, R.drawable.baseline_tag_faces_24);
         emojiButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,7 +112,7 @@ public class ControlView extends LinearLayout  {
                 if (emojiPopup.isShowing()) {
                     dismissEmojiPopup();
                 } else {
-                    emojiButton.setImageResource(R.drawable.baseline_keyboard_black_24);
+                    emojiButton.setImageResource(R.drawable.baseline_keyboard_24);
                     emojiPopup.toggle();
                     // Needed sometimes when the keyboard is not showing in the first place.
                     codeEditText.post(new Runnable() {
@@ -128,7 +128,7 @@ public class ControlView extends LinearLayout  {
         });
 
 
-        enterButton = new IconButton(mainActivity, R.drawable.baseline_keyboard_return_black_24);
+        enterButton = new IconButton(mainActivity, R.drawable.baseline_keyboard_return_24);
         enterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -364,6 +364,6 @@ public class ControlView extends LinearLayout  {
             emojiPopup.dismiss();
             emojiPopup = null;
         }
-        emojiButton.setImageResource(R.drawable.baseline_tag_faces_black_24);
+        emojiButton.setImageResource(R.drawable.baseline_tag_faces_24);
     }
 }

@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     ta.recycle();
     final int iconPadding = Dimensions.dpToPx(this, 12);
 
-        IconButton clearButton = new IconButton(this, R.drawable.baseline_delete_black_24);
+        IconButton clearButton = new IconButton(this, R.drawable.baseline_delete_24);
     clearButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
