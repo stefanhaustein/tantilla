@@ -1,14 +1,11 @@
 package org.kobjects.asde.android.ide;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.graphics.Typeface;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -354,6 +351,26 @@ public class ControlView extends LinearLayout  {
             });
             return true;
         });
+
+        /*
+        loadMenu.add("Remote File").setOnMenuItemClickListener(item -> {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+
+            // Filter to only show results that can be "opened", such as a
+            // file (as opposed to a list of contacts or timezones)
+       //     intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+            // Filter to show only images, using the image MIME data type.
+            // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
+            // To search for all documents available via installed storage providers,
+            // it would be "**" (with a slash between).
+           intent.setType("text/plain");
+
+            mainActivity.startActivityForResult(intent, 42);
+            return true;
+        });
+*/
+
         Menu examplesMenu = loadMenu.addSubMenu("Examples");
         try {
             for (final String example : mainActivity.getAssets().list("examples")) {
@@ -373,10 +390,20 @@ public class ControlView extends LinearLayout  {
                 mainActivity.clearOutput();
                 return true;
         });
-        displayMenu.add("Fullscreen mode").setOnMenuItemClickListener(item -> {
+        displayMenu.add("Overlay mode").setCheckable(true).setChecked(!mainActivity.windowMode).setOnMenuItemClickListener(item -> {
+            mainActivity.windowMode = false;
+            mainActivity.arrangeUi();
+            return true;
+        });
+        displayMenu.add("Fullscreen mode").setCheckable(true).setOnMenuItemClickListener(item -> {
                 mainActivity.fullScreenMode = true;
                 mainActivity.arrangeUi();
                 return true;
+        });
+        displayMenu.add("Window mode").setCheckable(true).setChecked(mainActivity.windowMode).setOnMenuItemClickListener(item -> {
+            mainActivity.windowMode = true;
+            mainActivity.arrangeUi();
+            return true;
         });
         popupMenu.show();
 

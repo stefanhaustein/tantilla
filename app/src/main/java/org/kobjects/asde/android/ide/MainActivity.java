@@ -26,6 +26,7 @@ import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.widget.Dimensions;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.IconButton;
+import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
@@ -71,8 +72,9 @@ public class MainActivity extends AppCompatActivity implements Console {
   private TitleView outputTitleView;
   private Viewport viewport;
   private boolean lineFeedPending;
+  boolean windowMode;
 
-  @Override
+    @Override
   public boolean dispatchKeyEvent(android.view.KeyEvent keyEvent) {
     if (!viewport.dispatchKeyEvent(keyEvent)) {
       return super.dispatchKeyEvent(keyEvent);
@@ -387,12 +389,29 @@ public class MainActivity extends AppCompatActivity implements Console {
         rootLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
         rootLayout.setOrientation(LinearLayout.VERTICAL);
 
-        FrameLayout overlay = new FrameLayout(this);
-        overlay.addView(scrollView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        overlay.addView(viewport, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        FrameLayout mainView = new FrameLayout(this);
+        mainView.addView(scrollView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        if (windowMode) {
+            ResizableFrameLayout resizableFrameLayout = new ResizableFrameLayout(this);
+            resizableFrameLayout.addView(viewport, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+            FrameLayout.LayoutParams resizableFrameLayoutParmas =
+                    new FrameLayout.LayoutParams(Dimensions.dpToPx(this, 120), Dimensions.dpToPx(this, 120));
+
+            resizableFrameLayoutParmas.rightMargin = Dimensions.dpToPx(this, 12);
+            resizableFrameLayoutParmas.topMargin = Dimensions.dpToPx(this, 36);
+
+            resizableFrameLayoutParmas.gravity = Gravity.TOP | Gravity.RIGHT;
+            viewport.setBackgroundColor(0xffffffff);
+
+            mainView.addView(resizableFrameLayout, resizableFrameLayoutParmas);
+        } else {
+            viewport.setBackgroundColor(0);
+            mainView.addView(viewport, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
 
         if (displayHeight >= displayWidth) {
-            rootLayout.addView(overlay, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
+            rootLayout.addView(mainView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
             scrollContentView.addView(programView, 0);
             scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
             rootLayout.addView(controlView,  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -411,7 +430,7 @@ public class MainActivity extends AppCompatActivity implements Console {
             contentView.setDividerDrawable(systemListDivider);
             contentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
             contentView.addView(leftScrollView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
-            contentView.addView(overlay, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 2));
+            contentView.addView(mainView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 2));
 
             rootLayout.addView(contentView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
             rootLayout.addView(controlView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0));

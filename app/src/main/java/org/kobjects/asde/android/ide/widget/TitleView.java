@@ -17,6 +17,7 @@ public class TitleView extends LinearLayout {
         textView = new AppCompatTextView(context);
         textView.setTextSize(20);
         textView.setTypeface(Typeface.MONOSPACE);
+        textView.setMaxLines(1);
 
         int padding = Dimensions.dpToPx(context, 6);
         textView.setPadding(padding, padding, padding, padding);
