@@ -63,7 +63,11 @@ public class Command extends Node {
             }
 
             case LOAD:
-                program.load(evalString(interpreter, 0));
+                try {
+                    program.load(program.console.nameToReference(evalString(interpreter, 0)));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
 
 
@@ -75,7 +79,11 @@ public class Command extends Node {
                 break;
 
             case SAVE:
-                program.save(children.length == 0 ? null : evalString(interpreter,0));
+                try {
+                    program.save(children.length == 0 ? program.reference : program.console.nameToReference(evalString(interpreter, 0)));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
 
             case TRON:

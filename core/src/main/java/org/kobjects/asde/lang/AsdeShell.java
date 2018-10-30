@@ -6,7 +6,9 @@ import org.kobjects.expressionparser.ExpressionParser;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -57,16 +59,6 @@ public class AsdeShell {
         }
 
         @Override
-        public File getProgramStoragePath() {
-            throw new RuntimeException("NYI");
-        }
-
-        @Override
-        public void programNameChangedTo(String name) {
-            // Ignore
-        }
-
-        @Override
         public void clearOutput() {
 
         }
@@ -80,6 +72,26 @@ public class AsdeShell {
         @Override
         public void trace(CallableUnit function, int lineNumber) {
             // TBD
+        }
+
+        @Override
+        public InputStream openInputStream(String url) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public OutputStream openOutputStream(String url) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void programReferenceChanged(ProgramReference fileReference) {
+            // TBD
+        }
+
+        @Override
+        public ProgramReference nameToReference(String name) {
+            return new ProgramReference(name, name, true);
         }
     });
 

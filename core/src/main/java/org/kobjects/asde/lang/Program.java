@@ -1,7 +1,6 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.LetStatement;
 import org.kobjects.asde.lang.node.Node;
@@ -13,11 +12,7 @@ import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -35,7 +30,7 @@ import java.util.TreeMap;
  * Example for mixing the expresion parser with "outer" parsing.
  */
 public class Program {
-  private String name = "Scratch";
+  public ProgramReference reference;
 
   public static final String INVISIBLE_STRING = new String();
 
@@ -64,6 +59,7 @@ public class Program {
   public Program(Console console) {
     this.console = console;
     // clear();
+    this.reference = new ProgramReference("Scratch", null, false);
 
     for (Builtin builtin : Builtin.values()) {
         setValue(GlobalSymbol.Scope.BUILTIN, builtin.name().toLowerCase(), builtin);
@@ -94,8 +90,8 @@ public class Program {
           }
           symbolMap = cleared;
       }
-      name = "Scratch";
-      console.programNameChangedTo(name);
+      reference = console.nameToReference("Unnamed");
+      console.programReferenceChanged(reference);
   }
 
 
@@ -165,10 +161,6 @@ public class Program {
       }
   }
 
-  public String getName() {
-      return name;
-  }
-
   public void toString(AnnotatedStringBuilder sb) {
       for (Map.Entry<String, GlobalSymbol> entry : getSymbolMap().entrySet()) {
           GlobalSymbol symbol = entry.getValue();
@@ -203,20 +195,18 @@ public class Program {
       return asb.toString();
   }
 
-  public void save(String name) {
-      if (name != null) {
-          this.name = name;
-          console.programNameChangedTo(name);
-      }
-      File saveFile = new File(console.getProgramStoragePath(), this.name);
 
-      try {
-          OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(saveFile), "utf8");
-          writer.write(toString());
-          writer.close();
-      } catch (IOException e) {
-          throw new RuntimeException(e);
+
+
+    public void save(ProgramReference programReference) throws IOException {
+      if (!programReference.urlWritable) {
+          throw new IOException("Can't write to URL: " + programReference.url);
       }
+      reference = programReference;
+      console.programReferenceChanged(programReference);
+      OutputStreamWriter writer = new OutputStreamWriter(console.openOutputStream(programReference.url), "utf8");
+      writer.write(toString());
+      writer.close();
    }
 
     // move to parser
@@ -274,21 +264,6 @@ public class Program {
     }
 
 
-    public void load(String programName) {
-      File programFile = programName.startsWith("/") ? new File(programName) : new File(console.getProgramStoragePath(), programName);
-      try {
-          int cut = programName.lastIndexOf("/");
-          String displayName = programName.substring(cut + 1);
-          cut = displayName.lastIndexOf(".");
-          if (cut != -1) {
-              displayName = displayName.substring(0, cut);
-          }
-          load(displayName, new FileInputStream(programFile));
-      } catch (IOException e) {
-          throw new RuntimeException(e);
-      }
-    }
-
     public void processDeclarations(List<? extends Node> statements) {
         ResolutionContext resolutionContext = new ResolutionContext(this, ResolutionContext.ResolutionMode.SHELL, new FunctionType(Types.VOID));
         for (Node node : statements) {
@@ -302,13 +277,15 @@ public class Program {
         }
     }
 
-    public void load(String programName, InputStream inputStream) {
-      try {
-          clearAll();
-          this.name = programName;
-          console.programNameChangedTo(programName);
 
-          BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "utf-8"));
+    public void load(ProgramReference fileReference) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(console.openInputStream(fileReference.url), "utf-8"));
+
+        clearAll();
+        this.reference = fileReference;
+        console.programReferenceChanged(fileReference);
+
+
           CallableUnit currentFunction = main;
           while (true) {
               String line = reader.readLine();
@@ -347,9 +324,6 @@ public class Program {
                   processDeclarations(statements);
               }
           }
-      } catch (IOException e) {
-          throw new RuntimeException(e);
-      }
     }
 
     public void setValue(GlobalSymbol.Scope scope, String name, Object value) {

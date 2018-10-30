@@ -1,6 +1,7 @@
 package org.kobjects.asde.android.ide;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.text.InputType;
 import android.view.Gravity;
@@ -28,7 +29,6 @@ import org.kobjects.asde.lang.StartStopListener;
 import java.io.IOException;
 
 public class ControlView extends LinearLayout  {
-
 
     public EmojiEditText codeEditText;
     public EmojiTextView resultView;
@@ -315,7 +315,9 @@ public class ControlView extends LinearLayout  {
         });
 
 
-        mainMenu.add("Save as...").setOnMenuItemClickListener(item -> {
+        Menu saveMenu = mainMenu.addSubMenu("Save");
+
+        saveMenu.add("Save locally as...").setOnMenuItemClickListener(item -> {
             AlertDialog.Builder dialog = new AlertDialog.Builder(mainActivity);
             EditText fileNameInput = new EditText(mainActivity);
             fileNameInput.setText(mainActivity.sharedPreferences.getString(MainActivity.PROGRAM_NAME_STORAGE_KEY, ""));
@@ -325,14 +327,29 @@ public class ControlView extends LinearLayout  {
             dialog.setPositiveButton("Save", (dlg, btn) -> {
                 String name = fileNameInput.getText().toString();
                 if (!name.isEmpty()) {
-                    mainActivity.program.save(fileNameInput.getText().toString());
+                    try {
+                        mainActivity.program.save(mainActivity.nameToReference(fileNameInput.getText().toString()));
+                    } catch (Exception e) {
+                        mainActivity.showError("Error saving file " + fileNameInput.getText().toString(), e);
+                    }
                 }
             });
             dialog.show();
             return true;
         });
+
+        saveMenu.add("Save externally as...").setOnMenuItemClickListener(item -> {
+            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+            intent.setType("text/plain");
+
+            mainActivity.startActivityForResult(intent, MainActivity.SAVE_EXTERNALLY_REQUEST_CODE);
+            return true;
+        });
+
+
+
         Menu loadMenu = mainMenu.addSubMenu("Load");
-        loadMenu.add("File").setOnMenuItemClickListener(item -> {
+        loadMenu.add("Local file").setOnMenuItemClickListener(item -> {
             DialogProperties properties = new DialogProperties();
             properties.root = mainActivity.getProgramStoragePath();
             properties.error_dir = mainActivity.getProgramStoragePath();
@@ -352,8 +369,7 @@ public class ControlView extends LinearLayout  {
             return true;
         });
 
-        /*
-        loadMenu.add("Remote File").setOnMenuItemClickListener(item -> {
+        loadMenu.add("External file").setOnMenuItemClickListener(item -> {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 
             // Filter to only show results that can be "opened", such as a
@@ -366,10 +382,9 @@ public class ControlView extends LinearLayout  {
             // it would be "**" (with a slash between).
            intent.setType("text/plain");
 
-            mainActivity.startActivityForResult(intent, 42);
+            mainActivity.startActivityForResult(intent, MainActivity.LOAD_EXTERNALLY_REQUEST_CODE);
             return true;
         });
-*/
 
         Menu examplesMenu = loadMenu.addSubMenu("Examples");
         try {
