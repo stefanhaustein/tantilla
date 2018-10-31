@@ -85,8 +85,11 @@ public class CallableUnit implements Function {
     }
 
     public void toString(AnnotatedStringBuilder sb, String name) {
+        boolean sub = type.getReturnType() == Types.VOID;
+        String kind = sub ? "SUB" : "FUNCTION";
         if (name != null) {
-            sb.append("FUNCTION ");
+            sb.append(kind);
+            sb.append(' ');
             sb.append(name);
             sb.append("(");
             for (int i = 0; i < parameterNames.length; i++) {
@@ -97,9 +100,12 @@ public class CallableUnit implements Function {
                 sb.append(' ');
                 sb.append(parameterNames[i]);
             }
-            sb.append(") -> ");
-            sb.append(type.getReturnType().toString());
-            sb.append("\n");
+            sb.append(")");
+            if (!sub) {
+                sb.append(") -> ");
+                sb.append(type.getReturnType().toString());
+            }
+            sb.append('\n');
         }
 
         for (Map.Entry<Integer, CodeLine> entry : code.entrySet()) {
@@ -110,7 +116,7 @@ public class CallableUnit implements Function {
         }
 
         if (name != null) {
-            sb.append("END FUNCTION\n\n");
+            sb.append("END ").append(kind).append("\n\n");
         }
 
     }

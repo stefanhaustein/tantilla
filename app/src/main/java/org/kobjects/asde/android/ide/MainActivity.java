@@ -54,13 +54,14 @@ import java.io.OutputStream;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements Console {
-  static final String PROGRAM_NAME_STORAGE_KEY = "ProgramName";
+    static final String PROGRAM_NAME_STORAGE_KEY = "ProgramName";
   static final String PROGRAM_URL_STORAGE_KEY = "ProgramUrl";
   static final String PROGRAM_URL_WRITABLE_STORAGE_KEY = "ProgramUrlWritable";
   static final int SAVE_EXTERNALLY_REQUEST_CODE = 420;
   static final int LOAD_EXTERNALLY_REQUEST_CODE = 421;
+  static final int OPEN_EXTERNALLY_REQUEST_CODE = 422;
 
-  LinearLayout scrollContentView;
+    LinearLayout scrollContentView;
   public View rootView;
   ScrollView scrollView;
   ScrollView leftScrollView;
@@ -236,7 +237,9 @@ public class MainActivity extends AppCompatActivity implements Console {
           if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER || "?".equals(tokenizer.currentValue)) {
             programView.currentFunctionView.put(lineNumber, program.parser.parseStatementList(tokenizer));
             sync(true);
-            program.save(program.reference);
+            if (program.reference.urlWritable) {
+                program.save(program.reference);
+            }
             break;
           }
           // Not
@@ -379,10 +382,16 @@ public class MainActivity extends AppCompatActivity implements Console {
               displayName = displayName.substring(0, cut);
           }
 
-          boolean writeable = requestCode == SAVE_EXTERNALLY_REQUEST_CODE;
-          ProgramReference programReference = new ProgramReference(displayName, uri.toString(), writeable);
+          int takeFlags = resultData.getFlags()
+                  & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                  | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+          getContentResolver().takePersistableUriPermission(uri, takeFlags);
+
+          boolean writable = (takeFlags & Intent.FLAG_GRANT_WRITE_URI_PERMISSION) != 0;
+          ProgramReference programReference = new ProgramReference(displayName, uri.toString(), writable);
 
           switch (requestCode) {
+              case OPEN_EXTERNALLY_REQUEST_CODE:
               case LOAD_EXTERNALLY_REQUEST_CODE:
                   try {
                       program.load(programReference);
@@ -543,17 +552,13 @@ public class MainActivity extends AppCompatActivity implements Console {
 
     @Override
     public void programReferenceChanged(ProgramReference fileReference) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                programView.setName(fileReference.name);
-                sharedPreferences.edit()
-                        .putString(PROGRAM_NAME_STORAGE_KEY, fileReference.name)
-                        .putString(PROGRAM_URL_STORAGE_KEY, fileReference.url)
-                        .putBoolean(PROGRAM_URL_WRITABLE_STORAGE_KEY, fileReference.urlWritable).commit();
-            }
+        runOnUiThread(() -> {
+                programView.sync();
         });
-
+        sharedPreferences.edit()
+                .putString(PROGRAM_NAME_STORAGE_KEY, fileReference.name)
+                .putString(PROGRAM_URL_STORAGE_KEY, fileReference.url)
+                .putBoolean(PROGRAM_URL_WRITABLE_STORAGE_KEY, fileReference.urlWritable).commit();
     }
 
     public File getProgramStoragePath() {

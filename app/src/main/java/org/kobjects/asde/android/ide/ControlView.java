@@ -315,6 +315,60 @@ public class ControlView extends LinearLayout  {
         });
 
 
+
+        Menu loadMenu = mainMenu.addSubMenu("Load");
+        loadMenu.add("Load local file").setOnMenuItemClickListener(item -> {
+            DialogProperties properties = new DialogProperties();
+            properties.root = mainActivity.getProgramStoragePath();
+            properties.error_dir = mainActivity.getProgramStoragePath();
+            properties.offset = mainActivity.getProgramStoragePath();
+            properties.selection_mode = DialogConfigs.SINGLE_MODE;
+            properties.selection_type = DialogConfigs.FILE_SELECT;
+
+            // TODO: new String[] {".bas", ".asde", ""};
+            properties.extensions = null;
+
+            FilePickerDialog dialog = new FilePickerDialog(mainActivity, properties);
+            dialog.setTitle("Select Program File");
+            dialog.show();
+            dialog.setDialogSelectionListener(files -> {
+                mainActivity.load(files[0]);
+            });
+            return true;
+        });
+
+        loadMenu.add("Load external file").setOnMenuItemClickListener(item -> {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("text/plain");
+            mainActivity.startActivityForResult(intent, MainActivity.OPEN_EXTERNALLY_REQUEST_CODE);
+            return true;
+        });
+
+        loadMenu.add("Import external file").setOnMenuItemClickListener(item -> {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("text/plain");
+            mainActivity.startActivityForResult(intent, MainActivity.LOAD_EXTERNALLY_REQUEST_CODE);
+            return true;
+        });
+
+
+        Menu examplesMenu = loadMenu.addSubMenu("Examples");
+        try {
+            for (final String example : mainActivity.getAssets().list("examples")) {
+                examplesMenu.add(example).setOnMenuItemClickListener( item -> {
+                            mainActivity.openExample(example);
+                            return true;
+                        }
+                );
+            }
+        }catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+
         Menu saveMenu = mainMenu.addSubMenu("Save");
 
         saveMenu.add("Save locally as...").setOnMenuItemClickListener(item -> {
@@ -346,58 +400,6 @@ public class ControlView extends LinearLayout  {
             return true;
         });
 
-
-
-        Menu loadMenu = mainMenu.addSubMenu("Load");
-        loadMenu.add("Local file").setOnMenuItemClickListener(item -> {
-            DialogProperties properties = new DialogProperties();
-            properties.root = mainActivity.getProgramStoragePath();
-            properties.error_dir = mainActivity.getProgramStoragePath();
-            properties.offset = mainActivity.getProgramStoragePath();
-            properties.selection_mode = DialogConfigs.SINGLE_MODE;
-            properties.selection_type = DialogConfigs.FILE_SELECT;
-
-            // TODO: new String[] {".bas", ".asde", ""};
-            properties.extensions = null;
-
-            FilePickerDialog dialog = new FilePickerDialog(mainActivity, properties);
-            dialog.setTitle("Select Program File");
-            dialog.show();
-            dialog.setDialogSelectionListener(files -> {
-                mainActivity.load(files[0]);
-            });
-            return true;
-        });
-
-        loadMenu.add("External file").setOnMenuItemClickListener(item -> {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-
-            // Filter to only show results that can be "opened", such as a
-            // file (as opposed to a list of contacts or timezones)
-       //     intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-            // Filter to show only images, using the image MIME data type.
-            // If one wanted to search for ogg vorbis files, the type would be "audio/ogg".
-            // To search for all documents available via installed storage providers,
-            // it would be "**" (with a slash between).
-           intent.setType("text/plain");
-
-            mainActivity.startActivityForResult(intent, MainActivity.LOAD_EXTERNALLY_REQUEST_CODE);
-            return true;
-        });
-
-        Menu examplesMenu = loadMenu.addSubMenu("Examples");
-        try {
-            for (final String example : mainActivity.getAssets().list("examples")) {
-                examplesMenu.add(example).setOnMenuItemClickListener( item -> {
-                        mainActivity.openExample(example);
-                        return true;
-                    }
-                );
-            }
-        }catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
 
         SubMenu displayMenu = mainMenu.addSubMenu("Display");
