@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -284,38 +285,37 @@ public class Program {
         clearAll();
         this.reference = fileReference;
         console.programReferenceChanged(fileReference);
-
+        HashSet<CallableUnit> callableUnits = new HashSet<>();
 
           CallableUnit currentFunction = main;
+          callableUnits.add(main);
           while (true) {
               String line = reader.readLine();
               if (line == null) {
                   break;
               }
-              System.out.println("Line: '" + line + "'");
+              System.out.println("Parsing: '" + line + "'");
 
               ExpressionParser.Tokenizer tokenizer = parser.createTokenizer(line);
               tokenizer.nextToken();
               if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.NUMBER) {
                   int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
                   tokenizer.nextToken();
-
-                  System.out.println("line number: " + lineNumber);
-
                   List<? extends Node> statements = parser.parseStatementList(tokenizer);
-
                   currentFunction.setLine(lineNumber, new CodeLine(statements));
               } else if (tokenizer.tryConsume("FUNCTION")) {
                   String functionName = tokenizer.consumeIdentifier();
                   ArrayList<String> parameterNames = new ArrayList();
                   FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames);
                   currentFunction = new CallableUnit(this, functionType, parameterNames.toArray(new String[0]));
+                  callableUnits.add(currentFunction);
                   setValue(GlobalSymbol.Scope.PERSISTENT, functionName, currentFunction);
               } else if (tokenizer.tryConsume("SUB")) {
                   String functionName = tokenizer.consumeIdentifier();
                   ArrayList<String> parameterNames = new ArrayList();
                   FunctionType functionType = parseSubroutineSignature(tokenizer, parameterNames);
                   currentFunction = new CallableUnit(this, functionType, parameterNames.toArray(new String[0]));
+                  callableUnits.add(currentFunction);
                   setValue(GlobalSymbol.Scope.PERSISTENT, functionName, currentFunction);
               } else if (tokenizer.tryConsume("END")) {
                   currentFunction = main;
@@ -324,6 +324,11 @@ public class Program {
                   processDeclarations(statements);
               }
           }
+
+          for (CallableUnit callableUnit : callableUnits) {
+              callableUnit.resolve();
+          }
+
     }
 
     public void setValue(GlobalSymbol.Scope scope, String name, Object value) {

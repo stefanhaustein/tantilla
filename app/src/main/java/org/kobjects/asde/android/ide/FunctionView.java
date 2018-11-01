@@ -114,6 +114,7 @@ public class FunctionView extends LinearLayout {
 
     public void put(int lineNumber, List<? extends Node> statementList) {
         callableUnit.setLine(lineNumber, new CodeLine(statementList));
+        callableUnit.resolve();
         syncContent();
     }
 

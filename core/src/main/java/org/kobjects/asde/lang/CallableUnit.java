@@ -123,7 +123,6 @@ public class CallableUnit implements Function {
 
     public void setLine(int number, CodeLine line) {
         code.put(number, line);
-        resolve();
     }
 
     public Map.Entry<Integer,CodeLine> ceilingEntry(int i) {
