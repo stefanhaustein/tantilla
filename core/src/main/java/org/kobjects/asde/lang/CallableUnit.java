@@ -102,7 +102,7 @@ public class CallableUnit implements Function {
             }
             sb.append(")");
             if (!sub) {
-                sb.append(") -> ");
+                sb.append(" -> ");
                 sb.append(type.getReturnType().toString());
             }
             sb.append('\n');
