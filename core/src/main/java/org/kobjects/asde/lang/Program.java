@@ -280,12 +280,17 @@ public class Program {
 
 
     public void load(ProgramReference fileReference) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(console.openInputStream(fileReference.url), "utf-8"));
 
-        clearAll();
-        this.reference = fileReference;
-        console.programReferenceChanged(fileReference);
-        HashSet<CallableUnit> callableUnits = new HashSet<>();
+      console.startProgress("Loading " + fileReference.name);
+      console.updateProgress("Url: " + fileReference.url);
+
+      try {
+          BufferedReader reader = new BufferedReader(new InputStreamReader(console.openInputStream(fileReference.url), "utf-8"));
+
+          clearAll();
+          this.reference = fileReference;
+          console.programReferenceChanged(fileReference);
+          HashSet<CallableUnit> callableUnits = new HashSet<>();
 
           CallableUnit currentFunction = main;
           callableUnits.add(main);
@@ -305,6 +310,7 @@ public class Program {
                   currentFunction.setLine(lineNumber, new CodeLine(statements));
               } else if (tokenizer.tryConsume("FUNCTION")) {
                   String functionName = tokenizer.consumeIdentifier();
+                  console.updateProgress("Parsing function " + functionName);
                   ArrayList<String> parameterNames = new ArrayList();
                   FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames);
                   currentFunction = new CallableUnit(this, functionType, parameterNames.toArray(new String[0]));
@@ -312,6 +318,7 @@ public class Program {
                   setValue(GlobalSymbol.Scope.PERSISTENT, functionName, currentFunction);
               } else if (tokenizer.tryConsume("SUB")) {
                   String functionName = tokenizer.consumeIdentifier();
+                  console.updateProgress("Parsing subroutine " + functionName);
                   ArrayList<String> parameterNames = new ArrayList();
                   FunctionType functionType = parseSubroutineSignature(tokenizer, parameterNames);
                   currentFunction = new CallableUnit(this, functionType, parameterNames.toArray(new String[0]));
@@ -328,6 +335,10 @@ public class Program {
           for (CallableUnit callableUnit : callableUnits) {
               callableUnit.resolve();
           }
+
+      } finally {
+          console.endProgress();
+      }
 
     }
 

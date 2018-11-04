@@ -24,6 +24,7 @@ import com.vanniktech.emoji.EmojiTextView;
 
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.widget.IconButton;
+import org.kobjects.asde.lang.ProgramReference;
 import org.kobjects.asde.lang.StartStopListener;
 
 import java.io.IOException;
@@ -332,7 +333,7 @@ public class ControlView extends LinearLayout  {
             dialog.setTitle("Select Program File");
             dialog.show();
             dialog.setDialogSelectionListener(files -> {
-                mainActivity.load(files[0]);
+                mainActivity.load(mainActivity.nameToReference(files[0]), true);
             });
             return true;
         });
@@ -357,8 +358,8 @@ public class ControlView extends LinearLayout  {
         Menu examplesMenu = loadMenu.addSubMenu("Examples");
         try {
             for (final String example : mainActivity.getAssets().list("examples")) {
-                examplesMenu.add(example).setOnMenuItemClickListener( item -> {
-                            mainActivity.openExample(example);
+                examplesMenu.add(example).setOnMenuItemClickListener(item -> {
+                            mainActivity.load(new ProgramReference(example, "file:///android_asset/examples/" + example, false), true);
                             return true;
                         }
                 );

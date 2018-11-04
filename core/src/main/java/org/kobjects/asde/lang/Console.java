@@ -21,4 +21,8 @@ public interface Console {
     void programReferenceChanged(ProgramReference fileReference);
 
     ProgramReference nameToReference(String name);
+
+    void startProgress(String title);
+    void updateProgress(String update);
+    void endProgress();
 }

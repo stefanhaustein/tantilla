@@ -1,5 +1,6 @@
 package org.kobjects.asde.android.ide;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -48,6 +50,7 @@ import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Console;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -189,17 +192,6 @@ public class MainActivity extends AppCompatActivity implements Console {
 
     arrangeUi();
 
-    ProgramReference programReference = new ProgramReference(
-            sharedPreferences.getString(PROGRAM_NAME_STORAGE_KEY, "Unnamed"),
-            sharedPreferences.getString(PROGRAM_URL_STORAGE_KEY, nameToReference("Unnamed").url),
-            sharedPreferences.getBoolean(PROGRAM_URL_WRITABLE_STORAGE_KEY, true));
-
-    try {
-       program.load(programReference);
-    } catch (Exception e) {
-       e.printStackTrace();
-    }
-    sync(false);
 
     print("  " + (Runtime.getRuntime().totalMemory() / 1024) + "K SYSTEM  "
                + Runtime.getRuntime().freeMemory() + " ASDE BYTES FREE\n\n");
@@ -215,7 +207,15 @@ public class MainActivity extends AppCompatActivity implements Console {
                 }
             });
         }
-    }
+
+      ProgramReference programReference = new ProgramReference(
+              sharedPreferences.getString(PROGRAM_NAME_STORAGE_KEY, "Unnamed"),
+              sharedPreferences.getString(PROGRAM_URL_STORAGE_KEY, nameToReference("Unnamed").url),
+              sharedPreferences.getBoolean(PROGRAM_URL_WRITABLE_STORAGE_KEY, true));
+
+        load(programReference, false);
+
+  }
 
 
   public void enter() {
@@ -332,8 +332,9 @@ public class MainActivity extends AppCompatActivity implements Console {
   }
 
   void sync(boolean expandNew) {
-      programView.sync();
-
+      runOnUiThread(() -> {
+                  programView.sync();
+              });
 /*
       if (!expandNew) {
           autoScroll = false;
@@ -581,6 +582,41 @@ public class MainActivity extends AppCompatActivity implements Console {
       return new ProgramReference(displayName, url, true);
     }
 
+    ProgressDialog progressDialog;
+    int openProgressCount;
+
+    @Override
+    public void startProgress(String title) {
+        if (openProgressCount == 0) {
+            runOnUiThread(() -> {
+                if (progressDialog == null) {
+                    progressDialog = ProgressDialog.show(this, title, "", true);
+                }
+            });
+        }
+        openProgressCount++;
+    }
+
+    @Override
+    public void updateProgress(String update) {
+        runOnUiThread(() -> {
+            if (progressDialog != null) {
+                progressDialog.setMessage(update);
+            }
+        });
+    }
+
+    @Override
+    public void endProgress() {
+        openProgressCount--;
+        runOnUiThread(() -> {
+            if (openProgressCount == 0) {
+                progressDialog.dismiss();
+                progressDialog = null;
+            }
+        });
+    }
+
     @Override
     public void clearOutput() {
         runOnUiThread(new Runnable() {
@@ -634,15 +670,6 @@ public class MainActivity extends AppCompatActivity implements Console {
     }
 
 
-    public void openExample(String name) {
-      try {
-          mainInterpreter.terminate();
-          program.load(new ProgramReference(name, "file:///android_asset/examples/" + name, false));
-          sync(false);
-      } catch (IOException e) {
-          throw new RuntimeException(e);
-      }
-    }
 
 
     public void eraseProgram() {
@@ -652,14 +679,20 @@ public class MainActivity extends AppCompatActivity implements Console {
         sync(false);
     }
 
-    public void load(String name) {
-        mainInterpreter.terminate();
-        try {
-            program.load(nameToReference(name));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        sync(false);
+    public void load(ProgramReference programReference, boolean showErrors) {
+        new Thread(() -> {
+            mainInterpreter.terminate();
+            try {
+                program.load(programReference);
+            } catch (Exception e) {
+                if (showErrors) {
+                    showError("Error loading " + programReference.url, e);
+                } else {
+                    e.printStackTrace();
+                }
+            }
+            sync(false);
+        }).start();
     }
 
     public void showError(String s, Exception e) {

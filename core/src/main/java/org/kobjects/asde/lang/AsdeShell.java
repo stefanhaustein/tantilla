@@ -93,6 +93,21 @@ public class AsdeShell {
         public ProgramReference nameToReference(String name) {
             return new ProgramReference(name, name, true);
         }
+
+        @Override
+        public void startProgress(String title) {
+
+        }
+
+        @Override
+        public void updateProgress(String update) {
+
+        }
+
+        @Override
+        public void endProgress() {
+
+        }
     });
 
     System.out.println("  **** EXPRESSION PARSER BASIC DEMO V1 ****\n");
