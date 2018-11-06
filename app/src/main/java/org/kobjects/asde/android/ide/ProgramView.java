@@ -46,29 +46,46 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
 
         mainFunctionView = new FunctionView(context, "Main", program.main);
         mainFunctionView.addExpandListener(this);
-        mainFunctionView.setVisibility(View.GONE);
         currentFunctionView = mainFunctionView;
 
         expanded = true;
-        sync();
+        sync(false);
     }
 
     void expand(boolean expand) {
         if (this.expanded != expand) {
             this.expanded = expand;
             symbolList.animateNextChanges();
-            sync();
+            sync(false);
         }
     }
 
-    public void sync() {
+    /**
+     * @param expandNew The first new symbol found during expansion will be expanded.
+     */
+    public void sync(boolean expandNew) {
+        if (program.main.getLineCount() == 0 && (program.reference == null || "Unnamed".equals(program.reference.name))) {
+            boolean empty = true;
+            for (GlobalSymbol symbol : program.getSymbolMap().values()) {
+                if (symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
+                    empty = false;
+                    break;
+                }
+            }
+            if (empty) {
+                setVisibility(GONE);
+                expanded = true;
+                return;
+            }
+        }
+        setVisibility(VISIBLE);
+
         titleView.setTitle(program.reference.name + (program.reference.urlWritable ? "" : "*"));
         symbolList.removeAllViews();
         if (!expanded) {
             symbolViewMap.clear();
             return;
         }
-
         int varCount = 0;
 
         HashMap<String, View> newSymbolViewMap = new HashMap<>();
@@ -86,9 +103,10 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
                     symbolView = functionView;
                     functionView.addExpandListener(this);
 
-                  //  if (expandNew) {
-                        //     functionView.setExpanded(true, false);
-                 //   }
+                    if (expandNew) {
+                        functionView.setExpanded(true, true);
+                        expandNew = false;
+                    }
                 }
                 index = symbolList.getChildCount();
             } else {
@@ -104,9 +122,8 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
         symbolViewMap = newSymbolViewMap;
         symbolList.addView(mainFunctionView);
 
-        if (program.main.getLineCount() > 0 && mainFunctionView.getVisibility() == View.GONE) {
-            mainFunctionView.setVisibility(View.VISIBLE);
-            //mainFunctionView.setExpanded(true, false);
+        if (expandNew && program.main.getLineCount() > 0 && !mainFunctionView.expanded) {
+            mainFunctionView.setExpanded(true, true);
         }
 
         mainFunctionView.syncContent();

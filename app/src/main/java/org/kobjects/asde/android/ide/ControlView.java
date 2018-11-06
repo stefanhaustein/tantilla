@@ -312,6 +312,11 @@ public class ControlView extends LinearLayout  {
 
         mainMenu.add("Erase Program").setOnMenuItemClickListener(item -> {
                mainActivity.eraseProgram();
+               try {
+                   mainActivity.program.save(mainActivity.program.reference);
+               } catch (Exception e) {
+                   e.printStackTrace();
+               }
                 return true;
         });
 
@@ -375,7 +380,7 @@ public class ControlView extends LinearLayout  {
         saveMenu.add("Save locally as...").setOnMenuItemClickListener(item -> {
             AlertDialog.Builder dialog = new AlertDialog.Builder(mainActivity);
             EditText fileNameInput = new EditText(mainActivity);
-            fileNameInput.setText(mainActivity.sharedPreferences.getString(MainActivity.PROGRAM_NAME_STORAGE_KEY, ""));
+            fileNameInput.setText(mainActivity.preferences.getProgramReference().name);
             dialog.setTitle("Save as...");
             dialog.setMessage("File name");
             dialog.setView(fileNameInput);

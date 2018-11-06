@@ -2,7 +2,6 @@ package org.kobjects.asde.android.ide;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.database.Cursor;
@@ -21,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -50,7 +48,6 @@ import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Console;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -76,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   ScreenAdapter screen;
   public ProgramControl mainInterpreter = new ProgramControl(program);
   ProgramControl shellInterpreter = new ProgramControl(program);
-  SharedPreferences sharedPreferences;
+  AsdePreferences preferences;
   boolean autoScroll = true;
   public boolean fullScreenMode;
   ProgramView programView;
@@ -104,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     super.onCreate(savedInstanceState);
     EmojiManager.install(new EmojiOneProvider());
 
-    sharedPreferences = getPreferences(MODE_PRIVATE);
+    preferences = new AsdePreferences(this);
 
     int[] attrs = { android.R.attr.listDivider };
     TypedArray ta = getApplicationContext().obtainStyledAttributes(attrs);
@@ -208,10 +205,7 @@ public class MainActivity extends AppCompatActivity implements Console {
             });
         }
 
-      ProgramReference programReference = new ProgramReference(
-              sharedPreferences.getString(PROGRAM_NAME_STORAGE_KEY, "Unnamed"),
-              sharedPreferences.getString(PROGRAM_URL_STORAGE_KEY, nameToReference("Unnamed").url),
-              sharedPreferences.getBoolean(PROGRAM_URL_WRITABLE_STORAGE_KEY, true));
+      ProgramReference programReference = preferences.getProgramReference();
 
         load(programReference, false);
 
@@ -238,7 +232,11 @@ public class MainActivity extends AppCompatActivity implements Console {
             programView.currentFunctionView.put(lineNumber, program.parser.parseStatementList(tokenizer));
             sync(true);
             if (program.reference.urlWritable) {
-                program.save(program.reference);
+                try {
+                    program.save(program.reference);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             break;
           }
@@ -333,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
   void sync(boolean expandNew) {
       runOnUiThread(() -> {
-                  programView.sync();
+                  programView.sync(expandNew);
               });
 /*
       if (!expandNew) {
@@ -554,16 +552,16 @@ public class MainActivity extends AppCompatActivity implements Console {
     @Override
     public void programReferenceChanged(ProgramReference fileReference) {
         runOnUiThread(() -> {
-                programView.sync();
+                programView.sync(false);
         });
-        sharedPreferences.edit()
-                .putString(PROGRAM_NAME_STORAGE_KEY, fileReference.name)
-                .putString(PROGRAM_URL_STORAGE_KEY, fileReference.url)
-                .putBoolean(PROGRAM_URL_WRITABLE_STORAGE_KEY, fileReference.urlWritable).commit();
+        preferences.setProgramReference(fileReference);
     }
 
     public File getProgramStoragePath() {
-      return new File(getFilesDir(), "programs");
+      File result = new File(getFilesDir(), "programs");
+      // Mkdirs needed to make sure there is a programs storage path.
+      result.mkdirs();
+      return result;
     }
 
     @Override
@@ -665,7 +663,7 @@ public class MainActivity extends AppCompatActivity implements Console {
             Uri uri = Uri.parse(url);
             return getContentResolver().openOutputStream(uri);
         } catch (IOException e) {
-            throw new RuntimeException();
+            throw new RuntimeException("Can't write to URL " + url, e);
         }
     }
 
@@ -675,7 +673,6 @@ public class MainActivity extends AppCompatActivity implements Console {
     public void eraseProgram() {
         mainInterpreter.terminate();
         program.clearAll();
-        programView.mainFunctionView.setVisibility(View.GONE);
         sync(false);
     }
 
