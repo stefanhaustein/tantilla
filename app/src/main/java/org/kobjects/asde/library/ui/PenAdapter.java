@@ -47,6 +47,18 @@ public class PenAdapter extends Instance {
         }
     };
 
+    private Property<Double> textSize = new Property<Double>() {
+        @Override
+        public boolean set(Double aDouble) {
+            return pen.setTextSize(aDouble.floatValue());
+        }
+
+        @Override
+        public Double get() {
+            return Double.valueOf(pen.getTextSize());
+        }
+    };
+
 
     PenAdapter(Pen pen) {
         super(CLASSIFIER);
@@ -58,6 +70,7 @@ public class PenAdapter extends Instance {
         switch ((PenPropertyDescriptor) property) {
             case fillcolor: return fillColor;
             case strokecolor: return strokeColor;
+            case textsize: return textSize;
             case clearrect:
                 return new Method((FunctionType) PenPropertyDescriptor.clearrect.type()) {
                     @Override
@@ -84,6 +97,18 @@ public class PenAdapter extends Instance {
                         return null;
                     }
                 };
+            case drawtext:
+                return new Method((FunctionType) PenPropertyDescriptor.drawtext.type()) {
+                    @Override
+                    public Object call(Interpreter interpreter, int paramCount) {
+                        LocalStack localStack = interpreter.localStack;
+                        pen.drawText(
+                                ((Number) localStack.getParameter(0, paramCount)).floatValue(),
+                                ((Number) localStack.getParameter(1, paramCount)).floatValue(),
+                                ((String) localStack.getParameter(2, paramCount)));
+                        return null;
+                    }
+                };
             case drawline:
                 return new Method((FunctionType) PenPropertyDescriptor.drawrect.type()) {
                     @Override
@@ -106,8 +131,10 @@ public class PenAdapter extends Instance {
     enum PenPropertyDescriptor implements PropertyDescriptor {
         fillcolor(Types.NUMBER),
         strokecolor(Types.NUMBER),
+        textsize(Types.NUMBER),
         clearrect(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER)),
         drawrect(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER)),
+        drawtext(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.STRING)),
         drawline(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER));
 
         private final Type type;
