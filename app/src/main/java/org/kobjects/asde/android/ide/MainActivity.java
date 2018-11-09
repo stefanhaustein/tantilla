@@ -693,9 +693,11 @@ public class MainActivity extends AppCompatActivity implements Console {
     }
 
     public void showError(String s, Exception e) {
-      AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-      alertBuilder.setTitle(s);
-      alertBuilder.setMessage("" + e);
-      alertBuilder.show();
+        runOnUiThread(() -> {
+            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+            alertBuilder.setTitle(s);
+            alertBuilder.setMessage("" + e);
+            alertBuilder.show();
+        });
     }
 }

@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.text.TextPaint;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -33,6 +34,7 @@ public class Pen {
 
         strokePaint.setAntiAlias(true);
         fillPaint.setAntiAlias(true);
+        textPaint.setAntiAlias(true);
 
         strokePaint.setStyle(Paint.Style.STROKE);
         strokePaint.setColor(Color.BLACK);
@@ -64,7 +66,14 @@ public class Pen {
 
     public void drawText(float x, float y, String text) {
         validate();
-        canvas.drawText(text, sx(x), sy(y), textPaint);
+
+        float sx = sx(x);
+        float sy = sy(y);
+        if ((fillPaint.getColor() & 0xff000000) != 0) {
+            float ty = sy + textPaint.ascent();
+            canvas.drawRect(sx, ty, sx + textPaint.measureText(text), ty + textPaint.getTextSize(), fillPaint);
+        }
+        canvas.drawText(text, sx, sy, textPaint);
     }
 
 

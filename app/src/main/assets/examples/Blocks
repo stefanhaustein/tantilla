@@ -9,6 +9,8 @@ DIM previewX(4)
 DIM previewY(4)
 LET px0 = 1
 LET py0 = 0
+LET score = 0
+LET rows = 0
 
 FUNCTION checkposition(Number x, Number y) -> Number
 100 FOR i = 0 TO 3
@@ -16,6 +18,16 @@ FUNCTION checkposition(Number x, Number y) -> Number
 120 NEXT i
 130 RETURN 1
 END FUNCTION
+
+SUB drawscore()
+100 pen.fillcolor = 255*256*65536 + 255 * 65536 + 65535
+110 pen.strokecolor = 255*256*65536
+120 pen.drawtext 40, 20, "Rows:"
+130 pen.drawtext 40, 10, "" + rows + "  "
+140 pen.drawtext 40, -10, "Score:"
+150 pen.drawtext 40, -20, "" + score + "  "
+160 pen.strokecolor = 0
+END SUB
 
 SUB setcolor(Number c)
 5 REM Store in array?
@@ -75,17 +87,21 @@ SUB dropgrid(Number cy)
 END SUB
 
 SUB checkgrid()
-100 for cy = 0 to 19
+100 LET dropcount = 0
+110 FOR cy = 0 to 19
 120   LET row = 0
 130   FOR x = 2 to 11
 140     IF grid(x,cy) <> 0 then ROW = ROW + 1
 150   NEXT x
-160   IF row = 10 then dropgrid cy
+160   IF row = 10 then dropgrid cy : dropcount = dropcount + 1
 170 next cy
+180 score = score + dropcount * dropcount * 10
+190 rows = rows + dropcount
 END SUB
 
 SUB newpiece()
 10 checkgrid
+20 drawscore
 100 px0 = 14
 110 py0 = 1
 120 pc = pp
