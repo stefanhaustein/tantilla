@@ -11,6 +11,7 @@ LET px0 = 1
 LET py0 = 0
 LET score = 0
 LET rows = 0
+LET gameover = 0
 
 FUNCTION checkposition(Number x, Number y) -> Number
 100 FOR i = 0 TO 3
@@ -102,6 +103,7 @@ END SUB
 SUB newpiece()
 10 checkgrid
 20 drawscore
+90 rem preview stuff
 100 px0 = 14
 110 py0 = 1
 120 pc = pp
@@ -116,6 +118,7 @@ SUB newpiece()
 250 definepiece
 260 px0 = 5
 270 py0 = 0
+280 if checkposition(px0, py0) = 0 then gameover = 1 : pen.fillcolor = 0 : pen.strokecolor = 255 *256 * 65536 : pen.drawtext -40, 40, "GAME OVER" : pen.strokecolor = 0
 END SUB
 
 SUB moveright()
@@ -198,4 +201,4 @@ END SUB
 640 timer = timer + 1
 
 680 pause 100
-690 goto 600
+690 if gameover = 0 then goto 600
