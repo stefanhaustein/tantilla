@@ -27,7 +27,7 @@ public class VariableView extends LinearLayout {
             subtitles.add("V: " + symbol.value);
         }
 
-        SymbolTitleView titleView = new SymbolTitleView(context, context.colors.hueToColor(35), 'V', name, subtitles);
+        SymbolTitleView titleView = new SymbolTitleView(context, context.colors.yellow, 'V', name, subtitles);
         addView(titleView);
     }
 }

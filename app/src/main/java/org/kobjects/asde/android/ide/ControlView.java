@@ -433,20 +433,20 @@ public class ControlView extends LinearLayout  {
         });
         displayMenu.setGroupCheckable(1, true, true);
 
-        AsdePreferences.Theme theme = mainActivity.preferences.getTheme();
+        Colors.Theme theme = mainActivity.preferences.getTheme();
         SubMenu themeMenu = mainMenu.addSubMenu("Theme");
-        themeMenu.add(1, 0, 0, "Arcorn").setChecked(theme == AsdePreferences.Theme.ARCORN).setOnMenuItemClickListener(item -> {
-            mainActivity.preferences.setTheme(AsdePreferences.Theme.ARCORN);
+        themeMenu.add(1, 0, 0, "Arcorn").setChecked(theme == Colors.Theme.ARCORN).setOnMenuItemClickListener(item -> {
+            mainActivity.preferences.setTheme(Colors.Theme.ARCORN);
             mainActivity.restart();
             return true;
         });
-        themeMenu.add(1, 0, 0, "C64").setChecked(theme == AsdePreferences.Theme.C64).setOnMenuItemClickListener(item -> {
-            mainActivity.preferences.setTheme(AsdePreferences.Theme.C64);
+        themeMenu.add(1, 0, 0, "C64").setChecked(theme == Colors.Theme.C64).setOnMenuItemClickListener(item -> {
+            mainActivity.preferences.setTheme(Colors.Theme.C64);
             mainActivity.restart();
             return true;
         });
-        themeMenu.add(1, 0, 0, "Spectrum").setChecked(theme == AsdePreferences.Theme.SPECTRUM).setOnMenuItemClickListener(item -> {
-                    mainActivity.preferences.setTheme(AsdePreferences.Theme.SPECTRUM);
+        themeMenu.add(1, 0, 0, "Spectrum").setChecked(theme == Colors.Theme.SPECTRUM).setOnMenuItemClickListener(item -> {
+                    mainActivity.preferences.setTheme(Colors.Theme.SPECTRUM);
                     mainActivity.restart();
                     return true;
                 });

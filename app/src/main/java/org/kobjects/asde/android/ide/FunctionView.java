@@ -31,7 +31,7 @@ public class FunctionView extends LinearLayout {
 
         boolean isMain = callableUnit == callableUnit.program.main;
         boolean isVoid = callableUnit.getType().getReturnType() == Types.VOID;
-        int color = isMain ? mainActivity.colors.primary : isVoid ? mainActivity.colors.hueToColor(290) : mainActivity.colors.hueToColor(210);
+        int color = isMain ? mainActivity.colors.primary : isVoid ? mainActivity.colors.purple : mainActivity.colors.cyan;
         char c = isMain ? 'M' : isVoid ? 'S' : 'F';
 
         ArrayList<String> subtitles = new ArrayList<>();

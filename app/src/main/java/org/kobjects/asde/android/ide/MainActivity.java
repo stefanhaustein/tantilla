@@ -114,17 +114,10 @@ public class MainActivity extends AppCompatActivity implements Console {
       }
 
     super.onCreate(savedInstanceState);
-    colors = new Colors(this);
+    colors = new Colors(this, preferences.getTheme());
     EmojiManager.install(new EmojiOneProvider());
 
-
-    int[] attrs = { android.R.attr.listDivider };
-    TypedArray ta = getApplicationContext().obtainStyledAttributes(attrs);
-    systemListDivider = ta.getDrawable(0);
-    ta.recycle();
-    final int iconPadding = Dimensions.dpToPx(this, 12);
-
-        IconButton clearButton = new IconButton(this, R.drawable.baseline_delete_24);
+    IconButton clearButton = new IconButton(this, R.drawable.baseline_delete_24);
     clearButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -479,7 +472,8 @@ public class MainActivity extends AppCompatActivity implements Console {
           viewport.addView(exitFullscreenButton, layoutParams);
       } else {
         LinearLayout rootLayout = new LinearLayout(this);
-        rootLayout.setDividerDrawable(systemListDivider);
+       // rootLayout.setDividerDrawable(systemListDivider);
+        rootLayout.setDividerDrawable(new ColorDrawable(colors.primary));
         rootLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
         rootLayout.setOrientation(LinearLayout.VERTICAL);
 
@@ -521,7 +515,7 @@ public class MainActivity extends AppCompatActivity implements Console {
             controlView.arrangeButtons(true);
 
             LinearLayout contentView = new LinearLayout(this);
-            contentView.setDividerDrawable(systemListDivider);
+            contentView.setDividerDrawable(new ColorDrawable(colors.primary));
             contentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
             contentView.addView(leftScrollView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
             contentView.addView(mainView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 2));
