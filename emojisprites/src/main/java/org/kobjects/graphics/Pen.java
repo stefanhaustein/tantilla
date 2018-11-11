@@ -18,7 +18,6 @@ public class Pen {
     Canvas canvas;
     Paint strokePaint = new Paint();
     Paint fillPaint = new Paint();
-    TextPaint textPaint = new TextPaint();
     Paint clearPaint;
 
     float sx(float x) {
@@ -34,14 +33,11 @@ public class Pen {
 
         strokePaint.setAntiAlias(true);
         fillPaint.setAntiAlias(true);
-        textPaint.setAntiAlias(true);
 
         strokePaint.setStyle(Paint.Style.STROKE);
         strokePaint.setColor(Color.BLACK);
         fillPaint.setStyle(Paint.Style.FILL);
         fillPaint.setColor(Color.BLUE);
-        textPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        textPaint.setColor(Color.BLACK);
 
         setTextSize(10);
     }
@@ -66,14 +62,14 @@ public class Pen {
 
     public void drawText(float x, float y, String text) {
         validate();
-
         float sx = sx(x);
         float sy = sy(y);
         if ((fillPaint.getColor() & 0xff000000) != 0) {
-            float ty = sy + textPaint.ascent();
-            canvas.drawRect(sx, ty, sx + textPaint.measureText(text), ty + textPaint.getTextSize(), fillPaint);
+            canvas.drawText(text, sx, sy, fillPaint);
         }
-        canvas.drawText(text, sx, sy, textPaint);
+        if ((strokePaint.getColor() & 0xff000000) != 0) {
+            canvas.drawText(text, sx, sy, strokePaint);
+        }
     }
 
 
@@ -89,10 +85,11 @@ public class Pen {
     }
 
     public boolean setTextSize(float size) {
-        if (textPaint.getTextSize() == size * viewport.bitmapScale) {
+        if (strokePaint.getTextSize() == size * viewport.bitmapScale) {
             return false;
         }
-        textPaint.setTextSize(size * viewport.bitmapScale);
+        strokePaint.setTextSize(size * viewport.bitmapScale);
+        fillPaint.setTextSize(size * viewport.bitmapScale);
         return true;
     }
 
@@ -112,7 +109,6 @@ public class Pen {
         if (argb == strokePaint.getColor()) {
             return false;
         }
-        textPaint.setColor(argb);
         strokePaint.setColor(argb);
         return true;
     }
@@ -122,6 +118,6 @@ public class Pen {
     }
 
     public float getTextSize() {
-        return textPaint.getTextSize() / viewport.bitmapScale;
+        return strokePaint.getTextSize() / viewport.bitmapScale;
     }
 }

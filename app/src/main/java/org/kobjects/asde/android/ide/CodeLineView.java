@@ -1,7 +1,6 @@
 package org.kobjects.asde.android.ide;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.SpannableString;
@@ -29,9 +28,11 @@ public class CodeLineView extends LinearLayout {
     boolean odd;
     boolean highlighted;
     int lineNumber;
+    MainActivity context;
 
-    public CodeLineView(Context context, boolean odd) {
+    public CodeLineView(MainActivity context, boolean odd) {
         super(context);
+        this.context = context;
         this.odd = odd;
 
         lineNumberView = new AppCompatTextView(context);
@@ -58,7 +59,7 @@ public class CodeLineView extends LinearLayout {
 
         SpannableString s = new SpannableString(asb.toString());
         for (final Span span : asb.spans()) {
-            s.setSpan(new BackgroundColorSpan(Colors.SECONDARY_LIGHT), span.start, span.end, 0);
+            s.setSpan(new BackgroundColorSpan(context.colors.accentMedium), span.start, span.end, 0);
             s.setSpan(new ClickableSpan() {
                 @Override
                 public void onClick(View widget) {
@@ -83,9 +84,9 @@ public class CodeLineView extends LinearLayout {
 
     void updateColor() {
         if (highlighted) {
-            setBackgroundColor(Colors.SECONDARY_LIGHT);
+            setBackgroundColor(context.colors.accentMedium);
         } else if (odd) {
-            setBackgroundColor(Colors.PRIMARY_LIGHT);
+            setBackgroundColor(context.colors.primaryMedium);
         } else {
             setBackgroundColor(0);
         }

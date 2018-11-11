@@ -9,7 +9,6 @@ public interface Console {
     String read();
 
     void clearOutput();
-
     void clearCanvas();
 
     void trace(CallableUnit function, int lineNumber);

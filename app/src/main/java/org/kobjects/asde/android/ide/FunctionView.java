@@ -1,10 +1,10 @@
 package org.kobjects.asde.android.ide;
 
 import android.view.View;
-import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 
 import org.kobjects.asde.android.ide.widget.ExpandableList;
+import org.kobjects.asde.android.ide.widget.SymbolTitleView;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Types;
@@ -31,7 +31,7 @@ public class FunctionView extends LinearLayout {
 
         boolean isMain = callableUnit == callableUnit.program.main;
         boolean isVoid = callableUnit.getType().getReturnType() == Types.VOID;
-        int color = isMain ? Colors.PRIMARY_DARK : isVoid ? Colors.DEEP_PURPLE : Colors.BLUE;
+        int color = isMain ? mainActivity.colors.primary : isVoid ? mainActivity.colors.hueToColor(290) : mainActivity.colors.hueToColor(210);
         char c = isMain ? 'M' : isVoid ? 'S' : 'F';
 
         ArrayList<String> subtitles = new ArrayList<>();
@@ -139,7 +139,7 @@ public class FunctionView extends LinearLayout {
     }
 
     public void syncContent() {
-        titleView.setBackgroundColor(callableUnit.errors.size() > 0 ? Colors.SECONDARY_LIGHT : expanded ? Colors.PRIMARY_MEDIUM : 0);
+        titleView.setBackgroundColor(callableUnit.errors.size() > 0 ? mainActivity.colors.accentMedium : expanded ? mainActivity.colors.primaryMedium : 0);
 
         ExpandableList codeView = mainActivity.codeView == null ? contentView : mainActivity.codeView;
 
@@ -153,7 +153,7 @@ public class FunctionView extends LinearLayout {
             if (index < codeView.getChildCount()) {
                 codeLineView = (CodeLineView) codeView.getChildAt(index);
             } else {
-                codeLineView = new CodeLineView(getContext(), index % 2 == 1);
+                codeLineView = new CodeLineView(mainActivity, index % 2 == 1);
                 codeView.addView(codeLineView);
             }
             codeLineView.setLineNumber(entry.getKey());

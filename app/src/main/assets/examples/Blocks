@@ -21,12 +21,12 @@ FUNCTION checkposition(Number x, Number y) -> Number
 END FUNCTION
 
 SUB drawscore()
-100 pen.fillcolor = 255*256*65536 + 255 * 65536 + 65535
-110 pen.strokecolor = 255*256*65536
-120 pen.drawtext 40, 20, "Rows:"
-130 pen.drawtext 40, 10, "" + rows + "  "
-140 pen.drawtext 40, -10, "Score:"
-150 pen.drawtext 40, -20, "" + score + "  "
+100 pen.fillcolor = 255*256*65536 + 127 * 65536 + 127 * 256 + 127
+110 pen.clearRect 40, -10, 60, 60
+120 pen.drawtext 40, 40, "Rows:"
+130 pen.drawtext 40, 30, "" + rows + "  "
+140 pen.drawtext 40, 10, "Score:"
+150 pen.drawtext 40, 0, "" + score + "  "
 160 pen.strokecolor = 0
 END SUB
 
@@ -39,7 +39,7 @@ SUB setcolor(Number c)
 50 if c = 5 then pen.fillcolor = 255*256*65536 + 255 + 255 * 65536 : REM violet T
 60 if c = 6 then pen.fillcolor = 255*256*65536 + 255 * 65536  + 255 * 256 : REM yellow O
 70 if c = 7 then pen.fillcolor = 255*256*65536 + 255 * 256 + 255  : REM cyan I
-80 if c = 8 then pen.fillcolor = 255*256*65536 : REM black border
+80 if c = 8 then pen.fillcolor = 255*256*65536 + 127 * 65536 + 127 * 256 + 127 : REM border
 END SUB
 
 SUB drawpiece()
@@ -118,7 +118,7 @@ SUB newpiece()
 250 definepiece
 260 px0 = 5
 270 py0 = 0
-280 if checkposition(px0, py0) = 0 then gameover = 1 : pen.fillcolor = 0 : pen.strokecolor = 255 *256 * 65536 : pen.drawtext -40, 40, "GAME OVER" : pen.strokecolor = 0
+280 if checkposition(px0, py0) = 0 then gameover = 1 : pen.fillcolor = 255 * 256 * 65536 + 127 * 65536 + 127 * 256 + 127: pen.drawtext -40, 40, "GAME OVER"
 END SUB
 
 SUB moveright()

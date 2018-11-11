@@ -32,7 +32,7 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
         this.context = context;
         this.program = program;
 
-        titleView = new TitleView(context, Colors.PRIMARY);
+        titleView = new TitleView(context, context.colors.primary);
         addView(titleView);
         titleView.setOnClickListener(new OnClickListener() {
             @Override

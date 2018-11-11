@@ -7,7 +7,12 @@ import org.kobjects.asde.lang.ProgramReference;
 
 public class AsdePreferences {
 
+    public enum Theme {
+        ARCORN, C64, SPECTRUM,
+    }
+
     static final String PROGRAM_REFERENCE = "program_reference";
+    static final String THEME = "theme";
 
     private final SharedPreferences sharedPreferences;
     private final MainActivity mainActivity;
@@ -25,4 +30,13 @@ public class AsdePreferences {
     public void setProgramReference(ProgramReference programReference) {
         sharedPreferences.edit().putString(PROGRAM_REFERENCE, programReference.toString()).commit();
     }
+
+    public Theme getTheme() {
+        return Theme.valueOf(sharedPreferences.getString(THEME, Theme.ARCORN.name()));
+    }
+
+    public void setTheme(Theme theme) {
+        sharedPreferences.edit().putString(THEME, theme.name()).commit();
+    }
+
 }

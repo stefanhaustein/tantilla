@@ -1,7 +1,9 @@
 package org.kobjects.asde.android.ide;
 
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.database.Cursor;
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   static final int LOAD_EXTERNALLY_REQUEST_CODE = 421;
   static final int OPEN_EXTERNALLY_REQUEST_CODE = 422;
 
+  Colors colors;
     LinearLayout scrollContentView;
   public View rootView;
   ScrollView scrollView;
@@ -96,10 +99,24 @@ public class MainActivity extends AppCompatActivity implements Console {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+      preferences = new AsdePreferences(this);
+   //   setTheme(preferences.getDarkMode() ? R.style.AppTheme_Dark : R.style.AppTheme_Light);
+
+      switch (preferences.getTheme()) {
+          case C64:
+              setTheme(R.style.AppTheme_Blue);
+              break;
+          case SPECTRUM:
+              setTheme(R.style.AppTheme_Light);
+              break;
+          default:
+              setTheme(R.style.AppTheme_Dark);
+      }
+
     super.onCreate(savedInstanceState);
+    colors = new Colors(this);
     EmojiManager.install(new EmojiOneProvider());
 
-    preferences = new AsdePreferences(this);
 
     int[] attrs = { android.R.attr.listDivider };
     TypedArray ta = getApplicationContext().obtainStyledAttributes(attrs);
@@ -118,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
     programView = new ProgramView(this, program);
 
-    outputTitleView = new TitleView(this, Colors.PRIMARY);
+    outputTitleView = new TitleView(this, colors.primary);
     outputTitleView.setTitle("Output");
     outputTitleView.addView(clearButton);
     outputView = new LinearLayout(this);
@@ -209,6 +226,15 @@ public class MainActivity extends AppCompatActivity implements Console {
 
   }
 
+  public void restart() {
+      PackageManager packageManager = getPackageManager();
+      Intent intent = packageManager.getLaunchIntentForPackage(getPackageName());
+      ComponentName componentName = intent.getComponent();
+      Intent mainIntent = Intent.makeRestartActivityTask(componentName);
+      startActivity(mainIntent);
+      Runtime.getRuntime().exit(0);
+  }
+
 
   public void enter() {
     String line = controlView.codeEditText.getText().toString();
@@ -247,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements Console {
           program.processDeclarations(statements);
           TextView inputView = new EmojiTextView(this);
           inputView.setText(new CodeLine(statements).toString());
-          inputView.setTextColor(Colors.SECONDARY);
+          inputView.setTextColor(colors.accent);
           inputView.setTypeface(Typeface.MONOSPACE);
 
 
@@ -470,7 +496,7 @@ public class MainActivity extends AppCompatActivity implements Console {
             resizableFrameLayoutParmas.topMargin = Dimensions.dpToPx(this, 36);
 
             resizableFrameLayoutParmas.gravity = Gravity.TOP | Gravity.RIGHT;
-            viewport.setBackgroundColor(0xffffffff);
+            viewport.setBackgroundColor(colors.background);
 
             mainView.addView(resizableFrameLayout, resizableFrameLayoutParmas);
         } else {

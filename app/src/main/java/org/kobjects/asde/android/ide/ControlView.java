@@ -310,10 +310,11 @@ public class ControlView extends LinearLayout  {
         PopupMenu popupMenu = new PopupMenu(mainActivity, menuButton);
         Menu mainMenu = popupMenu.getMenu();
 
-        mainMenu.add("Erase Program").setOnMenuItemClickListener(item -> {
+        mainMenu.add("Erase all and restart").setOnMenuItemClickListener(item -> {
                mainActivity.eraseProgram();
                try {
                    mainActivity.program.save(mainActivity.program.reference);
+                   mainActivity.restart();
                } catch (Exception e) {
                    e.printStackTrace();
                }
@@ -409,25 +410,48 @@ public class ControlView extends LinearLayout  {
 
 
         SubMenu displayMenu = mainMenu.addSubMenu("Display");
-        displayMenu.add("Clear Ouput").setOnMenuItemClickListener(item -> {
+        displayMenu.add("Clear").setOnMenuItemClickListener(item -> {
                 mainActivity.clearOutput();
-                return true;
+            mainActivity.clearCanvas();
+            return true;
         });
-        displayMenu.add("Overlay mode").setCheckable(true).setChecked(!mainActivity.windowMode).setOnMenuItemClickListener(item -> {
+
+        displayMenu.add(1, 0, 0, "Overlay mode").setChecked(!mainActivity.windowMode).setOnMenuItemClickListener(item -> {
             mainActivity.windowMode = false;
             mainActivity.arrangeUi();
             return true;
         });
-        displayMenu.add("Fullscreen mode").setCheckable(true).setOnMenuItemClickListener(item -> {
+        displayMenu.add(1, 0, 0, "Fullscreen mode").setOnMenuItemClickListener(item -> {
                 mainActivity.fullScreenMode = true;
                 mainActivity.arrangeUi();
                 return true;
         });
-        displayMenu.add("Window mode").setCheckable(true).setChecked(mainActivity.windowMode).setOnMenuItemClickListener(item -> {
+        displayMenu.add(1, 0, 0, "Window mode").setChecked(mainActivity.windowMode).setOnMenuItemClickListener(item -> {
             mainActivity.windowMode = true;
             mainActivity.arrangeUi();
             return true;
         });
+        displayMenu.setGroupCheckable(1, true, true);
+
+        AsdePreferences.Theme theme = mainActivity.preferences.getTheme();
+        SubMenu themeMenu = mainMenu.addSubMenu("Theme");
+        themeMenu.add(1, 0, 0, "Arcorn").setChecked(theme == AsdePreferences.Theme.ARCORN).setOnMenuItemClickListener(item -> {
+            mainActivity.preferences.setTheme(AsdePreferences.Theme.ARCORN);
+            mainActivity.restart();
+            return true;
+        });
+        themeMenu.add(1, 0, 0, "C64").setChecked(theme == AsdePreferences.Theme.C64).setOnMenuItemClickListener(item -> {
+            mainActivity.preferences.setTheme(AsdePreferences.Theme.C64);
+            mainActivity.restart();
+            return true;
+        });
+        themeMenu.add(1, 0, 0, "Spectrum").setChecked(theme == AsdePreferences.Theme.SPECTRUM).setOnMenuItemClickListener(item -> {
+                    mainActivity.preferences.setTheme(AsdePreferences.Theme.SPECTRUM);
+                    mainActivity.restart();
+                    return true;
+                });
+        themeMenu.setGroupCheckable(1, true, true);
+
         popupMenu.show();
 
     }

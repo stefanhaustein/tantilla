@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide;
+package org.kobjects.asde.android.ide.widget;
 
 import android.content.Context;
 import android.graphics.Typeface;
