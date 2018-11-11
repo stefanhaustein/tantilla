@@ -52,11 +52,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements Console {
-    static final String PROGRAM_NAME_STORAGE_KEY = "ProgramName";
-  static final String PROGRAM_URL_STORAGE_KEY = "ProgramUrl";
-  static final String PROGRAM_URL_WRITABLE_STORAGE_KEY = "ProgramUrlWritable";
   static final int SAVE_EXTERNALLY_REQUEST_CODE = 420;
   static final int LOAD_EXTERNALLY_REQUEST_CODE = 421;
   static final int OPEN_EXTERNALLY_REQUEST_CODE = 422;
@@ -329,9 +327,25 @@ public class MainActivity extends AppCompatActivity implements Console {
     }
   }
 
-  void sync(boolean expandNew) {
+    /**
+     * Syncs the displayed program code to the program code. If the sync is incremental,
+     * any new function will be expanded automatically. Otherwise, the sync process includes
+     * scrolling to the to and autorun support.
+     */
+  void sync(boolean incremental) {
       runOnUiThread(() -> {
-                  programView.sync(expandNew);
+                  programView.sync(incremental);
+                  if (!incremental) {
+                      scrollView.scrollTo(0, 0);
+                      Map.Entry<Integer,CodeLine> line0 = program.main.ceilingEntry(0);
+                      if (line0 != null) {
+                          if (line0.getValue().toString().equalsIgnoreCase("REM autorun")) {
+                              mainInterpreter.start();
+                          }
+
+                      }
+
+                  }
               });
 /*
       if (!expandNew) {

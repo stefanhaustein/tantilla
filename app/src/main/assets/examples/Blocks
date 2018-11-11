@@ -158,9 +158,10 @@ SUB rotate()
 240 NEXT j
 END SUB
 
-100 REM Based on David Murray's code, see
-110 REM http://www.the8bitguy.com/download-davids-software/
-120 dpad.visible = 1
+100 REM autorun
+110 REM Based on David Murray's code, see
+120 REM http://www.the8bitguy.com/download-davids-software/
+130 dpad.visible = 1
 140 pen.strokecolor = 0
 150 PP = 1
 
