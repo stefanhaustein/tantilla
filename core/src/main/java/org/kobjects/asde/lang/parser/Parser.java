@@ -197,6 +197,8 @@ public class Parser {
         }
         return new Command(kind);
 
+      case DELETE:
+      case EDIT:
       case LOAD: // Exactly one param
         return new Command(kind, expressionParser.parse(tokenizer));
 

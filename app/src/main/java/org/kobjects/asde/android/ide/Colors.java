@@ -79,7 +79,7 @@ public class Colors {
                 break;
              default:
                  // 500-colors from the material palette
-                 int alpha = theme == Theme.ARCORN ? 0xaa000000 : 0x55000000;
+                 int alpha = theme == Theme.DARK ? 0xaa000000 : 0x55000000;
                  red = alpha | 0xf44336;
                  cyan = alpha | 0x00bcd4;
                  purple = alpha | 0x9c27b0;
@@ -90,7 +90,7 @@ public class Colors {
 /*
             default:
 
-            case SPECTRUM:
+            case LIGHT:
                 // 200-colors from the material palette
                 // https://material.io/tools/color/
                 red = 0xffef9a9a;
@@ -120,6 +120,6 @@ public class Colors {
     }
 
     public enum Theme {
-        ARCORN, C64, SPECTRUM,
+        DARK, C64, LIGHT,
     }
 }

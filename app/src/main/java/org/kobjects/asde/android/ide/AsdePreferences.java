@@ -28,7 +28,11 @@ public class AsdePreferences {
     }
 
     public Colors.Theme getTheme() {
-        return Colors.Theme.valueOf(sharedPreferences.getString(THEME, Colors.Theme.ARCORN.name()));
+        try {
+            return Colors.Theme.valueOf(sharedPreferences.getString(THEME, Colors.Theme.DARK.name()));
+        } catch (IllegalArgumentException e) {
+            return Colors.Theme.LIGHT;
+        }
     }
 
     public void setTheme(Colors.Theme theme) {

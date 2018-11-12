@@ -374,8 +374,6 @@ public class ControlView extends LinearLayout  {
             throw new RuntimeException(e);
         }
 
-
-
         Menu saveMenu = mainMenu.addSubMenu("Save");
 
         saveMenu.add("Save locally as...").setOnMenuItemClickListener(item -> {
@@ -415,7 +413,6 @@ public class ControlView extends LinearLayout  {
             mainActivity.clearCanvas();
             return true;
         });
-
         displayMenu.add(1, 0, 0, "Overlay mode").setChecked(!mainActivity.windowMode).setOnMenuItemClickListener(item -> {
             mainActivity.windowMode = false;
             mainActivity.arrangeUi();
@@ -432,25 +429,11 @@ public class ControlView extends LinearLayout  {
             return true;
         });
         displayMenu.setGroupCheckable(1, true, true);
-
-        Colors.Theme theme = mainActivity.preferences.getTheme();
-        SubMenu themeMenu = mainMenu.addSubMenu("Theme");
-        themeMenu.add(1, 0, 0, "Arcorn").setChecked(theme == Colors.Theme.ARCORN).setOnMenuItemClickListener(item -> {
-            mainActivity.preferences.setTheme(Colors.Theme.ARCORN);
-            mainActivity.restart();
-            return true;
+        displayMenu.add("Dark theme").setCheckable(true).setChecked(mainActivity.preferences.getTheme() == Colors.Theme.DARK).setOnMenuItemClickListener(item -> {
+                mainActivity.preferences.setTheme(mainActivity.preferences.getTheme() == Colors.Theme.DARK ? Colors.Theme.LIGHT : Colors.Theme.DARK);
+                mainActivity.restart();
+                return true;
         });
-        themeMenu.add(1, 0, 0, "C64").setChecked(theme == Colors.Theme.C64).setOnMenuItemClickListener(item -> {
-            mainActivity.preferences.setTheme(Colors.Theme.C64);
-            mainActivity.restart();
-            return true;
-        });
-        themeMenu.add(1, 0, 0, "Spectrum").setChecked(theme == Colors.Theme.SPECTRUM).setOnMenuItemClickListener(item -> {
-                    mainActivity.preferences.setTheme(Colors.Theme.SPECTRUM);
-                    mainActivity.restart();
-                    return true;
-                });
-        themeMenu.setGroupCheckable(1, true, true);
 
         popupMenu.show();
 

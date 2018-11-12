@@ -24,4 +24,7 @@ public interface Console {
     void startProgress(String title);
     void updateProgress(String update);
     void endProgress();
+
+    void delete(int line);
+    void edit(int i);
 }

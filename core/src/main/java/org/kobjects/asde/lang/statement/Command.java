@@ -19,7 +19,9 @@ import java.util.Map;
 public class Command extends Node {
 
     public enum Kind {
-        CLEAR, CONTINUE, DUMP,
+        CLEAR, CONTINUE,
+        DELETE, DUMP,
+        EDIT,
         LIST, LOAD,
         RUN,SAVE, TRON, TROFF
     }
@@ -42,6 +44,11 @@ public class Command extends Node {
             case CLEAR:
                 program.clear(interpreter);
                 break;
+
+            case DELETE:
+                program.console.delete(evalInt(interpreter, 0));
+                break;
+
             case DUMP:
                 if (program.lastException != null) {
                     program.lastException.printStackTrace();
@@ -55,6 +62,10 @@ public class Command extends Node {
             }
           } */
                 }
+                break;
+
+            case EDIT:
+                program.console.edit(evalInt(interpreter, 0));
                 break;
 
             case LIST: {

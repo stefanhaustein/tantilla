@@ -71,8 +71,8 @@ public class PenAdapter extends Instance {
             case fillcolor: return fillColor;
             case strokecolor: return strokeColor;
             case textsize: return textSize;
-            case clearrect:
-                return new Method((FunctionType) PenPropertyDescriptor.clearrect.type()) {
+            case clear:
+                return new Method((FunctionType) PenPropertyDescriptor.clear.type()) {
                     @Override
                     public Object call(Interpreter interpreter, int paramCount) {
                         LocalStack localStack = interpreter.localStack;
@@ -84,8 +84,8 @@ public class PenAdapter extends Instance {
                         return null;
                     }
                 };
-            case drawrect:
-                return new Method((FunctionType) PenPropertyDescriptor.drawrect.type()) {
+            case rect:
+                return new Method((FunctionType) PenPropertyDescriptor.rect.type()) {
                     @Override
                     public Object call(Interpreter interpreter, int paramCount) {
                         LocalStack localStack = interpreter.localStack;
@@ -97,8 +97,8 @@ public class PenAdapter extends Instance {
                         return null;
                     }
                 };
-            case drawtext:
-                return new Method((FunctionType) PenPropertyDescriptor.drawtext.type()) {
+            case write:
+                return new Method((FunctionType) PenPropertyDescriptor.write.type()) {
                     @Override
                     public Object call(Interpreter interpreter, int paramCount) {
                         LocalStack localStack = interpreter.localStack;
@@ -109,8 +109,8 @@ public class PenAdapter extends Instance {
                         return null;
                     }
                 };
-            case drawline:
-                return new Method((FunctionType) PenPropertyDescriptor.drawrect.type()) {
+            case line:
+                return new Method((FunctionType) PenPropertyDescriptor.line.type()) {
                     @Override
                     public Object call(Interpreter interpreter, int paramCount) {
                         LocalStack localStack = interpreter.localStack;
@@ -132,10 +132,10 @@ public class PenAdapter extends Instance {
         fillcolor(Types.NUMBER),
         strokecolor(Types.NUMBER),
         textsize(Types.NUMBER),
-        clearrect(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER)),
-        drawrect(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER)),
-        drawtext(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.STRING)),
-        drawline(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER));
+        clear(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER)),
+        rect(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER)),
+        write(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.STRING)),
+        line(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER));
 
         private final Type type;
 

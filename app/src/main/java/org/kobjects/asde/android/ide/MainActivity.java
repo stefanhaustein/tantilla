@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -37,6 +36,7 @@ import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
+import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.ProgramReference;
 import org.kobjects.asde.lang.StartStopListener;
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements Console {
           case C64:
               setTheme(R.style.AppTheme_Blue);
               break;
-          case SPECTRUM:
+          case LIGHT:
               setTheme(R.style.AppTheme_Light);
               break;
           default:
@@ -235,8 +235,13 @@ public class MainActivity extends AppCompatActivity implements Console {
         print("\n");
         return;
     }
+
+    if (line.equalsIgnoreCase("go 64") || line.equalsIgnoreCase("go 64!")) {
+        preferences.setTheme(Colors.Theme.C64);
+        restart();
+    }
+
     ExpressionParser.Tokenizer tokenizer = program.parser.createTokenizer(line);
-    boolean inputPrinted = false;
     try {
       tokenizer.nextToken();
       switch (tokenizer.currentType) {
@@ -269,19 +274,14 @@ public class MainActivity extends AppCompatActivity implements Console {
           inputView.setTextColor(colors.accent);
           inputView.setTypeface(Typeface.MONOSPACE);
 
-
           if (lineFeedPending) {
               print("");
           }
 
           outputView.addView(inputView);
-          inputPrinted = true;
-            postScrollIfAtEnd();
-
+          postScrollIfAtEnd();
 
           shellInterpreter.runStatementsAsync(statements, mainInterpreter);
-
-
           break;
       }
         controlView.codeEditText.setText("");
@@ -646,6 +646,41 @@ public class MainActivity extends AppCompatActivity implements Console {
                 progressDialog.dismiss();
                 progressDialog = null;
             }
+        });
+    }
+
+    @Override
+    public void delete(int line) {
+        FunctionView functionView = programView.currentFunctionView;
+        if (functionView != null) {
+            CallableUnit callableUnit = functionView.callableUnit;
+            if (callableUnit != null) {
+                Map.Entry<Integer, CodeLine> entry = callableUnit.ceilingEntry(line);
+                if (entry != null && entry.getKey() == line) {
+                    callableUnit.setLine(line, null);
+                    sync(true);
+                    return;
+                }
+            }
+        }
+        throw new RuntimeException("Line " + line + " not found.");
+    }
+
+    @Override
+    public void edit(int line) {
+        runOnUiThread(() -> {
+            FunctionView functionView = programView.currentFunctionView;
+            // Append moves the cursor to the end.
+            controlView.codeEditText.setText("");
+            if (functionView != null) {
+                CallableUnit callableUnit = functionView.callableUnit;
+                Map.Entry<Integer, CodeLine> entry = callableUnit.ceilingEntry(line);
+                if (entry != null && entry.getKey() == line) {
+                    controlView.codeEditText.append(entry.getKey() + " " + entry.getValue());
+                    return;
+                }
+            }
+            controlView.codeEditText.append("" + line + " ");
         });
     }
 

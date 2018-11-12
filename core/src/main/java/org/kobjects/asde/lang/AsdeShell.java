@@ -108,6 +108,16 @@ public class AsdeShell {
         public void endProgress() {
 
         }
+
+        @Override
+        public void delete(int line) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void edit(int i) {
+            throw new UnsupportedOperationException();
+        }
     });
 
     System.out.println("  **** EXPRESSION PARSER BASIC DEMO V1 ****\n");

@@ -22,11 +22,11 @@ END FUNCTION
 
 SUB drawscore()
 100 pen.fillcolor = 255*256*65536 + 127 * 65536 + 127 * 256 + 127
-110 pen.clearRect 40, -10, 60, 60
-120 pen.drawtext 40, 40, "Rows:"
-130 pen.drawtext 40, 30, "" + rows + "  "
-140 pen.drawtext 40, 10, "Score:"
-150 pen.drawtext 40, 0, "" + score + "  "
+110 pen.clear 40, -10, 60, 60
+120 pen.write 40, 40, "Rows:"
+130 pen.write 40, 30, "" + rows + "  "
+140 pen.write 40, 10, "Score:"
+150 pen.write 40, 0, "" + score + "  "
 160 pen.strokecolor = 0
 END SUB
 
@@ -48,7 +48,7 @@ SUB drawpiece()
 120  LET x = px0 + piecex(i)
 130  LET y = py0 + piecey(i)
 140  grid(X,Y) = pc
-150  pen.drawRect x * 8 - 69, 91 - y * 8, 7, 7
+150  pen.rect x * 8 - 69, 91 - y * 8, 7, 7
 160 NEXT i
 END SUB
 
@@ -57,7 +57,7 @@ SUB erasepiece()
 110   LET x = px0 + piecex(i)
 120   LET y = py0 + piecey(i)
 130   grid(x, y) = 0
-140   pen.clearRect x * 8 - 70, 90 - y * 8, 8, 8
+140   pen.clear x * 8 - 70, 90 - y * 8, 8, 8
 150 NEXT i
 END SUB
 
@@ -72,8 +72,8 @@ SUB drawall()
 100 FOR y = 0 to 20
 120  FOR x = 1 to 12
 130    LET c = grid(x, y)
-140    IF c THEN setcolor c  : pen.drawRect x * 8 - 69, 91 - y * 8, 7, 7
-145    IF c = 0 THEN pen.clearRect x * 8 - 70, 90 - y * 8, 8, 8
+140    IF c THEN setcolor c  : pen.rect x * 8 - 69, 91 - y * 8, 7, 7
+145    IF c = 0 THEN pen.clear x * 8 - 70, 90 - y * 8, 8, 8
 150  NEXT x
 160 NEXT y
 END SUB
@@ -118,7 +118,7 @@ SUB newpiece()
 250 definepiece
 260 px0 = 5
 270 py0 = 0
-280 if checkposition(px0, py0) = 0 then gameover = 1 : pen.fillcolor = 255 * 256 * 65536 + 127 * 65536 + 127 * 256 + 127: pen.drawtext -40, 40, "GAME OVER"
+280 if checkposition(px0, py0) = 0 then gameover = 1 : pen.fillcolor = 255 * 256 * 65536 + 127 * 65536 + 127 * 256 + 127: pen.write -40, 40, "GAME OVER"
 END SUB
 
 SUB moveright()
