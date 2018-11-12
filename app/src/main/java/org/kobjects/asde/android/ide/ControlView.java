@@ -137,7 +137,7 @@ public class ControlView extends LinearLayout  {
             @Override
             public void onClick(View v) {
                 if (codeEditText.getVisibility() == View.VISIBLE) {
-                    mainActivity.enter();
+                    mainActivity.enter(codeEditText.getText().toString());
                 } else {
                     mainActivity.readLine = consoleEditText.getText().toString();
                     consoleEditText.setText("");
@@ -158,7 +158,7 @@ public class ControlView extends LinearLayout  {
         codeEditText.setOnEditorActionListener((view, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED
                     && event.getAction() == KeyEvent.ACTION_DOWN) {
-                mainActivity.enter();
+                mainActivity.enter(codeEditText.getText().toString());
                 return true;
             }
             return false;

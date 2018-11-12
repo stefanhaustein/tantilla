@@ -229,8 +229,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   }
 
 
-  public void enter() {
-    String line = controlView.codeEditText.getText().toString();
+  public void enter(String line) {
     if (line.isEmpty()) {
         print("\n");
         return;
