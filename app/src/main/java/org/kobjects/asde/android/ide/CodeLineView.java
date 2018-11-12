@@ -86,7 +86,7 @@ public class CodeLineView extends LinearLayout {
         if (highlighted) {
             setBackgroundColor(context.colors.accentMedium);
         } else if (odd) {
-            setBackgroundColor(context.colors.primaryMedium);
+            setBackgroundColor(context.colors.primaryLight);
         } else {
             setBackgroundColor(0);
         }

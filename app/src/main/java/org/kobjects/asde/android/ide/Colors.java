@@ -12,6 +12,7 @@ public class Colors {
 
     final int primary;
     final int primaryMedium;
+    final int primaryLight;
     final int accent;
     final int background;
     final int accentMedium;
@@ -61,6 +62,7 @@ public class Colors {
         darkMode = (background & 255 + ((background >> 8) & 255) + ((background >> 16) & 254)) < 3 * 128;
         primary = resolveColor(context, R.attr.colorPrimary);
         primaryMedium = interpolate(background, primary); // darkMode ? 0xff222222 : 0xffdde3e6;
+        primaryLight = interpolate(background, primaryMedium);
         accent = resolveColor(context, R.attr.colorAccent);
         accentMedium = darkMode ?  0xffac1900 :  0xffff6659;
         hsvHelper = new float[] {0, darkMode ? 0.8f : 0.25f, darkMode ? 0.8f : 1f};
