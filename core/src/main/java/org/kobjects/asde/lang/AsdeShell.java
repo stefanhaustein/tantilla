@@ -12,113 +12,13 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 
-public class AsdeShell {
-
-    /**
-     * Returns true if the line was "interactive" and a "ready" prompt should be displayed.
-     */
-    public static boolean processInputLine(ProgramControl control, String line) {
-        Program program = control.program;
-        ExpressionParser.Tokenizer tokenizer = program.parser.createTokenizer(line);
-
-        tokenizer.nextToken();
-        switch (tokenizer.currentType) {
-            case EOF:
-                return false;
-            case NUMBER:
-                int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
-                tokenizer.nextToken();
-                if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.EOF) {
-                    program.main.setLine(lineNumber, null);
-                } else {
-                    program.main.setLine(lineNumber, new CodeLine(program.parser.parseStatementList(tokenizer)));
-                }
-                return false;
-            default:
-                List<? extends Node> statements = program.parser.parseStatementList(tokenizer);
-                control.runStatementsAsync(statements, control);
-                return true;
-        }
-    }
+public class AsdeShell  {
 
   public static void main(String[] args) throws IOException {
     final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-    Program program = new Program(new Console() {
-        @Override
-        public void print(String s) {
-            System.out.print(s);
-        }
-
-        @Override
-        public String read() {
-            try {
-                return reader.readLine();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        @Override
-        public void clearOutput() {
-
-        }
-
-        @Override
-        public void clearCanvas() {
-
-        }
-
-
-        @Override
-        public void trace(CallableUnit function, int lineNumber) {
-            // TBD
-        }
-
-        @Override
-        public InputStream openInputStream(String url) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public OutputStream openOutputStream(String url) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void programReferenceChanged(ProgramReference fileReference) {
-            // TBD
-        }
-
-        @Override
-        public ProgramReference nameToReference(String name) {
-            return new ProgramReference(name, name, true);
-        }
-
-        @Override
-        public void startProgress(String title) {
-
-        }
-
-        @Override
-        public void updateProgress(String update) {
-
-        }
-
-        @Override
-        public void endProgress() {
-
-        }
-
-        @Override
-        public void delete(int line) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void edit(int i) {
-            throw new UnsupportedOperationException();
-        }
-    });
+    final StdioConsole console = new StdioConsole(reader);
+    final Program program = new Program(console);
+    final Shell shell = new Shell(program);
 
     System.out.println("  **** EXPRESSION PARSER BASIC DEMO V1 ****\n");
     System.out.println("  " + (Runtime.getRuntime().totalMemory() / 1024) + "K SYSTEM  "
@@ -126,7 +26,6 @@ public class AsdeShell {
 
     boolean prompt = true;
 
-    ProgramControl control = new ProgramControl(program);
     while (true) {
       if (prompt) {
         System.out.println("\nREADY.");
@@ -137,7 +36,7 @@ public class AsdeShell {
       }
       prompt = true;
       try {
-        prompt = processInputLine(control, line);
+          shell.enter(line);
       } catch (ExpressionParser.ParsingException e) {
         char[] fill = new char[e.start + 1];
         Arrays.fill(fill, ' ');
@@ -145,11 +44,100 @@ public class AsdeShell {
         System.out.println("?SYNTAX ERROR: " + e.getMessage());
         program.lastException = e;
       } catch (Exception e) {
-        System.out.println("\nERROR in " + control.rootInterprter.currentLine + ':'
-            + control.rootInterprter.currentIndex + ": " + e.getMessage());
+        System.out.println("\nERROR in " + shell.mainInterpreter.rootInterprter.currentLine + ':'
+            + shell.mainInterpreter.rootInterprter.currentIndex + ": " + e.getMessage());
         System.out.println("\nREADY.");
         program.lastException = e;
       }
     }
   }
+
+  static class StdioConsole implements Console {
+
+      private final BufferedReader reader;
+
+      StdioConsole(BufferedReader reader) {
+          this.reader = reader;
+      }
+
+      @Override
+      public void print(String s) {
+          System.out.print(s);
+      }
+
+      @Override
+      public String input() {
+          try {
+              return reader.readLine();
+          } catch (IOException e) {
+              throw new RuntimeException(e);
+          }
+      }
+
+      @Override
+      public void clearOutput() {
+
+      }
+
+      @Override
+      public void clearCanvas() {
+
+      }
+
+
+      @Override
+      public void trace(CallableUnit function, int lineNumber) {
+          // TBD
+      }
+
+      @Override
+      public InputStream openInputStream(String url) {
+          throw new UnsupportedOperationException();
+      }
+
+      @Override
+      public OutputStream openOutputStream(String url) {
+          throw new UnsupportedOperationException();
+      }
+
+      @Override
+      public void programReferenceChanged(ProgramReference fileReference) {
+          // TBD
+      }
+
+      @Override
+      public ProgramReference nameToReference(String name) {
+          return new ProgramReference(name, name, true);
+      }
+
+      @Override
+      public void startProgress(String title) {
+
+      }
+
+      @Override
+      public void updateProgress(String update) {
+
+      }
+
+      @Override
+      public void endProgress() {
+
+      }
+
+      @Override
+      public void delete(int line) {
+          throw new UnsupportedOperationException();
+      }
+
+      @Override
+      public void edit(int i) {
+          throw new UnsupportedOperationException();
+      }
+
+      @Override
+      public void sync(boolean incremental) {
+
+      }
+    }
 }

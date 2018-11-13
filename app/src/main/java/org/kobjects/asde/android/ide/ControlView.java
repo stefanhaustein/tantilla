@@ -67,7 +67,7 @@ public class ControlView extends LinearLayout  {
             @Override
             public void onClick(View v) {
                 hideControlButtons();
-                mainActivity.mainInterpreter.start();
+                mainActivity.shell.mainInterpreter.start();
             }
         });
         stopButton = new IconButton(mainActivity, R.drawable.baseline_stop_24);
@@ -76,7 +76,7 @@ public class ControlView extends LinearLayout  {
             public void onClick(View v) {
                 hideControlButtons();
                 clearScreenOnTermination = true;
-                mainActivity.mainInterpreter.terminate();
+                mainActivity.shell.mainInterpreter.terminate();
             }
         });
         pauseButton = new IconButton(mainActivity, R.drawable.baseline_pause_24);
@@ -84,7 +84,7 @@ public class ControlView extends LinearLayout  {
             @Override
             public void onClick(View v) {
                 hideControlButtons();
-                mainActivity.mainInterpreter.pause();
+                mainActivity.shell.mainInterpreter.pause();
             }
         });
         resumeButton = new IconButton(mainActivity, R.drawable.baseline_play_arrow_24);
@@ -92,7 +92,7 @@ public class ControlView extends LinearLayout  {
             @Override
             public void onClick(View v) {
                 hideControlButtons();
-                mainActivity.mainInterpreter.resume();
+                mainActivity.shell.mainInterpreter.resume();
             }
         });
 
@@ -100,7 +100,7 @@ public class ControlView extends LinearLayout  {
         stepButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                mainActivity.mainInterpreter.step();
+                mainActivity.shell.mainInterpreter.step();
             }
         });
         hideControlButtons();
@@ -176,7 +176,7 @@ public class ControlView extends LinearLayout  {
 
         // Right button bar
 
-        mainActivity.mainInterpreter.addStartStopListener(new StartStopListener() {
+        mainActivity.shell.mainInterpreter.addStartStopListener(new StartStopListener() {
             @Override
             public void programStarted() {
                 mainActivity.runOnUiThread(new Runnable() {

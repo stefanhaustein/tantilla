@@ -39,6 +39,7 @@ import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.ProgramReference;
+import org.kobjects.asde.lang.Shell;
 import org.kobjects.asde.lang.StartStopListener;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
@@ -72,13 +73,14 @@ public class MainActivity extends AppCompatActivity implements Console {
   LinearLayout outputView;
   public String readLine;
   ScreenAdapter screen;
-  public ProgramControl mainInterpreter = new ProgramControl(program);
-  ProgramControl shellInterpreter = new ProgramControl(program);
+//  public ProgramControl mainInterpreter = new ProgramControl(program);
+ // ProgramControl shellInterpreter = new ProgramControl(program);
   AsdePreferences preferences;
   boolean autoScroll = true;
   public boolean fullScreenMode;
   ProgramView programView;
   IconButton exitFullscreenButton;
+  Shell shell = new Shell(program);
 
   /** The view that displays the code in landscape mode */
   ExpandableList codeView;
@@ -167,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
 
 
-    shellInterpreter.addStartStopListener(new StartStopListener() {
+    shell.shellInterpreter.addStartStopListener(new StartStopListener() {
         @Override
         public void programStarted() {
             // screen.cls();
@@ -230,63 +232,16 @@ public class MainActivity extends AppCompatActivity implements Console {
 
 
   public void enter(String line) {
-    if (line.isEmpty()) {
-        print("\n");
-        return;
-    }
-
     if (line.equalsIgnoreCase("go 64") || line.equalsIgnoreCase("go 64!")) {
-        preferences.setTheme(Colors.Theme.C64);
-        restart();
+      preferences.setTheme(Colors.Theme.C64);
+      restart();
     }
-
-    ExpressionParser.Tokenizer tokenizer = program.parser.createTokenizer(line);
     try {
-      tokenizer.nextToken();
-      switch (tokenizer.currentType) {
-        case EOF:
-          break;
-        case NUMBER:
-          int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
-          tokenizer.nextToken();
-          if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER || "?".equals(tokenizer.currentValue)) {
-            programView.currentFunctionView.put(lineNumber, program.parser.parseStatementList(tokenizer));
-            sync(true);
-            if (program.reference.urlWritable) {
-                try {
-                    program.save(program.reference);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            break;
-          }
-          // Not
-          tokenizer = program.parser.createTokenizer(line);
-          tokenizer.nextToken();
-          // Fall-through intended
-        default:
-          List<? extends Node> statements = program.parser.parseStatementList(tokenizer);
-          program.processDeclarations(statements);
-          TextView inputView = new EmojiTextView(this);
-          inputView.setText(new CodeLine(statements).toString());
-          inputView.setTextColor(colors.accent);
-          inputView.setTypeface(Typeface.MONOSPACE);
-
-          if (lineFeedPending) {
-              print("");
-          }
-
-          outputView.addView(inputView);
-          postScrollIfAtEnd();
-
-          shellInterpreter.runStatementsAsync(statements, mainInterpreter);
-          break;
-      }
-        controlView.codeEditText.setText("");
-      } catch (Exception e) {
-        e.printStackTrace();
-        print(e.getMessage() + "\n");
+      shell.enter(line);
+      controlView.codeEditText.setText("");
+    } catch (Exception e) {
+       e.printStackTrace();
+       print(e.getMessage() + "\n");
     }
   }
 
@@ -350,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements Console {
      * any new function will be expanded automatically. Otherwise, the sync process includes
      * scrolling to the to and autorun support.
      */
-  void sync(boolean incremental) {
+  public void sync(boolean incremental) {
       runOnUiThread(() -> {
                   programView.sync(incremental);
                   if (!incremental) {
@@ -358,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements Console {
                       Map.Entry<Integer,CodeLine> line0 = program.main.ceilingEntry(0);
                       if (line0 != null) {
                           if (line0.getValue().toString().equalsIgnoreCase("REM autorun")) {
-                              mainInterpreter.start();
+                              shell.mainInterpreter.start();
                           }
 
                       }
@@ -549,7 +504,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     }
 
   @Override
-  public String read() {
+  public String input() {
     runOnUiThread(new Runnable() {
         @Override
         public void run() {
@@ -739,14 +694,14 @@ public class MainActivity extends AppCompatActivity implements Console {
 
 
     public void eraseProgram() {
-        mainInterpreter.terminate();
+        shell.mainInterpreter.terminate();
         program.clearAll();
         sync(false);
     }
 
     public void load(ProgramReference programReference, boolean showErrors) {
         new Thread(() -> {
-            mainInterpreter.terminate();
+            shell.mainInterpreter.terminate();
             try {
                 program.load(programReference);
             } catch (Exception e) {

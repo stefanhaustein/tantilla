@@ -6,7 +6,7 @@ import java.io.OutputStream;
 
 public interface Console {
     void print(String s);
-    String read();
+    String input();
 
     void clearOutput();
     void clearCanvas();
@@ -27,4 +27,7 @@ public interface Console {
 
     void delete(int line);
     void edit(int i);
+
+    // TODO: Replace with program change notification mechanism
+    void sync(boolean incremental);
 }

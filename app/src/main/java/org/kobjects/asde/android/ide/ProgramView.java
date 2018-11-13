@@ -138,6 +138,7 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
                     currentFunctionView.setExpanded(false, animated);
                 }
                 currentFunctionView = (FunctionView) functionView;
+                context.shell.setCurrentFunction(functionView.callableUnit);
             }
            }
 
