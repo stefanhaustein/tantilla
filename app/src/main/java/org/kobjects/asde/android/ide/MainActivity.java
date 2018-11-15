@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -15,6 +17,14 @@ import android.provider.OpenableColumns;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.SpannedString;
+import android.text.method.LinkMovementMethod;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -28,6 +38,9 @@ import com.vanniktech.emoji.EmojiManager;
 import com.vanniktech.emoji.EmojiTextView;
 import com.vanniktech.emoji.one.EmojiOneProvider;
 
+import org.kobjects.annotatedtext.AnnotatedString;
+import org.kobjects.annotatedtext.Annotations;
+import org.kobjects.annotatedtext.Span;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.widget.Dimensions;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
@@ -58,11 +71,12 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements Console {
-  static final int SAVE_EXTERNALLY_REQUEST_CODE = 420;
+    static final int SAVE_EXTERNALLY_REQUEST_CODE = 420;
   static final int LOAD_EXTERNALLY_REQUEST_CODE = 421;
   static final int OPEN_EXTERNALLY_REQUEST_CODE = 422;
+    static final int PICK_SHORTCUT_ICON_REQUEST_CODE = 423;
 
-  Colors colors;
+    Colors colors;
     LinearLayout scrollContentView;
   public View rootView;
   ScrollView scrollView;
@@ -89,6 +103,9 @@ public class MainActivity extends AppCompatActivity implements Console {
   private Viewport viewport;
   private boolean lineFeedPending;
   boolean windowMode;
+  boolean runningFromShortcut;
+
+  ShortcutHandler shortcutHandler;
 
     @Override
   public boolean dispatchKeyEvent(android.view.KeyEvent keyEvent) {
@@ -99,7 +116,29 @@ public class MainActivity extends AppCompatActivity implements Console {
   }
 
 
-  @Override
+  Spanned annotatedStringToSpanned(AnnotatedString annotated) {
+      SpannableString s = new SpannableString(annotated.toString());
+      for (final Span span : annotated.spans()) {
+          if (span.annotation == Annotations.ACCENT_COLOR) {
+              s.setSpan(new ForegroundColorSpan(colors.accent), span.start, span.end, 0);
+          } else if (span.annotation instanceof Exception) {
+              s.setSpan(new BackgroundColorSpan(colors.accentMedium), span.start, span.end, 0);
+              s.setSpan(new ClickableSpan() {
+              @Override
+              public void onClick(View widget) {
+                  android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
+                  builder.setTitle("Error");
+                  builder.setMessage(span.annotation.toString());
+                  builder.show();
+              }
+              }, span.start, span.end, 0);
+          }
+      }
+      return s;
+  }
+
+
+    @Override
   protected void onCreate(Bundle savedInstanceState) {
       preferences = new AsdePreferences(this);
    //   setTheme(preferences.getDarkMode() ? R.style.AppTheme_Dark : R.style.AppTheme_Light);
@@ -167,8 +206,6 @@ public class MainActivity extends AppCompatActivity implements Console {
         arrangeUi();
     });
 
-
-
     shell.shellInterpreter.addStartStopListener(new StartStopListener() {
         @Override
         public void programStarted() {
@@ -197,12 +234,6 @@ public class MainActivity extends AppCompatActivity implements Console {
     program.setValue(GlobalSymbol.Scope.BUILTIN, "dpad", new DpadAdapter(viewport.dpad));
 //    program.setValue(GlobalSymbol.Scope.BUILTIN,"pen", screen.penClassifier);
 
-    arrangeUi();
-
-
-    print("  " + (Runtime.getRuntime().totalMemory() / 1024) + "K SYSTEM  "
-               + Runtime.getRuntime().freeMemory() + " ASDE BYTES FREE\n\n");
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
@@ -215,10 +246,27 @@ public class MainActivity extends AppCompatActivity implements Console {
             });
         }
 
-      ProgramReference programReference = preferences.getProgramReference();
+    ProgramReference programReference;
+    String runIntent = getIntent().getStringExtra("run");
+    runningFromShortcut = runIntent != null && !runIntent.isEmpty();
+    if (runningFromShortcut) {
+        fullScreenMode = true;
+        programReference = ProgramReference.parse(runIntent);
+    } else {
+        print("  " + (Runtime.getRuntime().totalMemory() / 1024) + "K SYSTEM  "
+                + Runtime.getRuntime().freeMemory() + " ASDE BYTES FREE\n\n");
 
-        load(programReference, false);
+        programReference = preferences.getProgramReference();
+    }
+    arrangeUi();
+    load(programReference, false, runningFromShortcut);
+  }
 
+  public void addShortcut() {
+        if (shortcutHandler == null) {
+            shortcutHandler = new ShortcutHandler(this);
+        }
+        shortcutHandler.run();
   }
 
   public void restart() {
@@ -266,7 +314,8 @@ public class MainActivity extends AppCompatActivity implements Console {
   }
 
   @Override
-  public void print(final String s) {
+  public void print(final CharSequence chars) {
+    final AnnotatedString s = AnnotatedString.of(chars);
     runOnUiThread(new Runnable() {
       public void run() {
 
@@ -283,12 +332,12 @@ public class MainActivity extends AppCompatActivity implements Console {
 
         int cut = s.indexOf('\n');
         if (cut == -1) {
-          controlView.resultView.setText(controlView.resultView.getText() + s);
+          controlView.resultView.append(annotatedStringToSpanned(s));
         }  else {
-          controlView.resultView.setText(controlView.resultView.getText() + s.substring(0, cut));
+          controlView.resultView.append(annotatedStringToSpanned(s.subSequence(0, cut)));
           lineFeedPending = true;
           if (cut < s.length() - 1) {
-              print(s.substring(cut + 1));
+              print(s.subSequence(cut + 1, s.length()));
           }
         }
       }
@@ -310,13 +359,6 @@ public class MainActivity extends AppCompatActivity implements Console {
                   programView.sync(incremental);
                   if (!incremental) {
                       scrollView.scrollTo(0, 0);
-                      Map.Entry<Integer,CodeLine> line0 = program.main.ceilingEntry(0);
-                      if (line0 != null) {
-                          if (line0.getValue().toString().equalsIgnoreCase("REM autorun")) {
-                              shell.mainInterpreter.start();
-                          }
-
-                      }
 
                   }
               });
@@ -353,6 +395,21 @@ public class MainActivity extends AppCompatActivity implements Console {
                                Intent resultData) {
 
       if (resultCode == RESULT_OK && resultData != null) {
+          if (requestCode == PICK_SHORTCUT_ICON_REQUEST_CODE) {
+            try {
+                InputStream inputStream = getContentResolver().openInputStream(resultData.getData());
+                shortcutHandler.bitmap = BitmapFactory.decodeStream(inputStream);
+                inputStream.close();
+
+                addShortcut();
+
+                return;
+            } catch (Exception e) {
+                showError("Icon loading error", e);
+            }
+          }
+
+
           Uri uri = resultData.getData();
           String displayName = "Unnamed";
           Cursor cursor = getContentResolver().query(uri, null, null, null, null, null);
@@ -495,7 +552,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   }
 
     public void onBackPressed () {
-      if (fullScreenMode) {
+      if (fullScreenMode && !runningFromShortcut) {
           fullScreenMode = false;
           arrangeUi();
       } else {
@@ -699,11 +756,14 @@ public class MainActivity extends AppCompatActivity implements Console {
         sync(false);
     }
 
-    public void load(ProgramReference programReference, boolean showErrors) {
+    public void load(ProgramReference programReference, boolean showErrors, boolean run) {
         new Thread(() -> {
             shell.mainInterpreter.terminate();
             try {
                 program.load(programReference);
+                if (run) {
+                    shell.mainInterpreter.start();
+                }
             } catch (Exception e) {
                 if (showErrors) {
                     showError("Error loading " + programReference.url, e);

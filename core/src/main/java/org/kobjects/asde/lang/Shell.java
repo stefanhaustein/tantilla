@@ -1,5 +1,7 @@
 package org.kobjects.asde.lang;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.expressionparser.ExpressionParser;
 
@@ -72,7 +74,10 @@ public class Shell {
                     outputView.addView(inputView);
                     postScrollIfAtEnd();*/
 
-                program.console.print(new CodeLine(statements).toString() + "\n");
+                AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
+                asb.append(new CodeLine(statements).toString(), Annotations.ACCENT_COLOR);
+                asb.append("\n");
+                program.console.print(asb.build());
 
                 shellInterpreter.runStatementsAsync(statements, mainInterpreter);
                 break;

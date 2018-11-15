@@ -3,6 +3,8 @@ package org.kobjects.asde.android.ide;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.support.v4.content.pm.ShortcutInfoCompat;
+import android.support.v4.content.pm.ShortcutManagerCompat;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -227,7 +229,6 @@ public class ControlView extends LinearLayout  {
         arrangeButtons(false);
     }
 
-
     private void hideControlButtons() {
         pauseButton.setVisibility(GONE);
         resumeButton.setVisibility(GONE);
@@ -339,7 +340,7 @@ public class ControlView extends LinearLayout  {
             dialog.setTitle("Select Program File");
             dialog.show();
             dialog.setDialogSelectionListener(files -> {
-                mainActivity.load(mainActivity.nameToReference(files[0]), true);
+                mainActivity.load(mainActivity.nameToReference(files[0]), true, false);
             });
             return true;
         });
@@ -365,7 +366,7 @@ public class ControlView extends LinearLayout  {
         try {
             for (final String example : mainActivity.getAssets().list("examples")) {
                 examplesMenu.add(example).setOnMenuItemClickListener(item -> {
-                            mainActivity.load(new ProgramReference(example, "file:///android_asset/examples/" + example, false), true);
+                            mainActivity.load(new ProgramReference(example, "file:///android_asset/examples/" + example, false), true, false);
                             return true;
                         }
                 );
@@ -405,6 +406,10 @@ public class ControlView extends LinearLayout  {
             return true;
         });
 
+        saveMenu.add("Add shortcut").setOnMenuItemClickListener(item -> {
+            mainActivity.addShortcut();
+            return true;
+        });
 
 
         SubMenu displayMenu = mainMenu.addSubMenu("Display");

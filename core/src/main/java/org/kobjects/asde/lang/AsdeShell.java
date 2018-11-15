@@ -61,7 +61,7 @@ public class AsdeShell  {
       }
 
       @Override
-      public void print(String s) {
+      public void print(CharSequence s) {
           System.out.print(s);
       }
 

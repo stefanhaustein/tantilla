@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public interface Console {
-    void print(String s);
+    void print(CharSequence s);
     String input();
 
     void clearOutput();

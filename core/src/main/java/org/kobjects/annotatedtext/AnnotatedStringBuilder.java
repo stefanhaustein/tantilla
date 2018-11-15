@@ -1,10 +1,11 @@
 package org.kobjects.annotatedtext;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 public class AnnotatedStringBuilder implements Appendable {
     private final StringBuilder sb;
-    private final HashSet<Span> spans = new HashSet<>();
+    private final LinkedHashSet<Span> spans = new LinkedHashSet<>();
 
     public AnnotatedStringBuilder() {
         sb = new StringBuilder();
@@ -12,10 +13,17 @@ public class AnnotatedStringBuilder implements Appendable {
 
     @Override
     public AnnotatedStringBuilder append(CharSequence charSequence) {
+        int offset = sb.length();
         sb.append(charSequence);
+        if (charSequence instanceof AnnotatedString) {
+            for (Span span : ((AnnotatedString) charSequence).spans()) {
+                spans.add(new Span(span.start + offset, span.end + offset, span.annotation));
+            }
+        }
         return this;
     }
 
+    // This drops annotations "below". Should they be merged instead?
     public AnnotatedStringBuilder append(CharSequence charSequence, Object annotation) {
         if (annotation != null) {
             spans.add(new Span(sb.length(), sb.length() + charSequence.length(), annotation));
@@ -25,9 +33,14 @@ public class AnnotatedStringBuilder implements Appendable {
     }
 
 
+    // TODO: fix annotated string case
     @Override
-    public AnnotatedStringBuilder append(CharSequence charSequence, int i, int i1) {
-        sb.append(charSequence, i, i1);
+    public AnnotatedStringBuilder append(CharSequence charSequence, int start, int end) {
+        if (charSequence instanceof AnnotatedString) {
+            append(charSequence.subSequence(start, end));
+        } else {
+            sb.append(charSequence, start, end);
+        }
         return this;
     }
 
@@ -44,5 +57,9 @@ public class AnnotatedStringBuilder implements Appendable {
     @Override
     public String toString() {
         return sb.toString();
+    }
+
+    public AnnotatedString build() {
+        return new AnnotatedString(sb.toString(), spans);
     }
 }

@@ -9,7 +9,7 @@ import android.widget.LinearLayout;
 
 public class Dpad extends ViewHolder<LinearLayout> {
 
-    static final int BUTTON_SIZE = 20;
+    static final int BUTTON_SIZE = 30;
 
     static LinearLayout.LayoutParams createLayoutParams() {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -32,15 +32,21 @@ public class Dpad extends ViewHolder<LinearLayout> {
         Context context = viewport.getContext();
 
         left = new ImageView(context);
-        left.setImageDrawable(Emojis.getDrawable(context, "◀️"));
+        left.setImageResource(R.drawable.baseline_arrow_back_24);
+        //left.setImageDrawable(Emojis.getDrawable(context, "◀️"));
         up = new ImageView(context);
-        up.setImageDrawable(Emojis.getDrawable(context, "\uD83D\uDD3C️️️"));
+        up.setImageResource(R.drawable.baseline_arrow_upward_24);
+        // up.setImageDrawable(Emojis.getDrawable(context, "\uD83D\uDD3C️️️"));
         down = new ImageView(context);
-        down.setImageDrawable(Emojis.getDrawable(context, "\uD83D\uDD3D"));
+        down.setImageResource(R.drawable.baseline_arrow_downward_24);
+//        down.setImageDrawable(Emojis.getDrawable(context, "\uD83D\uDD3D"));
         right = new ImageView(context);
-        right.setImageDrawable(Emojis.getDrawable(context, "▶️"));
+        right.setImageResource(R.drawable.baseline_arrow_forward_24);
+
+  //      right.setImageDrawable(Emojis.getDrawable(context, "▶️"));
         fire = new ImageView(context);
-        fire.setImageDrawable(Emojis.getDrawable(context, "\u23FA️"));
+        fire.setImageResource(R.drawable.baseline_adjust_24);
+        // fire.setImageDrawable(Emojis.getDrawable(context, "\u23FA️"));
 
         LinearLayout updown = new LinearLayout(context);
         updown.setOrientation(LinearLayout.VERTICAL);
@@ -69,11 +75,14 @@ public class Dpad extends ViewHolder<LinearLayout> {
 
 
     void adjustSize(ImageView view) {
-        int imageSize = Math.round(viewport.scale * BUTTON_SIZE);
+        // TODO: Take distortion into account.
+        int imageSize = Math.round(Math.min(viewport.scale * BUTTON_SIZE, Dimensions.dpToPx(view.getContext(), 48)));
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+       // view.setBackgroundColor(0x88000000);
         if (layoutParams.width != imageSize || layoutParams.height != imageSize) {
             layoutParams.width = imageSize;
             layoutParams.height = imageSize;
+            view.setPadding(imageSize/4, imageSize/4, imageSize/4, imageSize/4);
             view.setLayoutParams(layoutParams);
             view.requestLayout();
         }

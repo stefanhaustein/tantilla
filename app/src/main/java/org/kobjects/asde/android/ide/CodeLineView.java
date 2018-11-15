@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.graphics.Typeface;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
@@ -56,23 +57,10 @@ public class CodeLineView extends LinearLayout {
     void setCodeLine(CodeLine codeLine, HashMap<Node, Exception> errors) {
         AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
         codeLine.toString(asb, errors);
-
-        SpannableString s = new SpannableString(asb.toString());
-        for (final Span span : asb.spans()) {
-            s.setSpan(new BackgroundColorSpan(context.colors.accentMedium), span.start, span.end, 0);
-            s.setSpan(new ClickableSpan() {
-                @Override
-                public void onClick(View widget) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setTitle("Error");
-                    builder.setMessage(span.annotation.toString());
-                    builder.show();
-                }
-            }, span.start, span.end, 0);
+        statementView.setText(context.annotatedStringToSpanned(asb.build()));
+        if (asb.spans().iterator().hasNext()) {
             statementView.setMovementMethod(LinkMovementMethod.getInstance());
         }
-
-        statementView.setText(s);
     }
 
     void setHighlighted(boolean highlighted) {
