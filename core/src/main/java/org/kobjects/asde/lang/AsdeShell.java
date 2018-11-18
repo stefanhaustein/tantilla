@@ -36,7 +36,9 @@ public class AsdeShell  {
       }
       prompt = true;
       try {
-          shell.enter(line);
+          shell.enter(line, result -> {
+              console.print(result == null ? "Ok" : String.valueOf(result));
+          });
       } catch (ExpressionParser.ParsingException e) {
         char[] fill = new char[e.start + 1];
         Arrays.fill(fill, ' ');

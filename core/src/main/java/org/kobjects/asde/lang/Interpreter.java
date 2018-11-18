@@ -35,7 +35,7 @@ public class Interpreter {
     Object runStatementsImpl(List<? extends Node> statements) {
         int line = currentLine;
         Object result = null;
-        while (currentIndex < statements.size() && control.state != ProgramControl.State.TERMINATING) {
+        while (currentIndex < statements.size() && control.state != ProgramControl.State.ABORTING) {
             int index = currentIndex;
             result = statements.get(index).eval(this);
             if (currentLine != line) {
@@ -72,7 +72,7 @@ public class Interpreter {
                         control.state = ProgramControl.State.PAUSED;
                     }
 
-                    if (control.state != ProgramControl.State.TERMINATING && control.state != ProgramControl.State.TERMINATED) {
+                    if (control.state != ProgramControl.State.ABORTING && control.state != ProgramControl.State.ENDED) {
                         runStatementsImpl(entry.getValue().statements);
                     }
                 }

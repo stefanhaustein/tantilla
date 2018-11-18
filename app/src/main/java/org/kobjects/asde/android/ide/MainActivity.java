@@ -6,11 +6,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.OpenableColumns;
@@ -18,10 +15,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.SpannedString;
-import android.text.method.LinkMovementMethod;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
@@ -29,6 +23,7 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -49,17 +44,13 @@ import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
-import org.kobjects.asde.lang.Function;
-import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.ProgramReference;
 import org.kobjects.asde.lang.Shell;
 import org.kobjects.asde.lang.StartStopListener;
-import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.asde.library.ui.DpadAdapter;
 import org.kobjects.asde.library.ui.ScreenAdapter;
 import org.kobjects.graphics.Viewport;
-import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Console;
 
@@ -67,25 +58,31 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.SynchronousQueue;
 
 public class MainActivity extends AppCompatActivity implements Console {
     static final int SAVE_EXTERNALLY_REQUEST_CODE = 420;
-  static final int LOAD_EXTERNALLY_REQUEST_CODE = 421;
-  static final int OPEN_EXTERNALLY_REQUEST_CODE = 422;
+    static final int LOAD_EXTERNALLY_REQUEST_CODE = 421;
+    static final int OPEN_EXTERNALLY_REQUEST_CODE = 422;
     static final int PICK_SHORTCUT_ICON_REQUEST_CODE = 423;
+
+    public static void removeFromParent(View view) {
+        if (view != null && view.getParent() instanceof ViewGroup) {
+            ((ViewGroup) view.getParent()).removeView(view);
+        }
+    }
 
     Colors colors;
     LinearLayout scrollContentView;
   public View rootView;
-  ScrollView scrollView;
+  ScrollView mainScrollView;
   ScrollView leftScrollView;
   ControlView controlView;
   Program program = new Program(this);
-  Drawable systemListDivider;
   LinearLayout outputView;
   public String readLine;
+  ResizableFrameLayout resizableFrameLayout;
   ScreenAdapter screen;
 //  public ProgramControl mainInterpreter = new ProgramControl(program);
  // ProgramControl shellInterpreter = new ProgramControl(program);
@@ -93,15 +90,16 @@ public class MainActivity extends AppCompatActivity implements Console {
   boolean autoScroll = true;
   public boolean fullScreenMode;
   ProgramView programView;
-  IconButton exitFullscreenButton;
-  Shell shell = new Shell(program);
+  public Shell shell = new Shell(program);
+
 
   /** The view that displays the code in landscape mode */
   ExpandableList codeView;
 
+  RunControlView runControlView;
   private TitleView outputTitleView;
   private Viewport viewport;
-  private boolean lineFeedPending;
+  private TextView pendingOutput;
   boolean windowMode;
   boolean runningFromShortcut;
 
@@ -158,23 +156,15 @@ public class MainActivity extends AppCompatActivity implements Console {
     colors = new Colors(this, preferences.getTheme());
     EmojiManager.install(new EmojiOneProvider());
 
-    IconButton clearButton = new IconButton(this, R.drawable.baseline_delete_24);
-    clearButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        clearOutput();
-      }
-    });
-
-
     programView = new ProgramView(this, program);
 
     outputTitleView = new TitleView(this, colors.primary);
     outputTitleView.setTitle("Output");
-    outputTitleView.addView(clearButton);
     outputView = new LinearLayout(this);
     outputView.setOrientation(LinearLayout.VERTICAL);
     outputView.addView(outputTitleView);
+
+    resizableFrameLayout = new ResizableFrameLayout(this);
 
     scrollContentView = new LinearLayout(this);
     scrollContentView.setOrientation(LinearLayout.VERTICAL);
@@ -194,39 +184,14 @@ public class MainActivity extends AppCompatActivity implements Console {
     scrollContentView.addView(programView);
     scrollContentView.addView(outputView);
 
-    scrollView = new ScrollView(this);
-    scrollView.addView(scrollContentView);
+    mainScrollView = new ScrollView(this);
+    mainScrollView.addView(scrollContentView);
 
     leftScrollView = new ScrollView(this);
+    runControlView = new RunControlView(this);
     controlView = new ControlView(this);
     viewport = new Viewport(this);
     screen = new ScreenAdapter(viewport);
-    exitFullscreenButton = new IconButton(this, R.drawable.baseline_fullscreen_exit_24, icon -> {
-        fullScreenMode = false;
-        arrangeUi();
-    });
-
-    shell.shellInterpreter.addStartStopListener(new StartStopListener() {
-        @Override
-        public void programStarted() {
-            // screen.cls();
-        }
-
-        @Override
-        public void programTerminated() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    sync(true);
-                }
-            });
-        }
-
-        @Override
-        public void programPaused() {
-            // TBD
-        }
-    });
 
     program.setValue(GlobalSymbol.Scope.BUILTIN,"screen", screen);
     program.setValue(GlobalSymbol.Scope.BUILTIN,"sprite", screen.spriteClassifier);
@@ -236,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            scrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            mainScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
                 @Override
                 public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
                     if (scrollY < oldScrollY) {
@@ -245,6 +210,8 @@ public class MainActivity extends AppCompatActivity implements Console {
                 }
             });
         }
+
+
 
     ProgramReference programReference;
     String runIntent = getIntent().getStringExtra("run");
@@ -279,34 +246,20 @@ public class MainActivity extends AppCompatActivity implements Console {
   }
 
 
-  public void enter(String line) {
-    if (line.equalsIgnoreCase("go 64") || line.equalsIgnoreCase("go 64!")) {
-      preferences.setTheme(Colors.Theme.C64);
-      restart();
-    }
-    try {
-      shell.enter(line);
-      controlView.codeEditText.setText("");
-    } catch (Exception e) {
-       e.printStackTrace();
-       print(e.getMessage() + "\n");
-    }
-  }
-
-  int lineCount;
+    int lineCount;
 
   void postScrollIfAtEnd() {
-      if (scrollContentView.getHeight() <= scrollView.getHeight() + scrollView.getScrollY()) {
+      if (scrollContentView.getHeight() <= mainScrollView.getHeight() + mainScrollView.getScrollY()) {
           autoScroll = true;
       }
       if (autoScroll) {
-          scrollView.post(new Runnable() {
+          mainScrollView.post(new Runnable() {
 
           @Override
               public void run() {
-                  if (scrollContentView.getHeight() != scrollView.getHeight() + scrollView.getScrollY()) {
-                      scrollView.scrollTo(0, Integer.MAX_VALUE / 2);
-                      scrollView.post(this);
+                  if (scrollContentView.getHeight() != mainScrollView.getHeight() + mainScrollView.getScrollY()) {
+                      mainScrollView.scrollTo(0, Integer.MAX_VALUE / 2);
+                      mainScrollView.post(this);
                   }
               }
           });
@@ -316,36 +269,30 @@ public class MainActivity extends AppCompatActivity implements Console {
   @Override
   public void print(final CharSequence chars) {
     final AnnotatedString s = AnnotatedString.of(chars);
-    runOnUiThread(new Runnable() {
-      public void run() {
-
-        if (lineFeedPending) {
-          TextView textView = new EmojiTextView(MainActivity.this);
-          textView.setText(controlView.resultView.getText());
-          textView.setTypeface(Typeface.MONOSPACE);
-          outputView.addView(textView);
+      int cut = s.indexOf('\n');
+    runOnUiThread(() -> {
+        if (pendingOutput == null) {
+            pendingOutput = new EmojiTextView(this);
+            outputView.addView(pendingOutput);
             postScrollIfAtEnd();
-          lineFeedPending = false;
-          lineCount++;
-          controlView.resultView.setText("");
         }
-
-        int cut = s.indexOf('\n');
         if (cut == -1) {
-          controlView.resultView.append(annotatedStringToSpanned(s));
+          pendingOutput.append(annotatedStringToSpanned(s));
         }  else {
-          controlView.resultView.append(annotatedStringToSpanned(s.subSequence(0, cut)));
-          lineFeedPending = true;
+          pendingOutput.append(annotatedStringToSpanned(s.subSequence(0, cut)));
+          pendingOutput = null;
           if (cut < s.length() - 1) {
               print(s.subSequence(cut + 1, s.length()));
           }
-        }
       }
     });
-    try {
-      Thread.sleep(Math.round(Math.log(lineCount + 1)));
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
+    if (cut != -1) {
+        lineCount++;
+        try {
+            Thread.sleep(Math.round(Math.log(lineCount + 1)));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
   }
 
@@ -358,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements Console {
       runOnUiThread(() -> {
                   programView.sync(incremental);
                   if (!incremental) {
-                      scrollView.scrollTo(0, 0);
+                      mainScrollView.scrollTo(0, 0);
 
                   }
               });
@@ -378,12 +325,6 @@ public class MainActivity extends AppCompatActivity implements Console {
       */
   }
 
-
-  public static void removeFromParent(View view) {
-      if (view != null && view.getParent() instanceof ViewGroup) {
-          ((ViewGroup) view.getParent()).removeView(view);
-      }
-  }
 
   public void onConfigurationChanged (Configuration newConfig) {
       super.onConfigurationChanged(newConfig);
@@ -455,16 +396,29 @@ public class MainActivity extends AppCompatActivity implements Console {
 
   }
 
-  public void arrangeUi() {
+  void setCanvasVisible(boolean visible) {
+      runOnUiThread(() -> {
+          resizableFrameLayout.setVisibility(visible ? View.VISIBLE : View.GONE);
+          viewport.setVisibility(visible ? View.VISIBLE : View.GONE);
+      });
+  }
+
+
+  void arrangeUi() {
+      runOnUiThread(() -> arrangeUiImpl());
+  }
+
+  private void arrangeUiImpl() {
       controlView.dismissEmojiPopup();
 
       removeFromParent(leftScrollView);
-      removeFromParent(scrollView);
+      removeFromParent(mainScrollView);
       removeFromParent(viewport);
       removeFromParent(controlView);
       removeFromParent(programView);
       removeFromParent(codeView);
-      removeFromParent(exitFullscreenButton);
+      removeFromParent(runControlView);
+      removeFromParent(resizableFrameLayout);
 
       Display display = getWindowManager().getDefaultDisplay();
       int displayWidth = display.getWidth();
@@ -475,13 +429,20 @@ public class MainActivity extends AppCompatActivity implements Console {
       }
 
       if (fullScreenMode) {
-         rootView = viewport;
+          FrameLayout mainView = new FrameLayout(this);
+          mainView.addView(mainScrollView);
+          mainView.addView(viewport);
+          outputTitleView.setVisibility(View.GONE);
+
 //         setContentView(viewport, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
   //       rootView = null;
           FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
           layoutParams.gravity = Gravity.TOP | Gravity.RIGHT;
-          viewport.addView(exitFullscreenButton, layoutParams);
+          mainView.addView(runControlView, layoutParams);
+          viewport.setBackgroundColor(0);
+          rootView = mainView;
       } else {
+          outputTitleView.setVisibility(View.VISIBLE);
         LinearLayout rootLayout = new LinearLayout(this);
        // rootLayout.setDividerDrawable(systemListDivider);
         rootLayout.setDividerDrawable(new ColorDrawable(colors.primary));
@@ -489,51 +450,48 @@ public class MainActivity extends AppCompatActivity implements Console {
         rootLayout.setOrientation(LinearLayout.VERTICAL);
 
         FrameLayout mainView = new FrameLayout(this);
-        mainView.addView(scrollView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        if (windowMode) {
-            ResizableFrameLayout resizableFrameLayout = new ResizableFrameLayout(this);
-            resizableFrameLayout.addView(viewport, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-            FrameLayout.LayoutParams resizableFrameLayoutParmas =
-                    new FrameLayout.LayoutParams(Dimensions.dpToPx(this, 120), Dimensions.dpToPx(this, 120));
-
-            resizableFrameLayoutParmas.rightMargin = Dimensions.dpToPx(this, 12);
-            resizableFrameLayoutParmas.topMargin = Dimensions.dpToPx(this, 36);
-
-            resizableFrameLayoutParmas.gravity = Gravity.TOP | Gravity.RIGHT;
-            viewport.setBackgroundColor(colors.background);
-
-            mainView.addView(resizableFrameLayout, resizableFrameLayoutParmas);
-        } else {
-            viewport.setBackgroundColor(0);
-            mainView.addView(viewport, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        }
+        rootLayout.addView(mainView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
+        rootLayout.addView(controlView,  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         if (displayHeight >= displayWidth) {
-            rootLayout.addView(mainView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
+            controlView.arrangeButtons(false);
+            mainView.addView(mainScrollView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             scrollContentView.addView(programView, 0);
             scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
-            rootLayout.addView(controlView,  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            controlView.arrangeButtons(false);
             codeView = null;
         } else {
+            controlView.arrangeButtons(true);
             leftScrollView.addView(programView);
 
             codeView = new ExpandableList(this);
             scrollContentView.addView(codeView, 0);
             scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
 
-            controlView.arrangeButtons(true);
-
             LinearLayout contentView = new LinearLayout(this);
             contentView.setDividerDrawable(new ColorDrawable(colors.primary));
             contentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
             contentView.addView(leftScrollView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
-            contentView.addView(mainView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 2));
-
-            rootLayout.addView(contentView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
-            rootLayout.addView(controlView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0));
+            contentView.addView(mainScrollView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 2));
+            mainView.addView(contentView);
         }
+
+          if (windowMode) {
+              resizableFrameLayout.addView(viewport, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+              FrameLayout.LayoutParams resizableFrameLayoutParmas =
+                      new FrameLayout.LayoutParams(Dimensions.dpToPx(this, 120), Dimensions.dpToPx(this, 120));
+
+              resizableFrameLayoutParmas.rightMargin = Dimensions.dpToPx(this, 12);
+              resizableFrameLayoutParmas.topMargin = Dimensions.dpToPx(this, 36);
+
+              resizableFrameLayoutParmas.gravity = Gravity.TOP | Gravity.RIGHT;
+              viewport.setBackgroundColor(colors.background);
+
+              mainView.addView(resizableFrameLayout, resizableFrameLayoutParmas);
+          } else {
+              viewport.setBackgroundColor(0);
+              mainView.addView(viewport, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+          }
 
         /*}  else {
             LinearLayout codingLayout = new LinearLayout(this);
@@ -553,8 +511,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
     public void onBackPressed () {
       if (fullScreenMode && !runningFromShortcut) {
-          fullScreenMode = false;
-          arrangeUi();
+          shell.mainInterpreter.abort();
       } else {
           super.onBackPressed();
       }
@@ -562,35 +519,29 @@ public class MainActivity extends AppCompatActivity implements Console {
 
   @Override
   public String input() {
-    runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-            controlView.codeEditText.setVisibility(View.GONE);
-            controlView.consoleEditText.setVisibility(View.VISIBLE);
-        }
+      SynchronousQueue<String> inputQueue = new SynchronousQueue<>();
+
+    runOnUiThread(() -> {
+        final LinearLayout inputView = new LinearLayout(this);
+        final EditText inputEditText = new EditText(this);
+        inputView.addView(inputEditText, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+        IconButton inputButton = new IconButton(this, R.drawable.baseline_keyboard_return_24);
+        inputView.addView(inputButton);
+        outputView.addView(inputView);
+        inputButton.setOnClickListener(item-> {
+            outputView.removeView(inputView);
+            inputQueue.add(inputEditText.getText().toString());
+        });
     });
 
-    // Should use wait/notify or similar instead of active wait...
-    while (readLine == null && !Thread.currentThread().isInterrupted()) {
-      try {
-        Thread.sleep(10);
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-      }
+    try {
+        String result = inputQueue.take();
+        print(result + "\n");
+        readLine = null;
+        return result;
+    } catch (InterruptedException e) {
+        throw new RuntimeException("interrupted");
     }
-    String result = "" + readLine;
-    print(result + "\n");
-    readLine = null;
-
-      runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-              controlView.codeEditText.setVisibility(View.VISIBLE);
-              controlView.consoleEditText.setVisibility(View.GONE);
-          }
-      });
-
-    return result;
   }
 
 
@@ -703,7 +654,7 @@ public class MainActivity extends AppCompatActivity implements Console {
                     outputView.removeViewAt(i);
                 }
                 controlView.resultView.setText("");
-                lineFeedPending = false;
+                pendingOutput = null;
             }
         });
     }
@@ -751,14 +702,14 @@ public class MainActivity extends AppCompatActivity implements Console {
 
 
     public void eraseProgram() {
-        shell.mainInterpreter.terminate();
+        shell.mainInterpreter.abort();
         program.clearAll();
         sync(false);
     }
 
     public void load(ProgramReference programReference, boolean showErrors, boolean run) {
         new Thread(() -> {
-            shell.mainInterpreter.terminate();
+            shell.mainInterpreter.abort();
             try {
                 program.load(programReference);
                 if (run) {

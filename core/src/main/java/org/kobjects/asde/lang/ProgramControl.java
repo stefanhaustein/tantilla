@@ -1,7 +1,6 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.statement.IoStatement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +12,10 @@ public class ProgramControl {
     Interpreter rootInterprter;
 
     public enum State {
-        PAUSED, TERMINATING, TERMINATED, RUNNING, STEP
+        PAUSED, ABORTING, ABORTED, ENDED, RUNNING, STEP
     }
 
-    State state = State.TERMINATED;
+    State state = State.ENDED;
     boolean trace;
 
     public ProgramControl(Program program) {
@@ -33,34 +32,36 @@ public class ProgramControl {
         return state;
     }
 
-    public synchronized void terminate() {
-        if (state == State.TERMINATED || state == State.TERMINATING) {
+    public synchronized void abort() {
+        if (state == State.ENDED || state == State.ABORTING || state == State.ABORTED) {
            return;
         }
-        state = State.TERMINATING;
+        state = State.ABORTING;
         if (interpreterThread != null) {
           interpreterThread.interrupt();
         }
     }
 
     private void runAsync(final Runnable runnable) {
-        if (state != State.TERMINATED) {
+        if (state != State.ENDED && state != State.ABORTED) {
             throw new IllegalStateException("Can't start in state " + state);
         }
-        interpreterThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
+        interpreterThread = new Thread(() -> {
                 try {
                     runnable.run();
                 } catch (Exception e) {
                     e.printStackTrace();
                     program.console.print(e.toString());
                 }
-                state = State.TERMINATED;
+                boolean aborted = state == State.ABORTING;
+                state = aborted ? State.ABORTED : State.ENDED;
                 for (StartStopListener startStopListener : startStopListeners) {
-                   startStopListener.programTerminated();
+                   if (aborted) {
+                       startStopListener.programAborted();
+                   } else {
+                       startStopListener.programEnded();
+                   }
                 }
-            }
         });
         state = State.RUNNING;
         for (StartStopListener startStopListener : startStopListeners) {
@@ -77,20 +78,15 @@ public class ProgramControl {
 
 
     // Called from the shell
-    public void runStatementsAsync(final List<? extends Node> statements, final ProgramControl programInterpreterControl) {
-        runAsync(new Runnable() {
-            @Override
-            public void run() {
+    public void runStatementsAsync(final List<? extends Node> statements, final ProgramControl programInterpreterControl, Consumer resultConsumer) {
+        runAsync(() -> {
                 rootInterprter.currentLine = -2;
                 Object result = rootInterprter.runStatementsImpl(statements);
                 if (rootInterprter.currentLine >= 0) {
                     programInterpreterControl.runAsync(rootInterprter.currentLine);
-                } else if (statements.size() == 0 || (!(statements.get(statements.size() - 1) instanceof IoStatement)
-                        || ((IoStatement) statements.get(statements.size() - 1)).kind != IoStatement.Kind.PRINT)) {
-                    program.console.print(result == null ? "OK\n" : (String.valueOf(result) + "\n"));
+                } else {
+                    resultConsumer.accept(result);
                 }
-
-            }
         });
     }
 

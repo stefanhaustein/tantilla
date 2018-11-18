@@ -28,9 +28,9 @@ public class Shell {
     }
 
 
-    public void enter(String line) {
+    public void enter(String line, Consumer<Object> resultConsumer) {
         if (line.isEmpty()) {
-            program.console.print("\n");
+            resultConsumer.accept("");
             return;
         }
 
@@ -79,7 +79,7 @@ public class Shell {
                 asb.append("\n");
                 program.console.print(asb.build());
 
-                shellInterpreter.runStatementsAsync(statements, mainInterpreter);
+                shellInterpreter.runStatementsAsync(statements, mainInterpreter, resultConsumer);
                 break;
         }
     }

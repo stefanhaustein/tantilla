@@ -3,8 +3,6 @@ package org.kobjects.asde.android.ide;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.support.v4.content.pm.ShortcutInfoCompat;
-import android.support.v4.content.pm.ShortcutManagerCompat;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -27,35 +25,23 @@ import com.vanniktech.emoji.EmojiTextView;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.lang.ProgramReference;
-import org.kobjects.asde.lang.StartStopListener;
 
 import java.io.IOException;
 
 public class ControlView extends LinearLayout  {
-
+    private final MainActivity mainActivity;
     public EmojiEditText codeEditText;
     public EmojiTextView resultView;
     IconButton enterButton;
     public IconButton menuButton;
-    public EmojiEditText consoleEditText;
     private EmojiPopup emojiPopup;
-    private IconButton startButton;
-    private IconButton pauseButton;
-    private IconButton resumeButton;
     private IconButton emojiButton;
-    private IconButton stopButton;
-    private IconButton stepButton;
     private LinearLayout inputLayout;
-
-    MainActivity mainActivity;
-    boolean clearScreenOnTermination;
-
 
     public ControlView(MainActivity mainActivity) {
         super(mainActivity);
         setOrientation(VERTICAL);
         this.mainActivity = mainActivity;
-
         menuButton = new IconButton(mainActivity, R.drawable.baseline_menu_24);
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,49 +50,6 @@ public class ControlView extends LinearLayout  {
             }
         });
 
-        startButton = new IconButton(mainActivity, R.drawable.baseline_play_arrow_24);
-        startButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hideControlButtons();
-                mainActivity.shell.mainInterpreter.start();
-            }
-        });
-        stopButton = new IconButton(mainActivity, R.drawable.baseline_stop_24);
-        stopButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hideControlButtons();
-                clearScreenOnTermination = true;
-                mainActivity.shell.mainInterpreter.terminate();
-            }
-        });
-        pauseButton = new IconButton(mainActivity, R.drawable.baseline_pause_24);
-        pauseButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hideControlButtons();
-                mainActivity.shell.mainInterpreter.pause();
-            }
-        });
-        resumeButton = new IconButton(mainActivity, R.drawable.baseline_play_arrow_24);
-        resumeButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hideControlButtons();
-                mainActivity.shell.mainInterpreter.resume();
-            }
-        });
-
-        stepButton = new IconButton(mainActivity, R.drawable.baseline_skip_next_24);
-        stepButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mainActivity.shell.mainInterpreter.step();
-            }
-        });
-        hideControlButtons();
-        startButton.setVisibility(VISIBLE);
 
         emojiButton = new IconButton(mainActivity, R.drawable.baseline_tag_faces_24);
         emojiButton.setOnClickListener(new OnClickListener() {
@@ -138,12 +81,7 @@ public class ControlView extends LinearLayout  {
         enterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (codeEditText.getVisibility() == View.VISIBLE) {
-                    mainActivity.enter(codeEditText.getText().toString());
-                } else {
-                    mainActivity.readLine = consoleEditText.getText().toString();
-                    consoleEditText.setText("");
-                }
+                enter();
             }
         });
 
@@ -160,99 +98,28 @@ public class ControlView extends LinearLayout  {
         codeEditText.setOnEditorActionListener((view, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED
                     && event.getAction() == KeyEvent.ACTION_DOWN) {
-                mainActivity.enter(codeEditText.getText().toString());
+                mainActivity.controlView.enter();
                 return true;
             }
             return false;
         });
 
 
-        consoleEditText = new EmojiEditText(mainActivity);
-        consoleEditText.setVisibility(View.GONE);
-
         inputLayout = new LinearLayout(mainActivity);
         inputLayout.setOrientation(LinearLayout.VERTICAL);
 
-        inputLayout.addView(consoleEditText);
         inputLayout.addView(codeEditText);
-
-        // Right button bar
-
-        mainActivity.shell.mainInterpreter.addStartStopListener(new StartStopListener() {
-            @Override
-            public void programStarted() {
-                mainActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        hideControlButtons();
-                        clearScreenOnTermination = false;
-                        pauseButton.setVisibility(VISIBLE);
-                    }
-                });
-            }
-
-            @Override
-            public void programTerminated() {
-                mainActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        consoleEditText.setVisibility(GONE);
-                        codeEditText.setVisibility(VISIBLE);
-
-                        hideControlButtons();
-                        startButton.setVisibility(VISIBLE);
-
-                        if (clearScreenOnTermination) {
-                            mainActivity.clearCanvas();
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void programPaused() {
-                mainActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        consoleEditText.setVisibility(GONE);
-                        codeEditText.setVisibility(VISIBLE);
-
-                        hideControlButtons();
-                        resumeButton.setVisibility(VISIBLE);
-                        stopButton.setVisibility(VISIBLE);
-                        stepButton.setVisibility(VISIBLE);
-                    }
-                });
-            }
-        });
-
-        arrangeButtons(false);
     }
 
-    private void hideControlButtons() {
-        pauseButton.setVisibility(GONE);
-        resumeButton.setVisibility(GONE);
-        startButton.setVisibility(GONE);
-        stepButton.setVisibility(GONE);
-        stopButton.setVisibility(GONE);
-        mainActivity.programView.unHighlight();
-    }
 
     public void arrangeButtons(boolean landscape) {
         MainActivity.removeFromParent(resultView);
         MainActivity.removeFromParent(inputLayout);
-
-        MainActivity.removeFromParent(startButton);
         MainActivity.removeFromParent(emojiButton);
         MainActivity.removeFromParent(menuButton);
         MainActivity.removeFromParent(enterButton);
-        MainActivity.removeFromParent(stopButton);
-        MainActivity.removeFromParent(stepButton);
-        MainActivity.removeFromParent(pauseButton);
-        MainActivity.removeFromParent(resumeButton);
 
         removeAllViews();
-
 
         if (landscape) {
             setOrientation(HORIZONTAL);
@@ -269,11 +136,8 @@ public class ControlView extends LinearLayout  {
 
             buttonParams.gravity = Gravity.CENTER_VERTICAL;
             addView(enterButton, buttonParams);
-            addView(stepButton, buttonParams);
-            addView(resumeButton, buttonParams);
-            addView(stopButton, buttonParams);
-            addView(pauseButton, buttonParams);
-            addView(startButton, buttonParams);
+
+            addView(mainActivity.runControlView, buttonParams);
 
         } else {
             setOrientation(VERTICAL);
@@ -283,11 +147,7 @@ public class ControlView extends LinearLayout  {
             LinearLayout.LayoutParams resultLayoutParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
             resultLayoutParams.gravity = Gravity.BOTTOM;
             topBar.addView(resultView, resultLayoutParams);
-            topBar.addView(stepButton);
-            topBar.addView(resumeButton);
-            topBar.addView(stopButton);
-            topBar.addView(pauseButton);
-            topBar.addView(startButton);
+            topBar.addView(mainActivity.runControlView);
             LinearLayout.LayoutParams topLayoutParams = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             topLayoutParams.gravity = Gravity.BOTTOM;
@@ -423,11 +283,6 @@ public class ControlView extends LinearLayout  {
             mainActivity.arrangeUi();
             return true;
         });
-        displayMenu.add(1, 0, 0, "Fullscreen mode").setOnMenuItemClickListener(item -> {
-                mainActivity.fullScreenMode = true;
-                mainActivity.arrangeUi();
-                return true;
-        });
         displayMenu.add(1, 0, 0, "Window mode").setChecked(mainActivity.windowMode).setOnMenuItemClickListener(item -> {
             mainActivity.windowMode = true;
             mainActivity.arrangeUi();
@@ -450,5 +305,32 @@ public class ControlView extends LinearLayout  {
             emojiPopup = null;
         }
         emojiButton.setImageResource(R.drawable.baseline_tag_faces_24);
+    }
+
+    public void enter() {
+        mainActivity.print(resultView.getText() + "\n");
+        resultView.setText("");
+
+        String line = codeEditText.getText().toString();
+
+      if (line.equalsIgnoreCase("go 64") || line.equalsIgnoreCase("go 64!")) {
+        mainActivity.preferences.setTheme(Colors.Theme.C64);
+        mainActivity.restart();
+      }
+      try {
+        mainActivity.shell.enter(line, result -> {
+            mainActivity.runOnUiThread(() -> {
+                if (result == null) {
+                    resultView.setText("Ok");
+                } else {
+                    resultView.setText("" + result);
+                }
+            });
+        });
+        codeEditText.setText("");
+      } catch (Exception e) {
+         e.printStackTrace();
+         resultView.setText("Error: " + e.getMessage());
+      }
     }
 }
