@@ -34,13 +34,13 @@ public class RunControlView extends LinearLayout {
            hideControlButtons();
            mainActivity.shell.mainInterpreter.resume();
         });
-        stepButton = new IconButton(mainActivity, R.drawable.baseline_skip_next_24, item ->  {
+        stepButton = new IconButton(mainActivity, R.drawable.baseline_skip_next_24, item -> {
             mainActivity.shell.mainInterpreter.step();
         });
         closeButton = new IconButton(mainActivity, R.drawable.baseline_clear_24, item -> {
             hideControlButtons();
             startButton.setVisibility(VISIBLE);
-            mainActivity.setCanvasVisible(false);
+            mainActivity.clearCanvas();
             mainActivity.fullScreenMode = false;
             mainActivity.arrangeUi();
         });
@@ -60,9 +60,10 @@ public class RunControlView extends LinearLayout {
             public void programStarted() {
                 mainActivity.runOnUiThread(() -> {
                     hideControlButtons();
-                    mainActivity.setCanvasVisible(true);
-                    pauseButton.setVisibility(VISIBLE);
-                    stopButton.setVisibility(VISIBLE);
+                    if (!mainActivity.runningFromShortcut) {
+                        pauseButton.setVisibility(VISIBLE);
+                        stopButton.setVisibility(VISIBLE);
+                    }
                     mainActivity.fullScreenMode = true;
                     mainActivity.arrangeUi();
                 });
@@ -71,7 +72,7 @@ public class RunControlView extends LinearLayout {
             public void programAborted() {
                 mainActivity.runOnUiThread(() -> {
                     hideControlButtons();
-                    mainActivity.setCanvasVisible(false);
+                    mainActivity.clearCanvas();
                     startButton.setVisibility(VISIBLE);
                     mainActivity.fullScreenMode = false;
                     mainActivity.arrangeUi();

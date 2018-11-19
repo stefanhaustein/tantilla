@@ -217,15 +217,14 @@ public class MainActivity extends AppCompatActivity implements Console {
     String runIntent = getIntent().getStringExtra("run");
     runningFromShortcut = runIntent != null && !runIntent.isEmpty();
     if (runningFromShortcut) {
-        fullScreenMode = true;
         programReference = ProgramReference.parse(runIntent);
     } else {
+        arrangeUi();
         print("  " + (Runtime.getRuntime().totalMemory() / 1024) + "K SYSTEM  "
                 + Runtime.getRuntime().freeMemory() + " ASDE BYTES FREE\n\n");
 
         programReference = preferences.getProgramReference();
     }
-    arrangeUi();
     load(programReference, false, runningFromShortcut);
   }
 
@@ -249,7 +248,8 @@ public class MainActivity extends AppCompatActivity implements Console {
     int lineCount;
 
   void postScrollIfAtEnd() {
-      if (scrollContentView.getHeight() <= mainScrollView.getHeight() + mainScrollView.getScrollY()) {
+      if (scrollContentView.getHeight() <= mainScrollView.getHeight() + mainScrollView.getScrollY()
+              || mainScrollView.getScrollY() == 0) {
           autoScroll = true;
       }
       if (autoScroll) {
@@ -393,14 +393,6 @@ public class MainActivity extends AppCompatActivity implements Console {
                   break;
           }
       }
-
-  }
-
-  void setCanvasVisible(boolean visible) {
-      runOnUiThread(() -> {
-          resizableFrameLayout.setVisibility(visible ? View.VISIBLE : View.GONE);
-          viewport.setVisibility(visible ? View.VISIBLE : View.GONE);
-      });
   }
 
 
