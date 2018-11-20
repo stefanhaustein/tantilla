@@ -31,53 +31,52 @@ import java.util.TreeMap;
  * Example for mixing the expresion parser with "outer" parsing.
  */
 public class Program {
-  public ProgramReference reference;
+    public ProgramReference reference;
 
-  public static final String INVISIBLE_STRING = new String();
+    public static final String INVISIBLE_STRING = new String();
 
-  public static String toString(double d) {
-    if (d == (int) d) {
-      return String.valueOf((int) d);
+    public static String toString(double d) {
+        if (d == (int) d) {
+            return String.valueOf((int) d);
+        }
+        return String.valueOf(d);
     }
-    return String.valueOf(d);
-  }
 
-  public static String toString(Object o) {
-    return o instanceof Number ? toString(((Number) o).doubleValue()) : String.valueOf(o);
-  }
-
-  public final Parser parser = new Parser(this);
-  public final CallableUnit main = new CallableUnit(this, new FunctionType(Types.VOID));
-
- // Program state
-
-  private TreeMap<String, GlobalSymbol> symbolMap = new TreeMap<>();
-  public Exception lastException;
-  public int tabPos;
-  public final Console console;
-
-
-  public Program(Console console) {
-    this.console = console;
-    // clear();
-    this.reference = new ProgramReference("Scratch", null, false);
-
-    for (Builtin builtin : Builtin.values()) {
-        setValue(GlobalSymbol.Scope.BUILTIN, builtin.name().toLowerCase(), builtin);
+    public static String toString(Object o) {
+        return o instanceof Number ? toString(((Number) o).doubleValue()) : String.valueOf(o);
     }
-  }
 
-  public void runInitializers(Interpreter interpreter) {
+    public final Parser parser = new Parser(this);
+    public final CallableUnit main = new CallableUnit(this, new FunctionType(Types.VOID));
 
-      synchronized (symbolMap) {
-          for (GlobalSymbol symbol : symbolMap.values()) {
-              if (symbol.initializer != null) {
-                  symbol.initializer.eval(interpreter);
-              }
-          }
-      }
+    // Program state
 
-  }
+    private TreeMap<String, GlobalSymbol> symbolMap = new TreeMap<>();
+    public Exception lastException;
+    public int tabPos;
+    public final Console console;
+
+
+    public Program(Console console) {
+      this.console = console;
+      // clear();
+      this.reference = new ProgramReference("Scratch", null, false);
+
+      for (Builtin builtin : Builtin.values()) {
+          setValue(GlobalSymbol.Scope.BUILTIN, builtin.name().toLowerCase(), builtin);
+        }
+    }
+
+    public void runInitializers(Interpreter interpreter) {
+
+        synchronized (symbolMap) {
+            for (GlobalSymbol symbol : symbolMap.values()) {
+                if (symbol.initializer != null) {
+                    symbol.initializer.eval(interpreter);
+                }
+            }
+        }
+    }
 
   public void clearAll() {
       main.clear();

@@ -26,6 +26,7 @@ import org.kobjects.expressionparser.ExpressionParser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class Parser {
   final ExpressionParser<Node> expressionParser;
@@ -51,7 +52,11 @@ public class Parser {
 
 
   public ExpressionParser.Tokenizer createTokenizer(String line) {
-    return new ExpressionParser.Tokenizer(new Scanner(line), expressionParser.getSymbols(), "->");
+    ExpressionParser.Tokenizer tokenizer = new ExpressionParser.Tokenizer(new Scanner(line), expressionParser.getSymbols(), "->");
+    tokenizer.numberPattern = Pattern.compile(
+            "\\G\\s*((#[0-9a-fA-f]+)|(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?)");
+    tokenizer.lineCommentPattern = Pattern.compile("\\G\\h*'.*(\\v|\\Z)");
+    return tokenizer;
   }
 
 

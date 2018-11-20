@@ -9,11 +9,22 @@ import org.kobjects.typesystem.Type;
 import java.util.Map;
 
 public class Literal extends Node {
-  Object value;
+  private final Object value;
+  private final Format format;
 
-  public Literal(Object value) {
+  public enum Format {
+    DEFAULT,
+    HEX
+  }
+
+  public Literal(Object value, Format format) {
     super((Node[]) null);
     this.value = value;
+    this.format = format;
+  }
+
+  public Literal(Object value) {
+    this(value, Format.DEFAULT);
   }
 
   @Override
@@ -30,6 +41,8 @@ public class Literal extends Node {
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
     if (value != Program.INVISIBLE_STRING && value instanceof String) {
       appendLinked(asb, "\"" + ((String) value).replace("\"", "\"\"") + '"', errors);
+    } else if (format == Format.HEX && returnType() == Types.NUMBER && ((Number) value).longValue() == ((Number) value).doubleValue()) {
+      appendLinked(asb, "#" + Long.toHexString(((Number) value).longValue()), errors);
     } else {
       appendLinked(asb, Program.toString(value), errors);
     }

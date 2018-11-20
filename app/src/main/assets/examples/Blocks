@@ -21,7 +21,7 @@ FUNCTION checkposition(Number x, Number y) -> Number
 END FUNCTION
 
 SUB drawscore()
-100 pen.fillcolor = 255*256*65536 + 127 * 65536 + 127 * 256 + 127
+100 pen.fillcolor = #ff888888
 110 pen.clear 40, -10, 60, 60
 120 pen.write 40, 40, "Rows:"
 130 pen.write 40, 30, "" + rows + "  "
@@ -32,14 +32,14 @@ END SUB
 
 SUB setcolor(Number c)
 5 REM Store in array?
-10 if c = 1 then pen.fillcolor = 255*256*65536 + 255 : REM blue J
-20 if c = 2 then pen.fillcolor = 255*256*65536 + 255 * 256 : REM green S
-30 if c = 3 then pen.fillcolor = 255*256*65536 + 255 * 65536 + 128 * 256 : REM orange L
-40 if c = 4 then pen.fillcolor = 255*256*65536 + 255 * 65536 : REM red Z
-50 if c = 5 then pen.fillcolor = 255*256*65536 + 255 + 255 * 65536 : REM violet T
-60 if c = 6 then pen.fillcolor = 255*256*65536 + 255 * 65536  + 255 * 256 : REM yellow O
-70 if c = 7 then pen.fillcolor = 255*256*65536 + 255 * 256 + 255  : REM cyan I
-80 if c = 8 then pen.fillcolor = 255*256*65536 + 127 * 65536 + 127 * 256 + 127 : REM border
+10 if c = 1 then pen.fillcolor = #ff0000ff : REM blue J
+20 if c = 2 then pen.fillcolor = #ff00ff00 : REM green S
+30 if c = 3 then pen.fillcolor = #ffff8800 : REM orange L
+40 if c = 4 then pen.fillcolor = #ffff0000 : REM red Z
+50 if c = 5 then pen.fillcolor = #ffff00ff : REM violet T
+60 if c = 6 then pen.fillcolor = #ffeeee00 : REM yellow O
+70 if c = 7 then pen.fillcolor = #ff00ffff : REM cyan I
+80 if c = 8 then pen.fillcolor = #ff888888 : REM border
 END SUB
 
 SUB drawpiece()
@@ -118,7 +118,7 @@ SUB newpiece()
 250 definepiece
 260 px0 = 5
 270 py0 = 0
-280 if checkposition(px0, py0) = 0 then gameover = 1 : pen.fillcolor = 255 * 256 * 65536 + 127 * 65536 + 127 * 256 + 127: pen.write -40, 40, "GAME OVER"
+280 if checkposition(px0, py0) = 0 then gameover = 1 : pen.fillcolor = #ff888888 : pen.write -40, 40, "GAME OVER"
 END SUB
 
 SUB moveright()

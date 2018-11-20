@@ -60,8 +60,8 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
     return new Group(args.get(0));
   }
 
-  @Override public Node identifier(ExpressionParser.Tokenizer tokenizer, String name) {
-
+  @Override
+  public Node identifier(ExpressionParser.Tokenizer tokenizer, String name) {
     name = name.toLowerCase();
 
     if (name.equals("new")) {
@@ -72,7 +72,11 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
     return new Identifier(program, name);
   }
 
-  @Override public Node numberLiteral(ExpressionParser.Tokenizer tokenizer, String value) {
+  @Override
+  public Node numberLiteral(ExpressionParser.Tokenizer tokenizer, String value) {
+    if (value.startsWith("#")) {
+      return new Literal((double) Long.parseLong(value.substring(1), 16), Literal.Format.HEX);
+    }
     return new Literal(Double.parseDouble(value));
   }
 

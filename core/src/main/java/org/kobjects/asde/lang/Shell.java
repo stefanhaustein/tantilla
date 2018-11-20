@@ -40,23 +40,26 @@ public class Shell {
             case EOF:
                 break;
             case NUMBER:
-                int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
-                tokenizer.nextToken();
-                if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER || "?".equals(tokenizer.currentValue)) {
-                    currentFunction.setLine(lineNumber, new CodeLine(program.parser.parseStatementList(tokenizer)));
-                    program.console.sync(true);
-                    if (program.reference.urlWritable) {
-                        try {
-                            program.save(program.reference);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                if (!tokenizer.currentValue.startsWith("#")) {
+                    int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
+                    tokenizer.nextToken();
+                    if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER || "?".equals(tokenizer.currentValue)) {
+                        currentFunction.setLine(lineNumber, new CodeLine(program.parser.parseStatementList(tokenizer)));
+                        program.console.sync(true);
+                        if (program.reference.urlWritable) {
+                            try {
+                                program.save(program.reference);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
+                        // Line added, done here.
+                        break;
                     }
-                    break;
+                    // Not
+                    tokenizer = program.parser.createTokenizer(line);
+                    tokenizer.nextToken();
                 }
-                // Not
-                tokenizer = program.parser.createTokenizer(line);
-                tokenizer.nextToken();
                 // Fall-through intended
             default:
                 List<? extends Node> statements = program.parser.parseStatementList(tokenizer);
