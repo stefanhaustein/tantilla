@@ -33,7 +33,7 @@ public class Viewport extends FrameLayout {
 
         dpad = new Dpad(this);
 
-        cls();
+        clsImpl();
 
         addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -59,14 +59,21 @@ public class Viewport extends FrameLayout {
         return false;
     }
 
-    public void cls() {
+    private void clsImpl() {
         removeAllViews();
-        bitmap.eraseColor(0);
+
         addView(imageView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         FrameLayout.LayoutParams dpadLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dpadLayoutParams.gravity = Gravity.BOTTOM;
         addView(dpad.getView(), dpadLayoutParams);
+
+
+    }
+
+    public void cls() {
+        bitmap.eraseColor(0);
         dpad.setVisible(false);
+        activity.runOnUiThread(() -> clsImpl());
     }
 }

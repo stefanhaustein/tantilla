@@ -67,13 +67,8 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
         viewport.addOnLayoutChangeListener(this);
     }
 
-    public void clear() {
-        viewport.activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                viewport.cls();
-            }
-        });
+    public void cls() {
+        viewport.cls();
     }
 
     @Override

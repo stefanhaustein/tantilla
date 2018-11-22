@@ -46,7 +46,6 @@ import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.ProgramReference;
 import org.kobjects.asde.lang.Shell;
-import org.kobjects.asde.lang.StartStopListener;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.asde.library.ui.DpadAdapter;
 import org.kobjects.asde.library.ui.ScreenAdapter;
@@ -653,12 +652,8 @@ public class MainActivity extends AppCompatActivity implements Console {
 
     @Override
     public void clearCanvas() {
-        runOnUiThread(new Runnable() {
-            public void run() {
-                screen.clear();
-
-            };
-        });
+        //
+        screen.cls();
     }
 
 
