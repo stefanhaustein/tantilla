@@ -27,7 +27,7 @@ public class Apply extends AssignableNode {
     Array array = (Array) base;
     int[] indices = new int[array.getType().dimensionality];
     for (int i = 1; i < children.length; i++) {
-      indices[i - 1] = evalInt(interpreter, i);
+      indices[i - 1] = evalChildToInt(interpreter, i);
     }
     array.setValueAt(value, indices);
   }

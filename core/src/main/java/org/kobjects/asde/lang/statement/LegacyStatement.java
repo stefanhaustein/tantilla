@@ -96,20 +96,20 @@ public class LegacyStatement extends Node {
         interpreter.stack.add(entry);
       }  // Fallthrough intended
       case GOTO:
-        interpreter.currentLine = (int) evalDouble(interpreter,0);
+        interpreter.currentLine = (int) evalChildToDouble(interpreter,0);
         interpreter.currentIndex = 0;
         break;
 
       case PAUSE:
         try {
-          Thread.sleep(evalInt(interpreter, 0));
+          Thread.sleep(evalChildToInt(interpreter, 0));
         } catch (InterruptedException e) {
           Thread.currentThread().interrupt();
         }
         break;
 
       case ON: {
-        int index = (int) Math.round(evalDouble(interpreter,0));
+        int index = (int) Math.round(evalChildToDouble(interpreter,0));
         if (index < children.length && index > 0) {
           if (delimiter[0].equals(" GOSUB ")) {
             StackEntry entry = new StackEntry();
@@ -117,7 +117,7 @@ public class LegacyStatement extends Node {
             entry.statementIndex = interpreter.currentIndex;
             interpreter.stack.add(entry);
           }
-          interpreter.currentLine = (int) evalDouble(interpreter, index);
+          interpreter.currentLine = (int) evalChildToDouble(interpreter, index);
           interpreter.currentIndex = 0;
         }
         break;
@@ -143,7 +143,7 @@ public class LegacyStatement extends Node {
         interpreter.dataStatement = null;
         Arrays.fill(interpreter.dataPosition, 0);
         if (children.length > 0) {
-          interpreter.dataPosition[0] = (int) evalDouble(interpreter, 0);
+          interpreter.dataPosition[0] = (int) evalChildToDouble(interpreter, 0);
         }
         break;
 

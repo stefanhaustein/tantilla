@@ -36,7 +36,19 @@ public abstract class Node {
     return eval(interpreter);
   }
 
-  public double evalDouble(Interpreter interpreter, int i) {
+  public boolean evalChildToBoolean(Interpreter interpreter, int i) {
+    Object o = children[i].eval(interpreter);
+    if (o instanceof Boolean) {
+      return (Boolean) o;
+    }
+    if (o instanceof Number) {
+      return ((Number) o).doubleValue() != 0;
+    }
+    throw new RuntimeException("Boolean or Number expected.");
+  }
+
+
+  public double evalChildToDouble(Interpreter interpreter, int i) {
     Object o = children[i].eval(interpreter);
     if (!(o instanceof Number)) {
       throw new RuntimeException("Number expected in " + this.toString());
@@ -44,11 +56,11 @@ public abstract class Node {
     return ((Number) o).doubleValue();
   }
 
-  public int evalInt(Interpreter interpreter, int i) {
-    return (int) evalDouble(interpreter, i);
+  public int evalChildToInt(Interpreter interpreter, int i) {
+    return (int) evalChildToDouble(interpreter, i);
   }
 
-  public String evalString(Interpreter interpreter, int i) {
+  public String evalChildToString(Interpreter interpreter, int i) {
     return Program.toString(children[i].eval(interpreter));
   }
 

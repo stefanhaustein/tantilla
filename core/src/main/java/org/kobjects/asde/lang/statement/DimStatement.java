@@ -21,8 +21,8 @@ public class DimStatement extends Node {
     public Object eval(Interpreter interpreter) {
         int[] dims = new int[children.length];
         for (int i = 0; i < children.length; i++) {
-             // TODO: evalInt
-             dims[i] = evalInt(interpreter, i);
+             // TODO: evalChildToInt
+             dims[i] = evalChildToInt(interpreter, i);
         }
         interpreter.control.program.setValue(interpreter.getSymbolScope(), varName, new Array(varName.endsWith("$") ? Types.STRING : Types.NUMBER, dims));
         return null;

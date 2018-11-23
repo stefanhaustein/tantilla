@@ -16,7 +16,7 @@ public class IfStatement extends Node {
 
     @Override
     public Object eval(Interpreter interpreter) {
-        if (evalDouble(interpreter, 0) == 0.0) {
+        if (!evalChildToBoolean(interpreter, 0)) {
             interpreter.currentLine++;
             interpreter.currentIndex = 0;
         }

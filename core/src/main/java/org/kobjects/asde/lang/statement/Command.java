@@ -1,19 +1,13 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.AsdeShell;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.typesystem.Type;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Map;
 
 public class Command extends Node {
@@ -46,7 +40,7 @@ public class Command extends Node {
                 break;
 
             case DELETE:
-                program.console.delete(evalInt(interpreter, 0));
+                program.console.delete(evalChildToInt(interpreter, 0));
                 break;
 
             case DUMP:
@@ -65,7 +59,7 @@ public class Command extends Node {
                 break;
 
             case EDIT:
-                program.console.edit(evalInt(interpreter, 0));
+                program.console.edit(evalChildToInt(interpreter, 0));
                 break;
 
             case LIST: {
@@ -75,7 +69,7 @@ public class Command extends Node {
 
             case LOAD:
                 try {
-                    program.load(program.console.nameToReference(evalString(interpreter, 0)));
+                    program.load(program.console.nameToReference(evalChildToString(interpreter, 0)));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -85,13 +79,13 @@ public class Command extends Node {
             case RUN:
                 program.clear(interpreter);
 
-                interpreter.currentLine = children.length == 0 ? 0 : (int) evalDouble(interpreter,0);
+                interpreter.currentLine = children.length == 0 ? 0 : (int) evalChildToDouble(interpreter,0);
                 interpreter.currentIndex = 0;
                 break;
 
             case SAVE:
                 try {
-                    program.save(children.length == 0 ? program.reference : program.console.nameToReference(evalString(interpreter, 0)));
+                    program.save(children.length == 0 ? program.reference : program.console.nameToReference(evalChildToString(interpreter, 0)));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

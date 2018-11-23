@@ -64,11 +64,15 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
   public Node identifier(ExpressionParser.Tokenizer tokenizer, String name) {
     name = name.toLowerCase();
 
-    if (name.equals("new")) {
-      String className = tokenizer.consumeIdentifier();
-      return new New(program, className);
+    switch(name) {
+      case "new":
+        String className = tokenizer.consumeIdentifier();
+        return new New(program, className);
+      case "true":
+        return new Literal(Boolean.TRUE);
+      case "false":
+        return new Literal(Boolean.FALSE);
     }
-
     return new Identifier(program, name);
   }
 

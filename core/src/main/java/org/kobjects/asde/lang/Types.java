@@ -3,6 +3,12 @@ package org.kobjects.asde.lang;
 import org.kobjects.typesystem.Type;
 
 public class Types {
+    public static final Type BOOLEAN = new Type() {
+        @Override
+        public String toString() {
+            return "Boolean";
+        }
+    };
     public static final Type NUMBER = new Type() {
         @Override
         public String toString() {

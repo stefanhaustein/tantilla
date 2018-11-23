@@ -12,6 +12,7 @@ public class Literal extends Node {
   private final Object value;
   private final Format format;
 
+
   public enum Format {
     DEFAULT,
     HEX
@@ -34,7 +35,7 @@ public class Literal extends Node {
 
   @Override
   public Type returnType() {
-    return value instanceof String ? Types.STRING : Types.NUMBER;
+    return value instanceof String ? Types.STRING : value instanceof Boolean ? Types.BOOLEAN : Types.NUMBER;
   }
 
   @Override

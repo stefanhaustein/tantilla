@@ -1,5 +1,7 @@
 package org.kobjects.asde.lang.node;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Builtin;
 import org.kobjects.asde.lang.Interpreter;
@@ -19,31 +21,70 @@ public class Operator extends Node {
   public Object eval(Interpreter interpreter) {
     Object lVal = children[0].eval(interpreter);
 
+    if (lVal instanceof Boolean) {
+      boolean l = (Boolean) lVal;
+      switch (name.charAt(0)) {
+        case 'n':
+        case 'N':
+          return  !l;
+        case 'a':
+        case 'A':
+          if (!l) {
+            return false;
+          }
+          return children[1].eval(interpreter);
+        case 'o':
+        case 'O':
+          if (l) {
+            return true;
+          }
+          return children[1].eval(interpreter);
+      }
+    }
+
     if (children.length == 1) {
       switch (name.charAt(0)) {
         case '-': return -(Double) lVal;
         case 'N':
-        case 'n': return Double.valueOf(~(Builtin.asInt(lVal)));
+        case 'n': return lVal instanceof Boolean ? !((Boolean) lVal) : Double.valueOf(~(Builtin.asInt(lVal)));
         default:
           throw new RuntimeException("Unsupported unary operator: " + name);
       }
     }
 
     Object rVal = children[1].eval(interpreter);
-    boolean numbers = (lVal instanceof Double) && (rVal instanceof Double);
-    if (!numbers) {
-      lVal = String.valueOf(lVal);
-      rVal = String.valueOf(rVal);
-    }
     if ("<=>".indexOf(name.charAt(0)) != -1) {
+      if (lVal.getClass() != rVal.getClass()) {
+        throw new RuntimeException("Types don't match for operator '"+ name + "'");
+      }
       int cmp = (((Comparable) lVal).compareTo(rVal));
       return (cmp == 0 ? name.contains("=") : cmp < 0 ? name.contains("<") : name.contains(">"))
-          ? -1.0 : 0.0;
+              ? Boolean.TRUE : Boolean.FALSE;
     }
+
+    boolean numbers;
+    if (lVal instanceof Double) {
+      if (rVal instanceof Double) {
+        numbers = true;
+      } else if (rVal instanceof Boolean) {
+        numbers = true;
+        rVal = ((Boolean) rVal) ? 1.0 : 0.0;
+      } else {
+        numbers = false;
+      }
+    } else {
+      numbers = false;
+    }
+
     if (!numbers) {
       if (!name.equals("+")) {
         throw new IllegalArgumentException("Numbers arguments expected for operator " + name);
       }
+      if (!(lVal instanceof String)) {
+        throw new IllegalArgumentException("Number or string arguments expected for operator '+'");
+      }
+      lVal = String.valueOf(lVal);
+      rVal = String.valueOf(rVal);
       return "" + lVal + rVal;
     }
     double l = (Double) lVal;

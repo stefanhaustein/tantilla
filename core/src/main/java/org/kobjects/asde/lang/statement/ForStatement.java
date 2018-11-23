@@ -28,10 +28,10 @@ public class ForStatement extends Node {
 
     @Override
     public Object eval(Interpreter interpreter) {
-            double current = evalDouble(interpreter,0);
+            double current = evalChildToDouble(interpreter,0);
             resolved.set(interpreter, current);
-            double end = evalDouble(interpreter, 1);
-            double step = children.length > 2 ? evalDouble(interpreter, 2) : 1.0;
+            double end = evalChildToDouble(interpreter, 1);
+            double step = children.length > 2 ? evalChildToDouble(interpreter, 2) : 1.0;
             if (Math.signum(step) == Math.signum(Double.compare(current, end))) {
                 int nextPosition[] = new int[3];
                 if (interpreter.callableUnit.find((Node statement) -> (statement instanceof NextStatement
