@@ -69,13 +69,18 @@ public class RunControlView extends LinearLayout {
                 });
             }
             @Override
-            public void programAborted() {
+            public void programAborted(Exception cause) {
                 mainActivity.runOnUiThread(() -> {
                     hideControlButtons();
                     mainActivity.clearCanvas();
                     startButton.setVisibility(VISIBLE);
                     mainActivity.fullScreenMode = false;
                     mainActivity.arrangeUi();
+
+                    if (cause != null) {
+                        mainActivity.showError(null, cause);
+                    }
+
                 });
             }
             @Override

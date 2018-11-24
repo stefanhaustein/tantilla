@@ -12,7 +12,6 @@ public class Literal extends Node {
   private final Object value;
   private final Format format;
 
-
   public enum Format {
     DEFAULT,
     HEX

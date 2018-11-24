@@ -12,16 +12,15 @@ public class New extends Node {
     final String name;
     Classifier classifier;
 
-    public New(Program program, String name) {
-        super();
+    public New(Program program, String name) throws Exception {
         this.name = name;
         GlobalSymbol symbol = program.getSymbol(name);
         if (symbol == null) {
-            throw new RuntimeException("'" + name + "' is not defined");
+            throw new Exception("'" + name + "' is not defined");
         }
         Object value = symbol.value;
         if (!(value instanceof Classifier)) {
-            throw new RuntimeException("'" + name + "' is not a classifier");
+            throw new Exception("'" + name + "' is not a classifier");
         }
         classifier = (Classifier) value;
     }

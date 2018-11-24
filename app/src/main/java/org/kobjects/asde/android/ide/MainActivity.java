@@ -46,6 +46,7 @@ import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.ProgramReference;
 import org.kobjects.asde.lang.Shell;
+import org.kobjects.asde.lang.WrappedExecutionException;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.asde.library.ui.DpadAdapter;
 import org.kobjects.asde.library.ui.ScreenAdapter;
@@ -58,6 +59,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.SynchronousQueue;
 
 public class MainActivity extends AppCompatActivity implements Console {
@@ -113,22 +115,24 @@ public class MainActivity extends AppCompatActivity implements Console {
   }
 
 
-  Spanned annotatedStringToSpanned(AnnotatedString annotated) {
+  Spanned annotatedStringToSpanned(AnnotatedString annotated, boolean linked) {
       SpannableString s = new SpannableString(annotated.toString());
       for (final Span span : annotated.spans()) {
           if (span.annotation == Annotations.ACCENT_COLOR) {
               s.setSpan(new ForegroundColorSpan(colors.accent), span.start, span.end, 0);
           } else if (span.annotation instanceof Exception) {
               s.setSpan(new BackgroundColorSpan(colors.accentMedium), span.start, span.end, 0);
-              s.setSpan(new ClickableSpan() {
-              @Override
-              public void onClick(View widget) {
-                  android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
-                  builder.setTitle("Error");
-                  builder.setMessage(span.annotation.toString());
-                  builder.show();
+              if (linked) {
+                  s.setSpan(new ClickableSpan() {
+                      @Override
+                      public void onClick(View widget) {
+                          android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
+                          builder.setTitle("Error");
+                          builder.setMessage(span.annotation.toString());
+                          builder.show();
+                      }
+                  }, span.start, span.end, 0);
               }
-              }, span.start, span.end, 0);
           }
       }
       return s;
@@ -276,9 +280,9 @@ public class MainActivity extends AppCompatActivity implements Console {
             postScrollIfAtEnd();
         }
         if (cut == -1) {
-          pendingOutput.append(annotatedStringToSpanned(s));
+          pendingOutput.append(annotatedStringToSpanned(s, true));
         }  else {
-          pendingOutput.append(annotatedStringToSpanned(s.subSequence(0, cut)));
+          pendingOutput.append(annotatedStringToSpanned(s.subSequence(0, cut), true));
           pendingOutput = null;
           if (cut < s.length() - 1) {
               print(s.subSequence(cut + 1, s.length()));
@@ -658,8 +662,8 @@ public class MainActivity extends AppCompatActivity implements Console {
 
 
     @Override
-    public void trace(CallableUnit function, int lineNumber) {
-      runOnUiThread(() -> programView.trace(function, lineNumber));
+    public void highlight(CallableUnit function, int lineNumber) {
+      runOnUiThread(() -> programView.highlight(function, lineNumber));
     }
 
     @Override
@@ -684,9 +688,6 @@ public class MainActivity extends AppCompatActivity implements Console {
             throw new RuntimeException("Can't write to URL " + url, e);
         }
     }
-
-
-
 
     public void eraseProgram() {
         shell.mainInterpreter.abort();
@@ -714,10 +715,21 @@ public class MainActivity extends AppCompatActivity implements Console {
     }
 
     public void showError(String s, Exception e) {
+        e.printStackTrace();
         runOnUiThread(() -> {
+            if (e instanceof WrappedExecutionException) {
+                WrappedExecutionException wrappedExecutionException = (WrappedExecutionException) e;
+
+                while (wrappedExecutionException.getCause() instanceof WrappedExecutionException) {
+                    wrappedExecutionException = (WrappedExecutionException) wrappedExecutionException.getCause();
+                }
+
+                highlight(wrappedExecutionException.callableUnit, wrappedExecutionException.lineNumber);
+            }
+
             AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-            alertBuilder.setTitle(s);
-            alertBuilder.setMessage("" + e);
+            alertBuilder.setTitle(s == null ? "Error" : s);
+            alertBuilder.setMessage("" + e.getMessage());
             alertBuilder.show();
         });
     }

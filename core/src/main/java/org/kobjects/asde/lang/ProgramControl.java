@@ -47,17 +47,18 @@ public class ProgramControl {
             throw new IllegalStateException("Can't start in state " + state);
         }
         interpreterThread = new Thread(() -> {
+            Exception exception = null;
                 try {
                     runnable.run();
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    program.console.print(e.toString());
+                    exception = new WrappedExecutionException(program.main, rootInterprter.currentLine, e);
+                    state = state.ABORTING;
                 }
                 boolean aborted = state == State.ABORTING;
                 state = aborted ? State.ABORTED : State.ENDED;
                 for (StartStopListener startStopListener : startStopListeners) {
                    if (aborted) {
-                       startStopListener.programAborted();
+                       startStopListener.programAborted(exception);
                    } else {
                        startStopListener.programEnded();
                    }

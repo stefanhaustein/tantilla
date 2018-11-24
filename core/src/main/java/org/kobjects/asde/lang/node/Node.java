@@ -3,6 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.Type;
 
@@ -41,19 +42,22 @@ public abstract class Node {
     if (o instanceof Boolean) {
       return (Boolean) o;
     }
-    if (o instanceof Number) {
-      return ((Number) o).doubleValue() != 0;
+    if (o instanceof Double) {
+      return ((Double) o).doubleValue() != 0;
     }
-    throw new RuntimeException("Boolean or Number expected.");
+    throw new EvaluationException(children[i], "Boolean or Number expected; got " + Types.of(o));
   }
 
 
   public double evalChildToDouble(Interpreter interpreter, int i) {
     Object o = children[i].eval(interpreter);
-    if (!(o instanceof Number)) {
-      throw new RuntimeException("Number expected in " + this.toString());
+    if (o instanceof Double) {
+      return (Double) o;
     }
-    return ((Number) o).doubleValue();
+    if (o instanceof Boolean) {
+      return ((Boolean) o) ? 1.0 : 0.0;
+    }
+    throw new EvaluationException(children[i], "Number expected.");
   }
 
   public int evalChildToInt(Interpreter interpreter, int i) {

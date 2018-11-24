@@ -11,7 +11,7 @@ public interface Console {
     void clearOutput();
     void clearCanvas();
 
-    void trace(CallableUnit function, int lineNumber);
+    void highlight(CallableUnit function, int lineNumber);
 
     InputStream openInputStream(String url);
 
@@ -27,6 +27,8 @@ public interface Console {
 
     void delete(int line);
     void edit(int i);
+
+    void showError(String message, Exception e);
 
     // TODO: Replace with program change notification mechanism
     void sync(boolean incremental);

@@ -57,7 +57,7 @@ public class CodeLineView extends LinearLayout {
     void setCodeLine(CodeLine codeLine, HashMap<Node, Exception> errors) {
         AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
         codeLine.toString(asb, errors);
-        statementView.setText(context.annotatedStringToSpanned(asb.build()));
+        statementView.setText(context.annotatedStringToSpanned(asb.build(), true));
         if (asb.spans().iterator().hasNext()) {
             statementView.setMovementMethod(LinkMovementMethod.getInstance());
         }

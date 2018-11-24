@@ -142,7 +142,7 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
             }
            }
 
-    public void trace(CallableUnit function, int lineNumber) {
+    public void highlight(CallableUnit function, int lineNumber) {
         unHighlight();
         FunctionView targetView = null;
         if (currentFunctionView != null && currentFunctionView.callableUnit == function) {

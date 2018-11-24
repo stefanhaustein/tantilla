@@ -22,7 +22,7 @@ public class Apply extends AssignableNode {
   public void set(Interpreter interpreter, Object value) {
     Object base = children[0].evalRaw(interpreter);
     if (!(base instanceof Array)) {
-      throw new RuntimeException("Can't set indexed value to non-array: " + value);
+      throw new EvaluationException(this, "Can't set indexed value to non-array: " + value);
     }
     Array array = (Array) base;
     int[] indices = new int[array.getType().dimensionality];
@@ -35,7 +35,7 @@ public class Apply extends AssignableNode {
   public Object eval(Interpreter interpreter) {
     Object base = children[0].evalRaw(interpreter);
     if (!(base instanceof Function)) {
-      throw new RuntimeException("Can't apply parameters to " + base);
+      throw new EvaluationException(this, "Can't apply parameters to " + base);
     }
     Function function = (Function) base;
     for (int i = 1; i < children.length; i++) {

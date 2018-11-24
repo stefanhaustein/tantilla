@@ -4,9 +4,9 @@ public interface StartStopListener {
     void programStarted();
 
     /**
-     * Program was forced to stop.
+     * Program was forced to stop. The cause is null if stopped by the user.
      */
-    void programAborted();
+    void programAborted(Exception cause);
     void programPaused();
 
     /**

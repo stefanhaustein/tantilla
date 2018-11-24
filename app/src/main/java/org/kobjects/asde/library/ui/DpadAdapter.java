@@ -85,10 +85,10 @@ public class DpadAdapter extends Instance {
     }
 
 
-    static class TouchProperty extends PhysicalProperty<Double> implements View.OnTouchListener {
+    static class TouchProperty extends PhysicalProperty<Boolean> implements View.OnTouchListener {
 
         public TouchProperty(View view) {
-            super(0.0);
+            super(false);
             view.setOnTouchListener(this);
 
         }
@@ -96,11 +96,11 @@ public class DpadAdapter extends Instance {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                set(1.0);
+                set(true);
                 return true;
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                set(0.0);
+                set(false);
                 return true;
             }
             return false;

@@ -11,7 +11,8 @@ import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.node.Operator;
+import org.kobjects.asde.lang.node.MathOperator;
+import org.kobjects.asde.lang.node.RelationalOperator;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
 
@@ -56,8 +57,8 @@ public class LegacyStatement extends Node {
     switch (kind) {
       case DEF: {
         Node assignment = children[0];
-        if (!(assignment instanceof Operator)
-                || !((Operator) assignment).name.equals("=")
+        if (!(assignment instanceof RelationalOperator)
+                || !((RelationalOperator) assignment).getName().equals("=")
                 || !(assignment.children[0] instanceof Apply)
                 || !(((Apply) assignment.children[0]).children[0] instanceof Identifier)) {
           throw new RuntimeException("Assignment to function declaration expected.");

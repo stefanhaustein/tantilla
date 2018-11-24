@@ -1,15 +1,19 @@
 package org.kobjects.asde.lang.parser;
 
+import org.kobjects.asde.lang.node.AndOperator;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Group;
+import org.kobjects.asde.lang.node.NegOperator;
 import org.kobjects.asde.lang.node.New;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.node.Operator;
+import org.kobjects.asde.lang.node.MathOperator;
+import org.kobjects.asde.lang.node.NotOperator;
+import org.kobjects.asde.lang.node.OrOperator;
 import org.kobjects.asde.lang.node.Path;
 import org.kobjects.asde.lang.node.Identifier;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.node.RelationalOperator;
 import org.kobjects.expressionparser.ExpressionParser;
 
 import java.util.List;
@@ -38,21 +42,59 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
 
   @Override
   public Node prefixOperator(ExpressionParser.Tokenizer tokenizer, String name, Node param) {
-    if (name.equalsIgnoreCase("not") || name.equals("-")) {
-      return new Operator(name, param);
+    switch (name.toLowerCase()) {
+      case "not":
+        return new NotOperator(param);
+      case "-":
+        return new NegOperator(param);
+      case "+":
+        return param;
+      default:
+        return super.prefixOperator(tokenizer, name, param);
     }
-    if (name.equals("+")) {
-      return param;
-    }
-    return super.prefixOperator(tokenizer, name, param);
   }
 
   @Override
   public Node infixOperator(ExpressionParser.Tokenizer tokenizer, String name, Node left, Node right) {
-    if (name.equals(".")) {
-      return new Path(left, right);
+    switch (name.toLowerCase()) {
+      case ".":
+        return new Path(left, right);
+      case "<":
+        return new RelationalOperator(-1, -1, left, right);
+      case "<=":
+      case "≤":
+        return new RelationalOperator(-1, 0, left, right);
+      case "=":
+        return new RelationalOperator(0, 0, left, right);
+      case "<>":
+      case "≠":
+        return new RelationalOperator(-1, 1, left, right);
+      case ">":
+        return new RelationalOperator(1, 1, left, right);
+      case ">=":
+      case "≥":
+        return new RelationalOperator(1, 0, left, right);
+      case "+":
+        return new MathOperator(MathOperator.Kind.ADD, left, right);
+      case "-":
+      case "−":
+        return new MathOperator(MathOperator.Kind.SUB, left, right);
+      case "⋅":
+      case "×":
+      case "*":
+        return new MathOperator(MathOperator.Kind.MUL, left, right);
+      case "÷":
+      case "/":
+        return new MathOperator(MathOperator.Kind.DIV, left, right);
+      case "^":
+        return new MathOperator(MathOperator.Kind.POW, left, right);
+      case "and":
+        return new AndOperator(left, right);
+      case "or":
+        return new OrOperator(left, right);
+      default:
+        return super.infixOperator(tokenizer, name, left, right);
     }
-    return new Operator(name.toLowerCase(), left, right);
   }
 
   @Override
@@ -66,8 +108,14 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
 
     switch(name) {
       case "new":
-        String className = tokenizer.consumeIdentifier();
-        return new New(program, className);
+        String className = tokenizer.currentValue;
+        try {
+          Node result = new New(program, className);
+          tokenizer.consumeIdentifier();
+          return result;
+        } catch (Exception e) {
+          throw tokenizer.exception(e.getMessage(), e);
+        }
       case "true":
         return new Literal(Boolean.TRUE);
       case "false":

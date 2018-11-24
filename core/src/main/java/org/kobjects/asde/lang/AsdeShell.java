@@ -88,7 +88,7 @@ public class AsdeShell  {
 
 
       @Override
-      public void trace(CallableUnit function, int lineNumber) {
+      public void highlight(CallableUnit function, int lineNumber) {
           // TBD
       }
 
@@ -135,6 +135,11 @@ public class AsdeShell  {
       @Override
       public void edit(int i) {
           throw new UnsupportedOperationException();
+      }
+
+      @Override
+      public void showError(String message, Exception e) {
+          print(message + e);
       }
 
       @Override

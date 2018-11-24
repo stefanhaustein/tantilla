@@ -58,7 +58,7 @@ public class Interpreter {
                 if (control.state != ProgramControl.State.PAUSED) {
                     runStatementsImpl(entry.getValue().statements);
                 } else {
-                    control.program.console.trace(callableUnit, currentLine);
+                    control.program.console.highlight(callableUnit, currentLine);
 
                     while (control.state == ProgramControl.State.PAUSED) {
                         try {

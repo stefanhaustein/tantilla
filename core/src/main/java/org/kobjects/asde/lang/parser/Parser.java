@@ -3,7 +3,9 @@ package org.kobjects.asde.lang.parser;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Group;
+import org.kobjects.asde.lang.node.NegOperator;
 import org.kobjects.asde.lang.node.Path;
+import org.kobjects.asde.lang.node.RelationalOperator;
 import org.kobjects.asde.lang.statement.AssignStatement;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.statement.Command;
@@ -15,7 +17,7 @@ import org.kobjects.asde.lang.statement.LetStatement;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.statement.NextStatement;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.node.Operator;
+import org.kobjects.asde.lang.node.MathOperator;
 import org.kobjects.asde.lang.statement.RemStatement;
 import org.kobjects.asde.lang.statement.ReturnStatement;
 import org.kobjects.asde.lang.statement.LegacyStatement;
@@ -113,20 +115,20 @@ public class Parser {
     }
 
     Node expression = expressionParser.parse(tokenizer);
-    if ((expression instanceof Operator) && (expression.children[0] instanceof AssignableNode)
-             && ((Operator) expression).name.equals("=")) {
+    if ((expression instanceof RelationalOperator) && (expression.children[0] instanceof AssignableNode)
+             && ((RelationalOperator) expression).getName().equals("=")) {
       result.add(new AssignStatement(expression.children[0], expression.children[1]));
     } else if (!tokenizer.currentValue.equals(":") && !tokenizer.currentValue.equals("")) {
       List<Node> params = new ArrayList<>();
       if (tokenizer.tryConsume(",")) {
-        if (expression instanceof Operator && ((Operator) expression).name.equals("-")) {
+        if (expression instanceof MathOperator && ((MathOperator) expression).kind == MathOperator.Kind.SUB) {
           params.add(expression.children[0]);
-          params.add(new Group(new Operator("-", expression.children[1])));
+          params.add(new Group(new NegOperator(expression.children[1])));
         } else if (expression instanceof Apply  && expression.children.length == 2) {
           params.add(expression.children[0]);
           params.add(new Group(expression.children[1]));
         } else {
-          throw new RuntimeException("Unexpected comma");
+          throw tokenizer.exception("Unexpected comma", null);
         }
       } else {
         params.add(expression);
@@ -217,13 +219,13 @@ public class Parser {
     do {
       Node dimExpr = expressionParser.parse(tokenizer);
       if (!(dimExpr instanceof Apply)) {
-        throw new RuntimeException("DIM: Apply expected, got: " + dimExpr);
+        throw tokenizer.exception("DIM: Apply expected, got: " + dimExpr, null);
       }
       if (!(dimExpr.children[0] instanceof Identifier)) {
-        throw new RuntimeException("DIM: Identifier expected, got: " + dimExpr.children[0]);
+        throw tokenizer.exception("DIM: Identifier expected, got: " + dimExpr.children[0], null);
       }
       if (dimExpr.children.length < 2) {
-        throw new RuntimeException("DIM: At least one dimension expected");
+        throw tokenizer.exception("DIM: At least one dimension expected", null);
       }
       Node[] dimensions = new Node[dimExpr.children.length - 1];
       System.arraycopy(dimExpr.children, 1, dimensions, 0, dimensions.length);
@@ -267,10 +269,10 @@ public class Parser {
   private Node parseFor(ExpressionParser.Tokenizer tokenizer) {
     tokenizer.nextToken();
     Node assignment = expressionParser.parse(tokenizer);
-    if (!(assignment instanceof Operator) || !(assignment.children[0] instanceof Identifier)
+    if (!(assignment instanceof RelationalOperator) || !(assignment.children[0] instanceof Identifier)
             || assignment.children[0].children.length != 0
-            || !((Operator) assignment).name.equals("=")) {
-      throw new RuntimeException("LocalVariable assignment expected after FOR");
+            || !((RelationalOperator) assignment).getName().equals("=")) {
+      tokenizer.exception("LocalVariable assignment expected after FOR", null);
     }
     String varName = ((Identifier) assignment.children[0]).name;
     require(tokenizer, "TO");
@@ -285,8 +287,8 @@ public class Parser {
   private Node parseLet(ExpressionParser.Tokenizer tokenizer) {
     tokenizer.nextToken();
     Node assignment = expressionParser.parse(tokenizer);
-    if (!(assignment instanceof Operator) || !(assignment.children[0] instanceof AssignableNode)
-            || !((Operator) assignment).name.equals("=")) {
+    if (!(assignment instanceof RelationalOperator) || !(assignment.children[0] instanceof AssignableNode)
+            || !((RelationalOperator) assignment).getName().equals("=")) {
       throw tokenizer.exception("Unrecognized statement or illegal assignment: '"
               + assignment + "'.", null);
     }

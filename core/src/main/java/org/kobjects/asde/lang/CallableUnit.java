@@ -73,12 +73,14 @@ public class CallableUnit implements Function {
     @Override
     public Object call(Interpreter interpreter, int paramCount) {
         int oldFrameStart = interpreter.localStack.frame(paramCount, localVariableCount);
+        Interpreter sub = new Interpreter(interpreter.control, this, interpreter.localStack);
         try {
             // This is called from inside ast evaluation, we can't push interpreter state
             // and keep
-            Interpreter sub = new Interpreter(interpreter.control, this, interpreter.localStack);
             sub.runCallableUnit();
             return sub.returnValue;
+        } catch (Exception e) {
+            throw new WrappedExecutionException(this, sub.currentLine, e);
         } finally {
             interpreter.localStack.release(oldFrameStart, paramCount);
         }

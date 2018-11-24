@@ -22,9 +22,13 @@ import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
 import com.vanniktech.emoji.EmojiTextView;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.annotatedtext.Annotations;
+import org.kobjects.annotatedtext.Span;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.lang.ProgramReference;
+import org.kobjects.expressionparser.ExpressionParser;
 
 import java.io.IOException;
 
@@ -328,6 +332,18 @@ public class ControlView extends LinearLayout  {
             });
         });
         codeEditText.setText("");
+      } catch (ExpressionParser.ParsingException e) {
+          codeEditText.setText("");
+          e.printStackTrace();
+          resultView.setText("Error: " + e.getMessage());
+          AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
+          int len = e.end - e.start;
+          int sanitizedStart = Math.min(Math.max(0, e.start + len), line.length());
+          int sanitizedEnd = Math.max(sanitizedStart, Math.min(e.end + len, line.length()));
+          asb.append(line, 0, sanitizedStart);
+          asb.append(line.subSequence(sanitizedStart, sanitizedEnd), e);
+          asb.append(line, sanitizedEnd, line.length());
+          codeEditText.append(mainActivity.annotatedStringToSpanned(asb.build(), false));
       } catch (Exception e) {
          e.printStackTrace();
          resultView.setText("Error: " + e.getMessage());
