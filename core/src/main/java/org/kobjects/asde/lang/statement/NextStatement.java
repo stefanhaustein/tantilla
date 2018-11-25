@@ -5,6 +5,7 @@ import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.StackEntry;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -47,6 +48,10 @@ public class NextStatement extends Node {
         return Types.VOID;
     }
 
+    public void resolve(ResolutionContext resolutionContext) {
+        super.resolve(resolutionContext);
+        resolutionContext.endBlock();
+    }
 
     @Override
     public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {

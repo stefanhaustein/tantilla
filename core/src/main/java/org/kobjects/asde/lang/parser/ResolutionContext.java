@@ -11,6 +11,7 @@ import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class ResolutionContext {
     public enum ResolutionMode {FUNCTION, SHELL, MAIN};
@@ -18,14 +19,31 @@ public class ResolutionContext {
     Program program;
     public HashMap<Node, Exception> errors = new HashMap<>();
     HashMap<String, LocalSymbol> localSymbols = new HashMap<>();
+    int localSymbolCount;
     ResolutionMode mode;
+    int depth;
 
     public ResolutionContext(Program program, ResolutionMode mode, FunctionType type, String... parameterNames) {
         this.program = program;
         this.mode = mode;
         for (int i = 0; i < parameterNames.length; i++) {
-            localSymbols.put(parameterNames[i], new LocalSymbol(i, type.getParameterType(i)));
+            localSymbols.put(parameterNames[i], new LocalSymbol(localSymbolCount++, type.getParameterType(i), depth));
         }
+    }
+
+    public void endBlock() {
+        HashMap<String, LocalSymbol> filtered = new HashMap<>();
+        for (Map.Entry<String, LocalSymbol> entry : localSymbols.entrySet()) {
+            if (entry.getValue().depth < depth) {
+                filtered.put(entry.getKey(), entry.getValue());
+            }
+        }
+        localSymbols = filtered;
+        depth--;
+    }
+
+    public void startBlock() {
+        depth++;
     }
 
     public ResolvedSymbol declare(String name, Type type) {
@@ -35,7 +53,7 @@ public class ResolutionContext {
         if (localSymbols.containsKey(name)) {
             throw new RuntimeException("Local variable named '" + name + "' already exists");
         }
-        LocalSymbol result = new LocalSymbol(localSymbols.size(), type);
+        LocalSymbol result = new LocalSymbol(localSymbolCount++, type, depth);
         localSymbols.put(name, result);
         return result;
     }
@@ -66,6 +84,6 @@ public class ResolutionContext {
     }
 
     public int getLocalVariableCount() {
-        return localSymbols.size();
+        return localSymbolCount;
     }
 }

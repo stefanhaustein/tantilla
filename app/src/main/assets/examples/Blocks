@@ -151,10 +151,10 @@ SUB rotate()
 140  piecey(i) = x
 150 NEXT i
 160 if checkposition(px0, py0) then drawpiece() : RETURN 0
-200 FOR j = 0 to 3
-210   LET xx = piecex(j)
-220   piecex(j) = piecey(j)
-230   piecey(j) = mx - xx
+200 FOR i = 0 to 3
+210   LET x = piecex(j)
+220   piecex(i) = piecey(i)
+230   piecey(i) = mx - x
 240 NEXT j
 END SUB
 

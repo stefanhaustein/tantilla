@@ -22,6 +22,7 @@ public class ForStatement extends Node {
 
     public void resolve(ResolutionContext resolutionContext) {
         super.resolve(resolutionContext);
+        resolutionContext.startBlock();
         resolved = resolutionContext.declare(varName, Types.NUMBER);
 
     }
