@@ -100,6 +100,9 @@ public class Parser {
     }
     for (Command.Kind kind : Command.Kind.values()) {
       if (name.equalsIgnoreCase(kind.name())) {
+        if (parsingContext != null) {
+            throw tokenizer.exception("Interactive command '" + name + "' can't be used in programs.", null);
+        }
         result.add(parseCommand(tokenizer, kind));
         return;
       }

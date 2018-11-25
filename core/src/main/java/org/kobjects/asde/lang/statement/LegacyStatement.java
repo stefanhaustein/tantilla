@@ -23,7 +23,7 @@ import java.util.Map;
 public class LegacyStatement extends Node {
 
   public enum Kind {
-    CLS,
+    CLS,  // TODO: Builtin?!
     DATA, DEF, DUMP,
     END,
     GOTO, GOSUB,
