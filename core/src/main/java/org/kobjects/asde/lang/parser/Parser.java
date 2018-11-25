@@ -124,7 +124,11 @@ public class Parser {
     Node expression = expressionParser.parse(tokenizer);
     if ((expression instanceof RelationalOperator) && (expression.children[0] instanceof AssignableNode)
              && ((RelationalOperator) expression).getName().equals("=")) {
-      result.add(new AssignStatement(expression.children[0], expression.children[1]));
+      try {
+        result.add(new AssignStatement(expression.children[0], expression.children[1]));
+      } catch (Exception e) {
+        throw tokenizer.exception(null, e);
+      }
     } else if (!tokenizer.currentValue.equals(":") && !tokenizer.currentValue.equals("")) {
       List<Node> params = new ArrayList<>();
       if (tokenizer.tryConsume(",")) {
@@ -303,7 +307,11 @@ public class Parser {
       String varName = ((Identifier) assignment.children[0]).name;
       return new LetStatement(varName, assignment.children[1]);
     }
-    return new AssignStatement(assignment.children[0], assignment.children[1]);
+    try {
+      return new AssignStatement(assignment.children[0], assignment.children[1]);
+    } catch (Exception e) {
+      throw tokenizer.exception("Error parsing let", e);
+    }
   }
 
   private void parseNext(ExpressionParser.Tokenizer tokenizer, List<Node> result) {

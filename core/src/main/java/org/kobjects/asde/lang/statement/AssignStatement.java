@@ -5,13 +5,25 @@ import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
 public class AssignStatement extends Node {
-    public AssignStatement(Node target, Node value) {
+    public AssignStatement(Node target, Node value) throws Exception {
         super(target, value);
+        if (!(target instanceof AssignableNode)) {
+            throw new Exception("Assignment target is not assignable.");
+        }
+    }
+
+    @Override
+    protected void onResolve(ResolutionContext resolutionContext) {
+        if (resolutionContext.mode == ResolutionContext.ResolutionMode.FUNCTION
+                && !children[0].returnType().equals(children[1].returnType())) {
+            throw new RuntimeException("Assignment source and target types do not match.");
+        }
     }
 
     @Override

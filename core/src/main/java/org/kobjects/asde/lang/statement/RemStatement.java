@@ -4,6 +4,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -14,6 +15,11 @@ public class RemStatement extends Node {
 
     public RemStatement(String comment) {
         this.comment = comment;
+    }
+
+    @Override
+    protected void onResolve(ResolutionContext resolutionContext) {
+        // Nothing to do here.
     }
 
     @Override

@@ -5,6 +5,7 @@ import org.kobjects.asde.lang.Array;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -18,6 +19,12 @@ public class DimStatement extends Node {
     }
 
     @Override
+    protected void onResolve(ResolutionContext resolutionContext) {
+        // TODO: Implement
+        System.err.println("TODO: DimStatement.onResolve");
+    }
+
+    @Override
     public Object eval(Interpreter interpreter) {
         int[] dims = new int[children.length];
         for (int i = 0; i < children.length; i++) {
@@ -27,6 +34,8 @@ public class DimStatement extends Node {
         interpreter.control.program.setValue(interpreter.getSymbolScope(), varName, new Array(varName.endsWith("$") ? Types.STRING : Types.NUMBER, dims));
         return null;
     }
+
+
 
     @Override
     public Type returnType() {

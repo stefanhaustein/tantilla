@@ -5,6 +5,7 @@ import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.Type;
 
 import java.io.IOException;
@@ -25,6 +26,11 @@ public class Command extends Node {
     public Command(Kind kind, Node... children) {
         super(children);
         this.kind = kind;
+    }
+
+    @Override
+    protected void onResolve(ResolutionContext resolutionContext) {
+        // Commands can't be in programs.
     }
 
     @Override

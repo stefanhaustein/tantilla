@@ -3,6 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.typesystem.Classifier;
 
@@ -23,6 +24,11 @@ public class New extends Node {
             throw new Exception("'" + name + "' is not a classifier");
         }
         classifier = (Classifier) value;
+    }
+
+    @Override
+    protected void onResolve(ResolutionContext resolutionContext) {
+        // TODO
     }
 
     @Override

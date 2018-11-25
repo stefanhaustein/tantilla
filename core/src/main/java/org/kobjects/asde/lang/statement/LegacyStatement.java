@@ -12,6 +12,7 @@ import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.RelationalOperator;
+import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
 
@@ -46,6 +47,11 @@ public class LegacyStatement extends Node {
 
   public LegacyStatement(Program program, Kind kind, Node... children) {
     this(program, kind, null, children);
+  }
+
+  @Override
+  protected void onResolve(ResolutionContext resolutionContext) {
+    // Nothing to do for legacy statements.
   }
 
   public Object eval(Interpreter interpreter) {

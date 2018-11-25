@@ -4,6 +4,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -25,6 +26,11 @@ public class Literal extends Node {
 
   public Literal(Object value) {
     this(value, Format.DEFAULT);
+  }
+
+  @Override
+  protected void onResolve(ResolutionContext resolutionContext) {
+    // Nothing to do here.
   }
 
   @Override

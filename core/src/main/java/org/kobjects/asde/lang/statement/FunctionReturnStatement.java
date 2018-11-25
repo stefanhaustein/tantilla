@@ -5,6 +5,7 @@ import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.StackEntry;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -13,6 +14,22 @@ public class FunctionReturnStatement extends Node {
 
     public FunctionReturnStatement(Node... children) {
         super(children);
+    }
+
+    @Override
+    protected void onResolve(ResolutionContext resolutionContext) {
+        if (resolutionContext.functionType.getReturnType() == Types.VOID) {
+            if (children.length != 0) {
+                throw new RuntimeException("Unexpected return value for subroutine.");
+            }
+        } else {
+            if (children.length != 1) {
+                throw new RuntimeException("Return value expected for function.");
+            }
+            if (children[0].returnType().equals(resolutionContext.functionType)) {
+                throw new RuntimeException("Expected return type: " + resolutionContext.functionType + "; actual: " + children[0].returnType());
+            }
+        }
     }
 
     @Override

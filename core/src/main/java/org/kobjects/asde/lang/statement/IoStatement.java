@@ -6,6 +6,7 @@ import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -23,6 +24,11 @@ public class IoStatement extends Node {
         super(children);
         this.kind = kind;
         this.delimiter = delimiter;
+    }
+
+    @Override
+    protected void onResolve(ResolutionContext resolutionContext) {
+        // TODO: Implement
     }
 
     @Override

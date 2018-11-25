@@ -20,11 +20,10 @@ public class ForStatement extends Node {
         this.varName = varName;
     }
 
-    public void resolve(ResolutionContext resolutionContext) {
-        super.resolve(resolutionContext);
+    public void onResolve(ResolutionContext resolutionContext) {
         resolutionContext.startBlock();
+        // TODO: Check types?
         resolved = resolutionContext.declare(varName, Types.NUMBER);
-
     }
 
     @Override

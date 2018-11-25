@@ -44,11 +44,7 @@ public class CallableUnit implements Function {
                         indent--;
                     }
                 }
-                try {
-                    statement.resolve(resolutionContext);
-                } catch (Exception e) {
-                    resolutionContext.addError(statement, e);
-                }
+                statement.resolve(resolutionContext);
             }
             line.indent = indent;
             indent += addLater;

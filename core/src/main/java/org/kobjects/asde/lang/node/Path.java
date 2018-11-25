@@ -3,6 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.Instance;
 import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.PropertyDescriptor;
@@ -32,6 +33,11 @@ public class Path extends AssignableNode {
             throw new RuntimeException("Property '" + pathName + "' does not exist.");
         }
         return instance.getProperty(propertyDescriptor);
+    }
+
+    @Override
+    protected void onResolve(ResolutionContext resolutionContext) {
+        // TODO: Implement.
     }
 
     @Override

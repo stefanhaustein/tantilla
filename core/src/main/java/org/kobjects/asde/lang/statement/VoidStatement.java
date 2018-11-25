@@ -5,6 +5,7 @@ import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -12,6 +13,11 @@ import java.util.Map;
 public class VoidStatement extends Node {
     public VoidStatement(Node expression) {
         super(expression);
+    }
+
+    @Override
+    protected void onResolve(ResolutionContext resolutionContext) {
+        // Nothing to do here.
     }
 
     @Override

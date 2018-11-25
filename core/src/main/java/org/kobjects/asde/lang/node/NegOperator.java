@@ -3,6 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -11,6 +12,14 @@ public class NegOperator extends Node {
 
   public NegOperator(Node child) {
     super(child);
+  }
+
+  @Override
+  protected void onResolve(ResolutionContext resolutionContext) {
+    if (resolutionContext.mode == ResolutionContext.ResolutionMode.FUNCTION
+      && children[0].returnType() != Types.NUMBER) {
+      throw new RuntimeException("Number argument expected for negation.");
+    }
   }
 
   public Object eval(Interpreter interpreter) {

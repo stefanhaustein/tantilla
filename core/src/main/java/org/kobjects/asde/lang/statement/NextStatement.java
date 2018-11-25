@@ -48,8 +48,8 @@ public class NextStatement extends Node {
         return Types.VOID;
     }
 
-    public void resolve(ResolutionContext resolutionContext) {
-        super.resolve(resolutionContext);
+    public void onResolve(ResolutionContext resolutionContext) {
+        // TODO: Check for match!
         resolutionContext.endBlock();
     }
 

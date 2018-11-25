@@ -21,8 +21,7 @@ public class Identifier extends AssignableNode {
     this.name = name;
   }
 
-  public void resolve(ResolutionContext resolutionContext) {
-      super.resolve(resolutionContext);
+  public void onResolve(ResolutionContext resolutionContext) {
       resolved = resolutionContext.resolve(name);
   }
 

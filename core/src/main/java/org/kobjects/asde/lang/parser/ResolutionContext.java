@@ -16,16 +16,20 @@ import java.util.Map;
 public class ResolutionContext {
     public enum ResolutionMode {FUNCTION, SHELL, MAIN};
 
-    Program program;
+    public final Program program;
     public HashMap<Node, Exception> errors = new HashMap<>();
-    HashMap<String, LocalSymbol> localSymbols = new HashMap<>();
-    int localSymbolCount;
-    ResolutionMode mode;
-    int depth;
+    public final ResolutionMode mode;
+    public final FunctionType functionType;
+
+    private HashMap<String, LocalSymbol> localSymbols = new HashMap<>();
+    private int depth;
+    private int localSymbolCount;
+
 
     public ResolutionContext(Program program, ResolutionMode mode, FunctionType type, String... parameterNames) {
         this.program = program;
         this.mode = mode;
+        this.functionType = type;
         for (int i = 0; i < parameterNames.length; i++) {
             localSymbols.put(parameterNames[i], new LocalSymbol(localSymbolCount++, type.getParameterType(i), depth));
         }

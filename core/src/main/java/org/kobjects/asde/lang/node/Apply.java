@@ -5,6 +5,7 @@ import org.kobjects.asde.lang.Array;
 import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -32,7 +33,12 @@ public class Apply extends AssignableNode {
     array.setValueAt(value, indices);
   }
 
-  public Object eval(Interpreter interpreter) {
+    @Override
+    protected void onResolve(ResolutionContext resolutionContext) {
+        // TODO: Implement!
+    }
+
+    public Object eval(Interpreter interpreter) {
     Object base = children[0].evalRaw(interpreter);
     if (!(base instanceof Function)) {
       throw new EvaluationException(this, "Can't apply parameters to " + base);

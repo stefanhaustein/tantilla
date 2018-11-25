@@ -4,6 +4,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Builtin;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -29,6 +30,15 @@ public class RelationalOperator extends Node {
         return val2 == 0 ? "≥" : val2 == -1 ? "≠" : ">";
     }
     throw new IllegalStateException();
+  }
+
+  @Override
+  protected void onResolve(ResolutionContext resolutionContext) {
+    if (resolutionContext.mode == ResolutionContext.ResolutionMode.FUNCTION
+            && !children[0].returnType().equals(children[1].returnType())) {
+      throw new RuntimeException("Argument types must match for relational expressions; got "
+              + children[0].returnType() + " and " + children[1].returnType());
+    }
   }
 
   @Override

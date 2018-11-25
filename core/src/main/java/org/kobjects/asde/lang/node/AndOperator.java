@@ -3,6 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -22,6 +23,19 @@ public class AndOperator extends Node {
       return ((Double) lVal).intValue() & evalChildToInt(interpreter,1);
     }
     throw new EvaluationException(children[0], "Boolean or Number expected for AND.");
+  }
+
+  @Override
+  protected void onResolve(ResolutionContext resolutionContext) {
+    if (resolutionContext.mode == ResolutionContext.ResolutionMode.FUNCTION) {
+      if (children[0].returnType() != children[1].returnType()) {
+        throw new RuntimeException("Matching Boolean or Number argument expected; got "
+                + children[0].returnType() + " and " + children[1].returnType());
+      }
+      if (children[0].returnType() != Types.BOOLEAN && children[0].returnType() != Types.NUMBER) {
+        throw new RuntimeException("Boolean or Number arguments expected; got: " + children[0].returnType());
+      }
+    }
   }
 
   @Override
