@@ -43,8 +43,9 @@ public class Shell {
                 if (!tokenizer.currentValue.startsWith("#")) {
                     int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
                     tokenizer.nextToken();
-                    if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER || "?".equals(tokenizer.currentValue)) {
-                        currentFunction.setLine(lineNumber, new CodeLine(program.parser.parseStatementList(tokenizer)));
+                    if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER
+                            || "?".equals(tokenizer.currentValue)) {
+                        currentFunction.setLine(lineNumber, new CodeLine(program.parser.parseStatementList(tokenizer, currentFunction)));
                         program.console.sync(true);
                         if (program.reference.urlWritable) {
                             try {
@@ -62,7 +63,7 @@ public class Shell {
                 }
                 // Fall-through intended
             default:
-                List<? extends Node> statements = program.parser.parseStatementList(tokenizer);
+                List<? extends Node> statements = program.parser.parseStatementList(tokenizer, null);
                 program.processDeclarations(statements);
 
                     /*TextView inputView = new EmojiTextView(this);

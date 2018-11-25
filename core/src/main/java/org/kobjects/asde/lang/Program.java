@@ -303,7 +303,7 @@ public class Program {
               if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.NUMBER) {
                   int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
                   tokenizer.nextToken();
-                  List<? extends Node> statements = parser.parseStatementList(tokenizer);
+                  List<? extends Node> statements = parser.parseStatementList(tokenizer, currentFunction);
                   currentFunction.setLine(lineNumber, new CodeLine(statements));
               } else if (tokenizer.tryConsume("FUNCTION")) {
                   String functionName = tokenizer.consumeIdentifier();
@@ -324,7 +324,7 @@ public class Program {
               } else if (tokenizer.tryConsume("END")) {
                   currentFunction = main;
               } else if (!tokenizer.tryConsume("")) {
-                  List<? extends Node> statements = parser.parseStatementList(tokenizer);
+                  List<? extends Node> statements = parser.parseStatementList(tokenizer, null);
                   processDeclarations(statements);
               }
           }

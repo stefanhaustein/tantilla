@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.parser;
 
+import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Group;
@@ -19,7 +20,7 @@ import org.kobjects.asde.lang.statement.NextStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.MathOperator;
 import org.kobjects.asde.lang.statement.RemStatement;
-import org.kobjects.asde.lang.statement.ReturnStatement;
+import org.kobjects.asde.lang.statement.FunctionReturnStatement;
 import org.kobjects.asde.lang.statement.LegacyStatement;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.statement.VoidStatement;
@@ -62,7 +63,7 @@ public class Parser {
   }
 
 
-  void parseStatement(ExpressionParser.Tokenizer tokenizer, List<Node> result) {
+  void parseStatement(ExpressionParser.Tokenizer tokenizer, List<Node> result, CallableUnit parsingContext) {
     String name = tokenizer.currentValue;
 
     switch (name.toUpperCase()) {
@@ -91,8 +92,11 @@ public class Parser {
         result.add(parseRem(tokenizer));
         return;
       case "RETURN":
-        result.add(parseReturn(tokenizer));
-        return;
+        if (parsingContext != null && parsingContext != program.main) {
+          result.add(parseFunctionReturn(tokenizer));
+          return;
+        }
+        break;
     }
     for (Command.Kind kind : Command.Kind.values()) {
       if (name.equalsIgnoreCase(kind.name())) {
@@ -323,16 +327,16 @@ public class Parser {
     return new RemStatement(sb.toString());
   }
 
-  private ReturnStatement parseReturn(ExpressionParser.Tokenizer tokenizer) {
+  private FunctionReturnStatement parseFunctionReturn(ExpressionParser.Tokenizer tokenizer) {
     tokenizer.nextToken();
     if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF &&
             !tokenizer.currentValue.equals(":")) {
-      return new ReturnStatement(expressionParser.parse(tokenizer));
+      return new FunctionReturnStatement(expressionParser.parse(tokenizer));
     }
-    return new ReturnStatement();
+    return new FunctionReturnStatement();
   }
 
-  public List<? extends Node> parseStatementList(ExpressionParser.Tokenizer tokenizer) {
+  public List<? extends Node> parseStatementList(ExpressionParser.Tokenizer tokenizer, CallableUnit parsingContext) {
     ArrayList<Node> result = new ArrayList<>();
     Node statement;
     do {
@@ -342,7 +346,7 @@ public class Parser {
       if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.EOF) {
         break;
       }
-      parseStatement(tokenizer, result);
+      parseStatement(tokenizer, result, parsingContext);
       statement = result.get(result.size() - 1);
     } while (statement instanceof IfStatement || tokenizer.tryConsume(":"));
     if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF) {

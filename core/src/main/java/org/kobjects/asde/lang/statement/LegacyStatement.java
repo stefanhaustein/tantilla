@@ -11,7 +11,6 @@ import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.node.MathOperator;
 import org.kobjects.asde.lang.node.RelationalOperator;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
@@ -30,7 +29,7 @@ public class LegacyStatement extends Node {
     GOTO, GOSUB,
     ON,
     PAUSE, // TODO: Turn into builtin
-    READ, RESTORE,
+    READ, RESTORE, RETURN,
     STOP,
   }
 
@@ -73,7 +72,7 @@ public class LegacyStatement extends Node {
           parameterTypes[i] = parameterNode.name.endsWith("$") ? Types.STRING : Types.NUMBER;
         }
         CallableUnit fn = new CallableUnit(program, new FunctionType(name.endsWith("$") ? Types.STRING : Types.NUMBER, parameterTypes), parameterNames);
-        fn.setLine(10, new CodeLine(Collections.singletonList(new ReturnStatement(assignment.children[1]))));
+        fn.setLine(10, new CodeLine(Collections.singletonList(new FunctionReturnStatement(assignment.children[1]))));
         program.setValue(interpreter.getSymbolScope(), name, fn);
         break;
       }
@@ -145,6 +144,20 @@ public class LegacyStatement extends Node {
         Arrays.fill(interpreter.dataPosition, 0);
         if (children.length > 0) {
           interpreter.dataPosition[0] = (int) evalChildToDouble(interpreter, 0);
+        }
+        break;
+
+      case RETURN:
+        while (true) {
+          if (interpreter.stack.isEmpty()) {
+            throw new RuntimeException("RETURN without GOSUB.");
+          }
+          StackEntry entry = interpreter.stack.remove(interpreter.stack.size() - 1);
+          if (entry.forVariable == null) {
+            interpreter.currentLine = entry.lineNumber;
+            interpreter.currentIndex = entry.statementIndex + 1;
+            break;
+          }
         }
         break;
 

@@ -9,9 +9,9 @@ import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
-public class ReturnStatement extends Node {
+public class FunctionReturnStatement extends Node {
 
-    public ReturnStatement(Node... children) {
+    public FunctionReturnStatement(Node... children) {
         super(children);
     }
 
@@ -19,21 +19,9 @@ public class ReturnStatement extends Node {
     public Object eval(Interpreter interpreter) {
         if (children.length > 0) {
             interpreter.returnValue = children[0].eval(interpreter);
-            interpreter.currentLine = Integer.MAX_VALUE;
-            interpreter.currentIndex = 0;
-        } else {
-            while (true) {
-                if (interpreter.stack.isEmpty()) {
-                    throw new RuntimeException("RETURN without GOSUB.");
-                }
-                StackEntry entry = interpreter.stack.remove(interpreter.stack.size() - 1);
-                if (entry.forVariable == null) {
-                    interpreter.currentLine = entry.lineNumber;
-                    interpreter.currentIndex = entry.statementIndex + 1;
-                    break;
-                }
-            }
         }
+        interpreter.currentLine = Integer.MAX_VALUE;
+        interpreter.currentIndex = 0;
         return null;
     }
 
