@@ -4,6 +4,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.parser.ResolutionContext;
+import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.Instance;
 import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.PropertyDescriptor;
@@ -37,7 +38,6 @@ public class Path extends AssignableNode {
 
     @Override
     protected void onResolve(ResolutionContext resolutionContext) {
-        // TODO: Implement.
     }
 
     @Override
@@ -47,7 +47,7 @@ public class Path extends AssignableNode {
 
     @Override
     public Type returnType() {
-        return null;
+        return children[0].returnType() instanceof Classifier ? ((Classifier) children[0].returnType()).getPropertyDescriptor(pathName).type() : null;
     }
 
     @Override

@@ -21,7 +21,7 @@ public class AssignStatement extends Node {
     @Override
     protected void onResolve(ResolutionContext resolutionContext) {
         if (resolutionContext.mode == ResolutionContext.ResolutionMode.FUNCTION
-                && !children[0].returnType().equals(children[1].returnType())) {
+                && !Types.match(children[0].returnType(), children[1].returnType())) {
             throw new RuntimeException("Assignment source and target types do not match.");
         }
     }

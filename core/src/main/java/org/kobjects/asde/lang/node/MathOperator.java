@@ -44,7 +44,7 @@ public class MathOperator extends Node {
       if (kind == Kind.ADD && children[0].returnType() == Types.STRING) {
         return;
       }
-      if (children[0].returnType() != Types.NUMBER || children[1].returnType() != Types.NUMBER) {
+      if (!Types.match(children[0].returnType(), Types.NUMBER) || !Types.match(children[1].returnType(), Types.NUMBER)) {
         throw new RuntimeException("Number arguments expected for " + getName());
       }
     }

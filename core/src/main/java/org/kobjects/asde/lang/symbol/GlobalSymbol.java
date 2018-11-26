@@ -1,12 +1,18 @@
 package org.kobjects.asde.lang.symbol;
 
 import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.typesystem.Type;
 
 public class GlobalSymbol implements ResolvedSymbol {
 
     public Node initializer;
+    public Object value;
+    public Scope scope;
+    Type type;
+    boolean immutable;
+
 
     @Override
     public Object get(Interpreter interpreter) {
@@ -29,15 +35,11 @@ public class GlobalSymbol implements ResolvedSymbol {
         TRANSIENT
     }
 
-    public Type type;
-    public Object value;
-    public Scope scope;
-    boolean immutable;
-
 
     public GlobalSymbol(Scope scope, Object value) {
         this.scope = scope;
         this.value = value;
+        this.type = value == null ? null : Types.of(value);
     }
 
 

@@ -11,59 +11,59 @@ import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class ResolutionContext {
     public enum ResolutionMode {FUNCTION, SHELL, MAIN};
+    public enum BlockType {
+        ROOT, FOR
+    }
 
     public final Program program;
     public HashMap<Node, Exception> errors = new HashMap<>();
     public final ResolutionMode mode;
     public final FunctionType functionType;
 
-    private HashMap<String, LocalSymbol> localSymbols = new HashMap<>();
     private int depth;
     private int localSymbolCount;
+    private Block currentBlock;
 
 
     public ResolutionContext(Program program, ResolutionMode mode, FunctionType type, String... parameterNames) {
         this.program = program;
         this.mode = mode;
         this.functionType = type;
+        startBlock(BlockType.ROOT);
         for (int i = 0; i < parameterNames.length; i++) {
-            localSymbols.put(parameterNames[i], new LocalSymbol(localSymbolCount++, type.getParameterType(i), depth));
+            currentBlock.localSymbols.put(parameterNames[i], new LocalSymbol(localSymbolCount++, type.getParameterType(i), depth));
         }
     }
 
-    public void endBlock() {
-        HashMap<String, LocalSymbol> filtered = new HashMap<>();
-        for (Map.Entry<String, LocalSymbol> entry : localSymbols.entrySet()) {
-            if (entry.getValue().depth < depth) {
-                filtered.put(entry.getKey(), entry.getValue());
-            }
-        }
-        localSymbols = filtered;
-        depth--;
+    public void startBlock(BlockType type) {
+        currentBlock = new Block(currentBlock, type);
     }
 
-    public void startBlock() {
-        depth++;
+    public void endBlock(BlockType type) {
+        if (type != currentBlock.type) {
+            throw new RuntimeException((currentBlock.type == BlockType.FOR ? "NEXT" : ("END " + currentBlock.type))
+                    + " expected.");
+        }
+        currentBlock = currentBlock.parent;
     }
 
     public ResolvedSymbol declare(String name, Type type) {
         if (mode != ResolutionMode.FUNCTION) {
             return resolve(name);
         }
-        if (localSymbols.containsKey(name)) {
+        if (currentBlock.localSymbols.containsKey(name)) {
             throw new RuntimeException("Local variable named '" + name + "' already exists");
         }
         LocalSymbol result = new LocalSymbol(localSymbolCount++, type, depth);
-        localSymbols.put(name, result);
+        currentBlock.localSymbols.put(name, result);
         return result;
     }
 
     public ResolvedSymbol resolve(String name) {
-        ResolvedSymbol resolved = localSymbols.get(name);
+        ResolvedSymbol resolved = currentBlock.get(name);
         if (resolved != null) {
             return resolved;
         }
@@ -89,5 +89,22 @@ public class ResolutionContext {
 
     public int getLocalVariableCount() {
         return localSymbolCount;
+    }
+
+
+    private class Block {
+        final Block parent;
+        final BlockType type;
+        private final HashMap<String, LocalSymbol> localSymbols = new HashMap<>();
+
+        Block(Block parent, BlockType blockType) {
+            this.parent = parent;
+            this.type = blockType;
+        }
+
+        LocalSymbol get(String name) {
+            LocalSymbol result = localSymbols.get(name);
+            return (result == null && parent != null) ? parent.get(name) : result;
+        }
     }
 }

@@ -47,4 +47,11 @@ public class Types {
         throw new IllegalArgumentException("Unrecognized type: " + o.getClass());
     }
 
+    /**
+     * Interprets null as wildcard.
+     */
+    // TODO: Remove when resolve works for the declaration block.
+    public static boolean match(Type type1, Type type2) {
+        return type1 == null || type2 == null || type1.equals(type2);
+    }
 }

@@ -17,8 +17,8 @@ public class VariableView extends LinearLayout {
 
         List<String> subtitles = new ArrayList<>();
 
-        if (symbol.type != null) {
-            subtitles.add("T: " + symbol.type);
+        if (symbol.getType() != null) {
+            subtitles.add("T: " + symbol.getType());
         }
         if (symbol.initializer != null) {
             subtitles.add("I: " + symbol.initializer);

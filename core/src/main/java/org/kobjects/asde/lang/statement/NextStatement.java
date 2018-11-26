@@ -49,8 +49,7 @@ public class NextStatement extends Node {
     }
 
     public void onResolve(ResolutionContext resolutionContext) {
-        // TODO: Check for match!
-        resolutionContext.endBlock();
+        resolutionContext.endBlock(ResolutionContext.BlockType.FOR);
     }
 
     @Override

@@ -21,7 +21,7 @@ public class ForStatement extends Node {
     }
 
     public void onResolve(ResolutionContext resolutionContext) {
-        resolutionContext.startBlock();
+        resolutionContext.startBlock(ResolutionContext.BlockType.FOR);
         // TODO: Check types?
         resolved = resolutionContext.declare(varName, Types.NUMBER);
     }

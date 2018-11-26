@@ -345,6 +345,7 @@ public class Program {
             symbol = new GlobalSymbol(scope, value);
             setSymbol(name, symbol);
         } else {
+            // TODO: check scope!
             symbol.value = value;
         }
     }
