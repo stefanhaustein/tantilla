@@ -3,10 +3,16 @@ package org.kobjects.typesystem;
 public class FunctionType implements Type {
     private final Type returnType;
     private Type[] parameterTypes;
+    private final int minParameterCount;
 
-    public FunctionType(Type returnType, Type... parameterTypes) {
+    public FunctionType(Type returnType, int minParamCount, Type... parameterTypes) {
         this.returnType = returnType;
         this.parameterTypes = parameterTypes;
+        this.minParameterCount = minParamCount;
+    }
+
+    public FunctionType(Type returnType, Type... parameterTypes) {
+        this (returnType, parameterTypes.length, parameterTypes);
     }
 
     public Type getReturnType() {
@@ -17,6 +23,9 @@ public class FunctionType implements Type {
         return parameterTypes[index];
     }
 
+    public int getMinParameterCount() {
+        return minParameterCount;
+    }
     public int getParameterCount() {
         return parameterTypes.length;
     }

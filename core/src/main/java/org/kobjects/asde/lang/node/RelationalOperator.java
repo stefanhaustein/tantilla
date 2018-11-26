@@ -34,8 +34,7 @@ public class RelationalOperator extends Node {
 
   @Override
   protected void onResolve(ResolutionContext resolutionContext) {
-    if (resolutionContext.mode == ResolutionContext.ResolutionMode.FUNCTION
-            && !Types.match(children[0].returnType(), children[1].returnType())) {
+    if (!Types.match(children[0].returnType(), children[1].returnType())) {
       throw new RuntimeException("Argument types must match for relational expressions; got "
               + children[0].returnType() + " and " + children[1].returnType());
     }
@@ -54,7 +53,8 @@ public class RelationalOperator extends Node {
 
   @Override
   public Type returnType() {
-    return Types.BOOLEAN;
+    return (children[0].returnType() == null || children[1].returnType() == null)
+            ? null : Types.BOOLEAN;
   }
 
   @Override

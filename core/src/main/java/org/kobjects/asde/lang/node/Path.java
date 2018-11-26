@@ -15,6 +15,8 @@ import java.util.Map;
 
 public class Path extends AssignableNode {
     String pathName;
+    PropertyDescriptor resolved;
+
     public Path(Node left, Node right) {
         super(left);
         if (!(right instanceof Identifier)) {
@@ -29,7 +31,7 @@ public class Path extends AssignableNode {
             throw new RuntimeException("instance expected");
         }
         Instance instance = (Instance) base;
-        PropertyDescriptor propertyDescriptor = instance.getType().getPropertyDescriptor(pathName);
+        PropertyDescriptor propertyDescriptor = resolved != null ? resolved : instance.getType().getPropertyDescriptor(pathName);
         if (propertyDescriptor == null) {
             throw new RuntimeException("Property '" + pathName + "' does not exist.");
         }
@@ -38,6 +40,11 @@ public class Path extends AssignableNode {
 
     @Override
     protected void onResolve(ResolutionContext resolutionContext) {
+        if (children[0].returnType() instanceof Classifier) {
+            resolved = ((Classifier) children[0].returnType()).getPropertyDescriptor(pathName);
+        } else if (children[0].returnType() != null) {
+            throw new RuntimeException("Classifier expected as path base.");
+        }
     }
 
     @Override
@@ -47,7 +54,7 @@ public class Path extends AssignableNode {
 
     @Override
     public Type returnType() {
-        return children[0].returnType() instanceof Classifier ? ((Classifier) children[0].returnType()).getPropertyDescriptor(pathName).type() : null;
+        return resolved == null ? null : resolved.type();
     }
 
     @Override

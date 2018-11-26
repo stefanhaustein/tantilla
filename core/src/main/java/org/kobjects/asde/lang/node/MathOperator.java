@@ -40,11 +40,14 @@ public class MathOperator extends Node {
 
   @Override
   protected void onResolve(ResolutionContext resolutionContext) {
-    if (resolutionContext.mode == ResolutionContext.ResolutionMode.FUNCTION) {
-      if (kind == Kind.ADD && children[0].returnType() == Types.STRING) {
-        return;
+    boolean bothNumber = Types.match(children[0].returnType(), Types.NUMBER)
+            && Types.match(children[1].returnType(), Types.NUMBER);
+    if (kind == Kind.ADD) {
+      if (!Types.match(children[0].returnType(), Types.STRING) && !bothNumber) {
+        throw new RuntimeException("Number or String arguments expected for '+'");
       }
-      if (!Types.match(children[0].returnType(), Types.NUMBER) || !Types.match(children[1].returnType(), Types.NUMBER)) {
+    } else {
+      if (!bothNumber) {
         throw new RuntimeException("Number arguments expected for " + getName());
       }
     }

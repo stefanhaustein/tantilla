@@ -40,7 +40,7 @@ public class Literal extends Node {
 
   @Override
   public Type returnType() {
-    return value instanceof String ? Types.STRING : value instanceof Boolean ? Types.BOOLEAN : Types.NUMBER;
+    return Types.of(value);
   }
 
   @Override

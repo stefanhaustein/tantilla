@@ -6,12 +6,10 @@ import org.kobjects.typesystem.Type;
 public class LocalSymbol implements ResolvedSymbol {
     private final int index;
     private final Type type;
-    public final int depth;
 
-    public LocalSymbol(int index, Type type, int depth) {
+    public LocalSymbol(int index, Type type) {
         this.index = index;
         this.type = type;
-        this.depth = depth;
     }
 
     @Override

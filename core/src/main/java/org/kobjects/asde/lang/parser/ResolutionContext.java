@@ -23,7 +23,6 @@ public class ResolutionContext {
     public final ResolutionMode mode;
     public final FunctionType functionType;
 
-    private int depth;
     private int localSymbolCount;
     private Block currentBlock;
 
@@ -34,7 +33,7 @@ public class ResolutionContext {
         this.functionType = type;
         startBlock(BlockType.ROOT);
         for (int i = 0; i < parameterNames.length; i++) {
-            currentBlock.localSymbols.put(parameterNames[i], new LocalSymbol(localSymbolCount++, type.getParameterType(i), depth));
+            currentBlock.localSymbols.put(parameterNames[i], new LocalSymbol(localSymbolCount++, type.getParameterType(i)));
         }
     }
 
@@ -57,7 +56,7 @@ public class ResolutionContext {
         if (currentBlock.localSymbols.containsKey(name)) {
             throw new RuntimeException("Local variable named '" + name + "' already exists");
         }
-        LocalSymbol result = new LocalSymbol(localSymbolCount++, type, depth);
+        LocalSymbol result = new LocalSymbol(localSymbolCount++, type);
         currentBlock.localSymbols.put(name, result);
         return result;
     }
@@ -70,10 +69,14 @@ public class ResolutionContext {
         GlobalSymbol symbol = program.getSymbol(name);
         switch (mode) {
             case MAIN:
-                return symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT ? symbol : new DynamicSymbol(name, mode);
+                return symbol != null
+                        && (symbol.scope == GlobalSymbol.Scope.PERSISTENT
+                           || symbol.scope == GlobalSymbol.Scope.BUILTIN)
+                    ? symbol : new DynamicSymbol(name, mode);
 
             case SHELL:
-                return new DynamicSymbol(name, mode);
+                return symbol != null && (symbol.scope == GlobalSymbol.Scope.BUILTIN)
+                        ? symbol : new DynamicSymbol(name, mode);
 
             default:
                 if (symbol == null || symbol.scope == GlobalSymbol.Scope.TRANSIENT) {

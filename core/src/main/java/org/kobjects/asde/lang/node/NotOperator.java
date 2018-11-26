@@ -16,9 +16,8 @@ public class NotOperator extends Node {
 
   @Override
   protected void onResolve(ResolutionContext resolutionContext) {
-    if (resolutionContext.mode == ResolutionContext.ResolutionMode.FUNCTION
-      && children[0].returnType() != Types.BOOLEAN
-            && children[0].returnType() != Types.NUMBER) {
+    if (!Types.match(children[0].returnType(), Types.BOOLEAN)
+            && !Types.match(children[0].returnType(), Types.NUMBER)) {
       throw new RuntimeException("Boolean or Number parameter expected.");
     }
   }
@@ -38,7 +37,8 @@ public class NotOperator extends Node {
 
   @Override
   public Type returnType() {
-    return children[0].returnType() == Types.BOOLEAN ? Types.BOOLEAN : Types.NUMBER;
+    return children[0].returnType() == Types.BOOLEAN || children[0].returnType() == Types.BOOLEAN
+            ? children[0].returnType() : null;
   }
 
   @Override

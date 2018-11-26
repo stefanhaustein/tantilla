@@ -17,7 +17,7 @@ public class AndOperator extends Node {
   public Object eval(Interpreter interpreter) {
     Object lVal = children[0].eval(interpreter);
     if (lVal instanceof Boolean) {
-      return ((Boolean) lVal) ? children[1].eval(interpreter) : Boolean.FALSE;
+      return ((Boolean) lVal) ? evalChildToBoolean(interpreter, 1) : Boolean.FALSE;
     }
     if (lVal instanceof Double) {
       return ((Double) lVal).intValue() & evalChildToInt(interpreter,1);
@@ -27,20 +27,20 @@ public class AndOperator extends Node {
 
   @Override
   protected void onResolve(ResolutionContext resolutionContext) {
-    if (resolutionContext.mode == ResolutionContext.ResolutionMode.FUNCTION) {
-      if (children[0].returnType() != children[1].returnType()) {
-        throw new RuntimeException("Matching Boolean or Number argument expected; got "
-                + children[0].returnType() + " and " + children[1].returnType());
-      }
-      if (children[0].returnType() != Types.BOOLEAN && children[0].returnType() != Types.NUMBER) {
-        throw new RuntimeException("Boolean or Number arguments expected; got: " + children[0].returnType());
-      }
+    if (!Types.match(children[0].returnType(), children[1].returnType())) {
+      throw new RuntimeException("Matching Boolean or Number argument expected; got "
+              + children[0].returnType() + " and " + children[1].returnType());
+    }
+    if (!Types.match(children[0].returnType(), Types.BOOLEAN)
+            && !Types.match(children[0].returnType(), Types.NUMBER)) {
+      throw new RuntimeException("Boolean or Number arguments expected; got: " + children[0].returnType());
     }
   }
 
   @Override
   public Type returnType() {
-    return children[0].returnType() == Types.BOOLEAN ? children[1].returnType() : Types.NUMBER;
+    return children[0].returnType() == Types.BOOLEAN || children[0].returnType() == Types.BOOLEAN
+            ? children[0].returnType() : null;
   }
 
   @Override
