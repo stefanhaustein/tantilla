@@ -10,7 +10,7 @@ public class GlobalSymbol implements ResolvedSymbol {
     public Node initializer;
     public Object value;
     public Scope scope;
-    Type type;
+    public Type type;
     boolean immutable;
 
 

@@ -155,7 +155,7 @@ SUB rotate()
 210   LET x = piecex(i)
 220   piecex(i) = piecey(i)
 230   piecey(i) = mx - x
-240 NEXT j
+240 NEXT i
 END SUB
 
 100 cls

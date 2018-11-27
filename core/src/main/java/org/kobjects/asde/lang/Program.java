@@ -267,10 +267,23 @@ public class Program {
         for (Node node : statements) {
             node.resolve(resolutionContext);
             if (node instanceof LetStatement) {
-                setInitializer(GlobalSymbol.Scope.PERSISTENT, ((LetStatement) node).varName, node);
+                LetStatement let = (LetStatement) node;
+                if (let.children[0].returnType() != null) {
+                    setInitializer(GlobalSymbol.Scope.PERSISTENT, let.varName, let, let.children[0].returnType());
+                }
             } else if (node instanceof DimStatement) {
                 DimStatement dim = (DimStatement) node;
-                setInitializer(GlobalSymbol.Scope.PERSISTENT, dim.varName, new DimStatement(dim.varName, dim.children));
+                boolean allChildrenTyped = true;
+                for (Node child : dim.children) {
+                    if (child.returnType() != Types.NUMBER) {
+                        allChildrenTyped = false;
+                        break;
+                    }
+                }
+                if (allChildrenTyped) {
+                    Type elmentType = dim.varName.endsWith("$") ? Types.STRING : Types.NUMBER;
+                    setInitializer(GlobalSymbol.Scope.PERSISTENT, dim.varName, dim, new ArrayType(elmentType, dim.children.length));
+                }
             }
         }
     }
@@ -350,12 +363,13 @@ public class Program {
         }
     }
 
-    public void setInitializer(GlobalSymbol.Scope scope, String name, Node expr) {
+    public void setInitializer(GlobalSymbol.Scope scope, String name, Node expr, Type type) {
       GlobalSymbol symbol = getSymbol(name);
       if (symbol == null) {
           symbol = new GlobalSymbol(scope, null);
           setSymbol(name, symbol);
       }
+      symbol.type = type;
       symbol.initializer = expr;
     }
 
