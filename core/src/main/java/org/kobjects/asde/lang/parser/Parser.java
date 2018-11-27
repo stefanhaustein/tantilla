@@ -11,6 +11,7 @@ import org.kobjects.asde.lang.statement.AssignStatement;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.statement.Command;
 import org.kobjects.asde.lang.statement.DimStatement;
+import org.kobjects.asde.lang.statement.EndIfStatement;
 import org.kobjects.asde.lang.statement.ForStatement;
 import org.kobjects.asde.lang.statement.IfStatement;
 import org.kobjects.asde.lang.statement.IoStatement;
@@ -70,17 +71,29 @@ public class Parser {
       case "DIM":
         parseDim(tokenizer, result);
         return;
+      case "END":
+        tokenizer.consumeIdentifier();
+        if (tokenizer.currentValue.equalsIgnoreCase("IF")) {
+          tokenizer.consumeIdentifier();
+          result.add(new EndIfStatement());
+        }
+        result.add(new LegacyStatement(LegacyStatement.Kind.END));
+        return;
+      case "ENDIF":
+        tokenizer.consumeIdentifier();
+        result.add(new EndIfStatement());
+        return;
       case "FOR":
         result.add(parseFor(tokenizer));
+        return;
+      case "IF":
+        parseIf(tokenizer, result);
         return;
       case "INPUT":
         result.add(parseIo(IoStatement.Kind.INPUT, tokenizer));
         return;
       case "LET":
         result.add(parseLet(tokenizer));
-        return;
-      case "IF":
-        parseIf(tokenizer, result);
         return;
       case "NEXT":
         parseNext(tokenizer, result);
@@ -162,15 +175,15 @@ public class Parser {
       case RESTORE: // 0 or 1 param; Default is 0
         if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF &&
             !tokenizer.currentValue.equals(":")) {
-          return new LegacyStatement(program, kind, expressionParser.parse(tokenizer));
+          return new LegacyStatement(kind, expressionParser.parse(tokenizer));
         }
-        return new LegacyStatement(program, kind);
+        return new LegacyStatement(kind);
 
       case DEF:  // Exactly one param
       case GOTO:
       case GOSUB:
       case PAUSE:
-        return new LegacyStatement(program, kind, expressionParser.parse(tokenizer));
+        return new LegacyStatement(kind, expressionParser.parse(tokenizer));
 
 
       case DATA:  // One or more params
@@ -179,7 +192,7 @@ public class Parser {
         do {
           expressions.add(expressionParser.parse(tokenizer));
         } while (tokenizer.tryConsume(","));
-        return new LegacyStatement(program, kind, expressions.toArray(new Node[expressions.size()]));
+        return new LegacyStatement(kind, expressions.toArray(new Node[expressions.size()]));
       }
 
       case ON: {
@@ -196,11 +209,11 @@ public class Parser {
         do {
           expressions.add(expressionParser.parse(tokenizer));
         } while (tokenizer.tryConsume(","));
-        return new LegacyStatement(program, kind, suffix,
+        return new LegacyStatement(kind, suffix,
             expressions.toArray(new Node[expressions.size()]));
       }
       default:
-        return new LegacyStatement(program, kind);
+        return new LegacyStatement(kind);
     }
   }
 
@@ -246,14 +259,17 @@ public class Parser {
 
   private void parseIf(ExpressionParser.Tokenizer tokenizer, List<Node> result) {
     tokenizer.nextToken();
-    result.add(new IfStatement(expressionParser.parse(tokenizer)));
+    IfStatement ifStatement = new IfStatement(expressionParser.parse(tokenizer));
+    result.add(ifStatement);
     if (!tryConsume(tokenizer, "THEN") && !tryConsume(tokenizer, "GOTO")) {
       throw tokenizer.exception("'THEN expected after IF-condition.'", null);
     }
     if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.NUMBER) {
       double target = (int) Double.parseDouble(tokenizer.currentValue);
       tokenizer.nextToken();
-      result.add(new LegacyStatement(program, LegacyStatement.Kind.GOTO, new Literal(target)));
+      result.add(new LegacyStatement(LegacyStatement.Kind.GOTO, new Literal(target)));
+    } else if (tokenizer.currentValue.isEmpty()) {
+      ifStatement.multiline = true;
     }
   }
 
@@ -352,7 +368,7 @@ public class Parser {
     Node statement;
     do {
       while (tokenizer.tryConsume(":")) {
-        result.add(new LegacyStatement(program, null));
+        result.add(new LegacyStatement(null));
       }
       if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.EOF) {
         break;

@@ -34,19 +34,19 @@ public class LegacyStatement extends Node {
     STOP,
   }
 
-  final Program program;
+//  final Program program;
   public final Kind kind;
   final String[] delimiter;
 
-  public LegacyStatement(Program program, Kind kind, String[] delimiter, Node... children) {
+  public LegacyStatement(Kind kind, String[] delimiter, Node... children) {
     super(children);
-    this.program = program;
+  //  this.program = program;
     this.kind = kind;
     this.delimiter = delimiter;
   }
 
-  public LegacyStatement(Program program, Kind kind, Node... children) {
-    this(program, kind, null, children);
+  public LegacyStatement(Kind kind, Node... children) {
+    this(kind, null, children);
   }
 
   @Override
@@ -58,7 +58,7 @@ public class LegacyStatement extends Node {
     if (kind == null) {
       return null;
     }
-
+    Program program = interpreter.control.program;
     switch (kind) {
       case DEF: {
         Node assignment = children[0];

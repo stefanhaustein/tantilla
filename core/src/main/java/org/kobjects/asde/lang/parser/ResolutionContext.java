@@ -15,7 +15,7 @@ import java.util.HashMap;
 public class ResolutionContext {
     public enum ResolutionMode {FUNCTION, SHELL, MAIN};
     public enum BlockType {
-        ROOT, FOR
+        ROOT, FOR, IF
     }
 
     public final Program program;
