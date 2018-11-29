@@ -20,7 +20,7 @@ public class CodeLine {
 
     public void toString(AnnotatedStringBuilder sb, Map<Node, Exception> errors) {
         for (int i = 0; i < indent; i++) {
-            sb.append("  ");
+            sb.append(' ');
         }
         for (int i = 0; i < statements.size(); i++) {
             if (i > 0) {

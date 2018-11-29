@@ -11,6 +11,7 @@ import org.kobjects.asde.lang.statement.AssignStatement;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.statement.Command;
 import org.kobjects.asde.lang.statement.DimStatement;
+import org.kobjects.asde.lang.statement.ElseStatement;
 import org.kobjects.asde.lang.statement.EndIfStatement;
 import org.kobjects.asde.lang.statement.ForStatement;
 import org.kobjects.asde.lang.statement.IfStatement;
@@ -71,11 +72,16 @@ public class Parser {
       case "DIM":
         parseDim(tokenizer, result);
         return;
+      case "ELSE":
+        tokenizer.consumeIdentifier();
+        result.add(new ElseStatement(result.size() == 0));
+        return;
       case "END":
         tokenizer.consumeIdentifier();
         if (tokenizer.currentValue.equalsIgnoreCase("IF")) {
           tokenizer.consumeIdentifier();
           result.add(new EndIfStatement());
+          return;
         }
         result.add(new LegacyStatement(LegacyStatement.Kind.END));
         return;

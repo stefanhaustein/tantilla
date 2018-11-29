@@ -51,7 +51,9 @@ public class LegacyStatement extends Node {
 
   @Override
   protected void onResolve(ResolutionContext resolutionContext) {
-    // Nothing to do for legacy statements.
+    if (resolutionContext.mode == ResolutionContext.ResolutionMode.FUNCTION) {
+      throw new RuntimeException("Legacy statement " + kind + " not permitted in functions and subroutines.");
+    }
   }
 
   public Object eval(Interpreter interpreter) {

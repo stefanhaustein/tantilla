@@ -1,7 +1,10 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.statement.ElseStatement;
+import org.kobjects.asde.lang.statement.EndIfStatement;
 import org.kobjects.asde.lang.statement.ForStatement;
+import org.kobjects.asde.lang.statement.IfStatement;
 import org.kobjects.asde.lang.statement.NextStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.parser.ResolutionContext;
@@ -35,9 +38,13 @@ public class CallableUnit implements Function {
         for (CodeLine line : code.values()) {
             int addLater = 0;
             for (Node statement : line.statements) {
-                if (statement instanceof ForStatement) {
+                if (statement instanceof ElseStatement) {
+                    indent--;
                     addLater++;
-                } else if (statement instanceof NextStatement) {
+                } else if (statement instanceof ForStatement
+                        || (statement instanceof IfStatement && ((IfStatement) statement).multiline)) {
+                    addLater++;
+                } else if (statement instanceof NextStatement || statement instanceof EndIfStatement) {
                     if (addLater > 0) {
                         addLater--;
                     } else {

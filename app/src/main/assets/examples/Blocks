@@ -15,7 +15,9 @@ LET gameover = 0
 
 FUNCTION checkposition(Number x, Number y) -> Number
 100 FOR i = 0 TO 3
-110   IF grid(x + piecex(i), y + piecey(i)) <> 0 THEN RETURN 0
+110   IF grid(x + piecex(i), y + piecey(i)) <> 0 THEN
+112     RETURN 0
+114   ENDIF
 120 NEXT i
 130 RETURN 1
 END FUNCTION
@@ -72,8 +74,12 @@ SUB drawall()
 100 FOR y = 0 to 20
 120  FOR x = 1 to 12
 130    LET c = grid(x, y)
-140    IF c THEN setcolor c  : pen.rect x * 8 - 69, 91 - y * 8, 7, 7
-145    IF c = 0 THEN pen.clear x * 8 - 70, 90 - y * 8, 8, 8
+140    IF c THEN
+141      setcolor c
+142      pen.rect x * 8 - 69, 91 - y * 8, 7, 7
+143    ELSE
+147      pen.clear x * 8 - 70, 90 - y * 8, 8, 8
+148    endif
 150  NEXT x
 160 NEXT y
 END SUB
@@ -92,9 +98,14 @@ SUB checkgrid()
 110 FOR cy = 0 to 19
 120   LET row = 0
 130   FOR x = 2 to 11
-140     IF grid(x,cy) <> 0 then ROW = ROW + 1
+140     IF grid(x,cy) <> 0 then
+141       ROW = ROW + 1
+142     END IF
 150   NEXT x
-160   IF row = 10 then dropgrid cy : dropcount = dropcount + 1
+160   IF row = 10 then
+162     dropgrid cy
+164     dropcount = dropcount + 1
+166   ENDIF
 170 next cy
 180 score = score + dropcount * dropcount * 10
 190 rows = rows + dropcount
@@ -123,20 +134,26 @@ END SUB
 
 SUB moveright()
 110 erasepiece
-120 if checkposition(px0 + 1, py0) then px0 = px0 + 1
+120 if checkposition(px0 + 1, py0) then
+122   px0 = px0 + 1
+124 END IF
 130 drawpiece
 END SUB
 
 SUB moveleft()
 110 erasepiece
-120 if checkposition(px0 - 1, py0) then px0 = px0 - 1
+120 if checkposition(px0 - 1, py0) then
+122   px0 = px0 - 1
+124 end if
 130 drawpiece
 END SUB
 
 SUB movedown()
 110 erasepiece
 120 LET ok = checkposition(px0, py0 + 1)
-125 IF ok THEN py0 = py0 + 1
+125 IF ok THEN
+127   py0 = py0 + 1
+128 END if
 130 drawpiece
 140 IF ok = 0 THEN newpiece() : drawpiece()
 END SUB
@@ -150,7 +167,10 @@ SUB rotate()
 130  piecex(i) = mx - piecey(i)
 140  piecey(i) = x
 150 NEXT i
-160 if checkposition(px0, py0) then drawpiece() : RETURN
+160 if checkposition(px0, py0) then
+170   drawpiece()
+180   RETURN
+190 end if
 200 FOR i = 0 to 3
 210   LET x = piecex(i)
 220   piecex(i) = piecey(i)

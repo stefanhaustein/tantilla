@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.CallableUnit;
+import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Node;
@@ -32,10 +34,18 @@ public class IfStatement extends Node {
     public Object eval(Interpreter interpreter) {
         if (!evalChildToBoolean(interpreter, 0)) {
             if (multiline) {
-                throw new RuntimeException("Multiline IF NYI");
+                EndifMatcher matcher = new EndifMatcher();
+                int[] pos = new int[] {interpreter.currentLine + 1, 0};
+                interpreter.callableUnit.find(matcher, pos);
+                interpreter.currentLine = pos[0];
+                interpreter.currentIndex = pos[1] + 1;
             } else {
-                interpreter.currentLine++;
-                interpreter.currentIndex = 0;
+                CodeLine line = interpreter.callableUnit.ceilingEntry(interpreter.currentLine).getValue();
+                while (++interpreter.currentIndex < line.statements.size()) {
+                    if (line.statements.get(interpreter.currentIndex) instanceof ElseStatement) {
+                        break;
+                    }
+                }
             }
         }
         return null;
@@ -51,5 +61,26 @@ public class IfStatement extends Node {
         appendLinked(asb, "IF ", errors);
         children[0].toString(asb, errors);
         asb.append(" THEN ");
+    }
+
+    static class EndifMatcher implements CallableUnit.StatementMatcher {
+        int skip;
+
+        @Override
+        public boolean statementMatches(Node statement) {
+            if (statement instanceof IfStatement && ((IfStatement) statement).multiline) {
+                skip++;
+            } else if (statement instanceof ElseStatement && ((ElseStatement) statement).multiline) {
+                if (skip == 0) {
+                  return true;
+               }
+            } else if (statement instanceof EndIfStatement) {
+              if (skip == 0) {
+                 return true;
+              }
+              skip--;
+            }
+            return false;
+        }
     }
 }
