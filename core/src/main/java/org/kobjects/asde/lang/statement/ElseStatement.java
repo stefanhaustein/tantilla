@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class ElseStatement extends Node {
 
-    final boolean multiline;
+    public final boolean multiline;
 
     public ElseStatement(boolean multiline) {
         this.multiline = multiline;
@@ -49,19 +49,21 @@ public class ElseStatement extends Node {
     }
 
 
-
+    /**
+     * Else is reached only after a successful if and hence always goes to the end
+     */
     static class EndifMatcher implements CallableUnit.StatementMatcher {
-        int skip;
+        int level;
 
         @Override
         public boolean statementMatches(Node statement) {
-            if (statement instanceof IfStatement && ((IfStatement) statement).multiline) {
-                skip++;
+            if (statement instanceof IfStatement && ((IfStatement) statement).multiline && !((IfStatement) statement).elseIf) {
+                level++;
             } else if (statement instanceof EndIfStatement) {
-                if (skip == 0) {
+                if (level == 0) {
                     return true;
                 }
-                skip--;
+                level--;
             }
             return false;
         }

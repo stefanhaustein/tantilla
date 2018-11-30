@@ -38,11 +38,13 @@ public class CallableUnit implements Function {
         for (CodeLine line : code.values()) {
             int addLater = 0;
             for (Node statement : line.statements) {
-                if (statement instanceof ElseStatement) {
-                    indent--;
+                if (statement instanceof ElseStatement && ((ElseStatement) statement).multiline) {
                     addLater++;
+                    indent--;
                 } else if (statement instanceof ForStatement
-                        || (statement instanceof IfStatement && ((IfStatement) statement).multiline)) {
+                        || (statement instanceof IfStatement
+                        && ((IfStatement) statement).multiline
+                        && !((IfStatement) statement).elseIf)) {
                     addLater++;
                 } else if (statement instanceof NextStatement || statement instanceof EndIfStatement) {
                     if (addLater > 0) {

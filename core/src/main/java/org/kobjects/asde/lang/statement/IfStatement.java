@@ -12,11 +12,13 @@ import org.kobjects.typesystem.Type;
 import java.util.Map;
 
 public class IfStatement extends Node {
+    public final boolean multiline;
+    public final boolean elseIf;
 
-    public boolean multiline;
-
-    public IfStatement(Node condition) {
+    public IfStatement(Node condition, boolean multiline, boolean elseIf) {
         super(condition);
+        this.multiline = multiline;
+        this.elseIf = elseIf;
     }
 
     @Override
@@ -25,7 +27,7 @@ public class IfStatement extends Node {
                 !Types.match(children[0].returnType(), Types.NUMBER)) {
             throw new RuntimeException("Boolean condition value expected.");
         }
-        if (multiline) {
+        if (multiline && !elseIf) {
             resolutionContext.startBlock(ResolutionContext.BlockType.IF);
         }
     }
@@ -60,7 +62,7 @@ public class IfStatement extends Node {
     public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
         appendLinked(asb, "IF ", errors);
         children[0].toString(asb, errors);
-        asb.append(" THEN ");
+        asb.append(" THEN");
     }
 
     static class EndifMatcher implements CallableUnit.StatementMatcher {
@@ -68,12 +70,10 @@ public class IfStatement extends Node {
 
         @Override
         public boolean statementMatches(Node statement) {
-            if (statement instanceof IfStatement && ((IfStatement) statement).multiline) {
+            if (statement instanceof IfStatement && ((IfStatement) statement).multiline && !((IfStatement) statement).elseIf) {
                 skip++;
-            } else if (statement instanceof ElseStatement && ((ElseStatement) statement).multiline) {
-                if (skip == 0) {
-                  return true;
-               }
+            } else if (statement instanceof ElseStatement && ((ElseStatement) statement).multiline && skip == 0) {
+               return true;
             } else if (statement instanceof EndIfStatement) {
               if (skip == 0) {
                  return true;

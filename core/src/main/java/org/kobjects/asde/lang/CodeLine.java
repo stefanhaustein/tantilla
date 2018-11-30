@@ -2,6 +2,7 @@ package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.statement.ElseStatement;
 import org.kobjects.asde.lang.statement.IfStatement;
 
 import java.util.ArrayList;
@@ -24,7 +25,8 @@ public class CodeLine {
         }
         for (int i = 0; i < statements.size(); i++) {
             if (i > 0) {
-                sb.append((i == 0 || statements.get(i - 1) instanceof IfStatement) ? "" : " : ");
+                sb.append(statements.get(i - 1) instanceof IfStatement
+                     || statements.get(i - 1) instanceof ElseStatement ? " " : " : ");
             }
             statements.get(i).toString(sb, errors);
         }

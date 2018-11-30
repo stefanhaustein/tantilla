@@ -34,14 +34,23 @@ END SUB
 
 SUB setcolor(Number c)
 5 REM Store in array?
-10 if c = 1 then pen.fillcolor = #ff0000ff : REM blue J
-20 if c = 2 then pen.fillcolor = #ff00ff00 : REM green S
-30 if c = 3 then pen.fillcolor = #ffff8800 : REM orange L
-40 if c = 4 then pen.fillcolor = #ffff0000 : REM red Z
-50 if c = 5 then pen.fillcolor = #ffff00ff : REM violet T
-60 if c = 6 then pen.fillcolor = #ffeeee00 : REM yellow O
-70 if c = 7 then pen.fillcolor = #ff00ffff : REM cyan I
-80 if c = 8 then pen.fillcolor = #ff888888 : REM border
+10 if c = 1 then
+15   pen.fillcolor = #ff0000ff : REM blue J
+20 else if c = 2 then
+25   pen.fillcolor = #ff00ff00 : REM green S
+30 else if c = 3 then
+35   pen.fillcolor = #ffff8800 : REM orange L
+40 else if c = 4 then
+45   pen.fillcolor = #ffff0000 : REM red Z
+50 else if c = 5 then
+55   pen.fillcolor = #ffff00ff : REM violet T
+60 else if c = 6 then
+65   pen.fillcolor = #ffeeee00 : REM yellow O
+70 else if c = 7 then
+75   pen.fillcolor = #ff00ffff : REM cyan I
+80 else if c = 8 then
+85    pen.fillcolor = #ff888888 : REM border
+90 endif
 END SUB
 
 SUB drawpiece()

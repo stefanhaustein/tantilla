@@ -73,7 +73,7 @@ public class Parser {
         parseDim(tokenizer, result);
         return;
       case "ELSE":
-        tokenizer.consumeIdentifier();
+        tokenizer.nextToken();
         result.add(new ElseStatement(result.size() == 0));
         return;
       case "END":
@@ -264,18 +264,18 @@ public class Parser {
   }
 
   private void parseIf(ExpressionParser.Tokenizer tokenizer, List<Node> result) {
+    boolean elseIf = (result.size() > 0 && result.get(result.size() - 1) instanceof ElseStatement);
+
     tokenizer.nextToken();
-    IfStatement ifStatement = new IfStatement(expressionParser.parse(tokenizer));
-    result.add(ifStatement);
+    Node condition = expressionParser.parse(tokenizer);
     if (!tryConsume(tokenizer, "THEN") && !tryConsume(tokenizer, "GOTO")) {
       throw tokenizer.exception("'THEN expected after IF-condition.'", null);
     }
+    result.add(new IfStatement(condition, tokenizer.currentValue.isEmpty(), elseIf));
     if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.NUMBER) {
       double target = (int) Double.parseDouble(tokenizer.currentValue);
       tokenizer.nextToken();
       result.add(new LegacyStatement(LegacyStatement.Kind.GOTO, new Literal(target)));
-    } else if (tokenizer.currentValue.isEmpty()) {
-      ifStatement.multiline = true;
     }
   }
 
@@ -381,7 +381,10 @@ public class Parser {
       }
       parseStatement(tokenizer, result, parsingContext);
       statement = result.get(result.size() - 1);
-    } while (statement instanceof IfStatement || tokenizer.tryConsume(":"));
+    } while (statement instanceof IfStatement
+            || statement instanceof ElseStatement
+            || tokenizer.currentValue.equalsIgnoreCase("else")
+            || tokenizer.tryConsume(":"));
     if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF) {
       throw tokenizer.exception("Leftover input.", null);
     }
