@@ -35,9 +35,11 @@ public class CallableUnit implements Function {
                 type, parameterNames);
 
         int indent = 0;
-        for (CodeLine line : code.values()) {
+        for (Map.Entry<Integer,CodeLine> entry : code.entrySet()) {
             int addLater = 0;
-            for (Node statement : line.statements) {
+            CodeLine line = entry.getValue();
+            for (int i = 0; i < line.statements.size(); i++) {
+                Node statement = line.statements.get(i);
                 if (statement instanceof ElseStatement && ((ElseStatement) statement).multiline) {
                     addLater++;
                     indent--;
@@ -53,7 +55,7 @@ public class CallableUnit implements Function {
                         indent--;
                     }
                 }
-                statement.resolve(resolutionContext);
+                statement.resolve(resolutionContext, entry.getKey(), i);
             }
             line.indent = indent;
             indent += addLater;

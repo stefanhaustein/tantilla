@@ -48,7 +48,7 @@ public class NextStatement extends Node {
         return Types.VOID;
     }
 
-    public void onResolve(ResolutionContext resolutionContext) {
+    public void onResolve(ResolutionContext resolutionContext, int line, int index) {
         resolutionContext.endBlock(ResolutionContext.BlockType.FOR);
     }
 

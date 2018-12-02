@@ -2,7 +2,6 @@ package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.StackEntry;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.parser.ResolutionContext;
@@ -17,7 +16,7 @@ public class FunctionReturnStatement extends Node {
     }
 
     @Override
-    protected void onResolve(ResolutionContext resolutionContext) {
+    protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
         if (resolutionContext.functionType.getReturnType() == Types.VOID) {
             if (children.length != 0) {
                 throw new RuntimeException("Unexpected return value for subroutine.");

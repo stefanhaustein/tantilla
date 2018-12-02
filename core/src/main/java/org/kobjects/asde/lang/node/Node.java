@@ -20,14 +20,14 @@ public abstract class Node {
     this.children = children == null || children.length == 0 ? EMPTY_ARRAY : children;
   }
 
-  protected abstract void onResolve(ResolutionContext resolutionContext);
+  protected abstract void onResolve(ResolutionContext resolutionContext, int line, int index);
 
-  public final void resolve(ResolutionContext resolutionContext) {
+  public final void resolve(ResolutionContext resolutionContext, int line, int index) {
     for (Node child: children) {
-      child.resolve(resolutionContext);
+      child.resolve(resolutionContext, line, index);
     }
     try {
-      onResolve(resolutionContext);
+      onResolve(resolutionContext, line, index);
     } catch (Exception e) {
       resolutionContext.addError(this, e);
     }

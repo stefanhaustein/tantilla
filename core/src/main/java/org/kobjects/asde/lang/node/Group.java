@@ -13,7 +13,7 @@ public class Group extends Node {
     }
 
     @Override
-    protected void onResolve(ResolutionContext resolutionContext) {
+    protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
         // Nothing to do here.
     }
 

@@ -1,7 +1,6 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Builtin;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.parser.ResolutionContext;
@@ -33,7 +32,7 @@ public class RelationalOperator extends Node {
   }
 
   @Override
-  protected void onResolve(ResolutionContext resolutionContext) {
+  protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
     if (!Types.match(children[0].returnType(), children[1].returnType())) {
       throw new RuntimeException("Argument types must match for relational expressions; got "
               + children[0].returnType() + " and " + children[1].returnType());

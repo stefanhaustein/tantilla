@@ -264,8 +264,9 @@ public class Program {
 
     public void processDeclarations(List<? extends Node> statements) {
         ResolutionContext resolutionContext = new ResolutionContext(this, ResolutionContext.ResolutionMode.SHELL, new FunctionType(Types.VOID));
-        for (Node node : statements) {
-            node.resolve(resolutionContext);
+        for (int i = 0; i < statements.size(); i++) {
+            Node node = statements.get(i);
+            node.resolve(resolutionContext, -2, i);
             if (node instanceof LetStatement) {
                 LetStatement let = (LetStatement) node;
                 if (let.children[0].returnType() != null) {

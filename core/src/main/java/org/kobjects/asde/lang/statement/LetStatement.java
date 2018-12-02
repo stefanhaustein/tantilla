@@ -19,7 +19,7 @@ public class LetStatement extends Node {
         this.varName = varName;
     }
 
-    public void onResolve(ResolutionContext resolutionContext) {
+    public void onResolve(ResolutionContext resolutionContext, int line, int index) {
         resolved = resolutionContext.declare(varName, children[0].returnType());
     }
 

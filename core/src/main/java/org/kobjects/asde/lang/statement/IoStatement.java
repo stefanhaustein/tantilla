@@ -27,7 +27,7 @@ public class IoStatement extends Node {
     }
 
     @Override
-    protected void onResolve(ResolutionContext resolutionContext) {
+    protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
         // TODO: Implement
     }
 

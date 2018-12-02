@@ -4,7 +4,6 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.parser.ResolutionContext;
-import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.typesystem.Type;
 
@@ -21,7 +20,7 @@ public class Identifier extends AssignableNode {
     this.name = name;
   }
 
-  public void onResolve(ResolutionContext resolutionContext) {
+  public void onResolve(ResolutionContext resolutionContext, int line, int index) {
       resolved = resolutionContext.resolve(name);
   }
 

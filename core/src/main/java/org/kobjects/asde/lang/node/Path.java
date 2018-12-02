@@ -2,7 +2,6 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.Instance;
@@ -39,7 +38,7 @@ public class Path extends AssignableNode {
     }
 
     @Override
-    protected void onResolve(ResolutionContext resolutionContext) {
+    protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
         if (children[0].returnType() instanceof Classifier) {
             resolved = ((Classifier) children[0].returnType()).getPropertyDescriptor(pathName);
         } else if (children[0].returnType() != null) {

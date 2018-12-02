@@ -29,7 +29,7 @@ public class Command extends Node {
     }
 
     @Override
-    protected void onResolve(ResolutionContext resolutionContext) {
+    protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
         // Commands can't be in programs.
     }
 

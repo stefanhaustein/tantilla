@@ -20,7 +20,7 @@ public class ForStatement extends Node {
         this.varName = varName;
     }
 
-    public void onResolve(ResolutionContext resolutionContext) {
+    public void onResolve(ResolutionContext resolutionContext, int line, int index) {
         resolutionContext.startBlock(ResolutionContext.BlockType.FOR);
         // TODO: Check types?
         resolved = resolutionContext.declare(varName, Types.NUMBER);

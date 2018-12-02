@@ -18,7 +18,7 @@ public class ElseStatement extends Node {
     }
 
     @Override
-    protected void onResolve(ResolutionContext resolutionContext) {
+    protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
         resolutionContext.endBlock(ResolutionContext.BlockType.IF);
         resolutionContext.startBlock(ResolutionContext.BlockType.IF);
     }

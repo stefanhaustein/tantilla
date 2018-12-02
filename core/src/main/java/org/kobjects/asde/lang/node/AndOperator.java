@@ -26,7 +26,7 @@ public class AndOperator extends Node {
   }
 
   @Override
-  protected void onResolve(ResolutionContext resolutionContext) {
+  protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
     if (!Types.match(children[0].returnType(), children[1].returnType())) {
       throw new RuntimeException("Matching Boolean or Number argument expected; got "
               + children[0].returnType() + " and " + children[1].returnType());

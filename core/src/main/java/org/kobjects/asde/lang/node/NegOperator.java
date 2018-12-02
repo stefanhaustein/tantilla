@@ -15,7 +15,7 @@ public class NegOperator extends Node {
   }
 
   @Override
-  protected void onResolve(ResolutionContext resolutionContext) {
+  protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
     if (!Types.match(children[0].returnType(), Types.NUMBER)) {
       throw new RuntimeException("Number argument expected for negation.");
     }

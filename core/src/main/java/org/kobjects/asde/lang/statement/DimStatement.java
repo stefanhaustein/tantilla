@@ -19,7 +19,7 @@ public class DimStatement extends Node {
     }
 
     @Override
-    protected void onResolve(ResolutionContext resolutionContext) {
+    protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
         // TODO: Implement
         System.err.println("TODO: DimStatement.onResolve");
     }
