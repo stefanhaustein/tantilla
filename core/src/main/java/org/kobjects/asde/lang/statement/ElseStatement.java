@@ -13,6 +13,9 @@ public class ElseStatement extends Node {
 
     public final boolean multiline;
 
+    public int resolvedLine;
+    public int resolvedIndex;
+
     public ElseStatement(boolean multiline) {
         this.multiline = multiline;
     }
@@ -21,20 +24,22 @@ public class ElseStatement extends Node {
     protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
         resolutionContext.endBlock(ResolutionContext.BlockType.IF);
         resolutionContext.startBlock(ResolutionContext.BlockType.IF);
+        if (multiline) {
+            EndifMatcher matcher = new EndifMatcher();
+            int[] pos = new int[] {line + 1, 0};
+            resolutionContext.callableUnit.find(matcher, pos);
+            resolvedLine = pos[0];
+            resolvedIndex = pos[1] + 1;
+        } else {
+            resolvedIndex = 0;
+            resolvedLine = line + 1;
+        }
     }
 
     @Override
     public Object eval(Interpreter interpreter) {
-        if (multiline) {
-            EndifMatcher matcher = new EndifMatcher();
-            int[] pos = new int[] {interpreter.currentLine + 1, 0};
-            interpreter.callableUnit.find(matcher, pos);
-            interpreter.currentLine = pos[0];
-            interpreter.currentIndex = pos[1] + 1;
-        } else {
-            interpreter.currentIndex = 0;
-            interpreter.currentLine++;
-        }
+        interpreter.currentLine = resolvedLine;
+        interpreter.currentIndex = resolvedIndex;
         return null;
     }
 

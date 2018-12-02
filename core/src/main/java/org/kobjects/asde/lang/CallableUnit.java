@@ -32,7 +32,7 @@ public class CallableUnit implements Function {
     public void resolve() {
         ResolutionContext resolutionContext = new ResolutionContext(program,
                 this == program.main ? ResolutionContext.ResolutionMode.MAIN : ResolutionContext.ResolutionMode.FUNCTION,
-                type, parameterNames);
+                this, parameterNames);
 
         int indent = 0;
         for (Map.Entry<Integer,CodeLine> entry : code.entrySet()) {

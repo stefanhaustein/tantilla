@@ -263,7 +263,9 @@ public class Program {
 
 
     public void processDeclarations(List<? extends Node> statements) {
-        ResolutionContext resolutionContext = new ResolutionContext(this, ResolutionContext.ResolutionMode.SHELL, new FunctionType(Types.VOID));
+        CallableUnit wrapper = new CallableUnit(this, new FunctionType(Types.VOID));
+        wrapper.setLine(-2, new CodeLine(statements));
+        ResolutionContext resolutionContext = new ResolutionContext(this, ResolutionContext.ResolutionMode.SHELL, wrapper);
         for (int i = 0; i < statements.size(); i++) {
             Node node = statements.get(i);
             node.resolve(resolutionContext, -2, i);

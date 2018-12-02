@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.parser;
 
 
+import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.symbol.DynamicSymbol;
@@ -21,19 +22,19 @@ public class ResolutionContext {
     public final Program program;
     public HashMap<Node, Exception> errors = new HashMap<>();
     public final ResolutionMode mode;
-    public final FunctionType functionType;
+    public final CallableUnit callableUnit;
 
     private int localSymbolCount;
     private Block currentBlock;
 
 
-    public ResolutionContext(Program program, ResolutionMode mode, FunctionType type, String... parameterNames) {
+    public ResolutionContext(Program program, ResolutionMode mode, CallableUnit callableUnit, String... parameterNames) {
         this.program = program;
         this.mode = mode;
-        this.functionType = type;
+        this.callableUnit = callableUnit;
         startBlock(BlockType.ROOT);
         for (int i = 0; i < parameterNames.length; i++) {
-            currentBlock.localSymbols.put(parameterNames[i], new LocalSymbol(localSymbolCount++, type.getParameterType(i)));
+            currentBlock.localSymbols.put(parameterNames[i], new LocalSymbol(localSymbolCount++, callableUnit.getType().getParameterType(i)));
         }
     }
 

@@ -15,6 +15,9 @@ public class IfStatement extends Node {
     public final boolean multiline;
     public final boolean elseIf;
 
+    int resolvedLine;
+    int resolvedIndex;
+
     public IfStatement(Node condition, boolean multiline, boolean elseIf) {
         super(condition);
         this.multiline = multiline;
@@ -30,25 +33,30 @@ public class IfStatement extends Node {
         if (multiline && !elseIf) {
             resolutionContext.startBlock(ResolutionContext.BlockType.IF);
         }
+
+        if (multiline) {
+            EndifMatcher matcher = new EndifMatcher();
+            int[] pos = new int[] {line + 1, 0};
+            resolutionContext.callableUnit.find(matcher, pos);
+            resolvedLine = pos[0];
+            resolvedIndex = pos[1] + 1;
+        } else {
+            CodeLine codeLine = resolutionContext.callableUnit.ceilingEntry(line).getValue();
+            while (++index < codeLine.statements.size()) {
+                if (codeLine.statements.get(index) instanceof ElseStatement) {
+                    break;
+                }
+            }
+            resolvedIndex = index;
+            resolvedLine = line;
+        }
     }
 
     @Override
     public Object eval(Interpreter interpreter) {
         if (!evalChildToBoolean(interpreter, 0)) {
-            if (multiline) {
-                EndifMatcher matcher = new EndifMatcher();
-                int[] pos = new int[] {interpreter.currentLine + 1, 0};
-                interpreter.callableUnit.find(matcher, pos);
-                interpreter.currentLine = pos[0];
-                interpreter.currentIndex = pos[1] + 1;
-            } else {
-                CodeLine line = interpreter.callableUnit.ceilingEntry(interpreter.currentLine).getValue();
-                while (++interpreter.currentIndex < line.statements.size()) {
-                    if (line.statements.get(interpreter.currentIndex) instanceof ElseStatement) {
-                        break;
-                    }
-                }
-            }
+            interpreter.currentLine = resolvedLine;
+            interpreter.currentIndex = resolvedIndex;
         }
         return null;
     }
