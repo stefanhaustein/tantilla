@@ -1,4 +1,4 @@
-10 bob = new sprite
+10 bob = new Sprite
 20 bob.size = 50
 30 dx = 0.5
 100 if bob.right < 0 then dx = -1

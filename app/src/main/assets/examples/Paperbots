@@ -1,35 +1,35 @@
-LET robot = new sprite
+LET robot = new Sprite
 DIM grid(12, 12)
-LET robotdir = 0
-LET robotx = 0
-LET roboty = 1
+LET robotDir = 0
+LET robotX = 0
+LET robotY = 1
 
 SUB forward()
-20 if robotdir = 0 and grid(roboty, robotx + 1) = 0 then robotx = robotx + 1
-30 if robotdir = 1 and grid(roboty - 1, robotx) = 0 then roboty = roboty - 1
-40 if robotdir = 2 and grid(roboty, robotx - 1) = 0 then robotx = robotx - 1
-50 if robotdir = 3 and grid(roboty + 1, robotx) = 0 then roboty = roboty + 1
-60 robot.x = robotx * 10 - 50 - 5
-70 robot.y = roboty * 10 - 50 - 5
+20 if robotDir = 0 and grid(robotY, robotX + 1) = 0 then robotX = robotX + 1
+30 if robotDir = 1 and grid(robotY - 1, robotX) = 0 then robotY = robotY - 1
+40 if robotDir = 2 and grid(robotY, robotX - 1) = 0 then robotX = robotX - 1
+50 if robotDir = 3 and grid(robotY + 1, robotX) = 0 then robotY = robotY + 1
+60 robot.x = robotX * 10 - 50 - 5
+70 robot.y = robotY * 10 - 50 - 5
 END SUB
 
-SUB turnleft()
-20 robotdir = robotdir - 1
-30 if robotdir = -1 then robotdir = 3
-40 robot.angle = robotdir * 90
+SUB turnLeft()
+20 robotDir = robotDir - 1
+30 if robotDir = -1 then robotDir = 3
+40 robot.angle = robotDir * 90
 END sub
 
-SUB turnright()
-20 robotdir = robotdir + 1
-30 if robotdir = 4 then robotdir = 0
-40 robot.angle = robotdir * 90
+SUB turnRight()
+20 robotDir = robotDir + 1
+30 if robotDir = 4 then robotDir = 0
+40 robot.angle = robotDir * 90
 END sub
 
 SUB init()
 10 robot.face = "➡️"
 20 robot.size = 10
 30 LET pen = screen.createPen()
-40 pen.strokecolor = 0
+40 pen.strokeColor = 0
 100 FOR i = 0 to 11
 110   grid(i, 0) = 1
 120   grid(i, 11) = 1
@@ -50,9 +50,9 @@ SUB init()
 300 for y = 1 to 10
 310   for x = 1 to 10
 315     LET dark = ((x+y) and 1)
-320     if dark = 1 then pen.fillcolor = 8 * 256 * 65536
-330     if dark = 0 then pen.fillcolor = 16 * 256 * 65536
-335     if grid(y, x) then pen.fillcolor = 255 * 256 * 65536
+320     if dark = 1 then pen.fillColor = 8 * 256 * 65536
+330     if dark = 0 then pen.fillColor = 16 * 256 * 65536
+335     if grid(y, x) then pen.fillColor = 255 * 256 * 65536
 340     pen.drawRect(x * 10 - 60, y * 10 - 60, 10, 10)
 350   next x
 360 next y

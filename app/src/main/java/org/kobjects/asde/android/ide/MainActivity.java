@@ -197,8 +197,8 @@ public class MainActivity extends AppCompatActivity implements Console {
     screen = new ScreenAdapter(viewport);
 
     program.setValue(GlobalSymbol.Scope.BUILTIN,"screen", screen);
-    program.setValue(GlobalSymbol.Scope.BUILTIN,"sprite", screen.spriteClassifier);
-    program.setValue(GlobalSymbol.Scope.BUILTIN, "text", screen.textClassifier);
+    program.setValue(GlobalSymbol.Scope.BUILTIN,"Sprite", screen.spriteClassifier);
+    program.setValue(GlobalSymbol.Scope.BUILTIN, "TextBox", screen.textClassifier);
     program.setValue(GlobalSymbol.Scope.BUILTIN, "dpad", new DpadAdapter(viewport.dpad));
 //    program.setValue(GlobalSymbol.Scope.BUILTIN,"pen", screen.penClassifier);
 

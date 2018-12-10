@@ -42,10 +42,10 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
     };
 
     public final Classifier textClassifier =
-            new Classifier(TextAdapter.TextMetaProperty.values()) {
+            new Classifier(TextBoxAdapter.TextMetaProperty.values()) {
         @Override
-        public TextAdapter createInstance() {
-            return new TextAdapter(textClassifier, ScreenAdapter.this);
+        public TextBoxAdapter createInstance() {
+            return new TextBoxAdapter(textClassifier, ScreenAdapter.this);
         }
     };
     /*
@@ -76,7 +76,7 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
         switch ((ScreenMetaProperty) property) {
             case width: return widthProperty;
             case height: return heightProperty;
-            case createpen: return new Method((FunctionType) ScreenMetaProperty.createpen.type) {
+            case createPen: return new Method((FunctionType) ScreenMetaProperty.createPen.type) {
                 @Override
                 public Object call(Interpreter interpreter, int paramCount) {
                     return new PenAdapter(viewport.createPen());
@@ -106,7 +106,7 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
     }
 
     private enum ScreenMetaProperty implements PropertyDescriptor {
-        width(Types.NUMBER), height(Types.NUMBER), createpen(new FunctionType(PenAdapter.CLASSIFIER));
+        width(Types.NUMBER), height(Types.NUMBER), createPen(new FunctionType(PenAdapter.CLASSIFIER));
 
         private final Type type;
 

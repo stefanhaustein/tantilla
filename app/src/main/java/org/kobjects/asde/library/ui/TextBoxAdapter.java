@@ -1,16 +1,15 @@
 package org.kobjects.asde.library.ui;
 
 import org.kobjects.asde.lang.Types;
-import org.kobjects.graphics.Text;
+import org.kobjects.graphics.TextBox;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.Instance;
-import org.kobjects.typesystem.PhysicalProperty;
 import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
 
-public class TextAdapter extends Instance {
-    private final Text view;
+public class TextBoxAdapter extends Instance {
+    private final TextBox view;
 
     final NumberProperty x = new NumberProperty(TextMetaProperty.x);
     final NumberProperty y = new NumberProperty(TextMetaProperty.y);
@@ -18,9 +17,9 @@ public class TextAdapter extends Instance {
     final NumberProperty size = new NumberProperty(TextMetaProperty.size);
     final StringProperty text = new StringProperty(TextMetaProperty.text);
 
-    public TextAdapter(Classifier classifier, final ScreenAdapter screen) {
+    public TextBoxAdapter(Classifier classifier, final ScreenAdapter screen) {
         super(classifier);
-        view = new Text(screen.getViewport());
+        view = new TextBox(screen.getViewport());
     }
 
     @Override

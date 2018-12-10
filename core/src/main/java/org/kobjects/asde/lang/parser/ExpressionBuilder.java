@@ -42,8 +42,8 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
 
   @Override
   public Node prefixOperator(ExpressionParser.Tokenizer tokenizer, String name, Node param) {
-    switch (name.toLowerCase()) {
-      case "not":
+    switch (name.toUpperCase()) {
+      case "NOT":
         return new NotOperator(param);
       case "-":
         return new NegOperator(param);
@@ -56,7 +56,7 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
 
   @Override
   public Node infixOperator(ExpressionParser.Tokenizer tokenizer, String name, Node left, Node right) {
-    switch (name.toLowerCase()) {
+    switch (name.toUpperCase()) {
       case ".":
         return new Path(left, right);
       case "<":
@@ -88,9 +88,9 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
         return new MathOperator(MathOperator.Kind.DIV, left, right);
       case "^":
         return new MathOperator(MathOperator.Kind.POW, left, right);
-      case "and":
+      case "AND":
         return new AndOperator(left, right);
-      case "or":
+      case "OR":
         return new OrOperator(left, right);
       default:
         return super.infixOperator(tokenizer, name, left, right);
@@ -104,10 +104,9 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
 
   @Override
   public Node identifier(ExpressionParser.Tokenizer tokenizer, String name) {
-    name = name.toLowerCase();
 
-    switch(name) {
-      case "new":
+    switch(name.toUpperCase()) {
+      case "NEW":
         String className = tokenizer.currentValue;
         try {
           Node result = new New(program, className);
@@ -116,9 +115,9 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
         } catch (Exception e) {
           throw tokenizer.exception(e.getMessage(), e);
         }
-      case "true":
+      case "TRUE":
         return new Literal(Boolean.TRUE);
-      case "false":
+      case "FALSE":
         return new Literal(Boolean.FALSE);
     }
     return new Identifier(program, name);

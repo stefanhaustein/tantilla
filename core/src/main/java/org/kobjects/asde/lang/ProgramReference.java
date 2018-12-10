@@ -10,7 +10,7 @@ public class ProgramReference {
         return new ProgramReference(
                 parts.length > 0 ? parts[0] : "",
                 parts.length > 1 ? parts[1] : "",
-                parts.length > 2 && "true".equalsIgnoreCase(parts[2]));
+                parts.length > 2 && "TRUE".equalsIgnoreCase(parts[2]));
     }
 
     public ProgramReference(String name, String url, boolean urlWritable) {

@@ -68,9 +68,9 @@ public class PenAdapter extends Instance {
     @Override
     public Property getProperty(PropertyDescriptor property) {
         switch ((PenPropertyDescriptor) property) {
-            case fillcolor: return fillColor;
-            case strokecolor: return strokeColor;
-            case textsize: return textSize;
+            case fillColor: return fillColor;
+            case strokeColor: return strokeColor;
+            case textSize: return textSize;
             case clear:
                 return new Method((FunctionType) PenPropertyDescriptor.clear.type()) {
                     @Override
@@ -129,9 +129,9 @@ public class PenAdapter extends Instance {
 
 
     enum PenPropertyDescriptor implements PropertyDescriptor {
-        fillcolor(Types.NUMBER),
-        strokecolor(Types.NUMBER),
-        textsize(Types.NUMBER),
+        fillColor(Types.NUMBER),
+        strokeColor(Types.NUMBER),
+        textSize(Types.NUMBER),
         clear(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER)),
         rect(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER)),
         write(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.STRING)),

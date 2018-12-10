@@ -8,13 +8,13 @@ import android.widget.TextView;
 
 import java.util.Objects;
 
-public class Text extends PositionedViewHolder<TextView> {
+public class TextBox extends PositionedViewHolder<TextView> {
 
     private boolean textDirty;
     private String text;
     private float size = 10;
 
-    public Text(Viewport viewport) {
+    public TextBox(Viewport viewport) {
         super(viewport, new TextView(viewport.activity));
         view.setTextColor(Color.BLACK);
     }

@@ -27,7 +27,7 @@ public class NextStatement extends Node {
                 throw new RuntimeException("NEXT " + varName+ " without FOR.");
             }
             entry = interpreter.stack.remove(interpreter.stack.size() - 1);
-            if (varName == null || entry.forVariableName.equalsIgnoreCase(varName)) {
+            if (varName == null || entry.forVariableName.equals(varName)) {
                 break;
             }
         }

@@ -209,11 +209,11 @@ public class Program {
 
     // move to parser
    private Type parseType(ExpressionParser.Tokenizer tokenizer) {
-       String typeName = tokenizer.consumeIdentifier();
-       if (typeName.equalsIgnoreCase("number")) {
+       String typeName = Case.toUpperCamel(tokenizer.consumeIdentifier());
+       if (typeName.equals("Number")) {
            return Types.NUMBER;
        }
-       if (typeName.equalsIgnoreCase("string")) {
+       if (typeName.equals("String")) {
            return Types.STRING;
        }
        GlobalSymbol symbol = getSymbol(typeName);
