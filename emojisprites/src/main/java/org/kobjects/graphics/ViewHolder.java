@@ -4,12 +4,12 @@ import android.view.View;
 
 abstract class ViewHolder<T extends View> implements Runnable {
     final Viewport viewport;
-    final T view;
+    final AnchorView<T> view;
     boolean syncRequested;
 
     ViewHolder(Viewport viewport, T view) {
         this.viewport = viewport;
-        this.view = view;
+        this.view = new AnchorView<>(view);
     }
 
 
@@ -20,7 +20,7 @@ abstract class ViewHolder<T extends View> implements Runnable {
         }
     }
 
-    public T getView() {
+    public AnchorView<T> getView() {
         return view;
     }
 }

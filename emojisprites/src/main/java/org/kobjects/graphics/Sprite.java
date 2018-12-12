@@ -30,8 +30,8 @@ public class Sprite extends PositionedViewHolder<ImageView> {
 
     public Sprite(Viewport viewport) {
         super(viewport, new ImageView(viewport.getContext()));
-        view.setAdjustViewBounds(true);
-        view.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        view.wrapped.setAdjustViewBounds(true);
+        view.wrapped.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
         backgroundPaint.setStyle(Paint.Style.FILL);
         backgroundPaint.setColor(Color.WHITE);
@@ -111,11 +111,11 @@ public class Sprite extends PositionedViewHolder<ImageView> {
                 bubble.measure(View.MeasureSpec.AT_MOST | Dimensions.dpToPx(bubble.getContext(), 160), View.MeasureSpec.UNSPECIFIED);
                 bubble.getLayoutParams().width = bubble.getMeasuredWidth();
             }
-            view.setImageDrawable(Emojis.getDrawable(view.getContext(), face));
+            view.wrapped.setImageDrawable(Emojis.getDrawable(view.getContext(), face));
         }
 
-        int intrinsicWidth = view.getDrawable().getIntrinsicWidth();
-        int intrinsicHeight = view.getDrawable().getIntrinsicHeight();
+        int intrinsicWidth = view.wrapped.getDrawable().getIntrinsicWidth();
+        int intrinsicHeight = view.wrapped.getDrawable().getIntrinsicHeight();
         int intrinsicSize = Math.max(intrinsicWidth, intrinsicHeight);
 
         float imageScale = (viewport.scale * size) / intrinsicSize;

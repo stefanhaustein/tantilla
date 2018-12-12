@@ -16,7 +16,7 @@ public class TextBox extends PositionedViewHolder<TextView> {
 
     public TextBox(Viewport viewport) {
         super(viewport, new TextView(viewport.activity));
-        view.setTextColor(Color.BLACK);
+        view.wrapped.setTextColor(Color.BLACK);
     }
 
     @Override
@@ -25,7 +25,7 @@ public class TextBox extends PositionedViewHolder<TextView> {
 
         if (textDirty) {
             textDirty = false;
-            view.setText(text);
+            view.wrapped.setText(text);
         }
 
         if (view.getParent() == null) {
@@ -34,7 +34,7 @@ public class TextBox extends PositionedViewHolder<TextView> {
 
         view.setTranslationX(x * viewport.scale);
         view.setTranslationY(y * viewport.scale);
-        view.setTextSize(TypedValue.COMPLEX_UNIT_PX, size * viewport.scale);
+        view.wrapped.setTextSize(TypedValue.COMPLEX_UNIT_PX, size * viewport.scale);
         view.setTranslationZ(z);
     }
 
