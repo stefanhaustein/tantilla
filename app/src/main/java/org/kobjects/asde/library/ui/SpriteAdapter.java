@@ -31,7 +31,7 @@ public class SpriteAdapter extends Instance {
     public SpriteAdapter(Classifier classifier, final ScreenAdapter screen) {
         super(classifier);
         this.screen = screen;
-        sprite = new Sprite(screen.getViewport());
+        sprite = new Sprite(screen.getScreen());
         sprite.setSize(10);
     }
 

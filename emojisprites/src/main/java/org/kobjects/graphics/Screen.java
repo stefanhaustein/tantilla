@@ -9,18 +9,20 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-public class Viewport extends FrameLayout {
+public class Screen {
     public final Activity activity;
     public float scale;
     ImageView imageView;
     Bitmap bitmap;
     float bitmapScale;
     public Dpad dpad;
+    public final FrameLayout view;
 
-    public Viewport(@NonNull Activity activity) {
-        super(activity);
+
+    public Screen(@NonNull Activity activity) {
         this.activity = activity;
-        setClipChildren(false);
+        view = new FrameLayout(activity);
+        view.setClipChildren(false);
 
         int size = Dimensions.dpToPx(activity,200);
 
@@ -35,7 +37,7 @@ public class Viewport extends FrameLayout {
 
         clsImpl();
 
-        addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+        view.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 scale = Math.min(right - left, bottom - top) / 200f;
@@ -46,7 +48,7 @@ public class Viewport extends FrameLayout {
 
         //setClickable(true);
         //setFocusable(FOCUSABLE);
-        setFocusableInTouchMode(true);
+        view.setFocusableInTouchMode(true);
     }
 
     public Pen createPen() {
@@ -60,13 +62,13 @@ public class Viewport extends FrameLayout {
     }
 
     private void clsImpl() {
-        removeAllViews();
+        view.removeAllViews();
 
-        addView(imageView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        view.addView(imageView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         FrameLayout.LayoutParams dpadLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dpadLayoutParams.gravity = Gravity.BOTTOM;
-        addView(dpad.view, dpadLayoutParams);
+        view.addView(dpad.view, dpadLayoutParams);
     }
 
     public void cls() {

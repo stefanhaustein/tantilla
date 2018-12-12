@@ -17,7 +17,7 @@ public class Dpad  {
         return layoutParams;
     }
 
-    private final Viewport viewport;
+    private final Screen screen;
     final LinearLayout view;
     private boolean syncRequested;
     private boolean visible;
@@ -29,10 +29,10 @@ public class Dpad  {
     public ImageView fire;
 
 
-    public Dpad(Viewport viewport) {
-        this.viewport = viewport;
-        this.view = new LinearLayout(viewport.getContext());
-        Context context = viewport.getContext();
+    public Dpad(Screen screen) {
+        this.screen = screen;
+        Context context = screen.activity;
+        this.view = new LinearLayout(context);
 
         left = new ImageView(context);
         left.setImageResource(R.drawable.baseline_arrow_back_24);
@@ -79,7 +79,7 @@ public class Dpad  {
 
     void adjustSize(ImageView view) {
         // TODO: Take distortion into account.
-        int imageSize = Math.round(Math.min(viewport.scale * BUTTON_SIZE, Dimensions.dpToPx(view.getContext(), 48)));
+        int imageSize = Math.round(Math.min(screen.scale * BUTTON_SIZE, Dimensions.dpToPx(view.getContext(), 48)));
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
        // view.setBackgroundColor(0x88000000);
         if (layoutParams.width != imageSize || layoutParams.height != imageSize) {
@@ -94,7 +94,7 @@ public class Dpad  {
     void requestSync() {
         if (!syncRequested) {
             syncRequested = true;
-            viewport.activity.runOnUiThread(() -> syncUi());
+            screen.activity.runOnUiThread(() -> syncUi());
         }
 
     }

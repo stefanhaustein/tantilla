@@ -1,5 +1,6 @@
 package org.kobjects.graphics;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.TypedValue;
@@ -28,8 +29,10 @@ public class Sprite extends PositionedViewHolder<ImageView> {
 
     boolean textDirty;
 
-    public Sprite(Viewport viewport) {
-        super(viewport, new ImageView(viewport.getContext()));
+    public Sprite(Screen screen) {
+        super(screen, new ImageView(screen.activity));
+        Context context = screen.activity;
+
         view.wrapped.setAdjustViewBounds(true);
         view.wrapped.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
@@ -37,16 +40,16 @@ public class Sprite extends PositionedViewHolder<ImageView> {
         backgroundPaint.setColor(Color.WHITE);
         borderPaint.setStyle(Paint.Style.STROKE);
         borderPaint.setColor(Color.BLACK);
-        borderPaint.setStrokeWidth(Dimensions.dpToPx(viewport.getContext(), 1));
+        borderPaint.setStrokeWidth(Dimensions.dpToPx(context, 1));
 
-        labelView = new TextView(viewport.getContext());
+        labelView = new TextView(context);
         //  labelView.setBackgroundColor(Color.WHITE);
         labelView.setTextColor(Color.BLACK);
         labelView.setVisibility(View.GONE);
 
-        bubble = new TextView(viewport.getContext());
+        bubble = new TextView(context);
 
-        int basePx = Dimensions.dpToPx(viewport.getContext(), 4);
+        int basePx = Dimensions.dpToPx(context, 4);
 
         bubble.setPadding(2 * basePx ,  basePx,2*basePx , basePx);
         bubble.setBackground(new BubbleDrawable(3 * basePx, 0, 3 * basePx, backgroundPaint, borderPaint));
@@ -83,9 +86,9 @@ public class Sprite extends PositionedViewHolder<ImageView> {
     public void syncUi() {
 
         if (view.getParent() == null) {
-            viewport.addView(view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            viewport.addView(labelView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            viewport.addView(bubble, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            screen.view.addView(view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            screen.view.addView(labelView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            screen.view.addView(bubble, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
 
         if (textDirty) {
@@ -95,7 +98,7 @@ public class Sprite extends PositionedViewHolder<ImageView> {
                 labelView.setText("");
                 labelView.setVisibility(View.GONE);
             } else {
-                labelView.setTextSize(TypedValue.COMPLEX_UNIT_PX, 5 * viewport.scale);
+                labelView.setTextSize(TypedValue.COMPLEX_UNIT_PX, 5 * screen.scale);
                 labelView.setVisibility(View.VISIBLE);
                 labelView.setText(" " + label + " ");
                 setX(x);
@@ -117,19 +120,19 @@ public class Sprite extends PositionedViewHolder<ImageView> {
         int intrinsicHeight = view.wrapped.getDrawable().getIntrinsicHeight();
         int intrinsicSize = Math.max(intrinsicWidth, intrinsicHeight);
 
-        float imageScale = (viewport.scale * size) / intrinsicSize;
+        float imageScale = (screen.scale * size) / intrinsicSize;
         view.setScaleX(imageScale);
         view.setScaleY(imageScale);
         view.setRotation(angle);
 
-        float screenX = x * viewport.scale + viewport.getWidth() / 2;
+        float screenX = x * screen.scale + screen.view.getWidth() / 2;
 
         view.setTranslationX(screenX - intrinsicWidth / 2);
         labelView.setTranslationX(screenX - labelView.getPaint().measureText(labelView.getText().toString()) / 2);
         bubble.setTranslationX(screenX - bubble.getMeasuredWidth() / 2);
 
         float heightPx = intrinsicHeight * view.getScaleY();
-        float scrY = viewport.getHeight() / 2 - y * viewport.scale;
+        float scrY = screen.view.getHeight() / 2 - y * screen.scale;
 
         view.setTranslationY(scrY - intrinsicHeight / 2);
 

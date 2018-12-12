@@ -14,8 +14,8 @@ public class TextBox extends PositionedViewHolder<TextView> {
     private String text;
     private float size = 10;
 
-    public TextBox(Viewport viewport) {
-        super(viewport, new TextView(viewport.activity));
+    public TextBox(Screen screen) {
+        super(screen, new TextView(screen.activity));
         view.wrapped.setTextColor(Color.BLACK);
     }
 
@@ -27,12 +27,12 @@ public class TextBox extends PositionedViewHolder<TextView> {
         }
 
         if (view.getParent() == null) {
-            viewport.addView(view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            screen.view.addView(view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
 
-        view.setTranslationX(x * viewport.scale);
-        view.setTranslationY(y * viewport.scale);
-        view.wrapped.setTextSize(TypedValue.COMPLEX_UNIT_PX, size * viewport.scale);
+        view.setTranslationX(x * screen.scale);
+        view.setTranslationY(y * screen.scale);
+        view.wrapped.setTextSize(TypedValue.COMPLEX_UNIT_PX, size * screen.scale);
         view.setTranslationZ(z);
     }
 

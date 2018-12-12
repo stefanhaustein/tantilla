@@ -7,15 +7,15 @@ public abstract class PositionedViewHolder<T extends View> {
     protected float y;
     protected float z;
 
-    final Viewport viewport;
+    final Screen screen;
     final AnchorView<T> view;
     boolean syncRequested;
 
-    PositionedViewHolder(Viewport viewport, T view) {
-        this.viewport = viewport;
+    PositionedViewHolder(Screen screen, T view) {
+        this.screen = screen;
         this.view = new AnchorView<>(view);
         view.setTag(this);
-        viewport.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+        screen.view.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 if (PositionedViewHolder.this.view.getParent() != null) {
@@ -31,7 +31,7 @@ public abstract class PositionedViewHolder<T extends View> {
     void requestSync() {
         if (!syncRequested) {
             syncRequested = true;
-            viewport.activity.runOnUiThread(() -> {
+            screen.activity.runOnUiThread(() -> {
                 syncRequested = false;
                 syncUi();
             });

@@ -19,7 +19,7 @@ public class TextBoxAdapter extends Instance {
 
     public TextBoxAdapter(Classifier classifier, final ScreenAdapter screen) {
         super(classifier);
-        view = new TextBox(screen.getViewport());
+        view = new TextBox(screen.getScreen());
     }
 
     @Override

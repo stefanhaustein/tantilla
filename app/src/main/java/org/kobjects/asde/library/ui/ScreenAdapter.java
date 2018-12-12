@@ -5,7 +5,7 @@ import android.view.View;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Method;
 import org.kobjects.asde.lang.Types;
-import org.kobjects.graphics.Viewport;
+import org.kobjects.graphics.Screen;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Instance;
@@ -15,7 +15,7 @@ import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.Type;
 
 public class ScreenAdapter extends Instance implements View.OnLayoutChangeListener{
-    private final Viewport viewport;
+    private final Screen screen;
     private float scale;
 
     // Hack; access from viewport instead.
@@ -61,14 +61,14 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
         }
     };*/
 
-    public ScreenAdapter(Viewport viewport) {
+    public ScreenAdapter(Screen screen) {
         super(CLASSIFIER);
-        this.viewport = viewport;
-        viewport.addOnLayoutChangeListener(this);
+        this.screen = screen;
+        screen.view.addOnLayoutChangeListener(this);
     }
 
     public void cls() {
-        viewport.cls();
+        screen.cls();
     }
 
     @Override
@@ -79,7 +79,7 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
             case createPen: return new Method((FunctionType) ScreenMetaProperty.createPen.type) {
                 @Override
                 public Object call(Interpreter interpreter, int paramCount) {
-                    return new PenAdapter(viewport.createPen());
+                    return new PenAdapter(screen.createPen());
                 }
             };
         }
@@ -101,8 +101,8 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
 
     }
 
-    public Viewport getViewport() {
-        return viewport;
+    public Screen getScreen() {
+        return screen;
     }
 
     private enum ScreenMetaProperty implements PropertyDescriptor {

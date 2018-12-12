@@ -50,7 +50,7 @@ import org.kobjects.asde.lang.WrappedExecutionException;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.asde.library.ui.DpadAdapter;
 import org.kobjects.asde.library.ui.ScreenAdapter;
-import org.kobjects.graphics.Viewport;
+import org.kobjects.graphics.Screen;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Console;
 
@@ -59,7 +59,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.SynchronousQueue;
 
 public class MainActivity extends AppCompatActivity implements Console {
@@ -84,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   LinearLayout outputView;
   public String readLine;
   ResizableFrameLayout resizableFrameLayout;
-  ScreenAdapter screen;
+  ScreenAdapter screenAdapter;
 //  public ProgramControl mainInterpreter = new ProgramControl(program);
  // ProgramControl shellInterpreter = new ProgramControl(program);
   AsdePreferences preferences;
@@ -99,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
   RunControlView runControlView;
   private TitleView outputTitleView;
-  private Viewport viewport;
+  private Screen screen;
   private TextView pendingOutput;
   boolean windowMode;
   boolean runningFromShortcut;
@@ -108,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
     @Override
   public boolean dispatchKeyEvent(android.view.KeyEvent keyEvent) {
-    if (!viewport.dispatchKeyEvent(keyEvent)) {
+    if (!screen.dispatchKeyEvent(keyEvent)) {
       return super.dispatchKeyEvent(keyEvent);
     }
     return true;
@@ -193,13 +192,13 @@ public class MainActivity extends AppCompatActivity implements Console {
     leftScrollView = new ScrollView(this);
     runControlView = new RunControlView(this);
     controlView = new ControlView(this);
-    viewport = new Viewport(this);
-    screen = new ScreenAdapter(viewport);
+    screen = new Screen(this);
+    screenAdapter = new ScreenAdapter(screen);
 
-    program.setValue(GlobalSymbol.Scope.BUILTIN,"screen", screen);
-    program.setValue(GlobalSymbol.Scope.BUILTIN,"Sprite", screen.spriteClassifier);
-    program.setValue(GlobalSymbol.Scope.BUILTIN, "TextBox", screen.textClassifier);
-    program.setValue(GlobalSymbol.Scope.BUILTIN, "dpad", new DpadAdapter(viewport.dpad));
+    program.setValue(GlobalSymbol.Scope.BUILTIN,"screen", screenAdapter);
+    program.setValue(GlobalSymbol.Scope.BUILTIN,"Sprite", screenAdapter.spriteClassifier);
+    program.setValue(GlobalSymbol.Scope.BUILTIN, "TextBox", screenAdapter.textClassifier);
+    program.setValue(GlobalSymbol.Scope.BUILTIN, "dpad", new DpadAdapter(screen.dpad));
 //    program.setValue(GlobalSymbol.Scope.BUILTIN,"pen", screen.penClassifier);
 
 
@@ -408,7 +407,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
       removeFromParent(leftScrollView);
       removeFromParent(mainScrollView);
-      removeFromParent(viewport);
+      removeFromParent(screen.view);
       removeFromParent(controlView);
       removeFromParent(programView);
       removeFromParent(codeView);
@@ -426,7 +425,7 @@ public class MainActivity extends AppCompatActivity implements Console {
       if (fullScreenMode) {
           FrameLayout mainView = new FrameLayout(this);
           mainView.addView(mainScrollView);
-          mainView.addView(viewport);
+          mainView.addView(screen.view);
           outputTitleView.setVisibility(View.GONE);
 
 //         setContentView(viewport, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -434,7 +433,7 @@ public class MainActivity extends AppCompatActivity implements Console {
           FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
           layoutParams.gravity = Gravity.TOP | Gravity.RIGHT;
           mainView.addView(runControlView, layoutParams);
-          viewport.setBackgroundColor(0);
+          screen.view.setBackgroundColor(0);
           rootView = mainView;
       } else {
           outputTitleView.setVisibility(View.VISIBLE);
@@ -471,7 +470,7 @@ public class MainActivity extends AppCompatActivity implements Console {
         }
 
           if (windowMode) {
-              resizableFrameLayout.addView(viewport, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+              resizableFrameLayout.addView(screen.view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
               FrameLayout.LayoutParams resizableFrameLayoutParmas =
                       new FrameLayout.LayoutParams(Dimensions.dpToPx(this, 120), Dimensions.dpToPx(this, 120));
@@ -480,12 +479,12 @@ public class MainActivity extends AppCompatActivity implements Console {
               resizableFrameLayoutParmas.topMargin = Dimensions.dpToPx(this, 36);
 
               resizableFrameLayoutParmas.gravity = Gravity.TOP | Gravity.RIGHT;
-              viewport.setBackgroundColor(colors.background);
+              screen.view.setBackgroundColor(colors.background);
 
               mainView.addView(resizableFrameLayout, resizableFrameLayoutParmas);
           } else {
-              viewport.setBackgroundColor(0);
-              mainView.addView(viewport, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+              screen.view.setBackgroundColor(0);
+              mainView.addView(screen.view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
           }
 
         /*}  else {
