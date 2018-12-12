@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-public class Dpad extends ViewHolder<LinearLayout> {
+public class Dpad  {
 
     static final int BUTTON_SIZE = 30;
 
@@ -17,6 +17,8 @@ public class Dpad extends ViewHolder<LinearLayout> {
         return layoutParams;
     }
 
+    private final Viewport viewport;
+    final LinearLayout view;
     private boolean syncRequested;
     private boolean visible;
 
@@ -28,7 +30,8 @@ public class Dpad extends ViewHolder<LinearLayout> {
 
 
     public Dpad(Viewport viewport) {
-        super(viewport, new LinearLayout(viewport.getContext()));
+        this.viewport = viewport;
+        this.view = new LinearLayout(viewport.getContext());
         Context context = viewport.getContext();
 
         left = new ImageView(context);
@@ -91,7 +94,7 @@ public class Dpad extends ViewHolder<LinearLayout> {
     void requestSync() {
         if (!syncRequested) {
             syncRequested = true;
-            viewport.activity.runOnUiThread(this);
+            viewport.activity.runOnUiThread(() -> syncUi());
         }
 
     }
@@ -101,8 +104,7 @@ public class Dpad extends ViewHolder<LinearLayout> {
     }
 
 
-    @Override
-    public void run() {
+    void syncUi() {
         syncRequested = false;
         view.setVisibility(visible ? View.VISIBLE : View.GONE);
         adjustSize(left);

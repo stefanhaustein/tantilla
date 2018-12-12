@@ -20,9 +20,7 @@ public class TextBox extends PositionedViewHolder<TextView> {
     }
 
     @Override
-    public void run() {
-        syncRequested = false;
-
+    public void syncUi() {
         if (textDirty) {
             textDirty = false;
             view.wrapped.setText(text);

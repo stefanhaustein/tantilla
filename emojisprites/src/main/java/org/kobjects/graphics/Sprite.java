@@ -79,9 +79,8 @@ public class Sprite extends PositionedViewHolder<ImageView> {
     }
 
 
-
-    public void run() {
-        syncRequested = false;
+    @Override
+    public void syncUi() {
 
         if (view.getParent() == null) {
             viewport.addView(view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));

@@ -2,13 +2,18 @@ package org.kobjects.graphics;
 
 import android.view.View;
 
-public abstract class PositionedViewHolder<T extends View> extends ViewHolder<T> {
+public abstract class PositionedViewHolder<T extends View> {
     protected float x;
     protected float y;
     protected float z;
 
+    final Viewport viewport;
+    final AnchorView<T> view;
+    boolean syncRequested;
+
     PositionedViewHolder(Viewport viewport, T view) {
-        super(viewport, view);
+        this.viewport = viewport;
+        this.view = new AnchorView<>(view);
         view.setTag(this);
         viewport.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -19,6 +24,20 @@ public abstract class PositionedViewHolder<T extends View> extends ViewHolder<T>
             }
         });
     }
+
+
+    abstract void syncUi();
+
+    void requestSync() {
+        if (!syncRequested) {
+            syncRequested = true;
+            viewport.activity.runOnUiThread(() -> {
+                syncRequested = false;
+                syncUi();
+            });
+        }
+    }
+
 
     public float getX() {
         return x;

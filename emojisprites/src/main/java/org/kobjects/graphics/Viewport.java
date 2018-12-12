@@ -66,9 +66,7 @@ public class Viewport extends FrameLayout {
 
         FrameLayout.LayoutParams dpadLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dpadLayoutParams.gravity = Gravity.BOTTOM;
-        addView(dpad.getView(), dpadLayoutParams);
-
-
+        addView(dpad.view, dpadLayoutParams);
     }
 
     public void cls() {
