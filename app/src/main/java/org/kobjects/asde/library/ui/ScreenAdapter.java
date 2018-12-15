@@ -33,34 +33,6 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
         }
     };
 
-    public final Classifier spriteClassifier =
-            new Classifier(SpriteAdapter.SpriteMetaProperty.values()) {
-        @Override
-        public SpriteAdapter createInstance() {
-            return new SpriteAdapter(spriteClassifier, ScreenAdapter.this);
-        }
-    };
-
-    public final Classifier textClassifier =
-            new Classifier(TextBoxAdapter.TextMetaProperty.values()) {
-        @Override
-        public TextBoxAdapter createInstance() {
-            return new TextBoxAdapter(textClassifier, ScreenAdapter.this);
-        }
-    };
-    /*
-    final Property<Classifier> spriteProperty = new Property<Classifier>() {
-        @Override
-        public boolean set(Classifier classifier) {
-            return false;
-        }
-
-        @Override
-        public Classifier get() {
-            return spriteClassifier;
-        }
-    };*/
-
     public ScreenAdapter(Screen screen) {
         super(CLASSIFIER);
         this.screen = screen;
@@ -82,12 +54,25 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
                     return new PenAdapter(screen.createPen());
                 }
             };
+            case newSprite: return new Method((FunctionType) ScreenMetaProperty.newSprite.type) {
+                @Override
+                public Object call(Interpreter interpreter, int paramCount) {
+                    return new SpriteAdapter(ScreenAdapter.this);
+                }
+            };
+            case newTextBox: return new Method((FunctionType) ScreenMetaProperty.newTextBox.type) {
+                @Override
+                public Object call(Interpreter interpreter, int paramCount) {
+                    return new TextBoxAdapter(ScreenAdapter.this);
+                }
+            };
         }
         throw new IllegalArgumentException();
     }
 
     @Override
-    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+    public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                               int oldLeft, int oldTop, int oldRight, int oldBottom) {
         int widthPx = right - left;
         int heightPx = bottom - top;
 
@@ -98,7 +83,6 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
 
         widthProperty.set(Double.valueOf(width));
         heightProperty.set(Double.valueOf(height));
-
     }
 
     public Screen getScreen() {
@@ -106,7 +90,10 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
     }
 
     private enum ScreenMetaProperty implements PropertyDescriptor {
-        width(Types.NUMBER), height(Types.NUMBER), createPen(new FunctionType(PenAdapter.CLASSIFIER));
+        width(Types.NUMBER), height(Types.NUMBER),
+        createPen(new FunctionType(PenAdapter.CLASSIFIER)),
+        newSprite(new FunctionType(SpriteAdapter.CLASSIFIER)),
+        newTextBox(new FunctionType(TextBoxAdapter.CLASSIFIER));
 
         private final Type type;
 

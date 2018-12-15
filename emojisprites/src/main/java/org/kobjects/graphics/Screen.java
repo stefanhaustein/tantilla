@@ -45,9 +45,6 @@ public class Screen {
             }
         });
 
-
-        //setClickable(true);
-        //setFocusable(FOCUSABLE);
         view.setFocusableInTouchMode(true);
     }
 
@@ -63,7 +60,6 @@ public class Screen {
 
     private void clsImpl() {
         view.removeAllViews();
-
         view.addView(imageView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         FrameLayout.LayoutParams dpadLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

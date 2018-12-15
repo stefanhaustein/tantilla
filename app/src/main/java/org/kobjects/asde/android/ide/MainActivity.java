@@ -50,9 +50,12 @@ import org.kobjects.asde.lang.WrappedExecutionException;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.asde.library.ui.DpadAdapter;
 import org.kobjects.asde.library.ui.ScreenAdapter;
+import org.kobjects.asde.library.ui.SpriteAdapter;
+import org.kobjects.asde.library.ui.TextBoxAdapter;
 import org.kobjects.graphics.Screen;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Console;
+import org.kobjects.graphics.TextBox;
 
 import java.io.File;
 import java.io.IOException;
@@ -196,8 +199,8 @@ public class MainActivity extends AppCompatActivity implements Console {
     screenAdapter = new ScreenAdapter(screen);
 
     program.setValue(GlobalSymbol.Scope.BUILTIN,"screen", screenAdapter);
-    program.setValue(GlobalSymbol.Scope.BUILTIN,"Sprite", screenAdapter.spriteClassifier);
-    program.setValue(GlobalSymbol.Scope.BUILTIN, "TextBox", screenAdapter.textClassifier);
+    program.setValue(GlobalSymbol.Scope.BUILTIN,"Sprite", SpriteAdapter.CLASSIFIER);
+    program.setValue(GlobalSymbol.Scope.BUILTIN, "TextBox", TextBoxAdapter.CLASSIFIER);
     program.setValue(GlobalSymbol.Scope.BUILTIN, "dpad", new DpadAdapter(screen.dpad));
 //    program.setValue(GlobalSymbol.Scope.BUILTIN,"pen", screen.penClassifier);
 

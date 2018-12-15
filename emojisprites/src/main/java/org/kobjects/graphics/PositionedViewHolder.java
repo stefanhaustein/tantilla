@@ -1,6 +1,7 @@
 package org.kobjects.graphics;
 
 import android.view.View;
+import android.view.ViewGroup;
 
 public abstract class PositionedViewHolder<T extends View> {
     protected float x;
@@ -11,8 +12,11 @@ public abstract class PositionedViewHolder<T extends View> {
     final AnchorView<T> view;
     boolean syncRequested;
 
+    ViewGroup anchor;
+
     PositionedViewHolder(Screen screen, T view) {
         this.screen = screen;
+        this.anchor = screen.view;
         this.view = new AnchorView<>(view);
         view.setTag(this);
         screen.view.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
@@ -33,6 +37,11 @@ public abstract class PositionedViewHolder<T extends View> {
             syncRequested = true;
             screen.activity.runOnUiThread(() -> {
                 syncRequested = false;
+                if (anchor != null && anchor != view.getParent()) {
+                    if (view.getParent() != null) {
+                        ((ViewGroup) view.getParent()).removeView(view);
+                    }
+                }
                 syncUi();
             });
         }
@@ -67,6 +76,11 @@ public abstract class PositionedViewHolder<T extends View> {
          this.y = y;
          requestSync();
         return true;
+    }
+
+    public void setAnchor(ViewGroup anchor) {
+        this.anchor = anchor;
+        requestSync();
     }
 
     public boolean setZ(float z) {

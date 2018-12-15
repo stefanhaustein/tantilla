@@ -25,9 +25,15 @@ class AnchorView<T extends View> extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        int width = right - left;
+        int height = bottom - top;
         for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
-            child.layout(left, top, left + child.getMeasuredWidth(), top + child.getMeasuredHeight());
+            int childWidth = child.getMeasuredWidth();
+            int childHeight = child.getMeasuredHeight();
+            int childX = left - (width - childWidth) / 2;
+            int childY = top - (height - childHeight) / 2;
+            child.layout(childX, childY, childX + childHeight, childY + childHeight);
         }
     }
 }

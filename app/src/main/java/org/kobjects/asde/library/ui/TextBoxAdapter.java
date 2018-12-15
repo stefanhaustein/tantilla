@@ -9,6 +9,18 @@ import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
 
 public class TextBoxAdapter extends Instance {
+
+    public static final Classifier CLASSIFIER =
+            new Classifier(TextBoxAdapter.TextMetaProperty.values()) {
+                @Override
+                public TextBoxAdapter createInstance() {
+                    throw new RuntimeException("call screen.newTextBox");
+                }
+            };
+
+
+
+
     private final TextBox view;
 
     final NumberProperty x = new NumberProperty(TextMetaProperty.x);
@@ -17,8 +29,8 @@ public class TextBoxAdapter extends Instance {
     final NumberProperty size = new NumberProperty(TextMetaProperty.size);
     final StringProperty text = new StringProperty(TextMetaProperty.text);
 
-    public TextBoxAdapter(Classifier classifier, final ScreenAdapter screen) {
-        super(classifier);
+    public TextBoxAdapter(final ScreenAdapter screen) {
+        super(CLASSIFIER);
         view = new TextBox(screen.getScreen());
     }
 

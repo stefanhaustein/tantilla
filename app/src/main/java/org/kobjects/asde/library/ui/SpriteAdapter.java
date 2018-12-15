@@ -12,6 +12,16 @@ import org.kobjects.typesystem.Type;
 import org.kobjects.graphics.Sprite;
 
 public class SpriteAdapter extends Instance {
+
+    public static final Classifier CLASSIFIER =
+            new Classifier(SpriteAdapter.SpriteMetaProperty.values()) {
+                @Override
+                public SpriteAdapter createInstance() {
+                    throw new RuntimeException("Use screen.createSprite()");
+                }
+            };
+
+
     private final Sprite sprite;
     private ScreenAdapter screen;
 
@@ -28,8 +38,8 @@ public class SpriteAdapter extends Instance {
     final ObjectProperty label = new ObjectProperty(SpriteMetaProperty.label);
     final ObjectProperty face = new ObjectProperty(SpriteMetaProperty.face);
 
-    public SpriteAdapter(Classifier classifier, final ScreenAdapter screen) {
-        super(classifier);
+    public SpriteAdapter(final ScreenAdapter screen) {
+        super(CLASSIFIER);
         this.screen = screen;
         sprite = new Sprite(screen.getScreen());
         sprite.setSize(10);
