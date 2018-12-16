@@ -19,19 +19,19 @@ public class TextBoxAdapter extends Instance {
             };
 
 
-
-
-    private final TextBox view;
+    private final TextBox textBox;
 
     final NumberProperty x = new NumberProperty(TextMetaProperty.x);
     final NumberProperty y = new NumberProperty(TextMetaProperty.y);
     final NumberProperty z = new NumberProperty(TextMetaProperty.z);
     final NumberProperty size = new NumberProperty(TextMetaProperty.size);
     final StringProperty text = new StringProperty(TextMetaProperty.text);
+    final ObjectProperty anchor = new ObjectProperty(TextMetaProperty.anchor);
 
     public TextBoxAdapter(final ScreenAdapter screen) {
         super(CLASSIFIER);
-        view = new TextBox(screen.getScreen());
+        textBox = new TextBox(screen.getScreen());
+        textBox.setTag(this);
     }
 
     @Override
@@ -57,13 +57,13 @@ public class TextBoxAdapter extends Instance {
         public Double get() {
             switch (target) {
                 case x:
-                    return Double.valueOf(view.getX());
+                    return Double.valueOf(textBox.getX());
                 case y:
-                    return Double.valueOf(view.getY());
+                    return Double.valueOf(textBox.getY());
                 case z:
-                    return Double.valueOf(view.getZ());
+                    return Double.valueOf(textBox.getZ());
                 case size:
-                    return Double.valueOf(view.getSize());
+                    return Double.valueOf(textBox.getSize());
             }
             throw new RuntimeException();
         }
@@ -72,13 +72,13 @@ public class TextBoxAdapter extends Instance {
         public boolean set(Double value) {
             switch (target) {
                 case x:
-                    return view.setX(((Double) value).floatValue());
+                    return textBox.setX(((Double) value).floatValue());
                 case y:
-                    return view.setY(((Double) value).floatValue());
+                    return textBox.setY(((Double) value).floatValue());
                 case z:
-                    return view.setZ(((Double) value).floatValue());
+                    return textBox.setZ(((Double) value).floatValue());
                 case size:
-                    return view.setSize(((Double) value).floatValue());
+                    return textBox.setSize(((Double) value).floatValue());
             }
             throw new RuntimeException();
         }
@@ -95,22 +95,47 @@ public class TextBoxAdapter extends Instance {
         public String get() {
             switch (target) {
                 case text:
-                    return view.getText();
+                    return textBox.getText();
             }
             throw new RuntimeException();
         }
 
         public boolean set(String value) {
             switch (target) {
-                case text: return view.setText(value);
+                case text: return textBox.setText(value);
             }
             throw new RuntimeException();
         }
     }
 
+
+    class ObjectProperty extends Property<Object> {
+        private final TextMetaProperty target;
+
+        ObjectProperty(TextMetaProperty target) {
+            this.target = target;
+        }
+
+        public Object get() {
+            switch (target) {
+                case anchor:
+                    return textBox.getAnchor().getTag();
+            }
+            throw new RuntimeException();
+        }
+
+        public boolean set(Object value) {
+            switch (target) {
+                case anchor: return textBox.setAnchor(((SpriteAdapter) value).sprite);
+            }
+            throw new RuntimeException();
+        }
+    }
+
+
     enum TextMetaProperty implements PropertyDescriptor {
         x(Types.NUMBER), y(Types.NUMBER), z(Types.NUMBER), size(Types.NUMBER),
-        text(Types.STRING);
+        text(Types.STRING), anchor(SpriteAdapter.CLASSIFIER);
 
         private final Type type;
 

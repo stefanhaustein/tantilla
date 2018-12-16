@@ -9,19 +9,18 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-public class Screen {
+public class Screen extends ViewHolder<FrameLayout> {
     public final Activity activity;
     public float scale;
     ImageView imageView;
     Bitmap bitmap;
     float bitmapScale;
     public Dpad dpad;
-    public final FrameLayout view;
 
 
     public Screen(@NonNull Activity activity) {
+        super(new FrameLayout(activity));
         this.activity = activity;
-        view = new FrameLayout(activity);
         view.setClipChildren(false);
 
         int size = Dimensions.dpToPx(activity,200);

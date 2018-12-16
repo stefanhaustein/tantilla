@@ -11,14 +11,15 @@ class AnchorView<T extends View> extends ViewGroup {
     public AnchorView(T wrapped) {
         super(wrapped.getContext());
         this.wrapped = wrapped;
-        addView(wrapped);
+        if (wrapped != null) {
+            addView(wrapped);
+        }
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         for (int i = 0; i < getChildCount(); i++) {
             getChildAt(i).measure(widthMeasureSpec, heightMeasureSpec);
-
         }
         setMeasuredDimension(wrapped.getMeasuredWidth(), wrapped.getMeasuredHeight());
     }

@@ -22,7 +22,7 @@ public class SpriteAdapter extends Instance {
             };
 
 
-    private final Sprite sprite;
+    final Sprite sprite;
     private ScreenAdapter screen;
 
     final NumberProperty x = new NumberProperty(SpriteMetaProperty.x);
@@ -42,6 +42,7 @@ public class SpriteAdapter extends Instance {
         super(CLASSIFIER);
         this.screen = screen;
         sprite = new Sprite(screen.getScreen());
+        sprite.setTag(this);
         sprite.setSize(10);
     }
 

@@ -2,22 +2,22 @@ package org.kobjects.graphics;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
-public abstract class PositionedViewHolder<T extends View> {
+public abstract class PositionedViewHolder<T extends View> extends ViewHolder<AnchorView<T>> {
     protected float x;
     protected float y;
     protected float z;
 
     final Screen screen;
-    final AnchorView<T> view;
     boolean syncRequested;
 
-    ViewGroup anchor;
+    ViewHolder<?> anchor;
 
     PositionedViewHolder(Screen screen, T view) {
+        super(new AnchorView<>(view));
         this.screen = screen;
-        this.anchor = screen.view;
-        this.view = new AnchorView<>(view);
+        this.anchor = screen;
         view.setTag(this);
         screen.view.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -37,16 +37,20 @@ public abstract class PositionedViewHolder<T extends View> {
             syncRequested = true;
             screen.activity.runOnUiThread(() -> {
                 syncRequested = false;
-                if (anchor != null && anchor != view.getParent()) {
+                if (anchor.view != view.getParent()) {
                     if (view.getParent() != null) {
                         ((ViewGroup) view.getParent()).removeView(view);
                     }
+                    anchor.view.addView(view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 }
                 syncUi();
             });
         }
     }
 
+    public ViewHolder<?> getAnchor() {
+        return anchor;
+    }
 
     public float getX() {
         return x;
@@ -78,9 +82,13 @@ public abstract class PositionedViewHolder<T extends View> {
         return true;
     }
 
-    public void setAnchor(ViewGroup anchor) {
+    public boolean setAnchor(ViewHolder<?> anchor) {
+        if (this.anchor == anchor) {
+            return false;
+        }
         this.anchor = anchor;
         requestSync();
+        return true;
     }
 
     public boolean setZ(float z) {
@@ -92,4 +100,5 @@ public abstract class PositionedViewHolder<T extends View> {
 
         return true;
     }
+
 }
