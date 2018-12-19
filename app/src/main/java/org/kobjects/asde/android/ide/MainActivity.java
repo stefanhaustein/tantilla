@@ -76,13 +76,13 @@ public class MainActivity extends AppCompatActivity implements Console {
         }
     }
 
-    Colors colors;
+    public Colors colors;
     LinearLayout scrollContentView;
   public View rootView;
   ScrollView mainScrollView;
   ScrollView leftScrollView;
   ControlView controlView;
-  Program program = new Program(this);
+  public Program program = new Program(this);
   LinearLayout outputView;
   public String readLine;
   ResizableFrameLayout resizableFrameLayout;

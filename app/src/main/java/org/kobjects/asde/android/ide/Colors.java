@@ -13,7 +13,7 @@ public class Colors {
     final int primary;
     final int primaryMedium;
     final int primaryLight;
-    final int accent;
+    public final int accent;
     final int background;
     final int accentMedium;
     final boolean darkMode;

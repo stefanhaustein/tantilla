@@ -23,9 +23,8 @@ import com.vanniktech.emoji.EmojiPopup;
 import com.vanniktech.emoji.EmojiTextView;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.annotatedtext.Annotations;
-import org.kobjects.annotatedtext.Span;
 import org.kobjects.asde.R;
+import org.kobjects.asde.android.ide.editor.FunctionSignatureBuilder;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.lang.ProgramReference;
 import org.kobjects.expressionparser.ExpressionParser;
@@ -186,7 +185,11 @@ public class ControlView extends LinearLayout  {
                 return true;
         });
 
-
+        Menu addMenu = mainMenu.addSubMenu("Add");
+        addMenu.add("Function").setOnMenuItemClickListener(item -> {
+            new FunctionSignatureBuilder(mainActivity).createFunction();
+           return true;
+        });
 
         Menu loadMenu = mainMenu.addSubMenu("Load");
         loadMenu.add("Load local file").setOnMenuItemClickListener(item -> {
