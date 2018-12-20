@@ -164,11 +164,15 @@ public class FunctionSignatureBuilder {
         nameInput.addTextChangedListener(new TextValidator(nameInput) {
             @Override
             public void validate(TextView textView, String text) {
+                System.err.println("Validation Text: '" + text + "' len: " + text.length());
                 if (text.isEmpty()) {
-                    errorTextView.setText("Name must not be empty.");
+                    errorTextView.setText("Name must not be empty....");
                     inputValid[0] = false;
                 } else if (!Character.isJavaIdentifierStart(text.charAt(0))) {
                     errorTextView.setText("'" + text.charAt(0) + "' is not a valid name start character. Function names should start with a lowercase letter.");
+                    inputValid[0] = false;
+                } else if (mainActivity.program.getSymbol(text) != null) {
+                    errorTextView.setText("Already defined!");
                     inputValid[0] = false;
                 } else {
                     for (int i = 1; i < text.length(); i++) {
