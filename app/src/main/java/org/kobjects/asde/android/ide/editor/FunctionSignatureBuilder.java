@@ -1,12 +1,15 @@
 package org.kobjects.asde.android.ide.editor;
 
 import android.app.AlertDialog;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.MainActivity;
+import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.TextValidator;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
@@ -59,6 +62,9 @@ public class FunctionSignatureBuilder {
                 } else if (!Character.isJavaIdentifierStart(text.charAt(0))) {
                     errorTextView.setText("'" + text.charAt(0) + "' is not a valid name start character. Function names should start with a lowercase letter.");
                     inputValid[0] = false;
+                } else if (mainActivity.program.getSymbol(text) != null) {
+                    errorTextView.setText("Name exists already.");
+                    inputValid[0] = false;
                 } else {
                     for (int i = 1; i < text.length(); i++) {
                         char c = text.charAt(i);
@@ -97,13 +103,10 @@ public class FunctionSignatureBuilder {
                 createFunction();
             }
         });
-
         alert.show();
-
     }
 
     void editFunctionParameters() {
-
         AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
 
         alert.setTitle("Function " + name);
@@ -111,36 +114,46 @@ public class FunctionSignatureBuilder {
         LinearLayout parameterListView = new LinearLayout(mainActivity);
 
         for (Parameter parameter : parameterList) {
-            LinearLayout paremeterView = new LinearLayout(mainActivity);
+            LinearLayout parameterView = new LinearLayout(mainActivity);
+
+            IconButton deleteButton = new IconButton(mainActivity, R.drawable.baseline_clear_24);
+            parameterView.addView(deleteButton);
+
             TextView textView = new TextView(mainActivity);
             textView.setText(parameter.name + ": " + parameter.type);
-            paremeterView.addView(textView);
-            parameterListView.addView(paremeterView);
+            parameterView.addView(textView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+
+            IconButton upButton = new IconButton(mainActivity, R.drawable.baseline_arrow_upward_24);
+            parameterView.addView(upButton);
+            IconButton downButton = new IconButton(mainActivity, R.drawable.baseline_arrow_downward_24);
+            parameterView.addView(downButton);
+            IconButton addButton = new IconButton(mainActivity, R.drawable.baseline_add_24);
+            addButton.setOnClickListener(event -> {addParameter();});
+            parameterView.addView(addButton);
+
+            parameterListView.addView(parameterView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
 
+        LinearLayout addParameterView = new LinearLayout(mainActivity);
+        IconButton addButton = new IconButton(mainActivity, R.drawable.baseline_add_24);
+        addButton.setOnClickListener(event -> {addParameter();});
+        addParameterView.addView(addButton);
+        parameterListView.addView(addParameterView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         ScrollView parameterScrollView = new ScrollView(mainActivity);
         parameterScrollView.addView(parameterListView);
 
         alert.setView(parameterScrollView);
 
-        alert.setNegativeButton("Back", (a,b) -> {
-            createFunction();
+        alert.setNegativeButton("Cancel", (a,b) -> {
         });
 
-        alert.setNeutralButton("Add Parameter", (a, b) -> {
-            addParameter();
-        });
 
         alert.setPositiveButton("Ok", (a, b) -> {
-
             commitNewFunction();
-
         });
 
-
         alert.show();
-
     }
 
 
