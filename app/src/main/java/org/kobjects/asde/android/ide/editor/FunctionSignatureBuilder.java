@@ -27,6 +27,7 @@ public class FunctionSignatureBuilder {
     String name;
     Type returnType;
     ArrayList<Parameter> parameterList = new ArrayList<>();
+    LinearLayout parameterListView;
 
 
     public FunctionSignatureBuilder(MainActivity mainActivity) {
@@ -35,7 +36,6 @@ public class FunctionSignatureBuilder {
 
 
     public void createFunction() {
-
         LinearLayout nameAndType = new LinearLayout(mainActivity);
         nameAndType.setOrientation(LinearLayout.VERTICAL);
         TextView nameLabel = new TextView(mainActivity);
@@ -106,18 +106,17 @@ public class FunctionSignatureBuilder {
         alert.show();
     }
 
-    void editFunctionParameters() {
-        AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
-
-        alert.setTitle("Function " + name);
-
-        LinearLayout parameterListView = new LinearLayout(mainActivity);
-
+    private void updateParameterList() {
+        parameterListView.removeAllViews();
+        int index = 0;
         for (Parameter parameter : parameterList) {
+            final int finalIndex = index;
             LinearLayout parameterView = new LinearLayout(mainActivity);
 
-            IconButton deleteButton = new IconButton(mainActivity, R.drawable.baseline_clear_24);
-            parameterView.addView(deleteButton);
+            IconButton addButton = new IconButton(mainActivity, R.drawable.baseline_add_24);
+            addButton.setOnClickListener(event -> {
+                editParameter(finalIndex, true);});
+            parameterView.addView(addButton);
 
             TextView textView = new TextView(mainActivity);
             textView.setText(parameter.name + ": " + parameter.type);
@@ -125,20 +124,58 @@ public class FunctionSignatureBuilder {
 
             IconButton upButton = new IconButton(mainActivity, R.drawable.baseline_arrow_upward_24);
             parameterView.addView(upButton);
+            if (index == 0) {
+                upButton.setEnabled(false);
+            } else {
+                upButton.setOnClickListener(event -> {
+                    parameterList.remove(parameter);
+                    parameterList.add(finalIndex - 1, parameter);
+                    updateParameterList();
+                });
+            }
+
             IconButton downButton = new IconButton(mainActivity, R.drawable.baseline_arrow_downward_24);
             parameterView.addView(downButton);
-            IconButton addButton = new IconButton(mainActivity, R.drawable.baseline_add_24);
-            addButton.setOnClickListener(event -> {addParameter();});
-            parameterView.addView(addButton);
+            if (index == parameterList.size() - 1) {
+                downButton.setEnabled(false);
+            } else {
+                downButton.setOnClickListener(event -> {
+                    parameterList.remove(parameter);
+                    parameterList.add(finalIndex + 1, parameter);
+                    updateParameterList();
+                });
+            }
 
+            IconButton deleteButton = new IconButton(mainActivity, R.drawable.baseline_clear_24);
+            parameterView.addView(deleteButton);
+            deleteButton.setOnClickListener(event -> {
+                parameterList.remove(parameter);
+                updateParameterList();
+            });
             parameterListView.addView(parameterView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            index++;
         }
-
         LinearLayout addParameterView = new LinearLayout(mainActivity);
         IconButton addButton = new IconButton(mainActivity, R.drawable.baseline_add_24);
-        addButton.setOnClickListener(event -> {addParameter();});
+        addButton.setOnClickListener(event -> {
+            editParameter(parameterList.size(), true);});
         addParameterView.addView(addButton);
         parameterListView.addView(addParameterView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        parameterListView.requestLayout();
+        parameterListView.invalidate();
+    }
+
+
+    void editFunctionParameters() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
+
+        alert.setTitle("Function " + name);
+        alert.setMessage("Parameters");
+
+        parameterListView = new LinearLayout(mainActivity);
+        parameterListView.setOrientation(LinearLayout.VERTICAL);
+
+       updateParameterList();
 
         ScrollView parameterScrollView = new ScrollView(mainActivity);
         parameterScrollView.addView(parameterListView);
@@ -157,7 +194,9 @@ public class FunctionSignatureBuilder {
     }
 
 
-    void addParameter() {
+    void editParameter(int index, boolean add) {
+        Parameter parameter = add ? new Parameter() : parameterList.get(index);
+
         LinearLayout nameAndType = new LinearLayout(mainActivity);
         nameAndType.setOrientation(LinearLayout.VERTICAL);
         TextView nameLabel = new TextView(mainActivity);
@@ -165,7 +204,7 @@ public class FunctionSignatureBuilder {
         nameAndType.addView(nameLabel);
 
         EditText nameInput = new EditText(mainActivity);
-        nameInput.setText(name);
+        nameInput.setText(parameter.name);
         nameAndType.addView(nameInput);
 
         TextView errorTextView = new TextView(mainActivity);
@@ -182,10 +221,7 @@ public class FunctionSignatureBuilder {
                     errorTextView.setText("Name must not be empty....");
                     inputValid[0] = false;
                 } else if (!Character.isJavaIdentifierStart(text.charAt(0))) {
-                    errorTextView.setText("'" + text.charAt(0) + "' is not a valid name start character. Function names should start with a lowercase letter.");
-                    inputValid[0] = false;
-                } else if (mainActivity.program.getSymbol(text) != null) {
-                    errorTextView.setText("Already defined!");
+                    errorTextView.setText("'" + text.charAt(0) + "' is not a valid name start character. Parameter names should start with a lowercase letter.");
                     inputValid[0] = false;
                 } else {
                     for (int i = 1; i < text.length(); i++) {
@@ -206,6 +242,7 @@ public class FunctionSignatureBuilder {
         typeLabel.setText("Parameter Type");
         nameAndType.addView(typeLabel);
         TypeSpinner typeInput = new TypeSpinner(mainActivity);
+        typeInput.selectType(parameter.type);
         nameAndType.addView(typeInput);
 
         AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
@@ -214,20 +251,19 @@ public class FunctionSignatureBuilder {
         alert.setView(nameAndType);
 
         alert.setNegativeButton("Cancel", (a, b) -> {
-            editFunctionParameters();
+
         });
 
-        alert.setPositiveButton("Add", (a, b) -> {
-            Parameter parameter = new Parameter();
+        alert.setPositiveButton(add? "Add" : "Ok", (a, b) -> {
             parameter.name = nameInput.getText().toString();
             parameter.type = typeInput.getSelectedType();
-            parameterList.add(parameter);
-
-            editFunctionParameters();
+            if (add) {
+                parameterList.add(index, parameter);
+            }
+            updateParameterList();
         });
 
         alert.show();
-
     }
 
     Type[] getParameterTypeArray() {
