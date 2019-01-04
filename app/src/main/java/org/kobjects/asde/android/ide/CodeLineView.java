@@ -1,15 +1,9 @@
 package org.kobjects.asde.android.ide;
 
-import android.app.AlertDialog;
 import android.graphics.Typeface;
 import android.support.v7.widget.AppCompatTextView;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ClickableSpan;
 import android.view.Gravity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -17,7 +11,6 @@ import android.widget.TextView;
 import com.vanniktech.emoji.EmojiTextView;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.annotatedtext.Span;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.node.Node;
 
@@ -72,7 +65,7 @@ public class CodeLineView extends LinearLayout {
 
     void updateColor() {
         if (highlighted) {
-            setBackgroundColor(context.colors.accentMedium);
+            setBackgroundColor(context.colors.accentLight);
         } else if (odd) {
             setBackgroundColor(context.colors.primaryLight);
         } else {

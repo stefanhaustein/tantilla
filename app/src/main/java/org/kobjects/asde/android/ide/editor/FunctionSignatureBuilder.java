@@ -1,6 +1,7 @@
 package org.kobjects.asde.android.ide.editor;
 
 import android.app.AlertDialog;
+import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -13,6 +14,7 @@ import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.TextValidator;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
+import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.statement.RemStatement;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.typesystem.FunctionType;
@@ -34,8 +36,16 @@ public class FunctionSignatureBuilder {
         this.mainActivity = mainActivity;
     }
 
-
     public void createFunction() {
+        createCallableUnit(false);
+    }
+
+    public void createSubroutine() {
+        createCallableUnit(true);
+    }
+
+
+    void createCallableUnit(boolean isVoid) {
         LinearLayout nameAndType = new LinearLayout(mainActivity);
         nameAndType.setOrientation(LinearLayout.VERTICAL);
         TextView nameLabel = new TextView(mainActivity);
@@ -80,27 +90,29 @@ public class FunctionSignatureBuilder {
             }
         });
 
-        TextView typeLabel = new TextView(mainActivity);
-        typeLabel.setText("Return Type");
-        nameAndType.addView(typeLabel);
-        TypeSpinner typeInput = new TypeSpinner(mainActivity);
-        nameAndType.addView(typeInput);
 
+        TypeSpinner typeInput = isVoid ? null : new TypeSpinner(mainActivity);
+        if (!isVoid) {
+            TextView typeLabel = new TextView(mainActivity);
+            typeLabel.setText("Return Type");
+            nameAndType.addView(typeLabel);
+            nameAndType.addView(typeInput);
+        }
         AlertDialog.Builder alert = new AlertDialog.Builder(mainActivity);
 
-        alert.setTitle("New Function");
+        alert.setTitle(isVoid ? "New Subroutine" : "New Function");
         alert.setView(nameAndType);
 
         alert.setNegativeButton("Cancel", null);
 
         alert.setPositiveButton("Next", (a, b) -> {
             name = nameInput.getText().toString();
-            returnType = typeInput.getSelectedType();
+            returnType = isVoid ? Types.VOID : typeInput.getSelectedType();
 
             if (inputValid[0]) {
                 editFunctionParameters();
             } else {
-                createFunction();
+                createCallableUnit(isVoid);
             }
         });
         alert.show();
@@ -113,14 +125,25 @@ public class FunctionSignatureBuilder {
             final int finalIndex = index;
             LinearLayout parameterView = new LinearLayout(mainActivity);
 
+            IconButton deleteButton = new IconButton(mainActivity, R.drawable.baseline_clear_24);
+            parameterView.addView(deleteButton);
+            deleteButton.setOnClickListener(event -> {
+                parameterList.remove(parameter);
+                updateParameterList();
+            });
+
+            /*
             IconButton addButton = new IconButton(mainActivity, R.drawable.baseline_add_24);
             addButton.setOnClickListener(event -> {
                 editParameter(finalIndex, true);});
             parameterView.addView(addButton);
-
+*/
             TextView textView = new TextView(mainActivity);
             textView.setText(parameter.name + ": " + parameter.type);
-            parameterView.addView(textView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+            LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+            textParams.gravity = Gravity.CENTER_VERTICAL | Gravity.LEFT;
+            textView.setOnClickListener(event -> editParameter(finalIndex, false));
+            parameterView.addView(textView, textParams);
 
             IconButton upButton = new IconButton(mainActivity, R.drawable.baseline_arrow_upward_24);
             parameterView.addView(upButton);
@@ -146,12 +169,6 @@ public class FunctionSignatureBuilder {
                 });
             }
 
-            IconButton deleteButton = new IconButton(mainActivity, R.drawable.baseline_clear_24);
-            parameterView.addView(deleteButton);
-            deleteButton.setOnClickListener(event -> {
-                parameterList.remove(parameter);
-                updateParameterList();
-            });
             parameterListView.addView(parameterView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             index++;
         }

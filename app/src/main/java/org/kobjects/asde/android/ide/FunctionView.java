@@ -2,13 +2,13 @@ package org.kobjects.asde.android.ide;
 
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.SymbolTitleView;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Types;
-import org.kobjects.asde.lang.node.Node;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,13 @@ public class FunctionView extends LinearLayout {
             subtitles.add("-> " + callableUnit.getType().getReturnType());
         }
 
-        this.titleView = new SymbolTitleView(context, color, c, name, subtitles);
+        this.titleView = new SymbolTitleView(context, color, c, name, subtitles, clicked -> {
+            PopupMenu popupMenu = new PopupMenu(mainActivity, clicked);
+            popupMenu.getMenu().add("Rename");
+            popupMenu.getMenu().add("Change Signature");
+            popupMenu.getMenu().add("Delete");
+            popupMenu.show();
+        });
         addView(titleView);
         contentView = new ExpandableList(context);
         addView(contentView);
@@ -134,7 +140,7 @@ public class FunctionView extends LinearLayout {
     }
 
     public void syncContent() {
-        titleView.setBackgroundColor(callableUnit.errors.size() > 0 ? mainActivity.colors.accentMedium : expanded ? mainActivity.colors.primaryMedium : 0);
+        titleView.setBackgroundColor(callableUnit.errors.size() > 0 ? mainActivity.colors.accentLight : expanded ? mainActivity.colors.primaryLight : 0);
 
         ExpandableList codeView = mainActivity.codeView == null ? contentView : mainActivity.codeView;
 

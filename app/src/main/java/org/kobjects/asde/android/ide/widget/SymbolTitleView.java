@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.widget.Dimensions;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.Types;
@@ -22,7 +23,7 @@ public class SymbolTitleView extends LinearLayout {
     AppCompatTextView typeView;
     AppCompatTextView textView;
 
-    public SymbolTitleView(Context context, int color, char c, String name, List<String> subtitles) {
+    public SymbolTitleView(Context context, int color, char c, String name, List<String> subtitles, OnClickListener moreClickListener) {
         super(context);
        // setBackgroundColor(0x0ffeeeeee);
 
@@ -72,6 +73,13 @@ public class SymbolTitleView extends LinearLayout {
         layoutParams.gravity = Gravity.CENTER_VERTICAL;
         addView(vertical, layoutParams);
 //        textView.setGravity(Gravity.CENTER_VERTICAL);
+
+        if (moreClickListener != null) {
+            IconButton moreButton = new IconButton(getContext(), R.drawable.baseline_more_vert_24);
+            addView(moreButton);
+            moreButton.setOnClickListener(moreClickListener);
+        }
+
     }
 
 }

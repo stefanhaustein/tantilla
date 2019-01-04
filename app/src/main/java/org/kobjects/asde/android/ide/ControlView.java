@@ -190,6 +190,10 @@ public class ControlView extends LinearLayout  {
             new FunctionSignatureBuilder(mainActivity).createFunction();
            return true;
         });
+        addMenu.add("Subroutine").setOnMenuItemClickListener(item -> {
+            new FunctionSignatureBuilder(mainActivity).createSubroutine();
+            return true;
+        });
 
         Menu loadMenu = mainMenu.addSubMenu("Load");
         loadMenu.add("Load local file").setOnMenuItemClickListener(item -> {

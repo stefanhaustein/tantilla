@@ -55,7 +55,6 @@ import org.kobjects.asde.library.ui.TextBoxAdapter;
 import org.kobjects.graphics.Screen;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Console;
-import org.kobjects.graphics.TextBox;
 
 import java.io.File;
 import java.io.IOException;
@@ -123,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements Console {
           if (span.annotation == Annotations.ACCENT_COLOR) {
               s.setSpan(new ForegroundColorSpan(colors.accent), span.start, span.end, 0);
           } else if (span.annotation instanceof Exception) {
-              s.setSpan(new BackgroundColorSpan(colors.accentMedium), span.start, span.end, 0);
+              s.setSpan(new BackgroundColorSpan(colors.accentLight), span.start, span.end, 0);
               if (linked) {
                   s.setSpan(new ClickableSpan() {
                       @Override

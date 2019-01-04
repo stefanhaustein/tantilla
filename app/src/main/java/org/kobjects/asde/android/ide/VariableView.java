@@ -2,6 +2,7 @@ package org.kobjects.asde.android.ide;
 
 import android.content.Context;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 
 import org.kobjects.asde.android.ide.widget.SymbolTitleView;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
@@ -27,7 +28,12 @@ public class VariableView extends LinearLayout {
             subtitles.add("V: " + symbol.value);
         }
 
-        SymbolTitleView titleView = new SymbolTitleView(context, context.colors.yellow, 'V', name, subtitles);
+        SymbolTitleView titleView = new SymbolTitleView(context, context.colors.yellow, 'V', name, subtitles, view -> {
+            PopupMenu popupMenu = new PopupMenu(getContext(), view);
+            popupMenu.getMenu().add("Rename");
+            popupMenu.getMenu().add("Delete");
+            popupMenu.show();
+        });
         addView(titleView);
     }
 }
