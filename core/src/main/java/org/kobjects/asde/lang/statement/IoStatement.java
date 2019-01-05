@@ -61,7 +61,7 @@ public class IoStatement extends Node {
                 Object value;
                 while(true) {
                     value = program.console.input();
-                    if (variable.name.endsWith("$")) {
+                    if (variable.getName().endsWith("$")) {
                         break;
                     }
                     try {

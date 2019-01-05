@@ -4,6 +4,9 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
+import org.kobjects.asde.android.ide.editor.DeleteFlow;
+import org.kobjects.asde.android.ide.editor.FunctionSignatureFlow;
+import org.kobjects.asde.android.ide.editor.RenameFlow;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.SymbolTitleView;
 import org.kobjects.asde.lang.CallableUnit;
@@ -42,11 +45,20 @@ public class FunctionView extends LinearLayout {
             subtitles.add("-> " + callableUnit.getType().getReturnType());
         }
 
-        this.titleView = new SymbolTitleView(context, color, c, name, subtitles, clicked -> {
+        this.titleView = new SymbolTitleView(context, color, c, name, subtitles, isMain ? null : clicked -> {
             PopupMenu popupMenu = new PopupMenu(mainActivity, clicked);
-            popupMenu.getMenu().add("Rename");
-            popupMenu.getMenu().add("Change Signature");
-            popupMenu.getMenu().add("Delete");
+            popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {
+                new RenameFlow(mainActivity, name).start();
+               return true;
+            });
+            popupMenu.getMenu().add("Change Signature").setOnMenuItemClickListener(item -> {
+                new FunctionSignatureFlow(mainActivity).changeSignature(name, callableUnit);
+                return true;
+            });
+            popupMenu.getMenu().add("Delete").setOnMenuItemClickListener(item -> {
+                new DeleteFlow(mainActivity, name).start();
+                return true;
+            });
             popupMenu.show();
         });
         addView(titleView);

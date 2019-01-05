@@ -1,33 +1,36 @@
 package org.kobjects.asde.android.ide.widget;
 
+import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.TextView;
 
 public abstract class TextValidator implements TextWatcher {
-    private final TextView textView;
+    protected final TextInputLayout textInputLayout;
 
-    public TextValidator(TextView textView) {
-        this.textView = textView;
+    public TextValidator(TextInputLayout textInputLayout) {
+        this.textInputLayout = textInputLayout;
+
+        textInputLayout.post(() -> afterTextChanged(textInputLayout.getEditText().getText()));
     }
 
-    public abstract void validate(TextView textView, String text);
+    public abstract String validate(String text);
 
     @Override
     final public void afterTextChanged(Editable s) {
-        String text = textView.getText().toString();
-        validate(textView, text);
+        String text = textInputLayout.getEditText().getText().toString();
+        String error = validate(text);
+
+        textInputLayout.setError(error);
     }
 
     @Override
-    final public void
-    beforeTextChanged(CharSequence s, int start, int count, int after) {
-        /* Needs to be implemented, but we are not using it. */
+    final public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        // required but unused
     }
 
     @Override
-    final public void
-    onTextChanged(CharSequence s, int start, int before, int count) {
-        /* Needs to be implemented, but we are not using it. */
+    final public void onTextChanged(CharSequence s, int start, int before, int count) {
+        // required but unused
     }
 }

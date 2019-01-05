@@ -12,7 +12,7 @@ import java.util.Map;
 // Not static for access to the variables.
 public class Identifier extends AssignableNode {
   final Program program;
-  public final String name;
+  String name;
   ResolvedSymbol resolved;
 
   public Identifier(Program program, String name) {
@@ -45,5 +45,21 @@ public class Identifier extends AssignableNode {
 
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
     appendLinked(asb, name, errors);
+  }
+
+  void accept(Visitor visitor) {
+    visitor.visitIdentifier(this);
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public ResolvedSymbol getResolved() {
+    return resolved;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 }

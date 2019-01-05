@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.node.Visitor;
+import org.kobjects.asde.lang.refactor.RenameGlobal;
 import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.LetStatement;
 import org.kobjects.asde.lang.node.Node;
@@ -76,6 +78,21 @@ public class Program {
                 }
             }
         }
+    }
+
+
+    public void renameGlobalSymbol(String oldName, String newName) {
+        if (newName == null || newName.isEmpty() || newName.equals(oldName)) {
+            return;
+        }
+        symbolMap.put(newName, symbolMap.get(oldName));
+        symbolMap.remove(oldName);
+        accept(new RenameGlobal(oldName, newName));
+    }
+
+
+    public void accept(Visitor visitor) {
+        visitor.visitProgram(this);
     }
 
   public void clearAll() {
@@ -377,5 +394,7 @@ public class Program {
     }
 
 
-
+    public void deleteSymbol(String name) {
+        symbolMap.remove(name);
+    }
 }

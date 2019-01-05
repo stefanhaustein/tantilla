@@ -259,7 +259,7 @@ public class Parser {
       }
       Node[] dimensions = new Node[dimExpr.children.length - 1];
       System.arraycopy(dimExpr.children, 1, dimensions, 0, dimensions.length);
-      result.add(new DimStatement(((Identifier) dimExpr.children[0]).name, dimensions));
+      result.add(new DimStatement(((Identifier) dimExpr.children[0]).getName(), dimensions));
     } while (tokenizer.tryConsume(","));
   }
 
@@ -307,7 +307,7 @@ public class Parser {
             || !((RelationalOperator) assignment).getName().equals("=")) {
       tokenizer.exception("LocalVariable assignment expected after FOR", null);
     }
-    String varName = ((Identifier) assignment.children[0]).name;
+    String varName = ((Identifier) assignment.children[0]).getName();
     require(tokenizer, "TO");
     Node end = expressionParser.parse(tokenizer);
     if (tryConsume(tokenizer, "STEP")) {
@@ -326,7 +326,7 @@ public class Parser {
               + assignment + "'.", null);
     }
     if (assignment.children[0] instanceof Identifier) {
-      String varName = ((Identifier) assignment.children[0]).name;
+      String varName = ((Identifier) assignment.children[0]).getName();
       return new LetStatement(varName, assignment.children[1]);
     }
     try {

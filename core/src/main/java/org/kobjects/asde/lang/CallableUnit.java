@@ -173,6 +173,10 @@ public class CallableUnit implements Function {
         return null;
     }
 
+    public void setType(FunctionType functionType) {
+        this.type = functionType;
+    }
+
     public interface StatementMatcher {
         boolean statementMatches(Node statement);
     }

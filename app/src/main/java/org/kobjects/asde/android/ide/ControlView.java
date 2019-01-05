@@ -24,7 +24,7 @@ import com.vanniktech.emoji.EmojiTextView;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.R;
-import org.kobjects.asde.android.ide.editor.FunctionSignatureBuilder;
+import org.kobjects.asde.android.ide.editor.FunctionSignatureFlow;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.lang.ProgramReference;
 import org.kobjects.expressionparser.ExpressionParser;
@@ -187,11 +187,11 @@ public class ControlView extends LinearLayout  {
 
         Menu addMenu = mainMenu.addSubMenu("Add");
         addMenu.add("Function").setOnMenuItemClickListener(item -> {
-            new FunctionSignatureBuilder(mainActivity).createFunction();
+            new FunctionSignatureFlow(mainActivity).createFunction();
            return true;
         });
         addMenu.add("Subroutine").setOnMenuItemClickListener(item -> {
-            new FunctionSignatureBuilder(mainActivity).createSubroutine();
+            new FunctionSignatureFlow(mainActivity).createSubroutine();
             return true;
         });
 

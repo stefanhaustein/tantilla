@@ -21,6 +21,12 @@ public class Apply extends AssignableNode {
         this.parentesis = parentesis;
     }
 
+
+    void accept(Visitor visitor) {
+        visitor.visitApply(this);
+    }
+
+
     public void set(Interpreter interpreter, Object value) {
         Object base = children[0].evalRaw(interpreter);
         if (!(base instanceof Array)) {

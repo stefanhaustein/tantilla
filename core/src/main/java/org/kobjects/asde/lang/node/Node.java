@@ -20,6 +20,10 @@ public abstract class Node {
     this.children = children == null || children.length == 0 ? EMPTY_ARRAY : children;
   }
 
+  void accept(Visitor visitor) {
+    visitor.visitNode(this);
+  }
+
   protected abstract void onResolve(ResolutionContext resolutionContext, int line, int index);
 
   public final void resolve(ResolutionContext resolutionContext, int line, int index) {

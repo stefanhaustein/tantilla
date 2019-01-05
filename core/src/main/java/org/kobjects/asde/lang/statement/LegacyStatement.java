@@ -71,13 +71,13 @@ public class LegacyStatement extends Node {
           throw new RuntimeException("Assignment to function declaration expected.");
         }
         Apply target = (Apply) assignment.children[0];
-        String name = ((Identifier) target.children[0]).name;
+        String name = ((Identifier) target.children[0]).getName();
         Type[] parameterTypes = new Type[target.children.length - 1];
         String[] parameterNames = new String[parameterTypes.length];
         for (int i = 0; i < parameterTypes.length; i++) {
           Identifier parameterNode = (Identifier) target.children[i + 1];
-          parameterNames[i] = parameterNode.name;
-          parameterTypes[i] = parameterNode.name.endsWith("$") ? Types.STRING : Types.NUMBER;
+          parameterNames[i] = parameterNode.getName();
+          parameterTypes[i] = parameterNode.getName().endsWith("$") ? Types.STRING : Types.NUMBER;
         }
         CallableUnit fn = new CallableUnit(program, new FunctionType(name.endsWith("$") ? Types.STRING : Types.NUMBER, parameterTypes), parameterNames);
         fn.setLine(10, new CodeLine(Collections.singletonList(new FunctionReturnStatement(assignment.children[1]))));
