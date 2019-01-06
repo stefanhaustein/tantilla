@@ -41,6 +41,7 @@ public class TextBoxAdapter extends Instance {
             case y: return y;
             case size: return size;
             case text: return text;
+            case anchor: return anchor;
         }
         throw new IllegalArgumentException();
     }

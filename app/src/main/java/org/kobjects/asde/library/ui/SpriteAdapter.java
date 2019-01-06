@@ -37,6 +37,7 @@ public class SpriteAdapter extends Instance {
     final ObjectProperty text = new ObjectProperty(SpriteMetaProperty.text);
     final ObjectProperty label = new ObjectProperty(SpriteMetaProperty.label);
     final ObjectProperty face = new ObjectProperty(SpriteMetaProperty.face);
+    final ObjectProperty anchor = new ObjectProperty(SpriteMetaProperty.anchor);
 
     public SpriteAdapter(final ScreenAdapter screen) {
         super(CLASSIFIER);
@@ -61,6 +62,7 @@ public class SpriteAdapter extends Instance {
             case label: return label;
             case text: return text;
             case face: return face;
+            case anchor: return anchor;
             case say: return new Method((FunctionType) SpriteMetaProperty.say.type()) {
                         @Override
                         public Object call(Interpreter interpreter, int paramCount) {
@@ -148,6 +150,8 @@ public class SpriteAdapter extends Instance {
                     return sprite.getFace();
                 case label:
                     return sprite.getLabel();
+                case anchor:
+                    return sprite.getAnchor().getTag();
 
 
             }
@@ -159,6 +163,7 @@ public class SpriteAdapter extends Instance {
                 case text: return sprite.setText((String) value);
                 case label: return sprite.setLabel((String) value);
                 case face:return sprite.setFace((String) value);
+                case anchor: return sprite.setAnchor(((SpriteAdapter) value).sprite);
             }
             throw new RuntimeException();
         }
@@ -169,6 +174,7 @@ public class SpriteAdapter extends Instance {
         x(Types.NUMBER), y(Types.NUMBER), z(Types.NUMBER), size(Types.NUMBER),
         left(Types.NUMBER), right(Types.NUMBER), top(Types.NUMBER), bottom(Types.NUMBER),
         angle(Types.NUMBER), label(Types.STRING), text(Types.STRING), face(Types.STRING),
+        anchor(SpriteAdapter.CLASSIFIER),
         say(new FunctionType(Types.VOID, Types.STRING));
 
         final Type type;

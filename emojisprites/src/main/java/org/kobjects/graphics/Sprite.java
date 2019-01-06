@@ -121,9 +121,9 @@ public class Sprite extends PositionedViewHolder<ImageView> {
         int intrinsicSize = Math.max(intrinsicWidth, intrinsicHeight);
 
         float imageScale = (screen.scale * size) / intrinsicSize;
-        view.setScaleX(imageScale);
-        view.setScaleY(imageScale);
-        view.setRotation(angle);
+        view.wrapped.setScaleX(imageScale);
+        view.wrapped.setScaleY(imageScale);
+        view.wrapped.setRotation(angle);
 
         float screenX = x * screen.scale + screen.view.getWidth() / 2;
 
