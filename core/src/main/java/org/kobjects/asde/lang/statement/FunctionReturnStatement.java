@@ -25,7 +25,7 @@ public class FunctionReturnStatement extends Node {
             if (children.length != 1) {
                 throw new RuntimeException("Return value expected for function.");
             }
-            if (children[0].returnType().equals(resolutionContext.callableUnit.getType().getReturnType())) {
+            if (!children[0].returnType().equals(resolutionContext.callableUnit.getType().getReturnType())) {
                 throw new RuntimeException("Expected return type: " + resolutionContext.callableUnit.getType().getReturnType() + "; actual: " + children[0].returnType());
             }
         }

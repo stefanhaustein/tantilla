@@ -362,15 +362,23 @@ public class Program {
               }
           }
 
-          for (CallableUnit callableUnit : callableUnits) {
-              callableUnit.resolve();
-          }
+          validate();
 
       } finally {
           console.endProgress();
       }
-
     }
+
+    public void validate() {
+        for (GlobalSymbol symbol : symbolMap.values()) {
+            if (symbol.value instanceof CallableUnit) {
+                ((CallableUnit) symbol.value).resolve();
+            }
+        }
+        main.resolve();
+    }
+
+
 
     public void setValue(GlobalSymbol.Scope scope, String name, Object value) {
         GlobalSymbol symbol = getSymbol(name);

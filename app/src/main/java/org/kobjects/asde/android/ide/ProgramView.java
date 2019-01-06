@@ -10,6 +10,7 @@ import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,6 +65,8 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
      * @param expandNew The first new symbol found during expansion will be expanded.
      */
     public void sync(boolean expandNew) {
+        program.validate();
+
         if (program.main.getLineCount() == 0 && (program.reference == null || "Unnamed".equals(program.reference.name))) {
             boolean empty = true;
             for (GlobalSymbol symbol : program.getSymbolMap().values()) {
@@ -95,7 +98,11 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
                 continue;
             }
             String name = entry.getKey();
-            View symbolView = symbolViewMap.get(name);
+            String qualifiedName = name + " " + symbol.getType();
+            if (symbol.value instanceof CallableUnit) {
+                qualifiedName += Arrays.toString(((CallableUnit) symbol.value).parameterNames);
+            }
+            View symbolView = symbolViewMap.get(qualifiedName);
             int index;
             if (symbol.value instanceof CallableUnit) {
                 if (!(symbolView instanceof FunctionView)) {
@@ -117,7 +124,7 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
                 index = varCount++;
             }
             symbolList.addView(symbolView, index);
-            newSymbolViewMap.put(name, symbolView);
+            newSymbolViewMap.put(qualifiedName, symbolView);
         }
         symbolViewMap = newSymbolViewMap;
         symbolList.addView(mainFunctionView);
