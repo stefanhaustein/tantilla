@@ -125,14 +125,14 @@ public class Sprite extends PositionedViewHolder<ImageView> {
         view.wrapped.setScaleY(imageScale);
         view.wrapped.setRotation(angle);
 
-        float screenX = x * screen.scale + screen.view.getWidth() / 2;
+        float screenX = x * screen.scale + anchor.view.getWidth() / 2;
 
         view.setTranslationX(screenX - intrinsicWidth / 2);
         labelView.setTranslationX(screenX - labelView.getPaint().measureText(labelView.getText().toString()) / 2);
         bubble.setTranslationX(screenX - bubble.getMeasuredWidth() / 2);
 
         float heightPx = intrinsicHeight * view.getScaleY();
-        float scrY = screen.view.getHeight() / 2 - y * screen.scale;
+        float scrY = anchor.view.getHeight() / 2 - y * screen.scale;
 
         view.setTranslationY(scrY - intrinsicHeight / 2);
 
