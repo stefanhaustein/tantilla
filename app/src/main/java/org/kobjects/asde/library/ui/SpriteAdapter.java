@@ -96,13 +96,13 @@ public class SpriteAdapter extends Instance {
                 case size:
                     return (double) sprite.getSize();
                 case left:
-                    return sprite.getX() + (screen.width - sprite.getSize()) / 2.0;
+                    return sprite.getX() - (sprite.getAnchor().getWidthForAnchoring() + sprite.getSize()) / 2.0;
                 case right:
-                    return (screen.width - sprite.getSize()) / 2.0 - sprite.getX();
+                    return -sprite.getX() - (sprite.getAnchor().getWidthForAnchoring() + sprite.getSize()) / 2.0;
                 case top:
-                    return (screen.height - sprite.getSize()) / 2.0 - sprite.getY();
+                    return -sprite.getY() - (sprite.getAnchor().getHeightForAnchoring() + sprite.getSize()) / 2.0;
                 case bottom:
-                    return sprite.getY() + (screen.height - sprite.getSize()) / 2.0;
+                    return sprite.getY() - (sprite.getAnchor().getHeightForAnchoring() + sprite.getSize()) / 2.0;
 
             }
             throw new RuntimeException();
@@ -111,24 +111,24 @@ public class SpriteAdapter extends Instance {
         @Override
         public boolean set(Double value) {
             switch (target) {
-                    case x:
-                        return sprite.setX(value.floatValue());
-                    case y:
-                        return sprite.setY(value.floatValue());
-                    case z:
-                        return sprite.setZ(value.floatValue());
-                    case angle:
-                        return sprite.setAngle(value.floatValue());
-                    case size:
+                case x:
+                    return sprite.setX(value.floatValue());
+                case y:
+                    return sprite.setY(value.floatValue());
+                case z:
+                    return sprite.setZ(value.floatValue());
+                case angle:
+                    return sprite.setAngle(value.floatValue());
+                case size:
                         return sprite.setSize(value.floatValue());
                 case left:
-                    return sprite.setX(value.floatValue() + (sprite.getSize() - screen.width) / 2);
+                    return sprite.setX(value.floatValue() + (sprite.getSize() + sprite.getAnchor().getWidthForAnchoring()) / 2);
                 case right:
-                    return sprite.setX((screen.width - sprite.getSize()) / 2 - value.floatValue());
+                    return sprite.setX(-(value.floatValue() + (sprite.getAnchor().getWidthForAnchoring() + sprite.getSize()) / 2));
                 case top:
-                    return sprite.setY((screen.height - sprite.getSize()) / 2 - value.floatValue());
+                    return sprite.setY(-(value.floatValue() + (sprite.getAnchor().getHeightForAnchoring() + sprite.getSize()) / 2));
                 case bottom:
-                    return sprite.setY(value.floatValue() + (sprite.getSize() - screen.height) / 2);
+                    return sprite.setY(value.floatValue() + (sprite.getSize() + sprite.getAnchor().getHeightForAnchoring()) / 2);
             }
             throw new RuntimeException();
         }

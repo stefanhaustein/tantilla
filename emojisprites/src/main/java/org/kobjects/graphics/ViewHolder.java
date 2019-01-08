@@ -2,7 +2,7 @@ package org.kobjects.graphics;
 
 import android.view.ViewGroup;
 
-public class ViewHolder<T extends ViewGroup> {
+public abstract class ViewHolder<T extends ViewGroup> {
 
     public T view;
     Object tag;
@@ -19,4 +19,13 @@ public class ViewHolder<T extends ViewGroup> {
         return tag;
     }
 
+    /**
+     * Returns the normalized width of the view. For the screen, this value is negative.
+     */
+    public abstract float getWidthForAnchoring();
+
+    /**
+     * Returns the normalized height of the view. For the screen, this value is negative.
+     */
+    public abstract float getHeightForAnchoring();
 }

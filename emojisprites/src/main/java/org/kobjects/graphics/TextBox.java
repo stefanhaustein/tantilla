@@ -62,4 +62,14 @@ public class TextBox extends PositionedViewHolder<TextView> {
     public String getText() {
         return text;
     }
+
+    @Override
+    public float getWidthForAnchoring() {
+        return view.getWidth() / screen.scale;
+    }
+
+    @Override
+    public float getHeightForAnchoring() {
+        return view.getHeight() / screen.scale;
+    }
 }

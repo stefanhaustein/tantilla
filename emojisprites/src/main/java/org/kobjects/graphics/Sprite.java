@@ -192,4 +192,13 @@ public class Sprite extends PositionedViewHolder<ImageView> {
     }
 
 
+    @Override
+    public float getWidthForAnchoring() {
+        return size;
+    }
+
+    @Override
+    public float getHeightForAnchoring() {
+        return size;
+    }
 }

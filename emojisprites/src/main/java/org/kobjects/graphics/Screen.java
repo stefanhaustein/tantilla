@@ -11,6 +11,10 @@ import android.widget.ImageView;
 
 public class Screen extends ViewHolder<FrameLayout> {
     public final Activity activity;
+    /**
+     * Multiply with scale to get from virtual coordinates to px, divide to get from px to
+     * virtual coordinates.
+     */
     public float scale;
     ImageView imageView;
     Bitmap bitmap;
@@ -70,5 +74,15 @@ public class Screen extends ViewHolder<FrameLayout> {
         bitmap.eraseColor(0);
         dpad.setVisible(false);
         activity.runOnUiThread(() -> clsImpl());
+    }
+
+    @Override
+    public float getWidthForAnchoring() {
+        return -view.getWidth() / scale;
+    }
+
+    @Override
+    public float getHeightForAnchoring() {
+        return -view.getHeight() / scale;
     }
 }
