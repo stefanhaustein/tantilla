@@ -19,7 +19,8 @@ class AnchorView<T extends View> extends ViewGroup {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         for (int i = 0; i < getChildCount(); i++) {
-            getChildAt(i).measure(widthMeasureSpec, heightMeasureSpec);
+            View child = getChildAt(i);
+            child.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
         }
         setMeasuredDimension(wrapped.getMeasuredWidth(), wrapped.getMeasuredHeight());
     }
@@ -34,7 +35,7 @@ class AnchorView<T extends View> extends ViewGroup {
             int childHeight = child.getMeasuredHeight();
             int childX = left - (width - childWidth) / 2;
             int childY = top - (height - childHeight) / 2;
-            child.layout(childX, childY, childX + childHeight, childY + childHeight);
+            child.layout(childX, childY, childX + childWidth, childY + childHeight);
         }
     }
 }

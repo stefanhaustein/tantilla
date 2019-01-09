@@ -2,6 +2,7 @@ package org.kobjects.graphics;
 
 import android.graphics.Color;
 import android.util.TypedValue;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -10,7 +11,7 @@ import java.util.Objects;
 
 public class TextBox extends PositionedViewHolder<TextView> {
 
-    private boolean textDirty;
+    private boolean layoutDirty;
     private String text;
     private float size = 10;
 
@@ -21,18 +22,19 @@ public class TextBox extends PositionedViewHolder<TextView> {
 
     @Override
     public void syncUi() {
-        if (textDirty) {
-            textDirty = false;
+        if (layoutDirty) {
+            layoutDirty = false;
             view.wrapped.setText(text);
+            view.wrapped.setTextSize(TypedValue.COMPLEX_UNIT_PX, size * screen.scale);
+            view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            view.wrapped.requestLayout();
         }
-/*
-        if (view.getParent() == null) {
-            screen.view.addView(view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        }
-*/
-        view.setTranslationX(x * screen.scale);
-        view.setTranslationY(y * screen.scale);
-        view.wrapped.setTextSize(TypedValue.COMPLEX_UNIT_PX, size * screen.scale);
+
+        float screenX = anchor.view.getWidth() / 2 + x * screen.scale;
+        float screenY = anchor.view.getHeight() / 2 - y * screen.scale;
+
+        view.setTranslationX(screenX - view.getMeasuredWidth() / 2);
+        view.setTranslationY(screenY - view.getMeasuredHeight() / 2);
         view.setTranslationZ(z);
     }
 
@@ -41,6 +43,7 @@ public class TextBox extends PositionedViewHolder<TextView> {
             return false;
         }
         this.size = size;
+        layoutDirty = true;
         requestSync();
         return true;
     }
@@ -50,7 +53,7 @@ public class TextBox extends PositionedViewHolder<TextView> {
             return false;
         }
         this.text = text;
-        textDirty = true;
+        layoutDirty = true;
         requestSync();
         return true;
     }
