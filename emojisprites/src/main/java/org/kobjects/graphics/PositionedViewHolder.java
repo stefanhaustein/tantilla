@@ -4,7 +4,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-public abstract class PositionedViewHolder<T extends View> extends ViewHolder<AnchorView<T>> {
+public abstract class PositionedViewHolder<T extends View> extends ViewHolder<AnchorLayout<T>> {
     protected float x;
     protected float y;
     protected float z;
@@ -15,7 +15,7 @@ public abstract class PositionedViewHolder<T extends View> extends ViewHolder<An
     ViewHolder<?> anchor;
 
     PositionedViewHolder(Screen screen, T view) {
-        super(new AnchorView<>(view));
+        super(new AnchorLayout<>(view));
         this.screen = screen;
         this.anchor = screen;
         view.setTag(this);

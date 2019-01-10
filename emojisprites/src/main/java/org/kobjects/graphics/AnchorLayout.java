@@ -4,11 +4,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-class AnchorView<T extends View> extends ViewGroup {
+/**
+ * Derives the size from the wrapped view. All views are positioned at the top left corner,
+ * similar to FrameLayout.
+ */
+class AnchorLayout<T extends View> extends ViewGroup {
 
     final T wrapped;
 
-    public AnchorView(T wrapped) {
+    public AnchorLayout(T wrapped) {
         super(wrapped.getContext());
         this.wrapped = wrapped;
         if (wrapped != null) {
@@ -27,15 +31,9 @@ class AnchorView<T extends View> extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        int width = right - left;
-        int height = bottom - top;
         for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
-            int childWidth = child.getMeasuredWidth();
-            int childHeight = child.getMeasuredHeight();
-            int childX = left - (width - childWidth) / 2;
-            int childY = top - (height - childHeight) / 2;
-            child.layout(childX, childY, childX + childWidth, childY + childHeight);
+            child.layout(left, top, left +  child.getMeasuredWidth(), top + child.getMeasuredHeight());
         }
     }
 }

@@ -24,6 +24,11 @@ public class TextBoxAdapter extends Instance {
     final NumberProperty x = new NumberProperty(TextMetaProperty.x);
     final NumberProperty y = new NumberProperty(TextMetaProperty.y);
     final NumberProperty z = new NumberProperty(TextMetaProperty.z);
+    final NumberProperty left = new NumberProperty(TextMetaProperty.left);
+    final NumberProperty right = new NumberProperty(TextMetaProperty.right);
+    final NumberProperty top = new NumberProperty(TextMetaProperty.top);
+    final NumberProperty bottom = new NumberProperty(TextMetaProperty.bottom);
+
     final NumberProperty size = new NumberProperty(TextMetaProperty.size);
     final StringProperty text = new StringProperty(TextMetaProperty.text);
     final ObjectProperty anchor = new ObjectProperty(TextMetaProperty.anchor);
@@ -42,6 +47,10 @@ public class TextBoxAdapter extends Instance {
             case size: return size;
             case text: return text;
             case anchor: return anchor;
+            case left: return left;
+            case right: return right;
+            case top: return top;
+            case bottom: return bottom;
         }
         throw new IllegalArgumentException();
     }
@@ -65,6 +74,15 @@ public class TextBoxAdapter extends Instance {
                     return Double.valueOf(textBox.getZ());
                 case size:
                     return Double.valueOf(textBox.getSize());
+                case left:
+                    return textBox.getX() - (textBox.getAnchor().getWidthForAnchoring() + textBox.getWidthForAnchoring()) / 2.0;
+                case right:
+                    return -textBox.getX() - (textBox.getAnchor().getWidthForAnchoring() + textBox.getWidthForAnchoring()) / 2.0;
+                case top:
+                    return -textBox.getY() - (textBox.getAnchor().getHeightForAnchoring() + textBox.getHeightForAnchoring()) / 2.0;
+                case bottom:
+                    return textBox.getY() - (textBox.getAnchor().getHeightForAnchoring() + textBox.getHeightForAnchoring()) / 2.0;
+
             }
             throw new RuntimeException();
         }
@@ -73,14 +91,21 @@ public class TextBoxAdapter extends Instance {
         public boolean set(Double value) {
             switch (target) {
                 case x:
-                    return textBox.setX(((Double) value).floatValue());
+                    return textBox.setX(value.floatValue());
                 case y:
-                    return textBox.setY(((Double) value).floatValue());
+                    return textBox.setY(value.floatValue());
                 case z:
-                    return textBox.setZ(((Double) value).floatValue());
+                    return textBox.setZ(value.floatValue());
                 case size:
-                    return textBox.setSize(((Double) value).floatValue());
-            }
+                    return textBox.setSize(value.floatValue());
+                case left:
+                    return textBox.setX(value.floatValue() + (textBox.getWidthForAnchoring() + textBox.getAnchor().getWidthForAnchoring()) / 2);
+                case right:
+                    return textBox.setX(-(value.floatValue() + (textBox.getAnchor().getWidthForAnchoring() + textBox.getWidthForAnchoring()) / 2));
+                case top:
+                    return textBox.setY(-(value.floatValue() + (textBox.getAnchor().getHeightForAnchoring() + textBox.getHeightForAnchoring()) / 2));
+                case bottom:
+                    return textBox.setY(value.floatValue() + (textBox.getHeightForAnchoring() + textBox.getAnchor().getHeightForAnchoring()) / 2);            }
             throw new RuntimeException();
         }
 
@@ -136,6 +161,7 @@ public class TextBoxAdapter extends Instance {
 
     enum TextMetaProperty implements PropertyDescriptor {
         x(Types.NUMBER), y(Types.NUMBER), z(Types.NUMBER), size(Types.NUMBER),
+        left(Types.NUMBER), right(Types.NUMBER), top(Types.NUMBER), bottom(Types.NUMBER),
         text(Types.STRING), anchor(SpriteAdapter.CLASSIFIER);
 
         private final Type type;
