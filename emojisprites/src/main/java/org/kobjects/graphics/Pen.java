@@ -10,7 +10,7 @@ public class Pen {
     Screen screen;
 //    Bitmap bitmap;
     Canvas canvas;
-    Paint strokePaint = new Paint();
+    Paint linePaint = new Paint();
     Paint fillPaint = new Paint();
     Paint clearPaint;
 
@@ -25,11 +25,11 @@ public class Pen {
     public Pen(Screen screen) {
         this.screen = screen;
 
-        strokePaint.setAntiAlias(true);
+        linePaint.setAntiAlias(true);
         fillPaint.setAntiAlias(true);
 
-        strokePaint.setStyle(Paint.Style.STROKE);
-        strokePaint.setColor(Color.BLACK);
+        linePaint.setStyle(Paint.Style.STROKE);
+        linePaint.setColor(Color.BLACK);
         fillPaint.setStyle(Paint.Style.FILL);
         fillPaint.setColor(Color.BLUE);
 
@@ -45,13 +45,13 @@ public class Pen {
 
     public void drawLine(float x0, float y0, float x1, float y1) {
         validate();
-        canvas.drawLine(sx(x0), sy(y0), sx(x1), sy(y1), strokePaint);
+        canvas.drawLine(sx(x0), sy(y0), sx(x1), sy(y1), linePaint);
     }
 
     public void drawRect(float  x, float y, float width, float height) {
         validate();
         canvas.drawRect(sx(x), sy(y), sx(x+ width), sy(y + height), fillPaint);
-        canvas.drawRect(sx(x), sy(y), sx(x+ width), sy(y + height), strokePaint);
+        canvas.drawRect(sx(x), sy(y), sx(x+ width), sy(y + height), linePaint);
     }
 
     public void drawText(float x, float y, String text) {
@@ -61,8 +61,8 @@ public class Pen {
         if ((fillPaint.getColor() & 0xff000000) != 0) {
             canvas.drawText(text, sx, sy, fillPaint);
         }
-        if ((strokePaint.getColor() & 0xff000000) != 0) {
-            canvas.drawText(text, sx, sy, strokePaint);
+        if ((linePaint.getColor() & 0xff000000) != 0) {
+            canvas.drawText(text, sx, sy, linePaint);
         }
     }
 
@@ -79,10 +79,10 @@ public class Pen {
     }
 
     public boolean setTextSize(float size) {
-        if (strokePaint.getTextSize() == size * screen.bitmapScale) {
+        if (linePaint.getTextSize() == size * screen.bitmapScale) {
             return false;
         }
-        strokePaint.setTextSize(size * screen.bitmapScale);
+        linePaint.setTextSize(size * screen.bitmapScale);
         fillPaint.setTextSize(size * screen.bitmapScale);
         return true;
     }
@@ -99,19 +99,19 @@ public class Pen {
         return fillPaint.getColor();
     }
 
-    public boolean setStrokeColor(int argb) {
-        if (argb == strokePaint.getColor()) {
+    public boolean setLineColor(int argb) {
+        if (argb == linePaint.getColor()) {
             return false;
         }
-        strokePaint.setColor(argb);
+        linePaint.setColor(argb);
         return true;
     }
 
-    public int getStrokeColor() {
-        return strokePaint.getColor();
+    public int getLineColor() {
+        return linePaint.getColor();
     }
 
     public float getTextSize() {
-        return strokePaint.getTextSize() / screen.bitmapScale;
+        return linePaint.getTextSize() / screen.bitmapScale;
     }
 }

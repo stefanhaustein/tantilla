@@ -52,7 +52,11 @@ public class Sprite extends PositionedViewHolder<ImageView> {
         int basePx = Dimensions.dpToPx(context, 4);
 
         bubble.setPadding(2 * basePx ,  basePx,2*basePx , basePx);
-        bubble.setBackground(new BubbleDrawable(3 * basePx, 0, 3 * basePx, backgroundPaint, borderPaint));
+        BubbleDrawable bubbleDrawable = new BubbleDrawable();
+        bubbleDrawable.cornerBox = 3 * basePx;
+        bubbleDrawable.backgroundPaint = backgroundPaint;
+        bubbleDrawable.strokePaint = borderPaint;
+        bubble.setBackground(bubbleDrawable);
         bubble.setTextColor(Color.BLACK);
         bubble.setVisibility(View.GONE);
 

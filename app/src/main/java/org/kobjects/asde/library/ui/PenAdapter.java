@@ -38,12 +38,12 @@ public class PenAdapter extends Instance {
     private Property<Double> strokeColor = new Property<Double>() {
         @Override
         public boolean set(Double argb) {
-            return pen.setStrokeColor((int) argb.longValue());
+            return pen.setLineColor((int) argb.longValue());
         }
 
         @Override
         public Double get() {
-            return Double.valueOf(pen.getStrokeColor());
+            return Double.valueOf(pen.getLineColor());
         }
     };
 

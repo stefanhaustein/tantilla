@@ -18,6 +18,7 @@ class AnchorLayout<T extends View> extends ViewGroup {
         if (wrapped != null) {
             addView(wrapped);
         }
+        setClipChildren(false);
     }
 
     @Override

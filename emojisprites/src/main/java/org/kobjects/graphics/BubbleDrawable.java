@@ -14,16 +14,12 @@ class BubbleDrawable extends Drawable {
     float cornerBox;
     float arrowDx;
     float arrowDy;
-    Paint backgroundPaint;
-    Paint strokePaint;
+    Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    BubbleDrawable(float cornerBox, float arrowDx, float arrowDy, Paint background, Paint stroke) {
-        this.cornerBox = cornerBox;
-        this.arrowDx = arrowDx;
-        this.arrowDy = arrowDy;
-        this.backgroundPaint = background;
-        this.strokePaint = stroke;
-
+    BubbleDrawable() {
+        strokePaint.setStyle(Paint.Style.STROKE);
+        backgroundPaint.setStyle(Paint.Style.FILL);
     }
 
 

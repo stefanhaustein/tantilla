@@ -7,6 +7,7 @@ import org.kobjects.typesystem.Instance;
 import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
+import org.w3c.dom.Text;
 
 public class TextBoxAdapter extends Instance {
 
@@ -28,7 +29,11 @@ public class TextBoxAdapter extends Instance {
     final NumberProperty right = new NumberProperty(TextMetaProperty.right);
     final NumberProperty top = new NumberProperty(TextMetaProperty.top);
     final NumberProperty bottom = new NumberProperty(TextMetaProperty.bottom);
-
+    final NumberProperty fillColor = new NumberProperty(TextMetaProperty.fillColor);
+    final NumberProperty lineColor = new NumberProperty(TextMetaProperty.lineColor);
+    final NumberProperty textColor = new NumberProperty(TextMetaProperty.textColor);
+    final NumberProperty cornerRadius = new NumberProperty(TextMetaProperty.cornerRadius);
+    final NumberProperty lineWidth = new NumberProperty(TextMetaProperty.lineWidth);
     final NumberProperty size = new NumberProperty(TextMetaProperty.size);
     final StringProperty text = new StringProperty(TextMetaProperty.text);
     final ObjectProperty anchor = new ObjectProperty(TextMetaProperty.anchor);
@@ -42,15 +47,20 @@ public class TextBoxAdapter extends Instance {
     @Override
     public Property getProperty(PropertyDescriptor property) {
         switch ((TextMetaProperty) property) {
+            case anchor: return anchor;
+            case bottom: return bottom;
             case x: return x;
             case y: return y;
             case size: return size;
             case text: return text;
-            case anchor: return anchor;
             case left: return left;
             case right: return right;
             case top: return top;
-            case bottom: return bottom;
+            case lineColor: return lineColor;
+            case lineWidth: return lineWidth;
+            case fillColor: return fillColor;
+            case textColor: return textColor;
+            case cornerRadius: return cornerRadius;
         }
         throw new IllegalArgumentException();
     }
@@ -74,6 +84,16 @@ public class TextBoxAdapter extends Instance {
                     return Double.valueOf(textBox.getZ());
                 case size:
                     return Double.valueOf(textBox.getSize());
+                case lineColor:
+                    return Double.valueOf(textBox.getLineColor() & 0xffffffffL);
+                case lineWidth:
+                    return Double.valueOf(textBox.getLineWidth());
+                case fillColor:
+                    return Double.valueOf(textBox.getFillColor() & 0xffffffffL);
+                case cornerRadius:
+                    return Double.valueOf(textBox.getCornerRadius());
+                case textColor:
+                    return Double.valueOf(textBox.getTextColor() & 0xffffffffL);
                 case left:
                     return textBox.getX() - (textBox.getAnchor().getWidthForAnchoring() + textBox.getWidthForAnchoring()) / 2.0;
                 case right:
@@ -96,6 +116,16 @@ public class TextBoxAdapter extends Instance {
                     return textBox.setY(value.floatValue());
                 case z:
                     return textBox.setZ(value.floatValue());
+                case lineColor:
+                    return textBox.setLineColor((int) value.longValue());
+                case lineWidth:
+                    return textBox.setLineWidth(value.floatValue());
+                case fillColor:
+                    return textBox.setFillColor((int) value.longValue());
+                case cornerRadius:
+                    return textBox.setCornerRadius(value.floatValue());
+                case textColor:
+                    return textBox.setTextColor((int) value.longValue());
                 case size:
                     return textBox.setSize(value.floatValue());
                 case left:
@@ -161,7 +191,9 @@ public class TextBoxAdapter extends Instance {
 
     enum TextMetaProperty implements PropertyDescriptor {
         x(Types.NUMBER), y(Types.NUMBER), z(Types.NUMBER), size(Types.NUMBER),
+        lineWidth(Types.NUMBER), lineColor(Types.NUMBER), fillColor(Types.NUMBER),
         left(Types.NUMBER), right(Types.NUMBER), top(Types.NUMBER), bottom(Types.NUMBER),
+        textColor(Types.NUMBER), cornerRadius(Types.NUMBER),
         text(Types.STRING), anchor(SpriteAdapter.CLASSIFIER);
 
         private final Type type;
