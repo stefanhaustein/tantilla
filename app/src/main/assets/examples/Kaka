@@ -2,12 +2,12 @@
 110 bob = screen.newSprite()
 120 bob.size = 25
 130 bob.z = 1
-140 bob.text = "Hallo, ich bin Bob!"
+140 bob.say("Hallo, ich bin Bob!")
 150 PAUSE 3000
-200 bob.text = "Oh, nein! Ich muss voll Kaka!"
+200 bob.say("Oh, nein! Ich muss voll Kaka!")
 210 bob.face = "😯"
 220 PAUSE 3000
-300 bob.text = "Mmmh"
+300 bob.say("Mmmh")
 310 bob.face = "😖"
 320 kaka = screen.newSprite()
 330 kaka.face = "💩"
@@ -16,7 +16,7 @@
 360   kaka.y = i
 370   PAUSE 15
 380 NEXT i
-390 bob.text = ""
+390 bob.say("")
 400 bob.face = "😳"
 410 pause 3000
 500 bob.face = "😖"

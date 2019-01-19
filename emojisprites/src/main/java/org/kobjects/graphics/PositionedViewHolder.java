@@ -9,6 +9,8 @@ public abstract class PositionedViewHolder<T extends View> extends ViewHolder<An
     protected float y;
     protected float z;
 
+    protected boolean visible = true;
+
     final Screen screen;
     boolean syncRequested;
 
@@ -37,6 +39,7 @@ public abstract class PositionedViewHolder<T extends View> extends ViewHolder<An
             syncRequested = true;
             screen.activity.runOnUiThread(() -> {
                 syncRequested = false;
+                view.setVisibility(visible ? View.VISIBLE : View.GONE);
                 if (anchor.view != view.getParent()) {
                     if (view.getParent() != null) {
                         ((ViewGroup) view.getParent()).removeView(view);
@@ -101,4 +104,16 @@ public abstract class PositionedViewHolder<T extends View> extends ViewHolder<An
         return true;
     }
 
+    public boolean getVisible() {
+        return visible;
+    }
+
+    public boolean setVisible(boolean value) {
+        if (value == visible) {
+            return false;
+        }
+        visible = value;
+        requestSync();
+        return true;
+    }
 }

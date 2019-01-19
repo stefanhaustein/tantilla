@@ -20,7 +20,7 @@ public class TextBoxAdapter extends Instance {
             };
 
 
-    private final TextBox textBox;
+    final TextBox textBox;
 
     final NumberProperty x = new NumberProperty(TextMetaProperty.x);
     final NumberProperty y = new NumberProperty(TextMetaProperty.y);

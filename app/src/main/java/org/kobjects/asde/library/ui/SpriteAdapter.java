@@ -3,6 +3,7 @@ package org.kobjects.asde.library.ui;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Method;
 import org.kobjects.asde.lang.Types;
+import org.kobjects.graphics.TextBox;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Instance;
@@ -34,7 +35,7 @@ public class SpriteAdapter extends Instance {
     final NumberProperty right = new NumberProperty(SpriteMetaProperty.right);
     final NumberProperty top = new NumberProperty(SpriteMetaProperty.top);
     final NumberProperty bottom = new NumberProperty(SpriteMetaProperty.bottom);
-    final ObjectProperty text = new ObjectProperty(SpriteMetaProperty.text);
+    final ObjectProperty bubble = new ObjectProperty(SpriteMetaProperty.bubble);
     final ObjectProperty label = new ObjectProperty(SpriteMetaProperty.label);
     final ObjectProperty face = new ObjectProperty(SpriteMetaProperty.face);
     final ObjectProperty anchor = new ObjectProperty(SpriteMetaProperty.anchor);
@@ -60,13 +61,13 @@ public class SpriteAdapter extends Instance {
             case size: return size;
             case angle: return angle;
             case label: return label;
-            case text: return text;
+            case bubble: return bubble;
             case face: return face;
             case anchor: return anchor;
             case say: return new Method((FunctionType) SpriteMetaProperty.say.type()) {
                         @Override
                         public Object call(Interpreter interpreter, int paramCount) {
-                            text.set(interpreter.localStack.getLocal(0));
+                            sprite.say((String) (interpreter.localStack.getLocal(0)));
                             return null;
                         }
                 };
@@ -144,24 +145,22 @@ public class SpriteAdapter extends Instance {
 
         public Object get() {
             switch (target) {
-                case text:
-                    return sprite.getBubbleText();
+                case bubble:
+                    return sprite.getBubble().getTag();
                 case face:
                     return sprite.getFace();
                 case label:
-                    return sprite.getLabelText();
+                    return sprite.getLabel().getTag();
                 case anchor:
                     return sprite.getAnchor().getTag();
-
-
             }
             throw new RuntimeException();
         }
 
         public boolean set(Object value) {
             switch (target) {
-                case text: return sprite.setBubbleText((String) value);
-                case label: return sprite.setLabelText((String) value);
+                case bubble: return sprite.setBubble(((TextBoxAdapter) value).textBox);
+                case label: return sprite.setLabel(((TextBoxAdapter) value).textBox);
                 case face:return sprite.setFace((String) value);
                 case anchor: return sprite.setAnchor(((SpriteAdapter) value).sprite);
             }
@@ -173,7 +172,7 @@ public class SpriteAdapter extends Instance {
     enum SpriteMetaProperty implements PropertyDescriptor {
         x(Types.NUMBER), y(Types.NUMBER), z(Types.NUMBER), size(Types.NUMBER),
         left(Types.NUMBER), right(Types.NUMBER), top(Types.NUMBER), bottom(Types.NUMBER),
-        angle(Types.NUMBER), label(Types.STRING), text(Types.STRING), face(Types.STRING),
+        angle(Types.NUMBER), label(TextBoxAdapter.CLASSIFIER), bubble(TextBoxAdapter.CLASSIFIER), face(Types.STRING),
         anchor(SpriteAdapter.CLASSIFIER),
         say(new FunctionType(Types.VOID, Types.STRING));
 

@@ -47,14 +47,6 @@ public class Sprite extends PositionedViewHolder<ImageView> {
 //        bubble.setClipToOutline(false);
 
     }
-    public String getLabelText() {
-        return label == null ? "" : label.getText();
-    }
-
-    public String getBubbleText() {
-        return bubble == null ? "" : bubble.getText();
-    }
-
     public String getFace() {
         return face;
     }
@@ -117,11 +109,12 @@ public class Sprite extends PositionedViewHolder<ImageView> {
         return label;
     }
 
-    public boolean setLabelText(String label) {
-        if (Objects.equals(label, getLabelText())) {
+    public boolean setLabel(TextBox bubble) {
+        if (label == this.label) {
             return false;
         }
-        this.label.setText(label);
+        this.label = label;
+        label.anchor = this;
         return true;
     }
 
@@ -129,22 +122,22 @@ public class Sprite extends PositionedViewHolder<ImageView> {
         if (bubble == null) {
             bubble = new TextBox(screen);
             bubble.setAnchor(this);
-            bubble.setPadding(5);
+            bubble.setPadding(3);
             bubble.setTextColor(0xff000000);
             bubble.setFillColor(0xffffffff);
             bubble.setLineColor(0xff000000);
-            bubble.setY(5 + (getHeightForAnchoring() + bubble.getHeightForAnchoring()) / 2);
-            bubble.setCornerRadius(5);
+            bubble.setY(10 + (getHeightForAnchoring() + bubble.getHeightForAnchoring()) / 2);
+            bubble.setCornerRadius(3);
         }
         return bubble;
     }
 
-
-    public boolean setBubbleText(String text) {
-        if (Objects.equals(text, getBubbleText())) {
+    public boolean setBubble(TextBox bubble) {
+        if (bubble == this.bubble) {
             return false;
         }
-        getBubble().setText(text);
+        this.bubble = bubble;
+        bubble.anchor = this;
         return true;
     }
 
@@ -176,5 +169,10 @@ public class Sprite extends PositionedViewHolder<ImageView> {
     @Override
     public float getHeightForAnchoring() {
         return size;
+    }
+
+    public void say(String text) {
+        getBubble().setText(text);
+        getBubble().setVisible(!text.isEmpty());
     }
 }
