@@ -145,6 +145,17 @@ public class TextBox extends PositionedViewHolder<TextView> {
         return true;
     }
 
+
+
+    public boolean setPadding(float padding) {
+        if (padding == this.padding) {
+            return false;
+        }
+        this.padding = padding;
+        requestSync();
+        return true;
+    }
+
     public float getSize() {
         return size;
     }
@@ -181,5 +192,9 @@ public class TextBox extends PositionedViewHolder<TextView> {
 
     public int getTextColor() {
         return textColor;
+    }
+
+    public float getPadding() {
+        return padding;
     }
 }

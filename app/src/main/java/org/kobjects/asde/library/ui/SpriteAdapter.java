@@ -145,11 +145,11 @@ public class SpriteAdapter extends Instance {
         public Object get() {
             switch (target) {
                 case text:
-                    return sprite.getText();
+                    return sprite.getBubbleText();
                 case face:
                     return sprite.getFace();
                 case label:
-                    return sprite.getLabel();
+                    return sprite.getLabelText();
                 case anchor:
                     return sprite.getAnchor().getTag();
 
@@ -160,8 +160,8 @@ public class SpriteAdapter extends Instance {
 
         public boolean set(Object value) {
             switch (target) {
-                case text: return sprite.setText((String) value);
-                case label: return sprite.setLabel((String) value);
+                case text: return sprite.setBubbleText((String) value);
+                case label: return sprite.setLabelText((String) value);
                 case face:return sprite.setFace((String) value);
                 case anchor: return sprite.setAnchor(((SpriteAdapter) value).sprite);
             }

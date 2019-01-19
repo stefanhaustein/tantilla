@@ -1,8 +1,6 @@
 package org.kobjects.graphics;
 
 import android.content.Context;
-import android.util.TypedValue;
-import android.view.View;
 import android.widget.ImageView;
 
 import java.util.Objects;
@@ -49,11 +47,11 @@ public class Sprite extends PositionedViewHolder<ImageView> {
 //        bubble.setClipToOutline(false);
 
     }
-    public String getLabel() {
+    public String getLabelText() {
         return label == null ? "" : label.getText();
     }
 
-    public String getText() {
+    public String getBubbleText() {
         return bubble == null ? "" : bubble.getText();
     }
 
@@ -106,36 +104,47 @@ public class Sprite extends PositionedViewHolder<ImageView> {
         requestSync();
         return true;
     }
-    public boolean setLabel(String label) {
-        if (Objects.equals(label, getLabel())) {
-            return false;
+
+    public TextBox getLabel() {
+        if (label == null) {
+            label = new TextBox(screen);
+            label.setAnchor(this);
+            label.setTextColor(0xff000000);
+            label.setFillColor(0xffffffff);
+            label.setLineColor(0xff000000);
+            label.setY((getHeightForAnchoring() + this.label.getHeightForAnchoring()) / -2);
         }
-        if (this.label == null) {
-            this.label = new TextBox(screen);
-            this.label.setAnchor(this);
-            this.label.setTextColor(0xff000000);
-            this.label.setFillColor(0xffffffff);
-            this.label.setLineColor(0xff000000);
-            this.label.setY((getHeightForAnchoring() + this.label.getHeightForAnchoring()) / -2);
+        return label;
+    }
+
+    public boolean setLabelText(String label) {
+        if (Objects.equals(label, getLabelText())) {
+            return false;
         }
         this.label.setText(label);
         return true;
     }
 
-    public boolean setText(String text) {
-        if (Objects.equals(text, getText())) {
+    public TextBox getBubble() {
+        if (bubble == null) {
+            bubble = new TextBox(screen);
+            bubble.setAnchor(this);
+            bubble.setPadding(5);
+            bubble.setTextColor(0xff000000);
+            bubble.setFillColor(0xffffffff);
+            bubble.setLineColor(0xff000000);
+            bubble.setY(5 + (getHeightForAnchoring() + bubble.getHeightForAnchoring()) / 2);
+            bubble.setCornerRadius(5);
+        }
+        return bubble;
+    }
+
+
+    public boolean setBubbleText(String text) {
+        if (Objects.equals(text, getBubbleText())) {
             return false;
         }
-        if (this.bubble == null) {
-            this.bubble = new TextBox(screen);
-            this.bubble.setAnchor(this);
-            this.bubble.setTextColor(0xff000000);
-            this.bubble.setFillColor(0xffffffff);
-            this.bubble.setLineColor(0xff000000);
-            this.bubble.setY(5 + (getHeightForAnchoring() + bubble.getHeightForAnchoring()) / 2);
-            this.bubble.setCornerRadius(5);
-        }
-        this.bubble.setText(text);
+        getBubble().setText(text);
         return true;
     }
 
