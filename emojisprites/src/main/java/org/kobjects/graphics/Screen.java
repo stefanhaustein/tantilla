@@ -9,7 +9,11 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-public class Screen extends ViewHolder<FrameLayout> {
+import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
+
+public class Screen extends ViewHolder<FrameLayout> implements Animated {
     public final Activity activity;
     /**
      * Multiply with scale to get from virtual coordinates to px, divide to get from px to
@@ -20,6 +24,7 @@ public class Screen extends ViewHolder<FrameLayout> {
     Bitmap bitmap;
     float bitmapScale;
     public Dpad dpad;
+    Set<PositionedViewHolder<?>> widgets = Collections.newSetFromMap(new WeakHashMap<>());
 
 
     public Screen(@NonNull Activity activity) {
@@ -84,5 +89,14 @@ public class Screen extends ViewHolder<FrameLayout> {
     @Override
     public float getHeightForAnchoring() {
         return -view.getHeight() / scale;
+    }
+
+    @Override
+    public void animate(float dt) {
+        for(PositionedViewHolder<?> widget : widgets) {
+            if (widget instanceof Animated) {
+                ((Animated) widget).animate(dt);
+            }
+        }
     }
 }

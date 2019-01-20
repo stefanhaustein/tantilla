@@ -8,8 +8,8 @@ public class PhysicalProperty<T> extends Property<T> {
     }
 
     @Override
-    public boolean set(T newValue) {
-        if (value.equals(newValue)) {
+    public boolean setImpl(T newValue) {
+        if (newValue.equals(value)) {
             return false;
         }
         this.value = newValue;

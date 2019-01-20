@@ -25,7 +25,7 @@ public class PenAdapter extends Instance {
 
     private Property<Double> fillColor = new Property<Double>() {
         @Override
-        public boolean set(Double argb) {
+        public boolean setImpl(Double argb) {
             return pen.setFillColor((int) argb.longValue());
         }
 
@@ -37,7 +37,7 @@ public class PenAdapter extends Instance {
 
     private Property<Double> strokeColor = new Property<Double>() {
         @Override
-        public boolean set(Double argb) {
+        public boolean setImpl(Double argb) {
             return pen.setLineColor((int) argb.longValue());
         }
 
@@ -49,7 +49,7 @@ public class PenAdapter extends Instance {
 
     private Property<Double> textSize = new Property<Double>() {
         @Override
-        public boolean set(Double aDouble) {
+        public boolean setImpl(Double aDouble) {
             return pen.setTextSize(aDouble.floatValue());
         }
 

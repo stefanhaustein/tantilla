@@ -17,8 +17,8 @@ public abstract class Method extends Property implements Function {
     }
 
     @Override
-    public boolean set(Object o) {
-        throw new RuntimeException();
+    public boolean setImpl(Object o) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

@@ -40,7 +40,7 @@ public class DpadAdapter extends Instance {
         fire = new TouchProperty(dpad.fire);
         visible = new Property<Number>() {
             @Override
-            public boolean set(Number number) {
+            public boolean setImpl(Number number) {
                 return dpad.setVisible(number.doubleValue() != 0);
             }
 

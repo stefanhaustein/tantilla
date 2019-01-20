@@ -5,7 +5,7 @@ import android.widget.ImageView;
 
 import java.util.Objects;
 
-public class Sprite extends PositionedViewHolder<ImageView> {
+public class Sprite extends PositionedViewHolder<ImageView> implements Animated {
 
     public static final String DEFAULT_FACE = "\ud83d\ude03";
 
@@ -174,5 +174,12 @@ public class Sprite extends PositionedViewHolder<ImageView> {
     public void say(String text) {
         getBubble().setText(text);
         getBubble().setVisible(!text.isEmpty());
+    }
+
+    @Override
+    public void animate(float dt) {
+        if (tag instanceof Animated) {
+            ((Animated) tag).animate(dt);
+        }
     }
 }

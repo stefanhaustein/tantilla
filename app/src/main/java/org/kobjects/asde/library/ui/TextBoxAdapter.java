@@ -108,7 +108,7 @@ public class TextBoxAdapter extends Instance {
         }
 
         @Override
-        public boolean set(Double value) {
+        public boolean setImpl(Double value) {
             switch (target) {
                 case x:
                     return textBox.setX(value.floatValue());
@@ -156,7 +156,7 @@ public class TextBoxAdapter extends Instance {
             throw new RuntimeException();
         }
 
-        public boolean set(String value) {
+        public boolean setImpl(String value) {
             switch (target) {
                 case text: return textBox.setText(value);
             }
@@ -180,7 +180,7 @@ public class TextBoxAdapter extends Instance {
             throw new RuntimeException();
         }
 
-        public boolean set(Object value) {
+        public boolean setImpl(Object value) {
             switch (target) {
                 case anchor: return textBox.setAnchor(((SpriteAdapter) value).sprite);
             }

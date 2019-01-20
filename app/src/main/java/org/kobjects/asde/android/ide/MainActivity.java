@@ -44,6 +44,7 @@ import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
+import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.ProgramReference;
 import org.kobjects.asde.lang.Shell;
 import org.kobjects.asde.lang.WrappedExecutionException;
@@ -195,6 +196,20 @@ public class MainActivity extends AppCompatActivity implements Console {
     runControlView = new RunControlView(this);
     controlView = new ControlView(this);
     screen = new Screen(this);
+
+    new Thread(() -> {
+        while (true) {
+            if (shell.mainInterpreter.getState() != ProgramControl.State.PAUSED) {
+                screen.animate(15);
+            }
+            try {
+                Thread.sleep(15);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }).start();
+
     screenAdapter = new ScreenAdapter(screen);
 
     program.setValue(GlobalSymbol.Scope.BUILTIN,"screen", screenAdapter);

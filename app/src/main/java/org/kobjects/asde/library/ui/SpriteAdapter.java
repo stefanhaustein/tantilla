@@ -3,10 +3,11 @@ package org.kobjects.asde.library.ui;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Method;
 import org.kobjects.asde.lang.Types;
-import org.kobjects.graphics.TextBox;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Instance;
+import org.kobjects.typesystem.PhysicalProperty;
+import org.kobjects.typesystem.PropertyChangeListener;
 import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.Type;
@@ -39,6 +40,15 @@ public class SpriteAdapter extends Instance {
     final ObjectProperty label = new ObjectProperty(SpriteMetaProperty.label);
     final ObjectProperty face = new ObjectProperty(SpriteMetaProperty.face);
     final ObjectProperty anchor = new ObjectProperty(SpriteMetaProperty.anchor);
+    final PhysicalProperty<Double> speed = new PhysicalProperty<>(0.0);
+    final PhysicalProperty<Double> direction = new PhysicalProperty<>(0.0);
+
+    final PropertyChangeListener<Double> movementChangeListener = new PropertyChangeListener<Double>() {
+        @Override
+        public void propertyChanged(Property property,  Double newValue) {
+
+        }
+    };
 
     public SpriteAdapter(final ScreenAdapter screen) {
         super(CLASSIFIER);
@@ -46,6 +56,9 @@ public class SpriteAdapter extends Instance {
         sprite = new Sprite(screen.getScreen());
         sprite.setTag(this);
         sprite.setSize(10);
+
+        speed.addListener(movementChangeListener);
+
     }
 
     @Override
@@ -110,7 +123,7 @@ public class SpriteAdapter extends Instance {
         }
 
         @Override
-        public boolean set(Double value) {
+        public boolean setImpl(Double value) {
             switch (target) {
                 case x:
                     return sprite.setX(value.floatValue());
@@ -157,7 +170,7 @@ public class SpriteAdapter extends Instance {
             throw new RuntimeException();
         }
 
-        public boolean set(Object value) {
+        public boolean setImpl(Object value) {
             switch (target) {
                 case bubble: return sprite.setBubble(((TextBoxAdapter) value).textBox);
                 case label: return sprite.setLabel(((TextBoxAdapter) value).textBox);
