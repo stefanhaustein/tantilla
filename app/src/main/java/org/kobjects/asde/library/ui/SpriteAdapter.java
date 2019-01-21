@@ -3,6 +3,7 @@ package org.kobjects.asde.library.ui;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Method;
 import org.kobjects.asde.lang.Types;
+import org.kobjects.graphics.Animated;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Instance;
@@ -13,7 +14,7 @@ import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.Type;
 import org.kobjects.graphics.Sprite;
 
-public class SpriteAdapter extends Instance {
+public class SpriteAdapter extends Instance implements Animated {
 
     public static final Classifier CLASSIFIER =
             new Classifier(SpriteAdapter.SpriteMetaProperty.values()) {
@@ -30,6 +31,8 @@ public class SpriteAdapter extends Instance {
     final NumberProperty x = new NumberProperty(SpriteMetaProperty.x);
     final NumberProperty y = new NumberProperty(SpriteMetaProperty.y);
     final NumberProperty z = new NumberProperty(SpriteMetaProperty.z);
+    final NumberProperty dx = new NumberProperty(SpriteMetaProperty.dx);
+    final NumberProperty dy = new NumberProperty(SpriteMetaProperty.dy);
     final NumberProperty size = new NumberProperty(SpriteMetaProperty.size);
     final NumberProperty angle = new NumberProperty(SpriteMetaProperty.angle);
     final NumberProperty left = new NumberProperty(SpriteMetaProperty.left);
@@ -43,13 +46,6 @@ public class SpriteAdapter extends Instance {
     final PhysicalProperty<Double> speed = new PhysicalProperty<>(0.0);
     final PhysicalProperty<Double> direction = new PhysicalProperty<>(0.0);
 
-    final PropertyChangeListener<Double> movementChangeListener = new PropertyChangeListener<Double>() {
-        @Override
-        public void propertyChanged(Property property,  Double newValue) {
-
-        }
-    };
-
     public SpriteAdapter(final ScreenAdapter screen) {
         super(CLASSIFIER);
         this.screen = screen;
@@ -57,8 +53,8 @@ public class SpriteAdapter extends Instance {
         sprite.setTag(this);
         sprite.setSize(10);
 
-        speed.addListener(movementChangeListener);
-
+        speed.addListener(p -> {dx.notifyChanged(); dy.notifyChanged();});
+        direction.addListener(p -> {dx.notifyChanged(); dy.notifyChanged();});
     }
 
     @Override
@@ -67,6 +63,8 @@ public class SpriteAdapter extends Instance {
             case x: return x;
             case y: return y;
             case z: return z;
+            case dx: return dx;
+            case dy: return dy;
             case left: return left;
             case right: return right;
             case top: return top;
@@ -77,6 +75,8 @@ public class SpriteAdapter extends Instance {
             case bubble: return bubble;
             case face: return face;
             case anchor: return anchor;
+            case speed: return speed;
+            case direction: return direction;
             case say: return new Method((FunctionType) SpriteMetaProperty.say.type()) {
                         @Override
                         public Object call(Interpreter interpreter, int paramCount) {
@@ -86,6 +86,16 @@ public class SpriteAdapter extends Instance {
                 };
         }
         throw new IllegalArgumentException();
+    }
+
+    @Override
+    public void animate(float dt) {
+        if (speed.get() != 0.0) {
+            double theta = Math.toRadians(90 - direction.get());
+            double delta = dt * speed.get() / 1000;
+            x.set(x.get() + Math.cos(theta) * delta);
+            y.set(y.get() + Math.sin(theta) * delta);
+        }
     }
 
 
@@ -117,18 +127,48 @@ public class SpriteAdapter extends Instance {
                     return -sprite.getY() - (sprite.getAnchor().getHeightForAnchoring() + sprite.getSize()) / 2.0;
                 case bottom:
                     return sprite.getY() - (sprite.getAnchor().getHeightForAnchoring() + sprite.getSize()) / 2.0;
+                case dx:
+                    return speed.get() * Math.cos(Math.toRadians(90 - direction.get()));
+                case dy:
+                    return speed.get() * Math.sin(Math.toRadians(90 - direction.get()));
 
             }
             throw new RuntimeException();
+        }
+
+        boolean changeDxy(double dx, double dy) {
+            double newSpeed = Math.sqrt(dx * dx + dy * dy);
+
+            if (newSpeed == 0) {
+                return speed.set(0.0);
+            }
+
+            double newDirection = 90 - Math.toDegrees(Math.atan2(dy, dx));
+
+            return speed.set(newSpeed) | direction.set(newDirection < 0 ? 360 + newDirection : newDirection);
         }
 
         @Override
         public boolean setImpl(Double value) {
             switch (target) {
                 case x:
-                    return sprite.setX(value.floatValue());
+                    if (!sprite.setX(value.floatValue())) {
+                        return false;
+                    }
+                    left.notifyChanged();
+                    right.notifyChanged();
+                    return true;
                 case y:
-                    return sprite.setY(value.floatValue());
+                    if (!sprite.setY(value.floatValue())) {
+                        return false;
+                    }
+                    top.notifyChanged();
+                    bottom.notifyChanged();
+                    return true;
+                case dx:
+                    return changeDxy(value, dy.get());
+                case dy:
+                    return changeDxy(dx.get(), value);
                 case z:
                     return sprite.setZ(value.floatValue());
                 case angle:
@@ -185,6 +225,7 @@ public class SpriteAdapter extends Instance {
     enum SpriteMetaProperty implements PropertyDescriptor {
         x(Types.NUMBER), y(Types.NUMBER), z(Types.NUMBER), size(Types.NUMBER),
         left(Types.NUMBER), right(Types.NUMBER), top(Types.NUMBER), bottom(Types.NUMBER),
+        speed(Types.NUMBER), direction(Types.NUMBER), dx(Types.NUMBER), dy(Types.NUMBER),
         angle(Types.NUMBER), label(TextBoxAdapter.CLASSIFIER), bubble(TextBoxAdapter.CLASSIFIER), face(Types.STRING),
         anchor(SpriteAdapter.CLASSIFIER),
         say(new FunctionType(Types.VOID, Types.STRING));
