@@ -45,6 +45,7 @@ public class SpriteAdapter extends Instance implements Animated {
     final ObjectProperty anchor = new ObjectProperty(SpriteMetaProperty.anchor);
     final PhysicalProperty<Double> speed = new PhysicalProperty<>(0.0);
     final PhysicalProperty<Double> direction = new PhysicalProperty<>(0.0);
+    final PhysicalProperty<Double> rotation = new PhysicalProperty<>(0.0);
 
     public SpriteAdapter(final ScreenAdapter screen) {
         super(CLASSIFIER);
@@ -77,6 +78,7 @@ public class SpriteAdapter extends Instance implements Animated {
             case anchor: return anchor;
             case speed: return speed;
             case direction: return direction;
+            case rotation: return rotation;
             case say: return new Method((FunctionType) SpriteMetaProperty.say.type()) {
                         @Override
                         public Object call(Interpreter interpreter, int paramCount) {
@@ -90,11 +92,16 @@ public class SpriteAdapter extends Instance implements Animated {
 
     @Override
     public void animate(float dt) {
-        if (speed.get() != 0.0) {
+        double s = speed.get();
+        if (s != 0.0) {
             double theta = Math.toRadians(90 - direction.get());
-            double delta = dt * speed.get() / 1000;
+            double delta = dt * s / 1000;
             x.set(x.get() + Math.cos(theta) * delta);
             y.set(y.get() + Math.sin(theta) * delta);
+        }
+        double r = rotation.get();
+        if (r != 0.0) {
+            angle.set(angle.get() + r * dt / 1000);
         }
     }
 
@@ -227,6 +234,7 @@ public class SpriteAdapter extends Instance implements Animated {
         left(Types.NUMBER), right(Types.NUMBER), top(Types.NUMBER), bottom(Types.NUMBER),
         speed(Types.NUMBER), direction(Types.NUMBER), dx(Types.NUMBER), dy(Types.NUMBER),
         angle(Types.NUMBER), label(TextBoxAdapter.CLASSIFIER), bubble(TextBoxAdapter.CLASSIFIER), face(Types.STRING),
+        rotation(Types.NUMBER),
         anchor(SpriteAdapter.CLASSIFIER),
         say(new FunctionType(Types.VOID, Types.STRING));
 
