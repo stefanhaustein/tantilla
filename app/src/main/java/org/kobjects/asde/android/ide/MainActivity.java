@@ -44,9 +44,12 @@ import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
+import org.kobjects.asde.lang.Function;
+import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.ProgramReference;
 import org.kobjects.asde.lang.Shell;
+import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.WrappedExecutionException;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.asde.library.ui.DpadAdapter;
@@ -56,6 +59,7 @@ import org.kobjects.asde.library.ui.TextBoxAdapter;
 import org.kobjects.graphics.Screen;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Console;
+import org.kobjects.typesystem.FunctionType;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements Console {
     static final int LOAD_EXTERNALLY_REQUEST_CODE = 421;
     static final int OPEN_EXTERNALLY_REQUEST_CODE = 422;
     static final int PICK_SHORTCUT_ICON_REQUEST_CODE = 423;
+
+    static final FunctionType FUNCTION_VOID_0 = new FunctionType(Types.VOID);
 
     public static void removeFromParent(View view) {
         if (view != null && view.getParent() instanceof ViewGroup) {
@@ -216,7 +222,34 @@ public class MainActivity extends AppCompatActivity implements Console {
     program.setValue(GlobalSymbol.Scope.BUILTIN,"Sprite", SpriteAdapter.CLASSIFIER);
     program.setValue(GlobalSymbol.Scope.BUILTIN, "TextBox", TextBoxAdapter.CLASSIFIER);
     program.setValue(GlobalSymbol.Scope.BUILTIN, "dpad", new DpadAdapter(screen.dpad));
-//    program.setValue(GlobalSymbol.Scope.BUILTIN,"pen", screen.penClassifier);
+    program.setValue(GlobalSymbol.Scope.BUILTIN, "cls", new Function() {
+        @Override
+        public FunctionType getType() {
+            return FUNCTION_VOID_0;
+        }
+        @Override
+        public Object call(Interpreter interpreter, int paramCount) {
+            clearOutput();
+            clearCanvas();
+            return null;
+        }
+    });
+    program.setValue(GlobalSymbol.Scope.BUILTIN, "pause", new Function() {
+        @Override
+        public FunctionType getType() {
+            return null;
+        }
+
+        @Override
+        public Object call(Interpreter interpreter, int paramCount) {
+            try {
+                Thread.sleep(((Number) interpreter.localStack.getParameter(0, paramCount)).intValue());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            return null;
+        }
+    });
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

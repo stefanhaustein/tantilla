@@ -31,7 +31,7 @@ public class CallableUnit implements Function {
 
     public void resolve() {
         ResolutionContext resolutionContext = new ResolutionContext(program,
-                this == program.main ? ResolutionContext.ResolutionMode.MAIN : ResolutionContext.ResolutionMode.FUNCTION,
+                this == program.legacy ? ResolutionContext.ResolutionMode.LEGACY : ResolutionContext.ResolutionMode.STRICT,
                 this, parameterNames);
 
         int indent = 0;

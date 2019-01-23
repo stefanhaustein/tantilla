@@ -188,7 +188,6 @@ public class Parser {
       case DEF:  // Exactly one param
       case GOTO:
       case GOSUB:
-      case PAUSE:
         return new LegacyStatement(kind, expressionParser.parse(tokenizer));
 
 

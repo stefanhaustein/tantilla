@@ -8,7 +8,6 @@ import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Instance;
 import org.kobjects.typesystem.PhysicalProperty;
-import org.kobjects.typesystem.PropertyChangeListener;
 import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.Type;

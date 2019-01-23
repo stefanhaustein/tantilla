@@ -8,13 +8,12 @@ import org.kobjects.asde.lang.symbol.DynamicSymbol;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.asde.lang.symbol.LocalSymbol;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
-import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
 
 import java.util.HashMap;
 
 public class ResolutionContext {
-    public enum ResolutionMode {FUNCTION, SHELL, MAIN};
+    public enum ResolutionMode {STRICT, SHELL, LEGACY};
     public enum BlockType {
         ROOT, FOR, IF
     }
@@ -51,7 +50,7 @@ public class ResolutionContext {
     }
 
     public ResolvedSymbol declare(String name, Type type) {
-        if (mode != ResolutionMode.FUNCTION) {
+        if (mode != ResolutionMode.STRICT) {
             return resolve(name);
         }
         if (currentBlock.localSymbols.containsKey(name)) {
@@ -69,7 +68,7 @@ public class ResolutionContext {
         }
         GlobalSymbol symbol = program.getSymbol(name);
         switch (mode) {
-            case MAIN:
+            case LEGACY:
                 return symbol != null
                         && (symbol.scope == GlobalSymbol.Scope.PERSISTENT
                            || symbol.scope == GlobalSymbol.Scope.BUILTIN)

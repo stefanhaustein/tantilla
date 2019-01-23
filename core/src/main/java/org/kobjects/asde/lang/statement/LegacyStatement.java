@@ -24,12 +24,10 @@ import java.util.Map;
 public class LegacyStatement extends Node {
 
   public enum Kind {
-    CLS,  // TODO: Builtin?!
     DATA, DEF, DUMP,
     END,
     GOTO, GOSUB,
     ON,
-    PAUSE, // TODO: Turn into builtin
     READ, RESTORE, RETURN,
     STOP,
   }
@@ -51,7 +49,7 @@ public class LegacyStatement extends Node {
 
   @Override
   protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
-    if (resolutionContext.mode == ResolutionContext.ResolutionMode.FUNCTION) {
+    if (resolutionContext.mode == ResolutionContext.ResolutionMode.STRICT) {
       throw new RuntimeException("Legacy statement " + kind + " not permitted in functions and subroutines.");
     }
   }
@@ -84,10 +82,6 @@ public class LegacyStatement extends Node {
         program.setValue(interpreter.getSymbolScope(), name, fn);
         break;
       }
-      case CLS:
-        interpreter.control.program.console.clearOutput();
-        interpreter.control.program.console.clearCanvas();
-        break;
 
       case DATA:
         break;
@@ -106,14 +100,6 @@ public class LegacyStatement extends Node {
       case GOTO:
         interpreter.currentLine = (int) evalChildToDouble(interpreter,0);
         interpreter.currentIndex = 0;
-        break;
-
-      case PAUSE:
-        try {
-          Thread.sleep(evalChildToInt(interpreter, 0));
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-        }
         break;
 
       case ON: {

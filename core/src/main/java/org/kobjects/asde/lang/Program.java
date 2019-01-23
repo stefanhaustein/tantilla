@@ -50,6 +50,7 @@ public class Program {
 
     public final Parser parser = new Parser(this);
     public final CallableUnit main = new CallableUnit(this, new FunctionType(Types.VOID));
+    public final CallableUnit legacy = new CallableUnit(this, new FunctionType(Types.VOID));
 
     // Program state
 
