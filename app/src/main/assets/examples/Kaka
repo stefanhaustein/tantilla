@@ -1,5 +1,5 @@
 100 REM kaka
-110 bob = screen.newSprite()
+110 LET bob = screen.newSprite()
 120 bob.size = 25
 130 bob.z = 1
 140 bob.say("Hallo, ich bin Bob!")
@@ -9,7 +9,7 @@
 220 PAUSE 3000
 300 bob.say("Mmmh")
 310 bob.face = "😖"
-320 kaka = screen.newSprite()
+320 LET kaka = screen.newSprite()
 330 kaka.face = "💩"
 340 kaka.angle = 180
 350 FOR i = -7 TO -11 STEP -0.01

@@ -83,7 +83,7 @@ SUB drawAll()
 100 FOR y = 0 to 20
 120  FOR x = 1 to 12
 130    LET c = grid(x, y)
-140    IF c THEN
+140    IF c <> 0 THEN
 141      setColor c
 142      pen.rect x * 8 - 69, 91 - y * 8, 7, 7
 143    ELSE

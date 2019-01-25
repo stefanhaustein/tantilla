@@ -2,6 +2,7 @@ package org.kobjects.asde.lang.parser;
 
 import org.kobjects.asde.lang.node.AndOperator;
 import org.kobjects.asde.lang.node.Apply;
+import org.kobjects.asde.lang.node.ArrayLiteral;
 import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.NegOperator;
 import org.kobjects.asde.lang.node.New;
@@ -99,7 +100,14 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
 
   @Override
   public Node group(ExpressionParser.Tokenizer tokenizer, String bracket, List<Node> args) {
-    return new Group(args.get(0));
+    switch (bracket) {
+      case "(":
+        return new Group(args.get(0));
+      case "{":
+        return new ArrayLiteral(args.toArray(new Node[0]));
+      default:
+        return super.group(tokenizer, bracket, args);
+    }
   }
 
   @Override

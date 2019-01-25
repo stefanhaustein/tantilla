@@ -1,6 +1,7 @@
-10 bob = screen.newSprite()
+10 LET bob = screen.newSprite()
 20 bob.size = 50
-30 dx = 0.5
+30 LET dx = 0.5
+40 LET dy = 0
 100 if bob.right < 0 then dx = -1
 110 if bob.left < 0 then dx = 1
 120 if bob.bottom < 0 then dy = 4

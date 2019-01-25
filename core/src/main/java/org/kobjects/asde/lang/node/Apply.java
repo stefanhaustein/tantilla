@@ -33,7 +33,7 @@ public class Apply extends AssignableNode {
             throw new EvaluationException(this, "Can't set indexed value to non-array: " + value);
         }
         Array array = (Array) base;
-        int[] indices = new int[array.getType().dimensionality];
+        int[] indices = new int[children.length - 1];
         for (int i = 1; i < children.length; i++) {
             indices[i - 1] = evalChildToInt(interpreter, i);
         }

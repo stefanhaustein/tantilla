@@ -44,6 +44,7 @@ public class Parser {
     expressionParser.addApplyBrackets(9,"(", ",", ")");
     expressionParser.addApplyBrackets(9,"[", ",", "]");  // HP
     expressionParser.addGroupBrackets("(", null, ")");
+    expressionParser.addGroupBrackets("{", ",", "}");
     expressionParser.addOperators(ExpressionParser.OperatorType.INFIX, 10, ".");
     expressionParser.addOperators(ExpressionParser.OperatorType.INFIX, 8, "^");
     expressionParser.addOperators(ExpressionParser.OperatorType.PREFIX, 7, "-");
