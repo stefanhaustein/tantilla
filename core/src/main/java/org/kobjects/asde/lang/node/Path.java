@@ -27,7 +27,7 @@ public class Path extends AssignableNode {
     Property evalProperty(Interpreter interpreter) {
         Object base = children[0].eval(interpreter);
         if (!(base instanceof Instance)) {
-            throw new RuntimeException("instance expected");
+            throw new RuntimeException("instance expected; was: " + (base == null ? null : base.getClass()) + " expr: " + children[0]);
         }
         Instance instance = (Instance) base;
         PropertyDescriptor propertyDescriptor = resolved != null ? resolved : instance.getType().getPropertyDescriptor(pathName);

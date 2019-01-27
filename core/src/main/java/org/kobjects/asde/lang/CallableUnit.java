@@ -11,6 +11,7 @@ import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.FunctionType;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -31,7 +32,7 @@ public class CallableUnit implements Function {
 
     public void resolve() {
         ResolutionContext resolutionContext = new ResolutionContext(program,
-                this == program.legacy ? ResolutionContext.ResolutionMode.LEGACY : ResolutionContext.ResolutionMode.STRICT,
+                this == program.main && program.legacyMode ? ResolutionContext.ResolutionMode.LEGACY : ResolutionContext.ResolutionMode.STRICT,
                 this, parameterNames);
 
         int indent = 0;
@@ -177,8 +178,112 @@ public class CallableUnit implements Function {
         this.type = functionType;
     }
 
+    public Iterable<Node> statements(int fromLine, int fromIndex, int toLine, int toIndex) {
+        return () -> new StatementIterator(fromLine, fromIndex, toLine, toIndex);
+    }
+
+    public Iterable<Node> descendingStatements(int fromLine, int fromIndex, int toLine, int toIndex) {
+        return () -> new DescendingStatementIterator(fromLine, fromIndex, toLine, toIndex);
+    }
+
     public interface StatementMatcher {
         boolean statementMatches(Node statement);
+    }
+
+    class StatementIterator implements Iterator<Node> {
+        final Iterator<Map.Entry<Integer, CodeLine>> lineIterator;
+
+        private Node next;
+        private Map.Entry<Integer, CodeLine> currentLine;
+        int index;
+        int toLine;
+        int toIndex;
+
+        StatementIterator(int fromLine, int fromIndex, int toLine, int toIndex) {
+            lineIterator = code.subMap(fromLine, true, toLine, true).entrySet().iterator();
+            currentLine = lineIterator.hasNext() ? lineIterator.next() : null;
+            index = fromIndex;
+            this.toLine = toLine;
+            this.toIndex = toIndex;
+        }
+
+        public boolean hasNext() {
+            if (next != null) {
+                return true;
+            }
+            if (currentLine == null) {
+                return false;
+            }
+            while (index >= currentLine.getValue().statements.size()) {
+                if (!lineIterator.hasNext()) {
+                    return false;
+                }
+                currentLine = lineIterator.next();
+                index = 0;
+            }
+            if (currentLine.getKey() == toLine && index >= toIndex) {
+                return false;
+            }
+            next = currentLine.getValue().statements.get(index++);
+            return true;
+        }
+
+        public Node next() {
+            if (next == null && !hasNext()) {
+                throw new IndexOutOfBoundsException();
+            }
+            Node result = next;
+            next = null;
+            return result;
+        }
+    }
+
+    class DescendingStatementIterator implements Iterator<Node> {
+        final Iterator<Map.Entry<Integer, CodeLine>> lineIterator;
+
+        private Node next;
+        private Map.Entry<Integer, CodeLine> currentLine;
+        int index;
+        int toLine;
+        int toIndex;
+
+        DescendingStatementIterator(int fromLine, int fromIndex, int toLine, int toIndex) {
+            lineIterator = code.subMap(toLine, true, fromLine, true).descendingMap().entrySet().iterator();
+            currentLine = lineIterator.hasNext() ? lineIterator.next() : null;
+            index = fromIndex;
+            this.toLine = toLine;
+            this.toIndex = toIndex;
+        }
+
+        public boolean hasNext() {
+            if (next != null) {
+                return true;
+            }
+            if (currentLine == null) {
+                return false;
+            }
+            while (index < 0) {
+                if (!lineIterator.hasNext()) {
+                    return false;
+                }
+                currentLine = lineIterator.next();
+                index = currentLine.getValue().statements.size() - 1;
+            }
+            if (currentLine.getKey() == toLine && index <= toIndex) {
+                return false;
+            }
+            next = currentLine.getValue().statements.get(index--);
+            return true;
+        }
+
+        public Node next() {
+            if (next == null && !hasNext()) {
+                throw new IndexOutOfBoundsException();
+            }
+            Node result = next;
+            next = null;
+            return result;
+        }
     }
 
 }

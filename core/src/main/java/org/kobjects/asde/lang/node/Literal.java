@@ -10,7 +10,7 @@ import org.kobjects.typesystem.Type;
 import java.util.Map;
 
 public class Literal extends Node {
-  private final Object value;
+  public final Object value;
   private final Format format;
 
   public enum Format {

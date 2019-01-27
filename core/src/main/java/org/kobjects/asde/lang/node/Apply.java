@@ -73,7 +73,7 @@ public class Apply extends AssignableNode {
         try {
             return function.call(interpreter, children.length - 1);
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage() + " in " + children[0]);
+            throw new RuntimeException(e.getMessage() + " in " + children[0], e);
         } finally {
             interpreter.localStack.drop(children.length - 1);
         }

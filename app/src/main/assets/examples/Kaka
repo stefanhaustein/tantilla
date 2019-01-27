@@ -3,10 +3,10 @@
 120 bob.size = 25
 130 bob.z = 1
 140 bob.say("Hallo, ich bin Bob!")
-150 PAUSE 3000
+150 pause 3000
 200 bob.say("Oh, nein! Ich muss voll Kaka!")
 210 bob.face = "😯"
-220 PAUSE 3000
+220 pause 3000
 300 bob.say("Mmmh")
 310 bob.face = "😖"
 320 LET kaka = screen.newSprite()
@@ -14,7 +14,7 @@
 340 kaka.angle = 180
 350 FOR i = -7 TO -11 STEP -0.01
 360   kaka.y = i
-370   PAUSE 15
+370   pause 15
 380 NEXT i
 390 bob.say("")
 400 bob.face = "😳"

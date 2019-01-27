@@ -14,6 +14,7 @@ import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.ElseStatement;
 import org.kobjects.asde.lang.statement.EndIfStatement;
 import org.kobjects.asde.lang.statement.ForStatement;
+import org.kobjects.asde.lang.statement.GotoStatement;
 import org.kobjects.asde.lang.statement.IfStatement;
 import org.kobjects.asde.lang.statement.IoStatement;
 import org.kobjects.asde.lang.statement.LetStatement;
@@ -134,6 +135,13 @@ public class Parser {
       name = "PRINT";
     }
 
+    // TODO(haustein): Condition on legacy mode
+    if (name.equalsIgnoreCase("GOTO")) {
+      tokenizer.nextToken();
+      result.add(new GotoStatement(expressionParser.parse(tokenizer)));
+      return;
+    }
+
     for (LegacyStatement.Kind kind : LegacyStatement.Kind.values()) {
       if (name.equalsIgnoreCase(kind.name())) {
         result.add(parseStatement(tokenizer, kind));
@@ -187,7 +195,6 @@ public class Parser {
         return new LegacyStatement(kind);
 
       case DEF:  // Exactly one param
-      case GOTO:
       case GOSUB:
         return new LegacyStatement(kind, expressionParser.parse(tokenizer));
 
@@ -275,7 +282,7 @@ public class Parser {
     if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.NUMBER) {
       double target = (int) Double.parseDouble(tokenizer.currentValue);
       tokenizer.nextToken();
-      result.add(new LegacyStatement(LegacyStatement.Kind.GOTO, new Literal(target)));
+      result.add(new GotoStatement(new Literal(target)));
     }
   }
 

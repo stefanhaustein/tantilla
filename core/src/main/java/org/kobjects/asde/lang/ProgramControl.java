@@ -95,8 +95,14 @@ public class ProgramControl {
         runAsync(new Runnable() {
             @Override
             public void run() {
-                rootInterprter.currentLine = runLine;
-                rootInterprter.runCallableUnit();
+                if (runLine != 0) {
+                    throw new RuntimeException("Run line must be 0 in non-legacy mode");
+                }
+
+                // TODO(haustein) In legacy mode:
+                // rootInterprter.currentLine = runLine;
+                // rootInterprter.runCallableUnit();
+                rootInterprter.callableUnit.call(rootInterprter, 0);
             }
         });
     }

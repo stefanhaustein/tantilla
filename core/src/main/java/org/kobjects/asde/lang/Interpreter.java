@@ -50,7 +50,7 @@ public class Interpreter {
         return result;
     }
 
-    public void runCallableUnit() {
+    void runCallableUnit() {
         if (currentLine > -1) {
             Map.Entry<Integer, CodeLine> entry;
             while (null != (entry = callableUnit.ceilingEntry(currentLine)) && !Thread.currentThread().isInterrupted()) {

@@ -26,7 +26,7 @@ public class LegacyStatement extends Node {
   public enum Kind {
     DATA, DEF, DUMP,
     END,
-    GOTO, GOSUB,
+    GOSUB,
     ON,
     READ, RESTORE, RETURN,
     STOP,
@@ -96,11 +96,10 @@ public class LegacyStatement extends Node {
         entry.lineNumber = interpreter.currentLine;
         entry.statementIndex = interpreter.currentIndex;
         interpreter.stack.add(entry);
-      }  // Fallthrough intended
-      case GOTO:
-        interpreter.currentLine = (int) evalChildToDouble(interpreter,0);
+        interpreter.currentLine = evalChildToInt(interpreter, 0);
         interpreter.currentIndex = 0;
         break;
+      }
 
       case ON: {
         int index = (int) Math.round(evalChildToDouble(interpreter,0));
