@@ -238,5 +238,5 @@ END SUB
 630 if dpad.up then rotate
 640 timer = timer + 1
 
-680 pause 100
+680 sleep 100
 690 if gameOver = 0 then goto 600

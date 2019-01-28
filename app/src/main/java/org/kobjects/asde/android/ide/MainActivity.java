@@ -234,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements Console {
             return null;
         }
     });
-    program.setValue(GlobalSymbol.Scope.BUILTIN, "pause", new Function() {
+    program.setValue(GlobalSymbol.Scope.BUILTIN, "sleep", new Function() {
         @Override
         public FunctionType getType() {
             return null;
