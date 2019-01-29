@@ -19,6 +19,10 @@ public class FunctionType implements Type {
         return returnType;
     }
 
+    public Type getReturnType(int parameterCount) {
+        return returnType;
+    }
+
     public Type getParameterType(int index) {
         return parameterTypes[index];
     }

@@ -1,5 +1,5 @@
-DIM allPieces(7, 8)
 DIM grid(21, 21)
+LET allPieces = {{1, 0, 1, 1, 1, 2, 0, 2}, {1, 0, 1, 1, 2, 1, 2, 2}, {1, 0, 1, 1, 1, 2, 2, 2}, {2, 0, 2, 1, 1, 1, 1, 2}, {1, 0, 0, 1, 1, 1, 2, 1}, {1, 0, 2, 0, 1, 1, 2, 1}, {2, 0, 2, 1, 2, 2, 2, 3}}
 LET pc = 0
 LET pp = 0
 LET pen = screen.createPen()
@@ -198,24 +198,9 @@ END SUB
 100 cls
 110 REM Based on David Murray's code, see
 120 REM http://www.the8bitguy.com/download-davids-software/
-130 dpad.visible = 1
+130 dpad.visible = true
 140 pen.strokeColor = 0
 150 pp = 1
-
-200 rem Piece data: J, S, L, Z, T, O, I
-210 data 1, 0, 1, 1, 1, 2, 0, 2
-220 data 1, 0, 1, 1, 2, 1, 2, 2
-230 data 1, 0, 1, 1, 1, 2, 2, 2
-240 data 2, 0, 2, 1, 1, 1, 1, 2
-250 data 1, 0, 0, 1, 1, 1, 2, 1
-260 data 1, 0, 2, 0, 1, 1, 2, 1
-270 data 2, 0, 2, 1, 2, 2, 2, 3
-
-300 for p = 0 to 6
-310   for i = 0 to 7
-320     read allPieces(p, i)
-330   next i
-340 next p
 
 400 for i = 0 to 20
 410   grid(1, i) = 8

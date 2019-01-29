@@ -20,7 +20,7 @@ public class DpadAdapter extends Instance {
     final TouchProperty down;
     final TouchProperty right;
     final TouchProperty fire;
-    final Property<Number> visible;
+    final Property<Boolean> visible;
 
     static Classifier CLASSIFER = new Classifier(DpadMetaProperty.values()) {
         @Override
@@ -38,15 +38,15 @@ public class DpadAdapter extends Instance {
         down = new TouchProperty(dpad.down);
         right = new TouchProperty(dpad.right);
         fire = new TouchProperty(dpad.fire);
-        visible = new Property<Number>() {
+        visible = new Property<Boolean>() {
             @Override
-            public boolean setImpl(Number number) {
-                return dpad.setVisible(number.doubleValue() != 0);
+            public boolean setImpl(Boolean visible) {
+                return dpad.setVisible(visible);
             }
 
             @Override
-            public Number get() {
-                return dpad.getVisible() ? 1.0 : 0.0;
+            public Boolean get() {
+                return dpad.getVisible();
             }
         };
     }
@@ -65,12 +65,12 @@ public class DpadAdapter extends Instance {
     }
 
     enum DpadMetaProperty implements PropertyDescriptor {
-        left(Types.NUMBER),
-        right(Types.NUMBER),
-        up(Types.NUMBER),
-        down(Types.NUMBER),
-        fire(Types.NUMBER),
-        visible(Types.NUMBER);
+        left(Types.BOOLEAN),
+        right(Types.BOOLEAN),
+        up(Types.BOOLEAN),
+        down(Types.BOOLEAN),
+        fire(Types.BOOLEAN),
+        visible(Types.BOOLEAN);
 
         private final Type type;
 

@@ -22,10 +22,31 @@ public class ArrayType extends FunctionType{
     }
 
     public ArrayType(Type elementType) {
-        super(elementType, createParameterTypes(elementType));
+        super(elementType, 1, createParameterTypes(elementType));
     }
 
     public ArrayType(Type elementType, int dimensionality) {
         this(dimensionality == 1 ? elementType : new ArrayType(elementType, dimensionality - 1));
+    }
+
+    public Type getReturnType(int parameterCount) {
+        Type returnType = getReturnType();
+        for (int i = 1; i < parameterCount; i++) {
+            returnType = ((ArrayType) returnType).getReturnType();
+        }
+        return returnType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof ArrayType)) {
+            return false;
+        }
+        return getReturnType().equals(((ArrayType) o).getReturnType());
+    }
+
+    @Override
+    public String toString() {
+        return getReturnType() + "[]";
     }
 }

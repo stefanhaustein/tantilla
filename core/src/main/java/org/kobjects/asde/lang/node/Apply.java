@@ -81,7 +81,7 @@ public class Apply extends AssignableNode {
 
     public Type returnType() {
         if (children[0].returnType() instanceof FunctionType) {
-            return ((FunctionType) children[0].returnType()).getReturnType();
+            return ((FunctionType) children[0].returnType()).getReturnType(children.length - 1);
         }
         if (children[0].returnType() == null) {
             return null;
