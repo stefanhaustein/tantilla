@@ -204,12 +204,16 @@ public class SpriteAdapter extends Instance implements Animated {
 
         public Object get() {
             switch (target) {
-                case bubble:
-                    return sprite.getBubble().getTag();
+                case bubble: {
+                    Object result = sprite.getBubble().getTag();
+                    return result != null ? result : new TextBoxAdapter(sprite.getBubble());
+                }
                 case face:
                     return sprite.getFace();
-                case label:
-                    return sprite.getLabel().getTag();
+                case label: {
+                    Object result = sprite.getLabel().getTag();
+                    return result != null ? result : new TextBoxAdapter(sprite.getBubble());
+                }
                 case anchor:
                     return sprite.getAnchor().getTag();
             }

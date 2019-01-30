@@ -1,18 +1,20 @@
 package org.kobjects.graphics;
 
 import android.graphics.Color;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import java.util.Objects;
 
+
 public class TextBox extends PositionedViewHolder<TextView> {
 
-    private boolean layoutDirty;
-    private String text;
+    private boolean layoutDirty = true;
+    private String text = "";
     private float size = 10;
     private int textColor = Color.GRAY;
     private int fillColor;
@@ -21,9 +23,11 @@ public class TextBox extends PositionedViewHolder<TextView> {
     private BubbleDrawable bubbleDrawable;
     private float padding = 5;
     private float cornerRadius = 0;
+    private TextPaint textPaint;
 
     public TextBox(Screen screen) {
         super(screen, new TextView(screen.activity));
+        this.textPaint = view.wrapped.getPaint();
     }
 
     @Override
@@ -31,10 +35,9 @@ public class TextBox extends PositionedViewHolder<TextView> {
         if (layoutDirty) {
             layoutDirty = false;
             view.wrapped.setText(text);
-            view.wrapped.setTextSize(TypedValue.COMPLEX_UNIT_PX, size * screen.scale);
             int sp = Math.round(padding * screen.scale);
             view.wrapped.setPadding(sp, sp, sp, sp);
-
+            view.wrapped.setTextSize(TypedValue.COMPLEX_UNIT_PX, size * screen.scale);
             view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
             view.wrapped.requestLayout();
         }
@@ -60,8 +63,9 @@ public class TextBox extends PositionedViewHolder<TextView> {
             bubbleDrawable.strokePaint.setStrokeWidth(lineWidth * screen.scale);
             bubbleDrawable.backgroundPaint.setColor(fillColor);
 
-            if (anchor != screen && y > anchor.getHeightForAnchoring() + getHeightForAnchoring()) {
-                bubbleDrawable.arrowDy = screen.scale * (y - (anchor.getHeightForAnchoring() + getHeightForAnchoring()) / 2) / 2;
+            float spaceBetween = (anchor.getHeightForAnchoring() + getHeightForAnchoring()) / 2;
+            if (anchor != screen && y > spaceBetween) {
+                bubbleDrawable.arrowDy = screen.scale * (y - spaceBetween);
                 bubbleDrawable.arrowDx = screen.scale * -x / 2;
             } else {
                 bubbleDrawable.arrowDy = 0;
@@ -166,12 +170,18 @@ public class TextBox extends PositionedViewHolder<TextView> {
 
     @Override
     public float getWidthForAnchoring() {
-        return view.getWidth() / screen.scale;
+        return layoutDirty ? calculateSize()[0] / screen.scale + 2 * padding : view.getHeight() / screen.scale;
     }
 
     @Override
     public float getHeightForAnchoring() {
-        return view.getHeight() / screen.scale;
+        return layoutDirty ? calculateSize()[1] / screen.scale + 2 * padding : view.getHeight() / screen.scale;
+    }
+
+    float[] calculateSize() {
+        textPaint.setTextSize(size * screen.scale);
+        StaticLayout staticLayout = new StaticLayout(text, textPaint, Integer.MAX_VALUE, Layout.Alignment.ALIGN_NORMAL, 1, 1, false);
+        return new float[] {staticLayout.getWidth(), Math.min(staticLayout.getHeight(), size * screen.scale)};
     }
 
     public int getLineColor() {

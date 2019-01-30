@@ -39,8 +39,12 @@ public class TextBoxAdapter extends Instance {
     final ObjectProperty anchor = new ObjectProperty(TextMetaProperty.anchor);
 
     public TextBoxAdapter(final ScreenAdapter screen) {
+        this(new TextBox(screen.getScreen()));
+    }
+
+    public TextBoxAdapter(TextBox textBox) {
         super(CLASSIFIER);
-        textBox = new TextBox(screen.getScreen());
+        this.textBox = textBox;
         textBox.setTag(this);
     }
 
