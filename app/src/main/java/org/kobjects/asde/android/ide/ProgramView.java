@@ -117,7 +117,9 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
                 }
                 index = symbolList.getChildCount();
             } else {
-                if (!(symbolView instanceof VariableView)) {
+                if (symbolView instanceof VariableView) {
+                    ((VariableView) symbolView).sync();
+                } else  {
                     VariableView variableView = new VariableView(context, name, symbol);
                     symbolView = variableView;
                 }

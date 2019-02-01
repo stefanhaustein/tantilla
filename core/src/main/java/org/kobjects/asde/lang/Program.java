@@ -3,6 +3,7 @@ package org.kobjects.asde.lang;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.node.Visitor;
 import org.kobjects.asde.lang.refactor.RenameGlobal;
+import org.kobjects.asde.lang.statement.AssignStatement;
 import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.LetStatement;
 import org.kobjects.asde.lang.node.Node;
@@ -280,10 +281,11 @@ public class Program {
     }
 
 
-    public void processDeclarations(List<? extends Node> statements) {
+    public boolean processDeclarations(List<? extends Node> statements) {
         CallableUnit wrapper = new CallableUnit(this, new FunctionType(Types.VOID));
         wrapper.setLine(-2, new CodeLine(statements));
         ResolutionContext resolutionContext = new ResolutionContext(this, ResolutionContext.ResolutionMode.SHELL, wrapper);
+        boolean syncNeeded = false;
         for (int i = 0; i < statements.size(); i++) {
             Node node = statements.get(i);
             node.resolve(resolutionContext, -2, i);
@@ -292,6 +294,7 @@ public class Program {
                 if (let.children[0].returnType() != null) {
                     setInitializer(GlobalSymbol.Scope.PERSISTENT, let.varName, let, let.children[0].returnType());
                 }
+                syncNeeded = true;
             } else if (node instanceof DimStatement) {
                 DimStatement dim = (DimStatement) node;
                 boolean allChildrenTyped = true;
@@ -305,8 +308,12 @@ public class Program {
                     Type elmentType = dim.varName.endsWith("$") ? Types.STRING : Types.NUMBER;
                     setInitializer(GlobalSymbol.Scope.PERSISTENT, dim.varName, dim, new ArrayType(elmentType, dim.children.length));
                 }
+                syncNeeded = true;
+            } else if (node instanceof AssignStatement) {
+                syncNeeded = true;
             }
         }
+        return syncNeeded;
     }
 
 

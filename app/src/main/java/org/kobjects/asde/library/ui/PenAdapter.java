@@ -19,6 +19,11 @@ public class PenAdapter extends Instance {
         public PenAdapter createInstance() {
             throw new RuntimeException("Use screen.createPen()");
         }
+
+        @Override
+        public String toString() {
+            return "Pen";
+        }
     };
 
     private final Pen pen;

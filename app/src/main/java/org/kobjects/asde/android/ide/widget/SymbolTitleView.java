@@ -58,6 +58,7 @@ public class SymbolTitleView extends LinearLayout {
 
         for (String s: subtitles) {
             AppCompatTextView parameterView = new AppCompatTextView(context);
+            parameterView.setMaxLines(1);
             parameterView.setText(s);
             // parameterView.setTextSize(10);
             parameterView.setTypeface(Typeface.MONOSPACE);

@@ -64,7 +64,9 @@ public class Shell {
                 // Fall-through intended
             default:
                 List<? extends Node> statements = program.parser.parseStatementList(tokenizer, null);
-                program.processDeclarations(statements);
+                if (program.processDeclarations(statements)) {
+                    program.console.sync(true);
+                }
 
                     /*TextView inputView = new EmojiTextView(this);
                     inputView.setText(new CodeLine(statements).toString());
