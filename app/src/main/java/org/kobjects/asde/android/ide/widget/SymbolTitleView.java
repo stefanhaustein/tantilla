@@ -20,31 +20,14 @@ import java.util.List;
 
 public class SymbolTitleView extends LinearLayout {
 
+    final LinearLayout vertical;
+    final AppCompatTextView textView;
     AppCompatTextView typeView;
-    AppCompatTextView textView;
+    IconButton moreButton;
 
-    public SymbolTitleView(Context context, int color, char c, String name, List<String> subtitles, OnClickListener moreClickListener) {
+    public SymbolTitleView(Context context, String name) {
         super(context);
-       // setBackgroundColor(0x0ffeeeeee);
-
-        typeView = new AppCompatTextView(getContext());
-        typeView.setGravity(Gravity.CENTER);
-        typeView.setTextSize(20);
-        typeView.setTypeface(Typeface.MONOSPACE);
-
-        ShapeDrawable shape = new ShapeDrawable(new OvalShape());
-        shape.getPaint().setColor(color);
-        int padding = Dimensions.dpToPx(getContext(), 6);
-
-        typeView.setBackground(new InsetDrawable(shape, padding));
-        typeView.setText(String.valueOf(c));
-
-        int size = Dimensions.dpToPx(getContext(), 48);
-
-        LayoutParams typeLayoutParams =  new LayoutParams(size, size);
-        typeLayoutParams.gravity = Gravity.TOP;
-
-        addView(typeView, typeLayoutParams);
+       // setBackgroundCol
 
         textView = new AppCompatTextView(context);
         textView.setTextSize(16);
@@ -52,18 +35,9 @@ public class SymbolTitleView extends LinearLayout {
         textView.setText(name);
        // textView.setPadding(0, padding, 0, 0);
 
-        LinearLayout vertical = new LinearLayout(context);
+        vertical = new LinearLayout(context);
         vertical.setOrientation(VERTICAL);
         vertical.addView(textView);
-
-        for (String s: subtitles) {
-            AppCompatTextView parameterView = new AppCompatTextView(context);
-            parameterView.setMaxLines(1);
-            parameterView.setText(s);
-            // parameterView.setTextSize(10);
-            parameterView.setTypeface(Typeface.MONOSPACE);
-            vertical.addView(parameterView);
-        }
 
         // setTextColor(0x0ffffffff);
 
@@ -75,10 +49,50 @@ public class SymbolTitleView extends LinearLayout {
         addView(vertical, layoutParams);
 //        textView.setGravity(Gravity.CENTER_VERTICAL);
 
-        if (moreClickListener != null) {
-            IconButton moreButton = new IconButton(getContext(), R.drawable.baseline_more_vert_24);
+    }
+
+    public void setTypeIndicator(char c, int color) {
+       if (typeView == null) {
+           typeView = new AppCompatTextView(getContext());
+           typeView.setGravity(Gravity.CENTER);
+           typeView.setTextSize(20);
+           typeView.setTypeface(Typeface.MONOSPACE);
+           int size = Dimensions.dpToPx(getContext(), 48);
+           LayoutParams typeLayoutParams =  new LayoutParams(size, size);
+           typeLayoutParams.gravity = Gravity.TOP;
+           addView(typeView, 0, typeLayoutParams);
+       }
+
+        ShapeDrawable shape = new ShapeDrawable(new OvalShape());
+        shape.getPaint().setColor(color);
+        int padding = Dimensions.dpToPx(getContext(), 6);
+
+        typeView.setBackground(new InsetDrawable(shape, padding));
+        typeView.setText(String.valueOf(c));
+    }
+
+    public void setMoreClickListener(OnClickListener moreClickListener) {
+        if (moreButton == null) {
+            moreButton = new IconButton(getContext(), R.drawable.baseline_more_vert_24);
             addView(moreButton);
-            moreButton.setOnClickListener(moreClickListener);
+        }
+        moreButton.setOnClickListener(moreClickListener);
+    }
+
+
+    public void setSubtitles(List<String> subtitles) {
+
+        while (vertical.getChildCount() > 1) {
+            vertical.removeViewAt(vertical.getChildCount() - 1);
+        }
+
+        for (String s: subtitles) {
+            AppCompatTextView parameterView = new AppCompatTextView(getContext());
+            parameterView.setMaxLines(1);
+            parameterView.setText(s);
+            // parameterView.setTextSize(10);
+            parameterView.setTypeface(Typeface.MONOSPACE);
+            vertical.addView(parameterView);
         }
 
     }

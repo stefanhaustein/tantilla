@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProgramView extends LinearLayout implements FunctionView.ExpandListener {
+public class ProgramView extends LinearLayout implements ExpandListener {
 
     private boolean expanded;
     private ExpandableList symbolList;
@@ -119,7 +119,7 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
                 index = symbolList.getChildCount();
             } else {
                 if (symbolView instanceof VariableView) {
-                    ((VariableView) symbolView).sync();
+                    ((VariableView) symbolView).syncContent();
                 } else  {
                     VariableView variableView = new VariableView(context, name, symbol);
                     symbolView = variableView;
@@ -141,14 +141,13 @@ public class ProgramView extends LinearLayout implements FunctionView.ExpandList
 
 
     @Override
-    public void notifyExpanding(FunctionView functionView, boolean animated) {
-
-            if (functionView != currentFunctionView && functionView instanceof FunctionView) {
+    public void notifyExpanding(SymbolView symbolView, boolean animated) {
+            if (symbolView != currentFunctionView && symbolView instanceof FunctionView) {
                 if (currentFunctionView != null) {
                     currentFunctionView.setExpanded(false, animated);
                 }
-                currentFunctionView = (FunctionView) functionView;
-                context.shell.setCurrentFunction(functionView.callableUnit);
+                currentFunctionView = (FunctionView) symbolView;
+                context.shell.setCurrentFunction(currentFunctionView.callableUnit);
             }
            }
 

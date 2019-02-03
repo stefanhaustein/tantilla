@@ -1,7 +1,6 @@
 package org.kobjects.asde.android.ide.symbollist;
 
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
 import org.kobjects.asde.android.ide.MainActivity;
@@ -15,38 +14,24 @@ import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Types;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-public class FunctionView extends LinearLayout {
+public class FunctionView extends SymbolView {
     public CallableUnit callableUnit;
     OnLongClickListener lineClickListener;
-    SymbolTitleView titleView;
-    ExpandableList contentView;
-    boolean expanded;
-    List<ExpandListener> expandListeners = new ArrayList<>();
-    MainActivity mainActivity;
 
-    public FunctionView(final MainActivity context, String name, final CallableUnit callableUnit) {
-        super(context);
-        this.mainActivity = context;
-        setOrientation(VERTICAL);
+    public FunctionView(final MainActivity mainActivity, String name, final CallableUnit callableUnit) {
+        super(mainActivity, name);
         this.callableUnit = callableUnit;
 
         boolean isMain = callableUnit == callableUnit.program.main;
         boolean isVoid = callableUnit.getType().getReturnType() == Types.VOID;
-        int color = isMain ? mainActivity.colors.primary : isVoid ? mainActivity.colors.purple : mainActivity.colors.cyan;
-        char c = isMain ? 'M' : isVoid ? 'S' : 'F';
 
-        ArrayList<String> subtitles = new ArrayList<>();
-        for (int i = 0; i < callableUnit.getType().getParameterCount(); i++) {
-            subtitles.add(" " + callableUnit.parameterNames[i] + ": " + callableUnit.getType().getParameterType(i));
-        }
-        if (!isVoid) {
-            subtitles.add("-> " + callableUnit.getType().getReturnType());
-        }
+        titleView.setTypeIndicator(
+                isMain ? 'M' : isVoid ? 'S' : 'F',
+                isMain ? mainActivity.colors.primary : isVoid ? mainActivity.colors.purple : mainActivity.colors.cyan);
 
-        this.titleView = new SymbolTitleView(context, color, c, name, subtitles, isMain ? null : clicked -> {
+        titleView.setMoreClickListener(clicked -> {
             PopupMenu popupMenu = new PopupMenu(mainActivity, clicked);
             popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {
                 new RenameFlow(mainActivity, name).start();
@@ -62,44 +47,27 @@ public class FunctionView extends LinearLayout {
             });
             popupMenu.show();
         });
-        addView(titleView);
-        contentView = new ExpandableList(context);
-        addView(contentView);
 
+        ArrayList<String> subtitles = new ArrayList<>();
+        for (int i = 0; i < callableUnit.getType().getParameterCount(); i++) {
+            subtitles.add(" " + callableUnit.parameterNames[i] + ": " + callableUnit.getType().getParameterType(i));
+        }
+        if (!isVoid) {
+            subtitles.add("-> " + callableUnit.getType().getReturnType());
+        }
 
-        titleView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setExpanded(!expanded, true);
-            }
+        titleView.setSubtitles(subtitles);
+
+        titleView.setOnClickListener(clicked -> {
+            setExpanded(!expanded, true);
         });
     }
 
 
-    public void setExpanded(final boolean expand, boolean animated) {
-        if (expanded == expand) {
-            return;
-        }
-        if (animated) {
-            contentView.animateNextChanges();
-        }
-        expanded = expand;
-        for (ExpandListener expandListener : expandListeners) {
-            expandListener.notifyExpanding(this, animated);
-        }
-        syncContent();
-    }
-
-
-
-    public void addExpandListener(ExpandListener expandListener) {
-        expandListeners.add(expandListener);
-    }
-
     public void syncContent() {
         titleView.setBackgroundColor(callableUnit.errors.size() > 0 ? mainActivity.colors.accentLight : expanded ? mainActivity.colors.primaryLight : 0);
 
-        ExpandableList codeView = mainActivity.codeView == null ? contentView : mainActivity.codeView;
+        ExpandableList codeView = getContentView();
 
         if (!expanded) {
             codeView.removeAllViews();
@@ -125,12 +93,8 @@ public class FunctionView extends LinearLayout {
     }
 
 
-    public interface ExpandListener {
-        void notifyExpanding(FunctionView expandableView, boolean animated);
-    }
-
     CodeLineView findLine(int lineNumber) {
-        ExpandableList codeView = mainActivity.codeView == null ? contentView : mainActivity.codeView;
+        ExpandableList codeView = getContentView();
         for (int i = 0; i < codeView.getChildCount(); i++) {
             CodeLineView codeLineView = (CodeLineView) codeView.getChildAt(i);
             if (codeLineView.lineNumber == lineNumber) {
