@@ -27,6 +27,9 @@ public abstract class SymbolView extends LinearLayout {
 
         titleView = new SymbolTitleView(mainActivity, name);
         addView(titleView);
+        titleView.setOnClickListener(clicked -> {
+            setExpanded(!expanded, true);
+        });
     }
 
     public void addExpandListener(ExpandListener expandListener) {

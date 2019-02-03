@@ -57,10 +57,6 @@ public class FunctionView extends SymbolView {
         }
 
         titleView.setSubtitles(subtitles);
-
-        titleView.setOnClickListener(clicked -> {
-            setExpanded(!expanded, true);
-        });
     }
 
 

@@ -8,6 +8,7 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.lang.CallableUnit;
+import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 
@@ -24,8 +25,9 @@ public class ProgramView extends LinearLayout implements ExpandListener {
     private final MainActivity context;
     private CodeLineView highlightedLine;
     TitleView titleView;
-    private HashMap<String, View> symbolViewMap = new HashMap<>();
+    private HashMap<String, SymbolView> symbolViewMap = new HashMap<>();
     public FunctionView currentFunctionView;
+    public SymbolView currentSymbolView;
 
     public ProgramView(MainActivity context, Program program) {
         super(context);
@@ -49,6 +51,7 @@ public class ProgramView extends LinearLayout implements ExpandListener {
         mainFunctionView = new FunctionView(context, "Main", program.main);
         mainFunctionView.addExpandListener(this);
         currentFunctionView = mainFunctionView;
+        currentSymbolView = mainFunctionView;
 
         expanded = true;
         sync(false);
@@ -92,7 +95,7 @@ public class ProgramView extends LinearLayout implements ExpandListener {
         }
         int varCount = 0;
 
-        HashMap<String, View> newSymbolViewMap = new HashMap<>();
+        HashMap<String, SymbolView> newSymbolViewMap = new HashMap<>();
         for (Map.Entry<String, GlobalSymbol> entry : program.getSymbolMap().entrySet()) {
             GlobalSymbol symbol = entry.getValue();
             if (symbol == null || symbol.scope != GlobalSymbol.Scope.PERSISTENT) {
@@ -103,7 +106,7 @@ public class ProgramView extends LinearLayout implements ExpandListener {
             if (symbol.value instanceof CallableUnit) {
                 qualifiedName += Arrays.toString(((CallableUnit) symbol.value).parameterNames);
             }
-            View symbolView = symbolViewMap.get(qualifiedName);
+            SymbolView symbolView = symbolViewMap.get(qualifiedName);
             int index;
             if (symbol.value instanceof CallableUnit) {
                 if (!(symbolView instanceof FunctionView)) {
@@ -119,9 +122,10 @@ public class ProgramView extends LinearLayout implements ExpandListener {
                 index = symbolList.getChildCount();
             } else {
                 if (symbolView instanceof VariableView) {
-                    ((VariableView) symbolView).syncContent();
+                    symbolView.syncContent();
                 } else  {
                     VariableView variableView = new VariableView(context, name, symbol);
+                    variableView.addExpandListener(this);
                     symbolView = variableView;
                 }
                 index = varCount++;
@@ -142,14 +146,15 @@ public class ProgramView extends LinearLayout implements ExpandListener {
 
     @Override
     public void notifyExpanding(SymbolView symbolView, boolean animated) {
-            if (symbolView != currentFunctionView && symbolView instanceof FunctionView) {
-                if (currentFunctionView != null) {
-                    currentFunctionView.setExpanded(false, animated);
-                }
-                currentFunctionView = (FunctionView) symbolView;
-                context.shell.setCurrentFunction(currentFunctionView.callableUnit);
+        if (symbolView != currentSymbolView) {
+            if (currentSymbolView != null) {
+                currentSymbolView.setExpanded(false, animated);
             }
-           }
+            currentSymbolView = symbolView;
+            currentFunctionView = symbolView instanceof FunctionView ? (FunctionView) symbolView : mainFunctionView;
+            context.shell.setCurrentFunction(currentFunctionView.callableUnit);
+        }
+    }
 
     public void highlight(CallableUnit function, int lineNumber) {
         unHighlight();

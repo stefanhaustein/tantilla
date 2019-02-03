@@ -1,19 +1,27 @@
 package org.kobjects.asde.android.ide.symbollist;
 
-import android.widget.LinearLayout;
+import android.graphics.Typeface;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.editor.DeleteFlow;
 import org.kobjects.asde.android.ide.editor.RenameFlow;
-import org.kobjects.asde.android.ide.widget.SymbolTitleView;
+import org.kobjects.asde.android.ide.widget.ExpandableList;
+import org.kobjects.asde.lang.ArrayType;
+import org.kobjects.asde.lang.node.ArrayLiteral;
 import org.kobjects.asde.lang.node.Literal;
+import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.LetStatement;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
+import org.kobjects.typesystem.Type;
 
 import java.util.Collections;
 
+
 public class VariableView extends SymbolView {
+    static final int ARRAY_SPLIT_LENGTH = 40;
+
     Object value = this;
     final GlobalSymbol symbol;
     MainActivity mainActivity;
@@ -43,11 +51,41 @@ public class VariableView extends SymbolView {
         syncContent();
     }
 
+    void addLine(ExpandableList target, int indent, Object value) {
+        TextView initializerView = new TextView(mainActivity);
+        initializerView.setTypeface(Typeface.MONOSPACE);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < indent; i++) {
+            sb.append(' ');
+        }
+        sb.append(value);
+        initializerView.setText(sb);
+        target.addView(initializerView);
+    }
+
+    void addChildList(ExpandableList target, int indent, Node node) {
+        for (int i = 0; i < node.children.length; i++) {
+            Node child = node.children[i];
+            boolean last = i == node.children.length - 1;
+            if (child instanceof ArrayLiteral && isMultiDim(child.returnType())) {
+                if (i == 0) {
+                    addLine(target, indent, "{");
+                }
+                addChildList(target, indent + 1, child);
+                addLine(target, indent, last ? "}" : "}, {");
+            } else {
+                addLine(target, indent, last ? String.valueOf(child) : (child + ","));
+            }
+        }
+    }
+
+
+    public boolean isMultiDim(Type type) {
+        return (type instanceof ArrayType && ((ArrayType) type).getReturnType() instanceof ArrayType);
+    }
+
     @Override
     public void syncContent() {
-        if (value == symbol.value) {
-            return;
-        }
         StringBuilder sb = new StringBuilder(" ");
         value = symbol.value;
         if (value != null) {
@@ -55,11 +93,27 @@ public class VariableView extends SymbolView {
         } else if (symbol.initializer instanceof LetStatement && symbol.initializer.children[0] instanceof Literal) {
             sb.append(((Literal) symbol.initializer.children[0]).value);
         } else if (symbol.getType() != null) {
-            sb.append(symbol.getType());
+            sb.append('(').append(symbol.getType()).append(')');
         } else {
             sb.append("?");
         }
         titleView.setSubtitles(Collections.singletonList(sb.toString()));
+
+        titleView.setBackgroundColor(expanded ? mainActivity.colors.primaryLight : 0);
+
+        ExpandableList codeView = getContentView();
+
+        codeView.removeAllViews();
+        if (expanded) {
+            if (symbol.initializer instanceof LetStatement && isMultiDim(symbol.type)) {
+                addLine(codeView, 1, "LET " + name + " = {");
+                addChildList(codeView, 2, symbol.initializer.children[0]);
+                addLine(codeView, 1, "}");
+            } else {
+                addLine(codeView, 1, symbol.initializer);
+            }
+
+        }
     }
 }
 

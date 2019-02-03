@@ -470,8 +470,8 @@ public class MainActivity extends AppCompatActivity implements Console {
       int displayWidth = display.getWidth();
       int displayHeight = display.getHeight();
 
-      if (programView.currentFunctionView != null) {
-          programView.currentFunctionView.setExpanded(false, false);
+      if (programView.currentSymbolView != null) {
+          programView.currentSymbolView.setExpanded(false, false);
       }
 
       if (fullScreenMode) {
