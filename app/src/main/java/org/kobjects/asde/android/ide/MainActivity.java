@@ -37,6 +37,8 @@ import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.annotatedtext.Span;
 import org.kobjects.asde.R;
+import org.kobjects.asde.android.ide.symbollist.FunctionView;
+import org.kobjects.asde.android.ide.symbollist.ProgramView;
 import org.kobjects.asde.android.ide.widget.Dimensions;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.IconButton;
@@ -87,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   public View rootView;
   ScrollView mainScrollView;
   ScrollView leftScrollView;
-  ControlView controlView;
+  public ControlView controlView;
   public Program program = new Program(this);
   LinearLayout outputView;
   public String readLine;
@@ -103,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
 
   /** The view that displays the code in landscape mode */
-  ExpandableList codeView;
+  public ExpandableList codeView;
 
   RunControlView runControlView;
   private TitleView outputTitleView;
@@ -123,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   }
 
 
-  Spanned annotatedStringToSpanned(AnnotatedString annotated, boolean linked) {
+  public Spanned annotatedStringToSpanned(AnnotatedString annotated, boolean linked) {
       SpannableString s = new SpannableString(annotated.toString());
       for (final Span span : annotated.spans()) {
           if (span.annotation == Annotations.ACCENT_COLOR) {

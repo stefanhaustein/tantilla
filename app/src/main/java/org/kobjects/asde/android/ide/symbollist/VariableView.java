@@ -1,9 +1,10 @@
-package org.kobjects.asde.android.ide;
+package org.kobjects.asde.android.ide.symbollist;
 
 import android.content.Context;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
+import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.editor.DeleteFlow;
 import org.kobjects.asde.android.ide.editor.RenameFlow;
 import org.kobjects.asde.android.ide.widget.SymbolTitleView;

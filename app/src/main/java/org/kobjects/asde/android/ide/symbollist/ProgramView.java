@@ -1,9 +1,10 @@
-package org.kobjects.asde.android.ide;
+package org.kobjects.asde.android.ide.symbollist;
 
 import android.view.View;
 import android.view.ViewParent;
 import android.widget.LinearLayout;
 
+import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.lang.CallableUnit;

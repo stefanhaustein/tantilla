@@ -10,21 +10,22 @@ import org.kobjects.asde.R;
 
 public class Colors {
 
-    final int primary;
+    public final int primary;
  //   final int primaryMedium;
-    final int primaryLight;
+    public final int primaryLight;
     public final int accent;
-    final int background;
-    final int accentLight;
-    final boolean darkMode;
+    public final int background;
+    public final int accentLight;
+    public final boolean darkMode;
+
     final private float[] hsvHelper;
 
-    final int red;
-    final int cyan;
-    final int purple;
-    final int green;
-    final int yellow;
-    final int orange;
+    public final int red;
+    public final int cyan;
+    public final int purple;
+    public final int green;
+    public final int yellow;
+    public final int orange;
 
     // public static final int PRIMARY_LIGHT = 0xffeceff1;
     // static final int SECONDARY_LIGHT = 0xffff6659;

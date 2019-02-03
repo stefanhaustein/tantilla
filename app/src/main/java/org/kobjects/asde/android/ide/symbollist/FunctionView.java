@@ -1,9 +1,10 @@
-package org.kobjects.asde.android.ide;
+package org.kobjects.asde.android.ide.symbollist;
 
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
+import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.editor.DeleteFlow;
 import org.kobjects.asde.android.ide.editor.FunctionSignatureFlow;
 import org.kobjects.asde.android.ide.editor.RenameFlow;
@@ -72,62 +73,6 @@ public class FunctionView extends LinearLayout {
                 setExpanded(!expanded, true);
             }
         });
-
-        /*
-        if (interpreter != null) {
-            startStopIcon = new IconButton(context, R.drawable.baseline_play_arrow_black_24);
-            interpreter.addStartStopListener(new StartStopListener() {
-                @Override
-                public void programStarted() {
-                    context.runOnUiThread(new Runnable() {
-                        public void run() {
-                            startStopIcon.setImageResource(R.drawable.baseline_stop_black_24);
-                        }
-                    });
-                }
-
-                @Override
-                public void programTerminated() {
-                    context.runOnUiThread(new Runnable() {
-                        public void run() {
-                            startStopIcon.setImageResource(R.drawable.baseline_play_arrow_black_24);
-                        }
-                    });
-                }
-            });
-
-            startStopIcon.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (interpreter.isRunning()) {
-                        interpreter.terminate();
-                    } else {
-                        interpreter.start();
-                    }
-                    ;
-                }
-            });
-            titleView.addView(startStopIcon);
-        }
-        titleView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setExpanded(!expanded, true);
-            }
-        });
-
-        lineClickListener = new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                lineEditor.edit(((CodeLineView) v).toString());
-                return true;
-            }
-        };
-
-        syncContent(); */
-
-
-
     }
 
 
@@ -177,11 +122,6 @@ public class FunctionView extends LinearLayout {
         while (index < codeView.getChildCount()) {
             codeView.removeViewAt(codeView.getChildCount() - 1);
         }
-    }
-
-    void remove(int lineNumber) {
-        callableUnit.setLine(lineNumber, null);
-        syncContent();
     }
 
 

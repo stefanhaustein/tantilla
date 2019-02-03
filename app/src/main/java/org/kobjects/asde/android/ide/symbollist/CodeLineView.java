@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide;
+package org.kobjects.asde.android.ide.symbollist;
 
 import android.graphics.Typeface;
 import android.support.v7.widget.AppCompatTextView;
@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.vanniktech.emoji.EmojiTextView;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.node.Node;
 
