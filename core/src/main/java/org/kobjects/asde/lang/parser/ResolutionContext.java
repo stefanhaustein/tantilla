@@ -11,6 +11,7 @@ import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.typesystem.Type;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class ResolutionContext {
     public enum ResolutionMode {STRICT, SHELL, LEGACY};
@@ -25,6 +26,7 @@ public class ResolutionContext {
 
     private int localSymbolCount;
     private Block currentBlock;
+    private HashSet<GlobalSymbol> dependencies = new HashSet<>();
 
 
     public ResolutionContext(Program program, ResolutionMode mode, CallableUnit callableUnit, String... parameterNames) {
@@ -69,19 +71,26 @@ public class ResolutionContext {
         GlobalSymbol symbol = program.getSymbol(name);
         switch (mode) {
             case LEGACY:
-                return symbol != null
+                if (symbol != null
                         && (symbol.scope == GlobalSymbol.Scope.PERSISTENT
-                           || symbol.scope == GlobalSymbol.Scope.BUILTIN)
-                    ? symbol : new DynamicSymbol(name, mode);
+                           || symbol.scope == GlobalSymbol.Scope.BUILTIN)) {
+                    dependencies.add(symbol);
+                    return symbol;
+                }
+                return new DynamicSymbol(name, mode);
 
             case SHELL:
-                return symbol != null && (symbol.scope == GlobalSymbol.Scope.BUILTIN)
-                        ? symbol : new DynamicSymbol(name, mode);
+                if (symbol != null && (symbol.scope == GlobalSymbol.Scope.BUILTIN)) {
+                    dependencies.add(symbol);
+                    return symbol;
+                }
+                return new DynamicSymbol(name, mode);
 
             default:
                 if (symbol == null || symbol.scope == GlobalSymbol.Scope.TRANSIENT) {
                     throw new RuntimeException("Variable not found: \"" + name + "\"");
                 }
+                dependencies.add(symbol);
                 return symbol;
         }
     }
