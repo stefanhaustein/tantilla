@@ -7,7 +7,6 @@ import org.kobjects.asde.lang.statement.AssignStatement;
 import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.LetStatement;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.asde.lang.parser.Parser;
@@ -34,7 +33,6 @@ import java.util.TreeMap;
  * Example for mixing the expresion parser with "outer" parsing.
  */
 public class Program {
-    public ProgramReference reference;
 
     public static final String INVISIBLE_STRING = new String();
 
@@ -49,8 +47,11 @@ public class Program {
         return o instanceof Number ? toString(((Number) o).doubleValue()) : String.valueOf(o);
     }
 
+    public ProgramReference reference;
+
     public final Parser parser = new Parser(this);
     public final CallableUnit main = new CallableUnit(this, new FunctionType(Types.VOID));
+    public final GlobalSymbol mainSymbol = new GlobalSymbol(GlobalSymbol.Scope.PERSISTENT, main);
 
     // Program state
 
@@ -59,7 +60,6 @@ public class Program {
     public int tabPos;
     public final Console console;
     public boolean legacyMode;
-
 
     public Program(Console console) {
       this.console = console;
@@ -193,11 +193,11 @@ public class Program {
           if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
               String name = entry.getKey();
               if (symbol.value instanceof CallableUnit) {
-                  ((CallableUnit) symbol.value).toString(sb, name);
+                  ((CallableUnit) symbol.value).toString(sb, name, symbol.errors);
               }
           }
       }
-      main.toString(sb, null);
+      main.toString(sb, null, mainSymbol.errors);
   }
 
   public void println() {
@@ -284,30 +284,16 @@ public class Program {
     public boolean processDeclarations(List<? extends Node> statements) {
         CallableUnit wrapper = new CallableUnit(this, new FunctionType(Types.VOID));
         wrapper.setLine(-2, new CodeLine(statements));
-        ResolutionContext resolutionContext = new ResolutionContext(this, ResolutionContext.ResolutionMode.SHELL, wrapper);
         boolean syncNeeded = false;
         for (int i = 0; i < statements.size(); i++) {
             Node node = statements.get(i);
-            node.resolve(resolutionContext, -2, i);
             if (node instanceof LetStatement) {
                 LetStatement let = (LetStatement) node;
-                if (let.children[0].returnType() != null) {
-                    setInitializer(GlobalSymbol.Scope.PERSISTENT, let.varName, let, let.children[0].returnType());
-                }
+                setInitializer(GlobalSymbol.Scope.PERSISTENT, let.varName, let);
                 syncNeeded = true;
             } else if (node instanceof DimStatement) {
                 DimStatement dim = (DimStatement) node;
-                boolean allChildrenTyped = true;
-                for (Node child : dim.children) {
-                    if (child.returnType() != Types.NUMBER) {
-                        allChildrenTyped = false;
-                        break;
-                    }
-                }
-                if (allChildrenTyped) {
-                    Type elmentType = dim.varName.endsWith("$") ? Types.STRING : Types.NUMBER;
-                    setInitializer(GlobalSymbol.Scope.PERSISTENT, dim.varName, dim, new ArrayType(elmentType, dim.children.length));
-                }
+                setInitializer(GlobalSymbol.Scope.PERSISTENT, dim.varName, dim);
                 syncNeeded = true;
             } else if (node instanceof AssignStatement) {
                 syncNeeded = true;
@@ -378,12 +364,12 @@ public class Program {
     }
 
     public void validate() {
-        for (GlobalSymbol symbol : symbolMap.values()) {
-            if (symbol.value instanceof CallableUnit) {
-                ((CallableUnit) symbol.value).resolve();
-            }
+        ProgramValidationContext context = new ProgramValidationContext(this);
+        for (Map.Entry<String,GlobalSymbol> entry : symbolMap.entrySet()) {
+            context.resetChain(entry.getKey());
+            entry.getValue().validate(context);
         }
-        main.resolve();
+        main.validate(context);
     }
 
 
@@ -399,13 +385,12 @@ public class Program {
         }
     }
 
-    public void setInitializer(GlobalSymbol.Scope scope, String name, Node expr, Type type) {
+    public void setInitializer(GlobalSymbol.Scope scope, String name, Node expr) {
       GlobalSymbol symbol = getSymbol(name);
       if (symbol == null) {
           symbol = new GlobalSymbol(scope, null);
           setSymbol(name, symbol);
       }
-      symbol.type = type;
       symbol.initializer = expr;
     }
 

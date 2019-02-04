@@ -4,7 +4,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.parser.ResolutionContext;
+import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -21,9 +21,9 @@ public class ElseStatement extends Node {
     }
 
     @Override
-    protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
-        resolutionContext.endBlock(ResolutionContext.BlockType.IF);
-        resolutionContext.startBlock(ResolutionContext.BlockType.IF);
+    protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+        resolutionContext.endBlock(FunctionValidationContext.BlockType.IF);
+        resolutionContext.startBlock(FunctionValidationContext.BlockType.IF);
         if (multiline) {
             EndifMatcher matcher = new EndifMatcher();
             int[] pos = new int[] {line + 1, 0};

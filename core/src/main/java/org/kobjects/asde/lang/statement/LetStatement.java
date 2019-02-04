@@ -4,7 +4,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.parser.ResolutionContext;
+import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.typesystem.Type;
 
@@ -19,7 +19,7 @@ public class LetStatement extends Node {
         this.varName = varName;
     }
 
-    public void onResolve(ResolutionContext resolutionContext, int line, int index) {
+    public void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
         resolved = resolutionContext.declare(varName, children[0].returnType());
     }
 

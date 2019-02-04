@@ -1,4 +1,4 @@
-package org.kobjects.asde.lang.parser;
+package org.kobjects.asde.lang;
 
 
 import org.kobjects.asde.lang.CallableUnit;
@@ -13,7 +13,7 @@ import org.kobjects.typesystem.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class ResolutionContext {
+public class FunctionValidationContext {
     public enum ResolutionMode {STRICT, SHELL, LEGACY};
     public enum BlockType {
         ROOT, FOR, IF
@@ -27,10 +27,11 @@ public class ResolutionContext {
     private int localSymbolCount;
     private Block currentBlock;
     private HashSet<GlobalSymbol> dependencies = new HashSet<>();
+    private final ProgramValidationContext programValidationContext;
 
-
-    public ResolutionContext(Program program, ResolutionMode mode, CallableUnit callableUnit, String... parameterNames) {
-        this.program = program;
+    public FunctionValidationContext(ProgramValidationContext programValidationContext, ResolutionMode mode, CallableUnit callableUnit, String... parameterNames) {
+        this.programValidationContext = programValidationContext;
+        this.program = programValidationContext.program;
         this.mode = mode;
         this.callableUnit = callableUnit;
         startBlock(BlockType.ROOT);
@@ -53,7 +54,7 @@ public class ResolutionContext {
 
     public ResolvedSymbol declare(String name, Type type) {
         if (mode != ResolutionMode.STRICT) {
-            return resolve(name);
+            return resolve(name, false);
         }
         if (currentBlock.localSymbols.containsKey(name)) {
             throw new RuntimeException("Local variable named '" + name + "' already exists");
@@ -64,11 +65,15 @@ public class ResolutionContext {
     }
 
     public ResolvedSymbol resolve(String name) {
+        return resolve(name, true);
+    }
+
+    public ResolvedSymbol resolve(String name, boolean validate) {
         ResolvedSymbol resolved = currentBlock.get(name);
         if (resolved != null) {
             return resolved;
         }
-        GlobalSymbol symbol = program.getSymbol(name);
+        GlobalSymbol symbol = validate ? programValidationContext.resolve(name) : program.getSymbol(name);
         switch (mode) {
             case LEGACY:
                 if (symbol != null

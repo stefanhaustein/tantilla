@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.parser.ResolutionContext;
+import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.typesystem.Type;
 
@@ -20,7 +20,7 @@ public class Identifier extends AssignableNode {
     this.name = name;
   }
 
-  public void onResolve(ResolutionContext resolutionContext, int line, int index) {
+  public void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
       resolved = resolutionContext.resolve(name);
   }
 

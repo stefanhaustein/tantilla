@@ -12,6 +12,7 @@ import org.kobjects.asde.android.ide.widget.SymbolTitleView;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.symbol.GlobalSymbol;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -20,9 +21,9 @@ public class FunctionView extends SymbolView {
     public CallableUnit callableUnit;
     OnLongClickListener lineClickListener;
 
-    public FunctionView(final MainActivity mainActivity, String name, final CallableUnit callableUnit) {
-        super(mainActivity, name);
-        this.callableUnit = callableUnit;
+    public FunctionView(final MainActivity mainActivity, String name, GlobalSymbol symbol) {
+        super(mainActivity, name, symbol);
+        this.callableUnit = (CallableUnit) symbol.value;
 
         boolean isMain = callableUnit == callableUnit.program.main;
         boolean isVoid = callableUnit.getType().getReturnType() == Types.VOID;
@@ -61,7 +62,7 @@ public class FunctionView extends SymbolView {
 
 
     public void syncContent() {
-        titleView.setBackgroundColor(callableUnit.errors.size() > 0 ? mainActivity.colors.accentLight : expanded ? mainActivity.colors.primaryLight : 0);
+        titleView.setBackgroundColor(symbol.errors.size() > 0 ? mainActivity.colors.accentLight : expanded ? mainActivity.colors.primaryLight : 0);
 
         ExpandableList codeView = getContentView();
 
@@ -79,7 +80,7 @@ public class FunctionView extends SymbolView {
                 codeView.addView(codeLineView);
             }
             codeLineView.setLineNumber(entry.getKey());
-            codeLineView.setCodeLine(entry.getValue(), callableUnit.errors);
+            codeLineView.setCodeLine(entry.getValue(), symbol.errors);
             codeLineView.setOnLongClickListener(lineClickListener);
             index++;
         }

@@ -1,14 +1,14 @@
 package org.kobjects.asde.lang.symbol;
 
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.parser.ResolutionContext;
+import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
 
 public class DynamicSymbol implements ResolvedSymbol {
     private final String name;
-    private final ResolutionContext.ResolutionMode mode;
+    private final FunctionValidationContext.ResolutionMode mode;
 
-    public DynamicSymbol(String name, ResolutionContext.ResolutionMode mode) {
+    public DynamicSymbol(String name, FunctionValidationContext.ResolutionMode mode) {
         this.name = name;
         this.mode = mode;
     }
@@ -21,7 +21,7 @@ public class DynamicSymbol implements ResolvedSymbol {
 
     @Override
     public void set(Interpreter interpreter, Object value) {
-        interpreter.control.program.setValue(mode == ResolutionContext.ResolutionMode.SHELL
+        interpreter.control.program.setValue(mode == FunctionValidationContext.ResolutionMode.SHELL
                 ? GlobalSymbol.Scope.PERSISTENT : GlobalSymbol.Scope.TRANSIENT, name, value);
     }
 

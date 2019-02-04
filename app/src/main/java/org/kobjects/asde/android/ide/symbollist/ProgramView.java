@@ -48,7 +48,7 @@ public class ProgramView extends LinearLayout implements ExpandListener {
         symbolList = new ExpandableList(context);
         addView(symbolList);
 
-        mainFunctionView = new FunctionView(context, "Main", program.main);
+        mainFunctionView = new FunctionView(context, "Main", program.mainSymbol);
         mainFunctionView.addExpandListener(this);
         currentFunctionView = mainFunctionView;
         currentSymbolView = mainFunctionView;
@@ -110,7 +110,7 @@ public class ProgramView extends LinearLayout implements ExpandListener {
             int index;
             if (symbol.value instanceof CallableUnit) {
                 if (!(symbolView instanceof FunctionView)) {
-                    FunctionView functionView = new FunctionView(context, name, (CallableUnit) symbol.value);
+                    FunctionView functionView = new FunctionView(context, name, symbol);
                     symbolView = functionView;
                     functionView.addExpandListener(this);
 

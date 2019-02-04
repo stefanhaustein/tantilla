@@ -5,7 +5,7 @@ import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.StackEntry;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.parser.ResolutionContext;
+import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -48,8 +48,8 @@ public class NextStatement extends Node {
         return Types.VOID;
     }
 
-    public void onResolve(ResolutionContext resolutionContext, int line, int index) {
-        resolutionContext.endBlock(ResolutionContext.BlockType.FOR);
+    public void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+        resolutionContext.endBlock(FunctionValidationContext.BlockType.FOR);
     }
 
     @Override

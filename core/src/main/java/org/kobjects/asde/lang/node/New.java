@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.parser.ResolutionContext;
+import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.typesystem.Classifier;
 
@@ -27,7 +27,7 @@ public class New extends Node {
     }
 
     @Override
-    protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
+    protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
         // TODO
     }
 

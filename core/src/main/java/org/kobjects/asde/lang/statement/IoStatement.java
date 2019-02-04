@@ -6,7 +6,7 @@ import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.parser.ResolutionContext;
+import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -27,7 +27,7 @@ public class IoStatement extends Node {
     }
 
     @Override
-    protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
+    protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
         // TODO: Implement
     }
 

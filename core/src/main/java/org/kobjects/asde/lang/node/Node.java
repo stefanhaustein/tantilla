@@ -4,7 +4,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
-import org.kobjects.asde.lang.parser.ResolutionContext;
+import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Collections;
@@ -24,9 +24,9 @@ public abstract class Node {
     visitor.visitNode(this);
   }
 
-  protected abstract void onResolve(ResolutionContext resolutionContext, int line, int index);
+  protected abstract void onResolve(FunctionValidationContext resolutionContext, int line, int index);
 
-  public final void resolve(ResolutionContext resolutionContext, int line, int index) {
+  public final void resolve(FunctionValidationContext resolutionContext, int line, int index) {
     for (Node child: children) {
       child.resolve(resolutionContext, line, index);
     }

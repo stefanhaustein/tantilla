@@ -20,14 +20,11 @@ import java.util.Collections;
 
 
 public class VariableView extends SymbolView {
-    static final int ARRAY_SPLIT_LENGTH = 40;
-
     Object value = this;
-    final GlobalSymbol symbol;
     MainActivity mainActivity;
 
     public VariableView(MainActivity mainActivity, String name, GlobalSymbol symbol) {
-        super(mainActivity, name);
+        super(mainActivity, name, symbol);
         this.mainActivity = mainActivity;
         this.symbol = symbol;
         titleView.setTypeIndicator('V', mainActivity.colors.yellow);
@@ -86,6 +83,8 @@ public class VariableView extends SymbolView {
 
     @Override
     public void syncContent() {
+        titleView.setBackgroundColor(symbol.errors.size() > 0 ? mainActivity.colors.accentLight : expanded ? mainActivity.colors.primaryLight : 0);
+
         StringBuilder sb = new StringBuilder(" ");
         value = symbol.value;
         if (value != null) {
@@ -98,8 +97,6 @@ public class VariableView extends SymbolView {
             sb.append("?");
         }
         titleView.setSubtitles(Collections.singletonList(sb.toString()));
-
-        titleView.setBackgroundColor(expanded ? mainActivity.colors.primaryLight : 0);
 
         ExpandableList codeView = getContentView();
 

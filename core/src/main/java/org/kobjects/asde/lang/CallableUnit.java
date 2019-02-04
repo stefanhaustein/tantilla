@@ -7,10 +7,8 @@ import org.kobjects.asde.lang.statement.ForStatement;
 import org.kobjects.asde.lang.statement.IfStatement;
 import org.kobjects.asde.lang.statement.NextStatement;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.parser.ResolutionContext;
 import org.kobjects.typesystem.FunctionType;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +19,6 @@ public class CallableUnit implements Function {
     FunctionType type;
     public String[] parameterNames;
     private TreeMap<Integer, CodeLine> code = new TreeMap<>();
-    public HashMap<Node, Exception> errors = new HashMap<>();
     private int localVariableCount;
 
     public CallableUnit(Program program, FunctionType type, String... parameterNames) {
@@ -30,9 +27,9 @@ public class CallableUnit implements Function {
         this.parameterNames = parameterNames;
     }
 
-    public void resolve() {
-        ResolutionContext resolutionContext = new ResolutionContext(program,
-                this == program.main && program.legacyMode ? ResolutionContext.ResolutionMode.LEGACY : ResolutionContext.ResolutionMode.STRICT,
+    public FunctionValidationContext validate(ProgramValidationContext programValidationContext) {
+        FunctionValidationContext resolutionContext = new FunctionValidationContext(programValidationContext,
+                this == program.main && program.legacyMode ? FunctionValidationContext.ResolutionMode.LEGACY : FunctionValidationContext.ResolutionMode.STRICT,
                 this, parameterNames);
 
         int indent = 0;
@@ -61,12 +58,8 @@ public class CallableUnit implements Function {
             line.indent = indent;
             indent += addLater;
         }
-
-        errors = resolutionContext.errors;
         localVariableCount = resolutionContext.getLocalVariableCount();
-        for (Exception exception : errors.values()) {
-            exception.printStackTrace();
-        }
+        return resolutionContext;
     }
 
     @Override
@@ -94,7 +87,7 @@ public class CallableUnit implements Function {
         }
     }
 
-    public void toString(AnnotatedStringBuilder sb, String name) {
+    public void toString(AnnotatedStringBuilder sb, String name, Map<Node, Exception> errors) {
         boolean sub = type.getReturnType() == Types.VOID;
         String kind = sub ? "SUB" : "FUNCTION";
         if (name != null) {

@@ -5,7 +5,7 @@ import org.kobjects.asde.lang.Array;
 import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
-import org.kobjects.asde.lang.parser.ResolutionContext;
+import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
 
@@ -41,7 +41,7 @@ public class Apply extends AssignableNode {
     }
 
     @Override
-    protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
+    protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
         if (children[0].returnType() instanceof FunctionType) {
             FunctionType resolved = (FunctionType) children[0].returnType();
             // TODO: b/c optional params, add minParameterCount

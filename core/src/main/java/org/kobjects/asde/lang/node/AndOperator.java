@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
-import org.kobjects.asde.lang.parser.ResolutionContext;
+import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -26,7 +26,7 @@ public class AndOperator extends Node {
   }
 
   @Override
-  protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
     if (!Types.match(children[0].returnType(), children[1].returnType())) {
       throw new RuntimeException("Matching Boolean or Number argument expected; got "
               + children[0].returnType() + " and " + children[1].returnType());

@@ -5,7 +5,7 @@ import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.parser.ResolutionContext;
+import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -19,8 +19,8 @@ public class AssignStatement extends Node {
     }
 
     @Override
-    protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
-        if (resolutionContext.mode == ResolutionContext.ResolutionMode.STRICT
+    protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+        if (resolutionContext.mode == FunctionValidationContext.ResolutionMode.STRICT
                 && !Types.match(children[0].returnType(), children[1].returnType())) {
             throw new RuntimeException("Cannot assign " + children[1].returnType() + " to " + children[0].returnType());
         }

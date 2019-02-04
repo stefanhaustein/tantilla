@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.statement;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.parser.ResolutionContext;
+import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -11,8 +11,8 @@ import java.util.Map;
 public class EndIfStatement extends Node {
 
     @Override
-    protected void onResolve(ResolutionContext resolutionContext, int line, int index) {
-        resolutionContext.endBlock(ResolutionContext.BlockType.IF);
+    protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+        resolutionContext.endBlock(FunctionValidationContext.BlockType.IF);
     }
 
     @Override
