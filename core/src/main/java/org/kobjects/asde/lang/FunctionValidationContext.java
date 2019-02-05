@@ -26,7 +26,7 @@ public class FunctionValidationContext {
 
     private int localSymbolCount;
     private Block currentBlock;
-    private HashSet<GlobalSymbol> dependencies = new HashSet<>();
+    public HashSet<GlobalSymbol> dependencies = new HashSet<>();
     private final ProgramValidationContext programValidationContext;
 
     public FunctionValidationContext(ProgramValidationContext programValidationContext, ResolutionMode mode, CallableUnit callableUnit, String... parameterNames) {

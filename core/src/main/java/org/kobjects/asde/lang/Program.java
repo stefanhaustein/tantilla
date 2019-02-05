@@ -63,22 +63,11 @@ public class Program {
 
     public Program(Console console) {
       this.console = console;
-      // clear();
+      // init();
       this.reference = new ProgramReference("Scratch", null, false);
 
       for (Builtin builtin : Builtin.values()) {
           setValue(GlobalSymbol.Scope.BUILTIN, builtin.name().toLowerCase(), builtin);
-        }
-    }
-
-    public void runInitializers(Interpreter interpreter) {
-
-        synchronized (symbolMap) {
-            for (GlobalSymbol symbol : symbolMap.values()) {
-                if (symbol.initializer != null) {
-                    symbol.initializer.eval(interpreter);
-                }
-            }
         }
     }
 
@@ -97,7 +86,7 @@ public class Program {
         visitor.visitProgram(this);
     }
 
-  public void clearAll() {
+  public void deleteAll() {
       main.clear();
       TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
       synchronized (symbolMap) {
@@ -114,19 +103,28 @@ public class Program {
   }
 
 
-  public void clear(Interpreter interpreter) {
+  public void init(Interpreter interpreter) {
       TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
-    synchronized (symbolMap) {
-        for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
-            GlobalSymbol symbol = entry.getValue();
-            if (symbol != null && symbol.scope != GlobalSymbol.Scope.TRANSIENT) {
-                cleared.put(entry.getKey(), symbol);
-            }
-        }
-        symbolMap = cleared;
-    }
+      synchronized (symbolMap) {
+          for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
+              GlobalSymbol symbol = entry.getValue();
+              if (symbol != null && symbol.scope != GlobalSymbol.Scope.TRANSIENT) {
+                  cleared.put(entry.getKey(), symbol);
+              }
+          }
+          symbolMap = cleared;
+      }
 
-    runInitializers(interpreter);
+
+      HashSet<GlobalSymbol> initialized = new HashSet<>();
+
+      // It's a new symbolMap now!
+      synchronized (symbolMap) {
+          for (GlobalSymbol symbol : symbolMap.values()) {
+              symbol.init(interpreter, initialized);
+          }
+      }
+
       Arrays.fill(interpreter.dataPosition, 0);
   }
 
@@ -311,7 +309,7 @@ public class Program {
       try {
           BufferedReader reader = new BufferedReader(new InputStreamReader(console.openInputStream(fileReference.url), "utf-8"));
 
-          clearAll();
+          deleteAll();
           this.reference = fileReference;
           console.programReferenceChanged(fileReference);
           HashSet<CallableUnit> callableUnits = new HashSet<>();

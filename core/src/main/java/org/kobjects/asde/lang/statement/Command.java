@@ -42,7 +42,7 @@ public class Command extends Node {
                 interpreter.control.resume();
 
             case CLEAR:
-                program.clear(interpreter);
+                program.init(interpreter);
                 break;
 
             case DELETE:
@@ -83,7 +83,7 @@ public class Command extends Node {
 
 
             case RUN:
-                program.clear(interpreter);
+                program.init(interpreter);
 
                 interpreter.currentLine = children.length == 0 ? 0 : (int) evalChildToDouble(interpreter,0);
                 interpreter.currentIndex = 0;

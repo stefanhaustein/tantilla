@@ -3,7 +3,6 @@ package org.kobjects.asde.lang.symbol;
 import org.kobjects.asde.lang.ArrayType;
 import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.ProgramValidationContext;
 import org.kobjects.asde.lang.Types;
 import org.kobjects.asde.lang.node.Node;
@@ -13,16 +12,18 @@ import org.kobjects.asde.lang.statement.LetStatement;
 import org.kobjects.typesystem.Type;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class GlobalSymbol implements ResolvedSymbol {
 
-    public int validationStamp;
+    public int stamp;
     public Node initializer;
     public Object value;
     public Scope scope;
     public Type type;
     boolean immutable;
     public HashMap<Node, Exception> errors = new HashMap<>();
+    public HashSet<GlobalSymbol> dependencies;
 
 
     @Override
@@ -39,6 +40,7 @@ public class GlobalSymbol implements ResolvedSymbol {
     public Type getType() {
         return type;
     }
+
 
     public enum Scope {
         BUILTIN,
@@ -63,12 +65,13 @@ public class GlobalSymbol implements ResolvedSymbol {
 
 
     public void validate(ProgramValidationContext programValidationContext) {
-        if (validationStamp == programValidationContext.stamp) {
+        if (programValidationContext.validated.contains(this)) {
             return;
         }
         if (value instanceof CallableUnit) {
             FunctionValidationContext context = ((CallableUnit) value).validate(programValidationContext);
             this.errors = context.errors;
+            this.dependencies = context.dependencies;
         } else if (initializer != null) {
             FunctionValidationContext context = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.SHELL, null);
             initializer.resolve(context, 0, 0);
@@ -84,7 +87,23 @@ public class GlobalSymbol implements ResolvedSymbol {
             } else {
                 throw new RuntimeException("not an initializer statement: " + initializer);
             }
+            this.dependencies = context.dependencies;
         }
-        validationStamp = programValidationContext.stamp;
+        programValidationContext.validated.add(this);
+    }
+
+    public void init(Interpreter interpreter, HashSet<GlobalSymbol> initialized) {
+        if (initialized.contains(this)) {
+            return;
+        }
+        if (dependencies != null) {
+            for (GlobalSymbol dep : dependencies) {
+                dep.init(interpreter, initialized);
+            }
+        }
+        if (initializer != null) {
+            initializer.eval(interpreter);
+        }
+        initialized.add(this);
     }
 }

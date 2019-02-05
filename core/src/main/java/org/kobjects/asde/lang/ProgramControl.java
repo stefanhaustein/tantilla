@@ -73,7 +73,7 @@ public class ProgramControl {
 
 
     public void start() {
-        program.clear(rootInterprter);
+        program.init(rootInterprter);
         runAsync(0);
     }
 

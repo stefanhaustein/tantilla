@@ -5,6 +5,7 @@ import org.kobjects.typesystem.Typed;
 
 public interface Function extends Typed {
 
+    @Override
     FunctionType getType();
 
     /**

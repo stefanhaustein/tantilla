@@ -2,14 +2,14 @@ package org.kobjects.asde.lang;
 
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 public class ProgramValidationContext {
-    static int stampFactory;
 
-    public final int stamp = ++stampFactory;
     LinkedHashSet<String> dependencyChain = new LinkedHashSet<>();
     Program program;
+    public HashSet<GlobalSymbol> validated = new HashSet<>();
 
     ProgramValidationContext(Program program) {
         this.program = program;
@@ -28,7 +28,7 @@ public class ProgramValidationContext {
         if (symbol == null) {
             return null;
         }
-        if (symbol.validationStamp != stamp) {
+        if (!validated.contains(symbol)) {
             dependencyChain.add(name);
             symbol.validate(this);
             dependencyChain.remove(name);

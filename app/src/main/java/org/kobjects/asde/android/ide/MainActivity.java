@@ -742,7 +742,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
     public void eraseProgram() {
         shell.mainInterpreter.abort();
-        program.clearAll();
+        program.deleteAll();
         sync(false);
     }
 
