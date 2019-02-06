@@ -46,14 +46,13 @@ public class Shell {
                     if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER
                             || "?".equals(tokenizer.currentValue)) {
                         currentFunction.setLine(lineNumber, new CodeLine(program.parser.parseStatementList(tokenizer, currentFunction)));
-                        program.console.sync(true);
-                        if (program.reference.urlWritable) {
+/*                        if (program.reference.urlWritable) {
                             try {
                                 program.save(program.reference);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                        }
+                        } */
                         // Line added, done here.
                         break;
                     }
@@ -64,9 +63,7 @@ public class Shell {
                 // Fall-through intended
             default:
                 List<? extends Node> statements = program.parser.parseStatementList(tokenizer, null);
-                if (program.processDeclarations(statements)) {
-                    program.console.sync(true);
-                }
+                program.processDeclarations(statements);
 
                     /*TextView inputView = new EmojiTextView(this);
                     inputView.setText(new CodeLine(statements).toString());

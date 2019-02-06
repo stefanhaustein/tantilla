@@ -30,7 +30,7 @@ public class RenameFlow {
         alertBuilder.setNegativeButton("Cancel", null);
         alertBuilder.setPositiveButton("Rename", (a,b) -> {
             mainActivity.program.renameGlobalSymbol(oldName, nameInput.getEditText().getText().toString());
-            mainActivity.sync(true);
+
         });
 
         AlertDialog alert = alertBuilder.show();

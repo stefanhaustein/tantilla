@@ -9,7 +9,9 @@ import org.kobjects.asde.lang.statement.NextStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.typesystem.FunctionType;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -124,20 +126,21 @@ public class CallableUnit implements Function {
 
     }
 
-    public void setLine(int number, CodeLine line) {
+    public synchronized void setLine(int number, CodeLine line) {
         if (line == null) {
             code.remove(number);
         } else {
             code.put(number, line);
         }
+        program.notifyProgramChanged();
     }
 
     public Map.Entry<Integer,CodeLine> ceilingEntry(int i) {
         return code.ceilingEntry(i);
     }
 
-    public Iterable<Map.Entry<Integer, CodeLine>> entrySet() {
-        return code.entrySet();
+    public synchronized Iterable<Map.Entry<Integer, CodeLine>> entrySet() {
+        return new LinkedHashSet<Map.Entry<Integer, CodeLine>>(code.entrySet());
     }
 
     public void clear() {

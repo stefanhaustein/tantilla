@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.refactor;
 
+import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Visitor;
 import org.kobjects.asde.lang.symbol.LocalSymbol;
@@ -22,4 +23,9 @@ public class RenameGlobal extends Visitor {
         }
     }
 
+    @Override
+    public void visitProgram(Program program) {
+        super.visitProgram(program);
+        program.notifyProgramChanged();
+    }
 }

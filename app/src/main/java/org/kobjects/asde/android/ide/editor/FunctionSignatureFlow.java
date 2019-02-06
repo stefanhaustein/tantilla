@@ -343,8 +343,6 @@ public class FunctionSignatureFlow {
         callableUnit.setType(new FunctionType(callableUnit.getType().getReturnType(), types));
 
         mainActivity.program.accept(new ChangeSignature(name, oldIndices));
-
-        mainActivity.sync(true);
     }
 
     void commitNewFunction() {
@@ -357,7 +355,6 @@ public class FunctionSignatureFlow {
 
         mainActivity.program.setValue(GlobalSymbol.Scope.PERSISTENT, name, callableUnit);
 
-        mainActivity.sync(true);
     }
 
 }

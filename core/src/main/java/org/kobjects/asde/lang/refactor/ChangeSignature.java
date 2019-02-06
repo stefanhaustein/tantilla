@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.refactor;
 
+import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
@@ -29,5 +30,11 @@ public class ChangeSignature extends Visitor {
                 apply.children[i + 1] = oldChildren[newOrder[i] + 1];
             }
         }
+    }
+
+    @Override
+    public void visitProgram(Program program) {
+        super.visitProgram(program);
+        program.notifyProgramChanged();
     }
 }

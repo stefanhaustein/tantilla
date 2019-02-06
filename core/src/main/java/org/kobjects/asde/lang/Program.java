@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang;
 
+import org.kobjects.ProgramChangeListener;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.node.Visitor;
 import org.kobjects.asde.lang.refactor.RenameGlobal;
@@ -52,6 +53,7 @@ public class Program {
     public final Parser parser = new Parser(this);
     public final CallableUnit main = new CallableUnit(this, new FunctionType(Types.VOID));
     public final GlobalSymbol mainSymbol = new GlobalSymbol(GlobalSymbol.Scope.PERSISTENT, main);
+    private final ArrayList<ProgramChangeListener> programChangeListeners = new ArrayList<>();
 
     // Program state
 
@@ -60,6 +62,7 @@ public class Program {
     public int tabPos;
     public final Console console;
     public boolean legacyMode;
+    private boolean loading;
 
     public Program(Console console) {
       this.console = console;
@@ -98,6 +101,7 @@ public class Program {
           }
           symbolMap = cleared;
       }
+      notifyProgramChanged();
       reference = console.nameToReference("Unnamed");
       console.programReferenceChanged(reference);
   }
@@ -210,9 +214,6 @@ public class Program {
       return asb.toString();
   }
 
-
-
-
     public void save(ProgramReference programReference) throws IOException {
       if (!programReference.urlWritable) {
           throw new IOException("Can't write to URL: " + programReference.url);
@@ -279,7 +280,7 @@ public class Program {
     }
 
 
-    public boolean processDeclarations(List<? extends Node> statements) {
+    public void processDeclarations(List<? extends Node> statements) {
         CallableUnit wrapper = new CallableUnit(this, new FunctionType(Types.VOID));
         wrapper.setLine(-2, new CodeLine(statements));
         boolean syncNeeded = false;
@@ -288,16 +289,11 @@ public class Program {
             if (node instanceof LetStatement) {
                 LetStatement let = (LetStatement) node;
                 setInitializer(GlobalSymbol.Scope.PERSISTENT, let.varName, let);
-                syncNeeded = true;
             } else if (node instanceof DimStatement) {
                 DimStatement dim = (DimStatement) node;
                 setInitializer(GlobalSymbol.Scope.PERSISTENT, dim.varName, dim);
-                syncNeeded = true;
-            } else if (node instanceof AssignStatement) {
-                syncNeeded = true;
             }
         }
-        return syncNeeded;
     }
 
 
@@ -305,6 +301,8 @@ public class Program {
 
       console.startProgress("Loading " + fileReference.name);
       console.updateProgress("Url: " + fileReference.url);
+
+      loading = true;
 
       try {
           BufferedReader reader = new BufferedReader(new InputStreamReader(console.openInputStream(fileReference.url), "utf-8"));
@@ -358,7 +356,10 @@ public class Program {
 
       } finally {
           console.endProgress();
+          loading = false;
       }
+
+      notifyProgramChanged();
     }
 
     public void validate() {
@@ -381,6 +382,9 @@ public class Program {
             // TODO: check scope!
             symbol.value = value;
         }
+        if (scope == GlobalSymbol.Scope.PERSISTENT) {
+            notifyProgramChanged();
+        }
     }
 
     public void setInitializer(GlobalSymbol.Scope scope, String name, Node expr) {
@@ -390,8 +394,22 @@ public class Program {
           setSymbol(name, symbol);
       }
       symbol.initializer = expr;
+      notifyProgramChanged();
     }
 
+    public void addProgramChangeListener(ProgramChangeListener programChangeListener) {
+        programChangeListeners.add(programChangeListener);
+    }
+
+    public void notifyProgramChanged() {
+        if (loading) {
+            return;
+        }
+        validate();
+        for (ProgramChangeListener changeListener : programChangeListeners) {
+            changeListener.notifyProgramChanged(this);
+        }
+    }
 
     public void deleteSymbol(String name) {
         symbolMap.remove(name);

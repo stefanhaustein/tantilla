@@ -29,7 +29,4 @@ public interface Console {
     void edit(int i);
 
     void showError(String message, Exception e);
-
-    // TODO: Replace with program change notification mechanism
-    void sync(boolean incremental);
 }

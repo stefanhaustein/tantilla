@@ -20,7 +20,6 @@ public class DeleteFlow {
         alertBuilder.setNegativeButton("Cancel", null);
         alertBuilder.setPositiveButton("Delete", (a,b) -> {
            mainActivity.program.deleteSymbol(name);
-           mainActivity.sync(true);
         });
 
         alertBuilder.show();

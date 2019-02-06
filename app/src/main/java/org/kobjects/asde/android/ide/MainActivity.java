@@ -350,11 +350,11 @@ public class MainActivity extends AppCompatActivity implements Console {
     }
   }
 
-    /**
+    /*
      * Syncs the displayed program code to the program code. If the sync is incremental,
      * any new function will be expanded automatically. Otherwise, the sync process includes
      * scrolling to the to and autorun support.
-     */
+     *
   public void sync(boolean incremental) {
       runOnUiThread(() -> {
                   programView.sync(incremental);
@@ -363,21 +363,8 @@ public class MainActivity extends AppCompatActivity implements Console {
 
                   }
               });
-/*
-      if (!expandNew) {
-          autoScroll = false;
-          scrollView.scrollTo(0, 0);
-          scrollView.post(new Runnable() {
 
-              @Override
-              public void run() {
-                  scrollView.scrollTo(0, 0);
-                  autoScroll = false;
-              }
-          });
-      }
-      */
-  }
+  }*/
 
 
   public void onConfigurationChanged (Configuration newConfig) {
@@ -594,7 +581,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     @Override
     public void programReferenceChanged(ProgramReference fileReference) {
         runOnUiThread(() -> {
-                programView.sync(false);
+                programView.sync();
         });
         preferences.setProgramReference(fileReference);
     }
@@ -666,7 +653,6 @@ public class MainActivity extends AppCompatActivity implements Console {
                 Map.Entry<Integer, CodeLine> entry = callableUnit.ceilingEntry(line);
                 if (entry != null && entry.getKey() == line) {
                     callableUnit.setLine(line, null);
-                    sync(true);
                     return;
                 }
             }
@@ -743,7 +729,6 @@ public class MainActivity extends AppCompatActivity implements Console {
     public void eraseProgram() {
         shell.mainInterpreter.abort();
         program.deleteAll();
-        sync(false);
     }
 
     public void load(ProgramReference programReference, boolean showErrors, boolean run) {
@@ -761,7 +746,6 @@ public class MainActivity extends AppCompatActivity implements Console {
                     e.printStackTrace();
                 }
             }
-            sync(false);
         }).start();
     }
 

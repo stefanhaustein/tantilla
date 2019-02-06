@@ -142,9 +142,5 @@ public class AsdeShell  {
           print(message + e);
       }
 
-      @Override
-      public void sync(boolean incremental) {
-
-      }
     }
 }

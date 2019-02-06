@@ -4,6 +4,7 @@ import android.view.View;
 import android.view.ViewParent;
 import android.widget.LinearLayout;
 
+import org.kobjects.ProgramChangeListener;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.TitleView;
@@ -28,6 +29,7 @@ public class ProgramView extends LinearLayout implements ExpandListener {
     private HashMap<String, SymbolView> symbolViewMap = new HashMap<>();
     public FunctionView currentFunctionView;
     public SymbolView currentSymbolView;
+    int syncRequestCount;
 
     public ProgramView(MainActivity context, Program program) {
         super(context);
@@ -50,27 +52,39 @@ public class ProgramView extends LinearLayout implements ExpandListener {
 
         mainFunctionView = new FunctionView(context, "Main", program.mainSymbol);
         mainFunctionView.addExpandListener(this);
+        mainFunctionView.setExpanded(true, false);
         currentFunctionView = mainFunctionView;
         currentSymbolView = mainFunctionView;
 
+        program.addProgramChangeListener(new ProgramChangeListener() {
+            @Override
+            public void notifyProgramChanged(Program program) {
+                final int thisSyncRequest = ++syncRequestCount;
+                postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (thisSyncRequest == syncRequestCount) {
+                            sync();
+                        }
+                    }
+                }, 10);
+            }
+        });
+
         expanded = true;
-        sync(false);
+        sync();
     }
 
     void expand(boolean expand) {
         if (this.expanded != expand) {
             this.expanded = expand;
             symbolList.animateNextChanges();
-            sync(false);
+            sync();
         }
     }
 
-    /**
-     * @param expandNew The first new symbol found during expansion will be expanded.
-     */
-    public void sync(boolean expandNew) {
-        program.validate();
 
+    public void sync() {
         if (program.main.getLineCount() == 0 && (program.reference == null || "Unnamed".equals(program.reference.name))) {
             boolean empty = true;
             for (GlobalSymbol symbol : program.getSymbolMap().values()) {
@@ -94,6 +108,9 @@ public class ProgramView extends LinearLayout implements ExpandListener {
             return;
         }
         int varCount = 0;
+        int newSymbolCount = 0;
+        SymbolView newSymbol = null;
+
 
         HashMap<String, SymbolView> newSymbolViewMap = new HashMap<>();
         for (Map.Entry<String, GlobalSymbol> entry : program.getSymbolMap().entrySet()) {
@@ -107,17 +124,15 @@ public class ProgramView extends LinearLayout implements ExpandListener {
                 qualifiedName += Arrays.toString(((CallableUnit) symbol.value).parameterNames);
             }
             SymbolView symbolView = symbolViewMap.get(qualifiedName);
+
             int index;
             if (symbol.value instanceof CallableUnit) {
                 if (!(symbolView instanceof FunctionView)) {
                     FunctionView functionView = new FunctionView(context, name, symbol);
                     symbolView = functionView;
                     functionView.addExpandListener(this);
-
-                    if (expandNew) {
-                        functionView.setExpanded(true, true);
-                        expandNew = false;
-                    }
+                    newSymbolCount++;
+                    newSymbol = symbolView;
                 }
                 index = symbolList.getChildCount();
             } else {
@@ -127,6 +142,8 @@ public class ProgramView extends LinearLayout implements ExpandListener {
                     VariableView variableView = new VariableView(context, name, symbol);
                     variableView.addExpandListener(this);
                     symbolView = variableView;
+                    newSymbolCount++;
+                    newSymbol = symbolView;
                 }
                 index = varCount++;
             }
@@ -136,11 +153,11 @@ public class ProgramView extends LinearLayout implements ExpandListener {
         symbolViewMap = newSymbolViewMap;
         symbolList.addView(mainFunctionView);
 
-        if (expandNew && program.main.getLineCount() > 0 && !mainFunctionView.expanded) {
-            mainFunctionView.setExpanded(true, true);
-        }
-
         mainFunctionView.syncContent();
+
+        if (newSymbolCount == 1) {
+            newSymbol.setExpanded(true, true);
+        }
     }
 
 
