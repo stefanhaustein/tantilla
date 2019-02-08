@@ -48,6 +48,7 @@ import org.kobjects.asde.lang.CallableUnit;
 import org.kobjects.asde.lang.CodeLine;
 import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.ProgramChangeListener;
 import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.ProgramReference;
 import org.kobjects.asde.lang.Shell;
@@ -279,6 +280,25 @@ public class MainActivity extends AppCompatActivity implements Console {
 
         programReference = preferences.getProgramReference();
     }
+
+    program.addProgramChangeListener(new ProgramChangeListener() {
+        @Override
+        public void programChanged(Program program) {
+            // ProgramView has its own listener.
+        }
+
+        @Override
+        public void symbolChangedByUser(Program program, GlobalSymbol symbol) {
+            // ProgramView has its own listener.
+        }
+
+        @Override
+        public void programRenamed(Program program, ProgramReference newReference) {
+            programView.requestSynchronization();
+            preferences.setProgramReference(newReference);
+        }
+    });
+
     load(programReference, false, runningFromShortcut);
   }
 
@@ -578,13 +598,6 @@ public class MainActivity extends AppCompatActivity implements Console {
   }
 
 
-    @Override
-    public void programReferenceChanged(ProgramReference fileReference) {
-        runOnUiThread(() -> {
-                programView.sync();
-        });
-        preferences.setProgramReference(fileReference);
-    }
 
     public File getProgramStoragePath() {
       File result = new File(getFilesDir(), "programs");
@@ -647,17 +660,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     @Override
     public void delete(int line) {
         FunctionView functionView = programView.currentFunctionView;
-        if (functionView != null) {
-            CallableUnit callableUnit = functionView.callableUnit;
-            if (callableUnit != null) {
-                Map.Entry<Integer, CodeLine> entry = callableUnit.ceilingEntry(line);
-                if (entry != null && entry.getKey() == line) {
-                    callableUnit.setLine(line, null);
-                    return;
-                }
-            }
-        }
-        throw new RuntimeException("Line " + line + " not found.");
+        program.setLine(functionView.symbol, line, null);
     }
 
     @Override

@@ -20,7 +20,7 @@ import java.util.Collections;
 
 
 public class VariableView extends SymbolView {
-    Object value = this;
+    Object cache = this;
     MainActivity mainActivity;
 
     public VariableView(MainActivity mainActivity, String name, GlobalSymbol symbol) {
@@ -81,14 +81,14 @@ public class VariableView extends SymbolView {
         return (type instanceof ArrayType && ((ArrayType) type).getReturnType() instanceof ArrayType);
     }
 
-    @Override
-    public void syncContent() {
-        titleView.setBackgroundColor(symbol.errors.size() > 0 ? mainActivity.colors.accentLight : expanded ? mainActivity.colors.primaryLight : 0);
-
+    public void refresh() {
+        super.refresh();
+        if (symbol.value == cache || symbol.initializer == cache) {
+            return;
+        }
         StringBuilder sb = new StringBuilder(" ");
-        value = symbol.value;
-        if (value != null) {
-            sb.append(value);
+        if (symbol.value != null) {
+            sb.append(symbol.value);
         } else if (symbol.initializer instanceof LetStatement && symbol.initializer.children[0] instanceof Literal) {
             sb.append(((Literal) symbol.initializer.children[0]).value);
         } else if (symbol.getType() != null) {
@@ -96,7 +96,13 @@ public class VariableView extends SymbolView {
         } else {
             sb.append("?");
         }
+        cache = symbol.value != null ? symbol.value : symbol.initializer;
         titleView.setSubtitles(Collections.singletonList(sb.toString()));
+    }
+
+    @Override
+    public void syncContent() {
+        refresh();
 
         ExpandableList codeView = getContentView();
 

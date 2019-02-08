@@ -62,7 +62,7 @@ public class FunctionView extends SymbolView {
 
 
     public void syncContent() {
-        titleView.setBackgroundColor(symbol.errors.size() > 0 ? mainActivity.colors.accentLight : expanded ? mainActivity.colors.primaryLight : 0);
+        refresh();
 
         ExpandableList codeView = getContentView();
 

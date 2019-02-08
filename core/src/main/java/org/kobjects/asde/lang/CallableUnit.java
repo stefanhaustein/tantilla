@@ -132,7 +132,6 @@ public class CallableUnit implements Function {
         } else {
             code.put(number, line);
         }
-        program.notifyProgramChanged();
     }
 
     public Map.Entry<Integer,CodeLine> ceilingEntry(int i) {

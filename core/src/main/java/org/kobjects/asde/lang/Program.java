@@ -1,10 +1,8 @@
 package org.kobjects.asde.lang;
 
-import org.kobjects.ProgramChangeListener;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.node.Visitor;
 import org.kobjects.asde.lang.refactor.RenameGlobal;
-import org.kobjects.asde.lang.statement.AssignStatement;
 import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.LetStatement;
 import org.kobjects.asde.lang.node.Node;
@@ -103,7 +101,7 @@ public class Program {
       }
       notifyProgramChanged();
       reference = console.nameToReference("Unnamed");
-      console.programReferenceChanged(reference);
+      notifyProgramRenamed();
   }
 
 
@@ -219,7 +217,7 @@ public class Program {
           throw new IOException("Can't write to URL: " + programReference.url);
       }
       reference = programReference;
-      console.programReferenceChanged(programReference);
+      notifyProgramRenamed();
       OutputStreamWriter writer = new OutputStreamWriter(console.openOutputStream(programReference.url), "utf8");
       writer.write(toString());
       writer.close();
@@ -309,7 +307,7 @@ public class Program {
 
           deleteAll();
           this.reference = fileReference;
-          console.programReferenceChanged(fileReference);
+          notifyProgramRenamed();
           HashSet<CallableUnit> callableUnits = new HashSet<>();
 
           CallableUnit currentFunction = main;
@@ -383,7 +381,7 @@ public class Program {
             symbol.value = value;
         }
         if (scope == GlobalSymbol.Scope.PERSISTENT) {
-            notifyProgramChanged();
+            notifySymbolChanged(symbol);
         }
     }
 
@@ -397,8 +395,32 @@ public class Program {
       notifyProgramChanged();
     }
 
+    public void setLine(GlobalSymbol symbol, int lineNumber, CodeLine codeLine) {
+        if (symbol.value instanceof CallableUnit) {
+            CallableUnit callableUnit = (CallableUnit) symbol.value;
+            callableUnit.setLine(lineNumber, codeLine);
+            notifySymbolChanged(symbol);
+        }
+    }
+
     public void addProgramChangeListener(ProgramChangeListener programChangeListener) {
         programChangeListeners.add(programChangeListener);
+    }
+
+    public void notifyProgramRenamed() {
+        for (ProgramChangeListener changeListener : programChangeListeners) {
+            changeListener.programRenamed(this, reference);
+        }
+    }
+
+
+    public void notifySymbolChanged(GlobalSymbol symbol) {
+        if (loading) {
+            return;
+        }validate();
+        for (ProgramChangeListener changeListener : programChangeListeners) {
+            changeListener.symbolChangedByUser(this, symbol);
+        }
     }
 
     public void notifyProgramChanged() {
@@ -407,7 +429,7 @@ public class Program {
         }
         validate();
         for (ProgramChangeListener changeListener : programChangeListeners) {
-            changeListener.notifyProgramChanged(this);
+            changeListener.programChanged(this);
         }
     }
 

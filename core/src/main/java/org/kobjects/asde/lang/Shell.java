@@ -3,6 +3,7 @@ package org.kobjects.asde.lang;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.symbol.GlobalSymbol;
 import org.kobjects.expressionparser.ExpressionParser;
 
 import java.util.List;
@@ -14,17 +15,17 @@ public class Shell {
     final public ProgramControl mainInterpreter ;
     public final ProgramControl shellInterpreter ;
 
-    CallableUnit currentFunction;
+    GlobalSymbol currentFunction;
 
     public Shell(Program program) {
         this.program = program;
         mainInterpreter = new ProgramControl(program);
         shellInterpreter = new ProgramControl(program);
-        currentFunction = program.main;
+        currentFunction = program.mainSymbol;
     }
 
-    public void setCurrentFunction(CallableUnit callableUnit) {
-        currentFunction = callableUnit;
+    public void setCurrentFunction(GlobalSymbol symbol) {
+        currentFunction = symbol;
     }
 
 
@@ -45,7 +46,7 @@ public class Shell {
                     tokenizer.nextToken();
                     if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER
                             || "?".equals(tokenizer.currentValue)) {
-                        currentFunction.setLine(lineNumber, new CodeLine(program.parser.parseStatementList(tokenizer, currentFunction)));
+                        program.setLine(currentFunction, lineNumber, new CodeLine(program.parser.parseStatementList(tokenizer, (CallableUnit) currentFunction.value)));
 /*                        if (program.reference.urlWritable) {
                             try {
                                 program.save(program.reference);

@@ -17,8 +17,6 @@ public interface Console {
 
     OutputStream openOutputStream(String url);
 
-    void programReferenceChanged(ProgramReference fileReference);
-
     ProgramReference nameToReference(String name);
 
     void startProgress(String title);

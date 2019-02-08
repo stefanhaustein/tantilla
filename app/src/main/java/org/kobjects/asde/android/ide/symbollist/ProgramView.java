@@ -4,13 +4,14 @@ import android.view.View;
 import android.view.ViewParent;
 import android.widget.LinearLayout;
 
-import org.kobjects.ProgramChangeListener;
+import org.kobjects.asde.lang.ProgramChangeListener;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.lang.CallableUnit;
-import org.kobjects.asde.lang.Function;
 import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.ProgramReference;
+import org.kobjects.asde.lang.StartStopListener;
 import org.kobjects.asde.lang.symbol.GlobalSymbol;
 
 import java.util.Arrays;
@@ -23,19 +24,20 @@ public class ProgramView extends LinearLayout implements ExpandListener {
     private ExpandableList symbolList;
     public final FunctionView mainFunctionView;
     private final Program program;
-    private final MainActivity context;
+    private final MainActivity mainActivity;
     private CodeLineView highlightedLine;
     TitleView titleView;
     private HashMap<String, SymbolView> symbolViewMap = new HashMap<>();
     public FunctionView currentFunctionView;
     public SymbolView currentSymbolView;
     int syncRequestCount;
+    GlobalSymbol expandOnSync;
 
     public ProgramView(MainActivity context, Program program) {
         super(context);
         setOrientation(VERTICAL);
 
-        this.context = context;
+        this.mainActivity = context;
         this.program = program;
 
         titleView = new TitleView(context, context.colors.primary);
@@ -56,35 +58,84 @@ public class ProgramView extends LinearLayout implements ExpandListener {
         currentFunctionView = mainFunctionView;
         currentSymbolView = mainFunctionView;
 
+        StartStopListener startStopRefresher = new StartStopListener() {
+            @Override
+            public void programStarted() {
+                refresh();
+            }
+
+            @Override
+            public void programAborted(Exception cause) {
+                refresh();
+            }
+
+            @Override
+            public void programPaused() {
+                refresh();
+            }
+
+            @Override
+            public void programEnded() {
+                refresh();
+            }
+        };
+
+        context.shell.mainInterpreter.addStartStopListener(startStopRefresher);
+        context.shell.shellInterpreter.addStartStopListener(startStopRefresher);
+
         program.addProgramChangeListener(new ProgramChangeListener() {
             @Override
-            public void notifyProgramChanged(Program program) {
-                final int thisSyncRequest = ++syncRequestCount;
-                postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (thisSyncRequest == syncRequestCount) {
-                            sync();
-                        }
-                    }
-                }, 10);
+            public void programChanged(Program program) {
+                requestSynchronization();
+            }
+
+            @Override
+            public void symbolChangedByUser(Program program, GlobalSymbol symbol) {
+                expandOnSync = symbol;
+                requestSynchronization();
+            }
+
+            @Override
+            public void programRenamed(Program program, ProgramReference newName) {
+                // Handled by separate listener in MainActivity.
             }
         });
 
         expanded = true;
-        sync();
+        synchronize();
     }
 
     void expand(boolean expand) {
         if (this.expanded != expand) {
             this.expanded = expand;
             symbolList.animateNextChanges();
-            sync();
+            synchronize();
         }
     }
 
+    public void refreshImpl() {
+        for (SymbolView symbolView : symbolViewMap.values()) {
+            symbolView.refresh();
+        }
+    }
 
-    public void sync() {
+    public void refresh() {
+        mainActivity.runOnUiThread(() -> refreshImpl());
+    }
+
+    public void requestSynchronization() {
+        final int thisSyncRequest = ++syncRequestCount;
+        postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (thisSyncRequest == syncRequestCount) {
+                    synchronize();
+                }
+            }
+        }, 10);
+    }
+
+    void synchronize() {
         if (program.main.getLineCount() == 0 && (program.reference == null || "Unnamed".equals(program.reference.name))) {
             boolean empty = true;
             for (GlobalSymbol symbol : program.getSymbolMap().values()) {
@@ -108,9 +159,8 @@ public class ProgramView extends LinearLayout implements ExpandListener {
             return;
         }
         int varCount = 0;
-        int newSymbolCount = 0;
-        SymbolView newSymbol = null;
 
+        SymbolView expandView = null;
 
         HashMap<String, SymbolView> newSymbolViewMap = new HashMap<>();
         for (Map.Entry<String, GlobalSymbol> entry : program.getSymbolMap().entrySet()) {
@@ -128,36 +178,40 @@ public class ProgramView extends LinearLayout implements ExpandListener {
             int index;
             if (symbol.value instanceof CallableUnit) {
                 if (!(symbolView instanceof FunctionView)) {
-                    FunctionView functionView = new FunctionView(context, name, symbol);
+                    FunctionView functionView = new FunctionView(mainActivity, name, symbol);
                     symbolView = functionView;
                     functionView.addExpandListener(this);
-                    newSymbolCount++;
-                    newSymbol = symbolView;
                 }
                 index = symbolList.getChildCount();
             } else {
                 if (symbolView instanceof VariableView) {
                     symbolView.syncContent();
-                } else  {
-                    VariableView variableView = new VariableView(context, name, symbol);
+                } else {
+                    VariableView variableView = new VariableView(mainActivity, name, symbol);
                     variableView.addExpandListener(this);
                     symbolView = variableView;
-                    newSymbolCount++;
-                    newSymbol = symbolView;
                 }
                 index = varCount++;
             }
             symbolList.addView(symbolView, index);
             newSymbolViewMap.put(qualifiedName, symbolView);
+            if (symbol == expandOnSync) {
+                expandView = symbolView;
+            }
         }
         symbolViewMap = newSymbolViewMap;
         symbolList.addView(mainFunctionView);
 
         mainFunctionView.syncContent();
-
-        if (newSymbolCount == 1) {
-            newSymbol.setExpanded(true, true);
+        if (expandOnSync == program.mainSymbol) {
+            expandView = mainFunctionView;
         }
+
+        if (expandView != null) {
+            expandView.setExpanded(true, true);
+        }
+        expandOnSync = null;
+
     }
 
 
@@ -169,7 +223,7 @@ public class ProgramView extends LinearLayout implements ExpandListener {
             }
             currentSymbolView = symbolView;
             currentFunctionView = symbolView instanceof FunctionView ? (FunctionView) symbolView : mainFunctionView;
-            context.shell.setCurrentFunction(currentFunctionView.callableUnit);
+            mainActivity.shell.setCurrentFunction(currentFunctionView.symbol);
         }
     }
 
@@ -199,7 +253,7 @@ public class ProgramView extends LinearLayout implements ExpandListener {
             if (highlightedLine != null) {
                 highlightedLine.setHighlighted(true);
                 if (!exapnded) {
-                    // TODO(hausteint): Build into expandableView?
+                    // TODO(haustein): Build into expandableView?
                     final View toFocus = highlightedLine;
                     postDelayed(() -> {
                         ViewParent parent = toFocus.getParent();

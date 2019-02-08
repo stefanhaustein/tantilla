@@ -17,7 +17,7 @@ public abstract class SymbolView extends LinearLayout {
     SymbolTitleView titleView;
     List<ExpandListener> expandListeners = new ArrayList<>();
     boolean expanded;
-    GlobalSymbol symbol;
+    public GlobalSymbol symbol;
 
     private ExpandableList contentView;
 
@@ -41,6 +41,10 @@ public abstract class SymbolView extends LinearLayout {
     }
 
     public abstract void syncContent();
+
+    public void refresh() {
+        titleView.setBackgroundColor(symbol.errors.size() > 0 ? mainActivity.colors.accentLight : expanded ? mainActivity.colors.primaryLight : 0);
+    }
 
     public void setExpanded(final boolean expand, boolean animated) {
         if (expanded == expand) {

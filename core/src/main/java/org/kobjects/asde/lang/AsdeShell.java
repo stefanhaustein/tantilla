@@ -102,10 +102,6 @@ public class AsdeShell  {
           throw new UnsupportedOperationException();
       }
 
-      @Override
-      public void programReferenceChanged(ProgramReference fileReference) {
-          // TBD
-      }
 
       @Override
       public ProgramReference nameToReference(String name) {
