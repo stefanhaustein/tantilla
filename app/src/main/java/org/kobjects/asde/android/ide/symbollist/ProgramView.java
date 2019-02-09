@@ -94,11 +94,6 @@ public class ProgramView extends LinearLayout implements ExpandListener {
                 expandOnSync = symbol;
                 requestSynchronization();
             }
-
-            @Override
-            public void programRenamed(Program program, ProgramReference newName) {
-                // Handled by separate listener in MainActivity.
-            }
         });
 
         expanded = true;

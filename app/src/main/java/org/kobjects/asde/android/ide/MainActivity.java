@@ -281,23 +281,10 @@ public class MainActivity extends AppCompatActivity implements Console {
         programReference = preferences.getProgramReference();
     }
 
-    program.addProgramChangeListener(new ProgramChangeListener() {
-        @Override
-        public void programChanged(Program program) {
-            // ProgramView has its own listener.
-        }
-
-        @Override
-        public void symbolChangedByUser(Program program, GlobalSymbol symbol) {
-            // ProgramView has its own listener.
-        }
-
-        @Override
-        public void programRenamed(Program program, ProgramReference newReference) {
+    program.addProgramRenameListener((program, newReference) -> {
             programView.requestSynchronization();
             preferences.setProgramReference(newReference);
-        }
-    });
+        });
 
     load(programReference, false, runningFromShortcut);
   }

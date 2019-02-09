@@ -52,6 +52,7 @@ public class Program {
     public final CallableUnit main = new CallableUnit(this, new FunctionType(Types.VOID));
     public final GlobalSymbol mainSymbol = new GlobalSymbol(GlobalSymbol.Scope.PERSISTENT, main);
     private final ArrayList<ProgramChangeListener> programChangeListeners = new ArrayList<>();
+    private final ArrayList<ProgramRenameListener> programRenameListeners = new ArrayList<>();
 
     // Program state
 
@@ -403,16 +404,19 @@ public class Program {
         }
     }
 
+    public void addProgramRenameListener(ProgramRenameListener listener) {
+        programRenameListeners.add(listener);
+    }
+
     public void addProgramChangeListener(ProgramChangeListener programChangeListener) {
         programChangeListeners.add(programChangeListener);
     }
 
     public void notifyProgramRenamed() {
-        for (ProgramChangeListener changeListener : programChangeListeners) {
-            changeListener.programRenamed(this, reference);
+        for (ProgramRenameListener renameListener : programRenameListeners) {
+            renameListener.programRenamed(this, reference);
         }
     }
-
 
     public void notifySymbolChanged(GlobalSymbol symbol) {
         if (loading) {
