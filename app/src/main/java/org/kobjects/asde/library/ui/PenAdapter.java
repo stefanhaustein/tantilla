@@ -80,12 +80,11 @@ public class PenAdapter extends Instance {
                 return new Method((FunctionType) PenPropertyDescriptor.clear.type()) {
                     @Override
                     public Object call(EvaluationContext evaluationContext, int paramCount) {
-                        LocalStack localStack = evaluationContext.localStack;
                         pen.clearRect(
-                                ((Number) localStack.getParameter(0, paramCount)).floatValue(),
-                                ((Number) localStack.getParameter(1, paramCount)).floatValue(),
-                                ((Number) localStack.getParameter(2, paramCount)).floatValue(),
-                                ((Number) localStack.getParameter(3, paramCount)).floatValue());
+                                ((Number) evaluationContext.getParameter(0)).floatValue(),
+                                ((Number) evaluationContext.getParameter(1)).floatValue(),
+                                ((Number) evaluationContext.getParameter(2)).floatValue(),
+                                ((Number) evaluationContext.getParameter(3)).floatValue());
                         return null;
                     }
                 };
@@ -95,10 +94,10 @@ public class PenAdapter extends Instance {
                     public Object call(EvaluationContext evaluationContext, int paramCount) {
                         LocalStack localStack = evaluationContext.localStack;
                         pen.drawRect(
-                                ((Number) localStack.getParameter(0, paramCount)).floatValue(),
-                                ((Number) localStack.getParameter(1, paramCount)).floatValue(),
-                                ((Number) localStack.getParameter(2, paramCount)).floatValue(),
-                                ((Number) localStack.getParameter(3, paramCount)).floatValue());
+                                ((Number) evaluationContext.getParameter(0)).floatValue(),
+                                ((Number) evaluationContext.getParameter(1)).floatValue(),
+                                ((Number) evaluationContext.getParameter(2)).floatValue(),
+                                ((Number) evaluationContext.getParameter(3)).floatValue());
                         return null;
                     }
                 };
@@ -106,11 +105,10 @@ public class PenAdapter extends Instance {
                 return new Method((FunctionType) PenPropertyDescriptor.write.type()) {
                     @Override
                     public Object call(EvaluationContext evaluationContext, int paramCount) {
-                        LocalStack localStack = evaluationContext.localStack;
                         pen.drawText(
-                                ((Number) localStack.getParameter(0, paramCount)).floatValue(),
-                                ((Number) localStack.getParameter(1, paramCount)).floatValue(),
-                                ((String) localStack.getParameter(2, paramCount)));
+                                ((Number) evaluationContext.getParameter(0)).floatValue(),
+                                ((Number) evaluationContext.getParameter(1)).floatValue(),
+                                ((String) evaluationContext.getParameter(2)));
                         return null;
                     }
                 };
@@ -118,12 +116,11 @@ public class PenAdapter extends Instance {
                 return new Method((FunctionType) PenPropertyDescriptor.line.type()) {
                     @Override
                     public Object call(EvaluationContext evaluationContext, int paramCount) {
-                        LocalStack localStack = evaluationContext.localStack;
                         pen.drawLine(
-                                ((Number) localStack.getParameter(0, paramCount)).floatValue(),
-                                ((Number) localStack.getParameter(1, paramCount)).floatValue(),
-                                ((Number) localStack.getParameter(2, paramCount)).floatValue(),
-                                ((Number) localStack.getParameter(3, paramCount)).floatValue());
+                                ((Number) evaluationContext.getParameter(0)).floatValue(),
+                                ((Number) evaluationContext.getParameter(1)).floatValue(),
+                                ((Number) evaluationContext.getParameter(2)).floatValue(),
+                                ((Number) evaluationContext.getParameter(3)).floatValue());
                         return null;
                     }
                 };

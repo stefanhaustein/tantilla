@@ -81,7 +81,7 @@ public class SpriteAdapter extends Instance implements Animated {
             case say: return new Method((FunctionType) SpriteMetaProperty.say.type()) {
                         @Override
                         public Object call(EvaluationContext evaluationContext, int paramCount) {
-                            sprite.say((String) (evaluationContext.localStack.getParameter(0, paramCount)));
+                            sprite.say((String) (evaluationContext.getParameter(0)));
                             return null;
                         }
                 };

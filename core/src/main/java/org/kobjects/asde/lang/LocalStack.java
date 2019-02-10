@@ -1,41 +1,34 @@
 package org.kobjects.asde.lang;
 
 public class LocalStack {
+    private Object[] stack;
+    int limit;
 
-    int bp;
-    int sp;
-
-    Object[] stack = new Object[65536];
-
-    public void push(Object object) {
-        stack[sp++] = object;
+    public LocalStack(int initialSize) {
+        this.stack = new Object[initialSize];
+        limit = initialSize;
     }
 
-    public void drop(int count) {
-        sp -= count;
+    public Object get(int index) {
+        if (index >= limit) {
+            throw new IndexOutOfBoundsException("limit: " + limit + " index: " + index);
+        }
+        return stack[index];
     }
 
-    public int frame(int paramCount, int totalLocalCount) {
-        int oldBp = bp;
-        bp = sp - paramCount;
-        sp = bp + totalLocalCount;
-        return oldBp;
+    public void set(int index, Object value) {
+        if (index >= limit) {
+            throw new IndexOutOfBoundsException("limit: " + limit + " index: " + index);
+        }
+        stack[index] = value;
     }
 
-    public void setLocal(int i, Object object) {
-        stack[bp + i] = object;
-    }
-
-    public Object getLocal(int i) {
-        return stack[bp + i];
-    }
-
-    public void release(int oldFrameStrart, int paramCount) {
-        sp = bp + paramCount;
-        bp = oldFrameStrart;
-    }
-
-    public Object getParameter(int i, int of) {
-        return stack[sp - of + i];
+    public void ensureSize(int i) {
+        limit = i;
+        if (stack.length < i) {
+            Object[] newStack = new Object[Math.max(i, stack.length * 3 / 2)];
+            System.arraycopy(stack, 0, newStack, 0, stack.length);
+            stack = newStack;
+        }
     }
 }

@@ -13,4 +13,8 @@ public interface Function extends Typed {
      * Calls this function with the given number of parameters on the stack.
      */
     Object call(EvaluationContext evaluationContext, int paramCount);
+
+    default int getLocalVariableCount() {
+        return getType().getParameterCount();
+    }
 }

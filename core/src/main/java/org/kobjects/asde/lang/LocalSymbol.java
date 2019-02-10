@@ -15,12 +15,12 @@ public class LocalSymbol implements ResolvedSymbol {
 
     @Override
     public Object get(EvaluationContext evaluationContext) {
-        return evaluationContext.localStack.getLocal(index);
+        return evaluationContext.getLocal(index);
     }
 
     @Override
     public void set(EvaluationContext evaluationContext, Object value) {
-        evaluationContext.localStack.setLocal(index, value);
+        evaluationContext.setLocal(index, value);
     }
 
     @Override

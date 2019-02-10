@@ -25,7 +25,7 @@ public class FunctionImplementation implements Function {
     FunctionType type;
     public String[] parameterNames;
     private TreeMap<Integer, CodeLine> code = new TreeMap<>();
-    private int localVariableCount;
+    int localVariableCount;
     private GlobalSymbol declaringSymbol;
 
     public FunctionImplementation(Program program, FunctionType type, String... parameterNames) {
@@ -79,25 +79,27 @@ public class FunctionImplementation implements Function {
      * Calls this method with a new evaluationContext.
      */
     @Override
-    public Object call(EvaluationContext evaluationContext, int paramCount) {
-        return call(evaluationContext, paramCount, 0);
+    public Object call(EvaluationContext callerContext, int parameterCount) {
+        return callImpl(new EvaluationContext(callerContext, this));
     }
 
-    public Object call(EvaluationContext evaluationContext, int paramCount, int runLine) {
-        int oldFrameStart = evaluationContext.localStack.frame(paramCount, localVariableCount);
-        EvaluationContext sub = new EvaluationContext(evaluationContext.control, this, evaluationContext.localStack);
-        sub.currentLine = runLine;
-        try {
-            if (sub.currentLine > -1) {
-                Map.Entry<Integer, CodeLine> entry;
-                while (null != (entry = sub.functionImplementation.ceilingEntry(sub.currentLine)) && !Thread.currentThread().isInterrupted()) {
-                    sub.currentLine = entry.getKey();
-                    if (sub.control.getState() != ProgramControl.State.PAUSED) {
-                        ProgramControl.runCodeLineImpl(entry.getValue(), sub);
-                    } else {
-                        sub.control.program.console.highlight(sub.functionImplementation, sub.currentLine);
+    public int getLocalVariableCount() {
+        return localVariableCount;
+    }
 
-                        while (sub.control.state == ProgramControl.State.PAUSED) {
+    Object callImpl(EvaluationContext newContext) {
+        try {
+            ProgramControl control = newContext.control;
+            if (newContext.currentLine > -1) {
+                Map.Entry<Integer, CodeLine> entry;
+                while (null != (entry = ceilingEntry(newContext.currentLine)) && !Thread.currentThread().isInterrupted()) {
+                    newContext.currentLine = entry.getKey();
+                    if (control.getState() != ProgramControl.State.PAUSED) {
+                        ProgramControl.runCodeLineImpl(entry.getValue(), newContext);
+                    } else {
+                        control.program.console.highlight(this, newContext.currentLine);
+
+                        while (control.state == ProgramControl.State.PAUSED) {
                             try {
                                 Thread.sleep(100);
                             } catch (InterruptedException e) {
@@ -105,24 +107,24 @@ public class FunctionImplementation implements Function {
                             }
                         }
 
-                        if (sub.control.state == ProgramControl.State.STEP) {
-                            sub.control.state = ProgramControl.State.PAUSED;
+                        if (control.state == ProgramControl.State.STEP) {
+                            control.state = ProgramControl.State.PAUSED;
                         }
 
-                        if (sub.control.state != ProgramControl.State.ABORTING && sub.control.state != ProgramControl.State.ENDED) {
-                            ProgramControl.runCodeLineImpl(entry.getValue(), sub);
+                        if (control.state != ProgramControl.State.ABORTING && control.state != ProgramControl.State.ENDED) {
+                            ProgramControl.runCodeLineImpl(entry.getValue(), newContext);
                         }
                     }
                 }
             }
-
-            return sub.returnValue;
+            return newContext.returnValue;
         } catch (Exception e) {
-            throw new WrappedExecutionException(this, sub.currentLine, e);
-        } finally {
-            evaluationContext.localStack.release(oldFrameStart, paramCount);
+            throw new WrappedExecutionException(this, newContext.currentLine, e);
         }
+
     }
+
+
 
     public void toString(AnnotatedStringBuilder sb, String name, Map<Node, Exception> errors) {
         boolean sub = type.getReturnType() == Types.VOID;

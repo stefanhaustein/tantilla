@@ -239,13 +239,13 @@ public class MainActivity extends AppCompatActivity implements Console {
     program.setValue(GlobalSymbol.Scope.BUILTIN, "sleep", new Function() {
         @Override
         public FunctionType getType() {
-            return null;
+            return new FunctionType(Types.VOID, Types.NUMBER);
         }
 
         @Override
         public Object call(EvaluationContext evaluationContext, int paramCount) {
             try {
-                Thread.sleep(((Number) evaluationContext.localStack.getParameter(0, paramCount)).intValue());
+                Thread.sleep(((Number) evaluationContext.getParameter(0)).intValue());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

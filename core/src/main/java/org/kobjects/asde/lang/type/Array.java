@@ -45,10 +45,9 @@ public class Array implements Function {
 
     @Override
     public Object call(EvaluationContext evaluationContext, int paramCount) {
-        LocalStack localStack = evaluationContext.localStack;
         Object result = this;
         for (int i = 0; i < paramCount; i++) {
-            result = ((Array) result).data[((Number) localStack.getParameter(i, paramCount)).intValue()];
+            result = ((Array) result).data[((Number) evaluationContext.getParameter(i)).intValue()];
         }
         return result;
     }

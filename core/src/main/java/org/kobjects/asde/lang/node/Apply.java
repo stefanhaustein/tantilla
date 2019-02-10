@@ -72,15 +72,19 @@ public class Apply extends AssignableNode {
             throw new EvaluationException(this, "Can't apply parameters to " + base);
         }
         Function function = (Function) base;
-        for (int i = 1; i < children.length; i++) {
-            evaluationContext.localStack.push(children[i].eval(evaluationContext));
+        evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
+        if (children.length - 1 > function.getLocalVariableCount()) {
+            throw new RuntimeException("Too many params for " + function);
         }
+        // Push is important here, as parameter evaluation might also run apply().
+        for (int i = 1; i < children.length; i++) {
+            evaluationContext.push(children[i].eval(evaluationContext));
+        }
+        evaluationContext.popN(children.length - 1);
         try {
             return function.call(evaluationContext, children.length - 1);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage() + " in " + children[0], e);
-        } finally {
-            evaluationContext.localStack.drop(children.length - 1);
         }
     }
 

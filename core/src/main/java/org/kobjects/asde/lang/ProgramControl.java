@@ -10,7 +10,7 @@ public class ProgramControl {
     Thread interpreterThread;
     private final List<StartStopListener> startStopListeners = new ArrayList<>();
     public Program program;
-    EvaluationContext rootInterprter;
+    EvaluationContext rootContext;
 
     public enum State {
         PAUSED, ABORTING, ABORTED, ENDED, RUNNING, STEP
@@ -21,7 +21,7 @@ public class ProgramControl {
 
     public ProgramControl(Program program) {
         this.program = program;
-        rootInterprter = new EvaluationContext(this, program.main, new LocalStack());
+        rootContext = new EvaluationContext(this, program.main);
     }
 
     public void addStartStopListener(StartStopListener startStopListener) {
@@ -52,7 +52,7 @@ public class ProgramControl {
                 try {
                     runnable.run();
                 } catch (Exception e) {
-                    exception = new WrappedExecutionException(program.main, rootInterprter.currentLine, e);
+                    exception = new WrappedExecutionException(program.main, rootContext.currentLine, e);
                     state = state.ABORTING;
                 }
                 boolean aborted = state == State.ABORTING;
@@ -74,7 +74,8 @@ public class ProgramControl {
 
 
     public void start() {
-        program.init(rootInterprter);
+        rootContext = new EvaluationContext(ProgramControl.this, program.main);
+        program.init(rootContext);
         runAsync(0);
     }
 
@@ -100,10 +101,11 @@ public class ProgramControl {
     // Called from the shell
     public void runStatementsAsync(CodeLine codeLine, final ProgramControl programInterpreterControl, Consumer resultConsumer) {
         runAsync(() -> {
-                rootInterprter.currentLine = -2;
-                Object result = runCodeLineImpl(codeLine, rootInterprter);
-                if (rootInterprter.currentLine >= 0) {
-                    programInterpreterControl.runAsync(rootInterprter.currentLine);
+            rootContext = new EvaluationContext(ProgramControl.this, program.main);
+            rootContext.currentLine = -2;
+                Object result = runCodeLineImpl(codeLine, rootContext);
+                if (rootContext.currentLine >= 0) {
+                    programInterpreterControl.runAsync(rootContext.currentLine);
                 } else {
                     resultConsumer.accept(result);
                 }
@@ -114,7 +116,8 @@ public class ProgramControl {
         runAsync(new Runnable() {
             @Override
             public void run() {
-                rootInterprter.functionImplementation.call(rootInterprter, 0, runLine);
+                rootContext.currentLine = runLine;
+                program.main.callImpl(rootContext);
             }
         });
     }

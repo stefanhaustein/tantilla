@@ -43,45 +43,44 @@ public enum Builtin implements Function {
   }
 
   public Object call(EvaluationContext evaluationContext, int paramCount) {
-    LocalStack localStack = evaluationContext.localStack;
     switch (this) {
-      case ABS: return Math.abs((Double) localStack.getParameter(0, paramCount));
+      case ABS: return Math.abs((Double) evaluationContext.getParameter(0));
       case ASC: {
-        String s = (String) localStack.getParameter(0, paramCount);
+        String s = (String) evaluationContext.getParameter(0);
         return s.length() == 0 ? 0.0 : (double) s.charAt(0);
       }
-      case CHR$: return String.valueOf((char) ((Double)(localStack.getParameter(0, paramCount))).intValue());
-      case COS: return Math.cos((Double) localStack.getParameter(0, paramCount));
-      case EXP: return Math.exp((Double) localStack.getParameter(0, paramCount));
-      case INT: return Math.floor((Double) localStack.getParameter(0, paramCount));
+      case CHR$: return String.valueOf((char) ((Double)(evaluationContext.getParameter(0))).intValue());
+      case COS: return Math.cos((Double) evaluationContext.getParameter(0));
+      case EXP: return Math.exp((Double) evaluationContext.getParameter(0));
+      case INT: return Math.floor((Double) evaluationContext.getParameter(0));
       case LEFT$: {
-        String s = (String) localStack.getParameter(0, paramCount);
-        return s.substring(0, Math.min(s.length(), asInt(localStack.getParameter(1, paramCount))));
+        String s = (String) evaluationContext.getParameter(0);
+        return s.substring(0, Math.min(s.length(), asInt(evaluationContext.getParameter(1))));
       }
-      case LEN: return (double) ((String) localStack.getParameter(0, paramCount)).length();
-      case LOG: return Math.log((Double) localStack.getParameter(0, paramCount));
+      case LEN: return (double) ((String) evaluationContext.getParameter(0)).length();
+      case LOG: return Math.log((Double) evaluationContext.getParameter(0));
       case MID$: {
-        String s = (String) localStack.getParameter(0, paramCount);
-        int start = Math.max(0, Math.min(asInt(localStack.getParameter(1, paramCount)) - 1, s.length()));
+        String s = (String) evaluationContext.getParameter(0);
+        int start = Math.max(0, Math.min(asInt(evaluationContext.getParameter(1)) - 1, s.length()));
         if (paramCount == 2) {
           return s.substring(start);
         }
-        int count = asInt(localStack.getParameter(2, paramCount));
+        int count = asInt(evaluationContext.getParameter(2));
         int end = Math.min(s.length(), start + count);
         return s.substring(start, end);
       }
-      case SGN: return Math.signum((Double) localStack.getParameter(0, paramCount));
-      case SIN: return Math.sin((Double) localStack.getParameter(0, paramCount));
-      case SQR: return Math.sqrt((Double) localStack.getParameter(0, paramCount));
-      case STR$: return Program.toString(localStack.getParameter(0, paramCount));
+      case SGN: return Math.signum((Double) evaluationContext.getParameter(0));
+      case SIN: return Math.sin((Double) evaluationContext.getParameter(0));
+      case SQR: return Math.sqrt((Double) evaluationContext.getParameter(0));
+      case STR$: return Program.toString(evaluationContext.getParameter(0));
       case RIGHT$: {
-        String s = (String) localStack.getParameter(0, paramCount);
-        return s.substring(Math.min(s.length(), s.length() - asInt(localStack.getParameter(1, paramCount))));
+        String s = (String) evaluationContext.getParameter(0);
+        return s.substring(Math.min(s.length(), s.length() - asInt(evaluationContext.getParameter(1))));
       }
       case RND: return Math.random();
-      case TAB: return evaluationContext.control.program.tab(asInt(localStack.getParameter(1, paramCount)));
-      case TAN: return Math.tan((Double) localStack.getParameter(0, paramCount));
-      case VAL: return Double.parseDouble((String) localStack.getParameter(0, paramCount));
+      case TAB: return evaluationContext.control.program.tab(asInt(evaluationContext.getParameter(1)));
+      case TAN: return Math.tan((Double) evaluationContext.getParameter(0));
+      case VAL: return Double.parseDouble((String) evaluationContext.getParameter(0));
       default:
         throw new IllegalArgumentException("NYI: " + name());
     }

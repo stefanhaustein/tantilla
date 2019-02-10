@@ -23,7 +23,9 @@ public class VoidStatement extends Node {
     public Object eval(EvaluationContext evaluationContext) {
         Object result = children[0].eval(evaluationContext);
         if (result instanceof Function) {
-            ((Function) result).call(evaluationContext, 0);
+            Function function = (Function) result;
+            evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
+            function.call(evaluationContext, 0);
         }
         return result;
     }
