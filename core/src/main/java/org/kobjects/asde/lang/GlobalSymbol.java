@@ -27,7 +27,7 @@ public class GlobalSymbol implements ResolvedSymbol {
     Object value;
     Scope scope;
     Type type;
-    boolean immutable;
+    private boolean constant;
     private Map<Node, Exception> errors = Collections.emptyMap();
     Set<GlobalSymbol> dependencies = Collections.emptySet();
 
@@ -89,6 +89,10 @@ public class GlobalSymbol implements ResolvedSymbol {
         this.value = value;
     }
 
+    void setConstant(boolean constant) {
+        this.constant = constant;
+    }
+
     void setName(String name) {
         this.name = name;
     }
@@ -132,6 +136,10 @@ public class GlobalSymbol implements ResolvedSymbol {
             this.dependencies = context.dependencies;
         }
         programValidationContext.validated.add(this);
+    }
+
+    public boolean isConstant() {
+        return constant;
     }
 
 }

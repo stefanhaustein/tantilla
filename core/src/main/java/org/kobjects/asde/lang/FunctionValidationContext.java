@@ -31,7 +31,7 @@ public class FunctionValidationContext {
         this.functionImplementation = functionImplementation;
         startBlock(BlockType.ROOT);
         for (int i = 0; i < parameterNames.length; i++) {
-            currentBlock.localSymbols.put(parameterNames[i], new LocalSymbol(localSymbolCount++, functionImplementation.getType().getParameterType(i)));
+            currentBlock.localSymbols.put(parameterNames[i], new LocalSymbol(localSymbolCount++, functionImplementation.getType().getParameterType(i), false));
         }
     }
 
@@ -47,28 +47,28 @@ public class FunctionValidationContext {
         currentBlock = currentBlock.parent;
     }
 
-    public ResolvedSymbol declare(String name, Type type) {
+    public ResolvedSymbol declare(String name, Type type, boolean constant) {
         if (mode != ResolutionMode.STRICT) {
-            return resolve(name, false);
+            return resolve(name, true);
         }
         if (currentBlock.localSymbols.containsKey(name)) {
             throw new RuntimeException("Local variable named '" + name + "' already exists");
         }
-        LocalSymbol result = new LocalSymbol(localSymbolCount++, type);
+        LocalSymbol result = new LocalSymbol(localSymbolCount++, type, constant);
         currentBlock.localSymbols.put(name, result);
         return result;
     }
 
     public ResolvedSymbol resolve(String name) {
-        return resolve(name, true);
+        return resolve(name, false);
     }
 
-    public ResolvedSymbol resolve(String name, boolean validate) {
+    public ResolvedSymbol resolve(String name, boolean forDeclaration) {
         ResolvedSymbol resolved = currentBlock.get(name);
         if (resolved != null) {
             return resolved;
         }
-        GlobalSymbol symbol = validate ? programValidationContext.resolve(name) : program.getSymbol(name);
+        GlobalSymbol symbol = forDeclaration ? program.getSymbol(name) : programValidationContext.resolve(name);
         switch (mode) {
             case LEGACY:
                 if (symbol != null
@@ -80,7 +80,7 @@ public class FunctionValidationContext {
                 return new DynamicSymbol(name, mode);
 
             case SHELL:
-                if (symbol != null && (symbol.scope == GlobalSymbol.Scope.BUILTIN)) {
+                if (symbol != null && (symbol.scope != GlobalSymbol.Scope.TRANSIENT)) {
                     dependencies.add(symbol);
                     return symbol;
                 }

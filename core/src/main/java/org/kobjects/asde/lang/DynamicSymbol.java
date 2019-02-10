@@ -27,4 +27,9 @@ public class DynamicSymbol implements ResolvedSymbol {
     public Type getType() {
         return null;
     }
+
+    @Override
+    public boolean isConstant() {
+        return false;
+    }
 }

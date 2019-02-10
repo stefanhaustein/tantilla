@@ -20,9 +20,14 @@ public class AssignStatement extends Node {
 
     @Override
     protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
-        if (resolutionContext.mode == FunctionValidationContext.ResolutionMode.STRICT
-                && !Types.match(children[0].returnType(), children[1].returnType())) {
+        if (resolutionContext.mode == FunctionValidationContext.ResolutionMode.LEGACY) {
+            return;
+        }
+        if (!Types.match(children[0].returnType(), children[1].returnType())) {
             throw new RuntimeException("Cannot assign " + children[1].returnType() + " to " + children[0].returnType());
+        }
+        if (((AssignableNode) children[0]).isConstant()) {
+            throw new RuntimeException("Cannot assign to a constant.");
         }
     }
 

@@ -29,6 +29,11 @@ public class Identifier extends AssignableNode {
   }
 
   @Override
+  public boolean isConstant() {
+    return resolved.isConstant();
+  }
+
+  @Override
   public Object eval(Interpreter interpreter) {
     Object result = evalRaw(interpreter);
     return result == null ? name.endsWith("$") ? "" : 0.0 : result;

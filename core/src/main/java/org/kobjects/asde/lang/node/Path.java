@@ -67,4 +67,10 @@ public class Path extends AssignableNode {
     public void set(Interpreter interpreter, Object value) {
         evalProperty(interpreter).set(value);
     }
+
+    @Override
+    public boolean isConstant() {
+        // TODO
+        return false;
+    }
 }

@@ -41,6 +41,11 @@ public class Apply extends AssignableNode {
     }
 
     @Override
+    public boolean isConstant() {
+        return false;
+    }
+
+    @Override
     protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
         if (children[0].returnType() instanceof FunctionType) {
             FunctionType resolved = (FunctionType) children[0].returnType();

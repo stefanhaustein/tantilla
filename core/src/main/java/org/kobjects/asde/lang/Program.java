@@ -380,6 +380,7 @@ public class Program {
             }
             symbol.value = implementation;
         }
+        symbol.setConstant(true);
         implementation.setDeclaringSymbol(symbol);
 
         notifySymbolChanged(symbol);
@@ -394,6 +395,7 @@ public class Program {
           throw new RuntimeException("Can't overwriter builtin '" + name + "'");
       }
       symbol.initializer = expr;
+      symbol.setConstant(expr instanceof LetStatement && ((LetStatement) expr).isConstant());
       notifyProgramChanged();
     }
 

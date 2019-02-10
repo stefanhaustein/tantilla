@@ -23,7 +23,7 @@ public class ForStatement extends Node {
     public void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
         resolutionContext.startBlock(FunctionValidationContext.BlockType.FOR);
         // TODO: Check types?
-        resolved = resolutionContext.declare(varName, Types.NUMBER);
+        resolved = resolutionContext.declare(varName, Types.NUMBER, false);
     }
 
     @Override

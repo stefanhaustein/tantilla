@@ -27,7 +27,7 @@ public class VariableView extends SymbolView {
         super(mainActivity, symbol);
         this.mainActivity = mainActivity;
         this.symbol = symbol;
-        titleView.setTypeIndicator('V', mainActivity.colors.yellow);
+        titleView.setTypeIndicator(symbol.isConstant() ? 'C' : 'V', mainActivity.colors.yellow);
         titleView.setMoreClickListener(view -> {
             PopupMenu popupMenu = new PopupMenu(getContext(), view);
             popupMenu.getMenu().add("Edit").setOnMenuItemClickListener(item -> {

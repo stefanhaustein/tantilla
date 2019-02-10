@@ -71,6 +71,9 @@ public class Parser {
     String name = tokenizer.currentValue;
 
     switch (name.toUpperCase()) {
+      case "CONST":
+        result.add(parseLet(tokenizer, true));
+        return;
       case "DIM":
         parseDim(tokenizer, result);
         return;
@@ -101,7 +104,7 @@ public class Parser {
         result.add(parseIo(IoStatement.Kind.INPUT, tokenizer));
         return;
       case "LET":
-        result.add(parseLet(tokenizer));
+        result.add(parseLet(tokenizer, false));
         return;
       case "NEXT":
         parseNext(tokenizer, result);
@@ -324,7 +327,7 @@ public class Parser {
     return new ForStatement(varName, assignment.children[1], end);
   }
 
-  private Node parseLet(ExpressionParser.Tokenizer tokenizer) {
+  private Node parseLet(ExpressionParser.Tokenizer tokenizer, boolean constant) {
     tokenizer.nextToken();
     Node assignment = expressionParser.parse(tokenizer);
     if (!(assignment instanceof RelationalOperator) || !(assignment.children[0] instanceof AssignableNode)
@@ -334,7 +337,7 @@ public class Parser {
     }
     if (assignment.children[0] instanceof Identifier) {
       String varName = ((Identifier) assignment.children[0]).getName();
-      return new LetStatement(varName, assignment.children[1]);
+      return new LetStatement(varName, assignment.children[1], constant);
     }
     try {
       return new AssignStatement(assignment.children[0], assignment.children[1]);

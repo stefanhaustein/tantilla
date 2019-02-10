@@ -7,4 +7,5 @@ public interface ResolvedSymbol {
     Object get(Interpreter interpreter);
     void set(Interpreter interpreter, Object value);
     Type getType();
+    boolean isConstant();
 }
