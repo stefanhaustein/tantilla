@@ -3,11 +3,14 @@ package org.kobjects.asde.lang.io;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.asde.lang.Consumer;
+import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.asde.lang.GlobalSymbol;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.ProgramControl;
+import org.kobjects.asde.lang.ProgramValidationContext;
+import org.kobjects.asde.lang.event.StartStopListener;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.FunctionImplementation;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.expressionparser.ExpressionParser;
 
@@ -20,21 +23,35 @@ public class Shell {
     final public ProgramControl mainInterpreter ;
     public final ProgramControl shellInterpreter ;
 
-    GlobalSymbol currentFunction;
-
     public Shell(Program program) {
         this.program = program;
         mainInterpreter = new ProgramControl(program);
         shellInterpreter = new ProgramControl(program);
-        currentFunction = program.mainSymbol;
+        shellInterpreter.addStartStopListener(new StartStopListener() {
+            @Override
+            public void programStarted() {
+            }
+
+            @Override
+            public void programAborted(Exception cause) {
+                if (cause != null) {
+                    program.console.showError(null, cause);
+                }
+            }
+
+            @Override
+            public void programPaused() {
+            }
+
+            @Override
+            public void programEnded() {
+            }
+        });
+
     }
 
-    public void setCurrentFunction(GlobalSymbol symbol) {
-        currentFunction = symbol;
-    }
 
-
-    public void enter(String line, Consumer<Object> resultConsumer) {
+    public void enter(String line, GlobalSymbol currentFunction, Consumer<Object> resultConsumer) {
         if (line.isEmpty()) {
             resultConsumer.accept("");
             return;
@@ -51,14 +68,7 @@ public class Shell {
                     tokenizer.nextToken();
                     if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER
                             || "?".equals(tokenizer.currentValue)) {
-                        program.setLine(currentFunction, lineNumber, new CodeLine(program.parser.parseStatementList(tokenizer, (CallableUnit) currentFunction.getValue())));
-/*                        if (program.reference.urlWritable) {
-                            try {
-                                program.save(program.reference);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        } */
+                        program.setLine(currentFunction, new CodeLine(lineNumber, program.parser.parseStatementList(tokenizer, (FunctionImplementation) currentFunction.getValue())));
                         // Line added, done here.
                         break;
                     }
@@ -69,26 +79,32 @@ public class Shell {
                 // Fall-through intended
             default:
                 List<? extends Node> statements = program.parser.parseStatementList(tokenizer, null);
-                program.processDeclarations(statements);
 
-                    /*TextView inputView = new EmojiTextView(this);
-                    inputView.setText(new CodeLine(statements).toString());
-                    inputView.setTextColor(colors.accent);
-                    inputView.setTypeface(Typeface.MONOSPACE);
+                CodeLine codeLine = new CodeLine(-2, statements);
+                program.processDeclarations(codeLine);
 
-                    if (lineFeedPending) {
-                        print("");
+                ProgramValidationContext programValidationContext = new ProgramValidationContext(program);
+                FunctionValidationContext functionValidationContext = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.SHELL, program.main);
+                int index = 0;
+                for (Node node : codeLine) {
+                    node.resolve(functionValidationContext, -2, index++);
+                    if (functionValidationContext.errors.size() > 0) {
+                        Exception exception = functionValidationContext.errors.values().iterator().next();
+                        throw new RuntimeException(exception);
                     }
-
-                    outputView.addView(inputView);
-                    postScrollIfAtEnd();*/
+                }
 
                 AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-                asb.append(new CodeLine(statements).toString(), Annotations.ACCENT_COLOR);
+                if (functionValidationContext.errors.size() == 0) {
+                    asb.append(codeLine.toString(), Annotations.ACCENT_COLOR);
+                } else {
+                    // Show error like a syntax error instead?
+                    codeLine.toString(asb, functionValidationContext.errors);
+                }
                 asb.append("\n");
                 program.console.print(asb.build());
 
-                shellInterpreter.runStatementsAsync(statements, mainInterpreter, resultConsumer);
+                shellInterpreter.runStatementsAsync(codeLine, mainInterpreter, resultConsumer);
                 break;
         }
     }

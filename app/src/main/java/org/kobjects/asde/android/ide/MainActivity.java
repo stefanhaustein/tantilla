@@ -44,7 +44,7 @@ import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.android.ide.widget.TitleView;
-import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.FunctionImplementation;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Function;
 import org.kobjects.asde.lang.Interpreter;
@@ -646,7 +646,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     @Override
     public void delete(int line) {
         FunctionView functionView = programView.currentFunctionView;
-        program.setLine(functionView.symbol, line, null);
+        program.deleteLine(functionView.symbol, line);
     }
 
     @Override
@@ -656,8 +656,8 @@ public class MainActivity extends AppCompatActivity implements Console {
             // Append moves the cursor to the end.
             controlView.codeEditText.setText("");
             if (functionView != null) {
-                CallableUnit callableUnit = functionView.callableUnit;
-                Map.Entry<Integer, CodeLine> entry = callableUnit.ceilingEntry(line);
+                FunctionImplementation functionImplementation = functionView.functionImplementation;
+                Map.Entry<Integer, CodeLine> entry = functionImplementation.ceilingEntry(line);
                 if (entry != null && entry.getKey() == line) {
                     controlView.codeEditText.append(entry.getKey() + " " + entry.getValue());
                     return;
@@ -688,7 +688,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
 
     @Override
-    public void highlight(CallableUnit function, int lineNumber) {
+    public void highlight(FunctionImplementation function, int lineNumber) {
       runOnUiThread(() -> programView.highlight(function, lineNumber));
     }
 
@@ -748,7 +748,7 @@ public class MainActivity extends AppCompatActivity implements Console {
                     wrappedExecutionException = (WrappedExecutionException) wrappedExecutionException.getCause();
                 }
 
-                highlight(wrappedExecutionException.callableUnit, wrappedExecutionException.lineNumber);
+                highlight(wrappedExecutionException.functionImplementation, wrappedExecutionException.lineNumber);
             }
 
             AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);

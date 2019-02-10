@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.FunctionImplementation;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.type.Types;
@@ -37,13 +37,13 @@ public class IfStatement extends Node {
         if (multiline) {
             EndifMatcher matcher = new EndifMatcher();
             int[] pos = new int[] {line + 1, 0};
-            resolutionContext.callableUnit.find(matcher, pos);
+            resolutionContext.functionImplementation.find(matcher, pos);
             resolvedLine = pos[0];
             resolvedIndex = pos[1] + 1;
         } else {
-            CodeLine codeLine = resolutionContext.callableUnit.ceilingEntry(line).getValue();
-            while (++index < codeLine.statements.size()) {
-                if (codeLine.statements.get(index) instanceof ElseStatement) {
+            CodeLine codeLine = resolutionContext.functionImplementation.ceilingEntry(line).getValue();
+            while (++index < codeLine.length()) {
+                if (codeLine.get(index) instanceof ElseStatement) {
                     break;
                 }
             }
@@ -73,7 +73,7 @@ public class IfStatement extends Node {
         asb.append(" THEN");
     }
 
-    static class EndifMatcher implements CallableUnit.StatementMatcher {
+    static class EndifMatcher implements FunctionImplementation.StatementMatcher {
         int skip;
 
         @Override

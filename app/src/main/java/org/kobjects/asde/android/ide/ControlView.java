@@ -329,7 +329,7 @@ public class ControlView extends LinearLayout  {
         mainActivity.restart();
       }
       try {
-        mainActivity.shell.enter(line, result -> {
+        mainActivity.shell.enter(line, mainActivity.programView.currentFunctionView.symbol, result -> {
             mainActivity.runOnUiThread(() -> {
                 if (result == null) {
                     resultView.setText("Ok");

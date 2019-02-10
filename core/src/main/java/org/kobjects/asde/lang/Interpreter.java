@@ -2,7 +2,7 @@ package org.kobjects.asde.lang;
 
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.LegacyStatement;
-import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.FunctionImplementation;
 import org.kobjects.asde.lang.type.CodeLine;
 
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Interpreter {
-    public final CallableUnit callableUnit;
+    public final FunctionImplementation functionImplementation;
     public int currentLine;
     public int currentIndex;
     public int nextSubIndex;  // index within next when skipping a for loop; reset in next
@@ -22,9 +22,9 @@ public class Interpreter {
     public final LocalStack localStack;
     public final ProgramControl control;
 
-    public Interpreter(ProgramControl control, CallableUnit callableUnit, LocalStack localStack) {
+    public Interpreter(ProgramControl control, FunctionImplementation functionImplementation, LocalStack localStack) {
         this.control = control;
-        this.callableUnit = callableUnit;
+        this.functionImplementation = functionImplementation;
         this.localStack = localStack;
     }
 
@@ -33,12 +33,12 @@ public class Interpreter {
         return currentLine == -2 ? GlobalSymbol.Scope.PERSISTENT : GlobalSymbol.Scope.TRANSIENT;
     }
 
-    Object runStatementsImpl(List<? extends Node> statements) {
+    Object runCodeLineImpl(CodeLine codeLine) {
         int line = currentLine;
         Object result = null;
-        while (currentIndex < statements.size() && control.state != ProgramControl.State.ABORTING) {
+        while (currentIndex < codeLine.length() && control.state != ProgramControl.State.ABORTING) {
             int index = currentIndex;
-            result = statements.get(index).eval(this);
+            result = codeLine.get(index).eval(this);
             if (currentLine != line) {
                 return result;  // Goto or similar out of the current line
             }
@@ -54,12 +54,12 @@ public class Interpreter {
     public void runCallableUnit() {
         if (currentLine > -1) {
             Map.Entry<Integer, CodeLine> entry;
-            while (null != (entry = callableUnit.ceilingEntry(currentLine)) && !Thread.currentThread().isInterrupted()) {
+            while (null != (entry = functionImplementation.ceilingEntry(currentLine)) && !Thread.currentThread().isInterrupted()) {
                 currentLine = entry.getKey();
                 if (control.state != ProgramControl.State.PAUSED) {
-                    runStatementsImpl(entry.getValue().statements);
+                    runCodeLineImpl(entry.getValue());
                 } else {
-                    control.program.console.highlight(callableUnit, currentLine);
+                    control.program.console.highlight(functionImplementation, currentLine);
 
                     while (control.state == ProgramControl.State.PAUSED) {
                         try {
@@ -74,7 +74,7 @@ public class Interpreter {
                     }
 
                     if (control.state != ProgramControl.State.ABORTING && control.state != ProgramControl.State.ENDED) {
-                        runStatementsImpl(entry.getValue().statements);
+                        runCodeLineImpl(entry.getValue());
                     }
                 }
             }

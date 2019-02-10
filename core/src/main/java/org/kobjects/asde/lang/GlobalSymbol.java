@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.asde.lang.type.ArrayType;
-import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.FunctionImplementation;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.DimStatement;
@@ -9,7 +9,6 @@ import org.kobjects.asde.lang.statement.LetStatement;
 import org.kobjects.typesystem.Type;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -111,8 +110,8 @@ public class GlobalSymbol implements ResolvedSymbol {
         if (programValidationContext.validated.contains(this)) {
             return;
         }
-        if (value instanceof CallableUnit) {
-            FunctionValidationContext context = ((CallableUnit) value).validate(programValidationContext);
+        if (value instanceof FunctionImplementation) {
+            FunctionValidationContext context = ((FunctionImplementation) value).validate(programValidationContext);
             this.errors = context.errors;
             this.dependencies = context.dependencies;
         } else if (initializer != null) {

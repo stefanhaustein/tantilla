@@ -1,14 +1,14 @@
 package org.kobjects.asde.lang;
 
-import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.FunctionImplementation;
 
 public class WrappedExecutionException extends RuntimeException {
-    public final CallableUnit callableUnit;
+    public final FunctionImplementation functionImplementation;
     public final int lineNumber;
 
-    public WrappedExecutionException(CallableUnit callableUnit, int lineNumber, Exception cause) {
+    public WrappedExecutionException(FunctionImplementation functionImplementation, int lineNumber, Exception cause) {
         super(cause);
-        this.callableUnit = callableUnit;
+        this.functionImplementation = functionImplementation;
         this.lineNumber = lineNumber;
     }
 }

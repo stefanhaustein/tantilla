@@ -5,7 +5,7 @@ import org.kobjects.asde.lang.WrappedExecutionException;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.io.Shell;
-import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.FunctionImplementation;
 import org.kobjects.expressionparser.ExpressionParser;
 
 import java.io.BufferedReader;
@@ -39,7 +39,7 @@ public class AsdeShell  {
       }
       prompt = true;
       try {
-          shell.enter(line, result -> {
+          shell.enter(line, program.mainSymbol, result -> {
               console.print(result == null ? "Ok" : String.valueOf(result));
           });
       } catch (ExpressionParser.ParsingException e) {
@@ -94,7 +94,7 @@ public class AsdeShell  {
 
 
       @Override
-      public void highlight(CallableUnit function, int lineNumber) {
+      public void highlight(FunctionImplementation function, int lineNumber) {
           // TBD
       }
 

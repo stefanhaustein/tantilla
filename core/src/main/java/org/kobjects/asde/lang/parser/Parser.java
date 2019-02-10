@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.parser;
 
-import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.FunctionImplementation;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Group;
@@ -67,7 +67,7 @@ public class Parser {
   }
 
 
-  void parseStatement(ExpressionParser.Tokenizer tokenizer, List<Node> result, CallableUnit parsingContext) {
+  void parseStatement(ExpressionParser.Tokenizer tokenizer, List<Node> result, FunctionImplementation parsingContext) {
     String name = tokenizer.currentValue;
 
     switch (name.toUpperCase()) {
@@ -376,7 +376,7 @@ public class Parser {
     return new FunctionReturnStatement();
   }
 
-  public List<? extends Node> parseStatementList(ExpressionParser.Tokenizer tokenizer, CallableUnit parsingContext) {
+  public List<? extends Node> parseStatementList(ExpressionParser.Tokenizer tokenizer, FunctionImplementation parsingContext) {
     ArrayList<Node> result = new ArrayList<>();
     Node statement;
     do {

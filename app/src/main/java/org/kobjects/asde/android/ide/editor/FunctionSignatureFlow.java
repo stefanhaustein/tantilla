@@ -14,7 +14,7 @@ import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.TextValidator;
-import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.FunctionImplementation;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.refactor.ChangeSignature;
@@ -34,7 +34,7 @@ public class FunctionSignatureFlow {
     ArrayList<Parameter> originalParameterList;
     ArrayList<Parameter> parameterList = new ArrayList<>();
     LinearLayout parameterListView;
-    CallableUnit callableUnit;
+    FunctionImplementation functionImplementation;
 
     public FunctionSignatureFlow(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -51,15 +51,15 @@ public class FunctionSignatureFlow {
     }
 
 
-    public void changeSignature(String name, CallableUnit callableUnit) {
+    public void changeSignature(String name, FunctionImplementation functionImplementation) {
         this.name = name;
-        this.callableUnit = callableUnit;
-        this.returnType = callableUnit.getType().getReturnType();
+        this.functionImplementation = functionImplementation;
+        this.returnType = functionImplementation.getType().getReturnType();
         originalParameterList = new ArrayList<>();
-        for (int i = 0; i < callableUnit.getType().getParameterCount(); i++) {
+        for (int i = 0; i < functionImplementation.getType().getParameterCount(); i++) {
             Parameter parameter = new Parameter();
-            parameter.name = callableUnit.parameterNames[i];
-            parameter.type = callableUnit.getType().getParameterType(i);
+            parameter.name = functionImplementation.parameterNames[i];
+            parameter.type = functionImplementation.getType().getParameterType(i);
             originalParameterList.add(parameter);
             parameterList.add(parameter);
         }
@@ -210,7 +210,7 @@ public class FunctionSignatureFlow {
             if (typeInput != null) {
                 returnType = typeInput.getSelectedType();
             }
-            if (callableUnit == null) {
+            if (functionImplementation == null) {
                 commitNewFunction();
             } else {
                 commitRefactor();
@@ -333,28 +333,27 @@ public class FunctionSignatureFlow {
         // Refactor
 
         Type[] types = new Type[count];
-        callableUnit.parameterNames = new String[parameterList.size()];
+        functionImplementation.parameterNames = new String[parameterList.size()];
         for (int i = 0; i < parameterList.size(); i++) {
             Parameter parameter = parameterList.get(i);
-            callableUnit.parameterNames[i] = parameter.name;
+            functionImplementation.parameterNames[i] = parameter.name;
             types[i] = parameter.type;
         }
 
-        callableUnit.setType(new FunctionType(callableUnit.getType().getReturnType(), types));
+        functionImplementation.setType(new FunctionType(functionImplementation.getType().getReturnType(), types));
 
         mainActivity.program.accept(new ChangeSignature(name, oldIndices));
     }
 
     void commitNewFunction() {
         FunctionType functionType = new FunctionType(returnType, getParameterTypeArray());
-        CallableUnit callableUnit = new CallableUnit(mainActivity.program, functionType, getParameterNameArray());
+        FunctionImplementation functionImplementation = new FunctionImplementation(mainActivity.program, functionType, getParameterNameArray());
 
-        RemStatement remStatement = new RemStatement("TBD");
+        RemStatement remStatement = new RemStatement("This comment should document this function.");
 
-        callableUnit.setLine(10, new CodeLine(Collections.singletonList(remStatement)));
+        functionImplementation.setLine(new CodeLine(10, remStatement));
 
-        mainActivity.program.setValue(GlobalSymbol.Scope.PERSISTENT, name, callableUnit);
-
+        mainActivity.program.setPersistentFunction(name, functionImplementation);
     }
 
 }

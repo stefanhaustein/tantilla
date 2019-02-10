@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang;
 
 
-import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.FunctionImplementation;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.typesystem.Type;
 
@@ -17,21 +17,21 @@ public class FunctionValidationContext {
     public final Program program;
     public HashMap<Node, Exception> errors = new HashMap<>();
     public final ResolutionMode mode;
-    public final CallableUnit callableUnit;
+    public final FunctionImplementation functionImplementation;
 
     private int localSymbolCount;
     private Block currentBlock;
     public HashSet<GlobalSymbol> dependencies = new HashSet<>();
     private final ProgramValidationContext programValidationContext;
 
-    public FunctionValidationContext(ProgramValidationContext programValidationContext, ResolutionMode mode, CallableUnit callableUnit, String... parameterNames) {
+    public FunctionValidationContext(ProgramValidationContext programValidationContext, ResolutionMode mode, FunctionImplementation functionImplementation, String... parameterNames) {
         this.programValidationContext = programValidationContext;
         this.program = programValidationContext.program;
         this.mode = mode;
-        this.callableUnit = callableUnit;
+        this.functionImplementation = functionImplementation;
         startBlock(BlockType.ROOT);
         for (int i = 0; i < parameterNames.length; i++) {
-            currentBlock.localSymbols.put(parameterNames[i], new LocalSymbol(localSymbolCount++, callableUnit.getType().getParameterType(i)));
+            currentBlock.localSymbols.put(parameterNames[i], new LocalSymbol(localSymbolCount++, functionImplementation.getType().getParameterType(i)));
         }
     }
 

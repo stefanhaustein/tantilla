@@ -2,6 +2,7 @@ package org.kobjects.asde.lang.type;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.FunctionValidationContext;
+import org.kobjects.asde.lang.GlobalSymbol;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.ProgramValidationContext;
@@ -20,14 +21,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class CallableUnit implements Function {
+public class FunctionImplementation implements Function {
     public final Program program;
     FunctionType type;
     public String[] parameterNames;
     private TreeMap<Integer, CodeLine> code = new TreeMap<>();
     private int localVariableCount;
+    private GlobalSymbol declaringSymbol;
 
-    public CallableUnit(Program program, FunctionType type, String... parameterNames) {
+    public FunctionImplementation(Program program, FunctionType type, String... parameterNames) {
         this.program = program;
         this.type = type;
         this.parameterNames = parameterNames;
@@ -42,8 +44,8 @@ public class CallableUnit implements Function {
         for (Map.Entry<Integer,CodeLine> entry : code.entrySet()) {
             int addLater = 0;
             CodeLine line = entry.getValue();
-            for (int i = 0; i < line.statements.size(); i++) {
-                Node statement = line.statements.get(i);
+            for (int i = 0; i < line.length(); i++) {
+                Node statement = line.get(i);
                 if (statement instanceof ElseStatement && ((ElseStatement) statement).multiline) {
                     addLater++;
                     indent--;
@@ -61,7 +63,7 @@ public class CallableUnit implements Function {
                 }
                 statement.resolve(resolutionContext, entry.getKey(), i);
             }
-            line.indent = indent;
+            line.setIndent(indent);
             indent += addLater;
         }
         localVariableCount = resolutionContext.getLocalVariableCount();
@@ -79,8 +81,13 @@ public class CallableUnit implements Function {
      */
     @Override
     public Object call(Interpreter interpreter, int paramCount) {
+        return call(interpreter, paramCount, 0);
+    }
+
+    public Object call(Interpreter interpreter, int paramCount, int runLine) {
         int oldFrameStart = interpreter.localStack.frame(paramCount, localVariableCount);
         Interpreter sub = new Interpreter(interpreter.control, this, interpreter.localStack);
+        sub.currentLine = runLine;
         try {
             // This is called from inside ast evaluation, we can't push interpreter state
             // and keep
@@ -130,12 +137,12 @@ public class CallableUnit implements Function {
 
     }
 
-    public synchronized void setLine(int number, CodeLine line) {
-        if (line == null) {
-            code.remove(number);
-        } else {
-            code.put(number, line);
-        }
+    public synchronized void deleteLine(int lineNumber) {
+        code.remove(lineNumber);
+    }
+
+    public synchronized void setLine(CodeLine line) {
+        code.put(line.getNumber(), line);
     }
 
     public Map.Entry<Integer,CodeLine> ceilingEntry(int i) {
@@ -159,9 +166,9 @@ public class CallableUnit implements Function {
         Map.Entry<Integer, CodeLine> entry;
         while (null != (entry = ceilingEntry(position[0]))) {
             position[0] = entry.getKey();
-            List<Node> list = entry.getValue().statements;
-            while (position[1] < list.size()) {
-                Node statement = list.get(position[1]);
+            CodeLine line = entry.getValue();
+            while (position[1] < line.length()) {
+                Node statement = line.get(position[1]);
                 if (matcher.statementMatches(statement)) {
                         return statement;
                 }
@@ -183,6 +190,10 @@ public class CallableUnit implements Function {
 
     public Iterable<Node> descendingStatements(int fromLine, int fromIndex, int toLine, int toIndex) {
         return () -> new DescendingStatementIterator(fromLine, fromIndex, toLine, toIndex);
+    }
+
+    public void setDeclaringSymbol(GlobalSymbol symbol) {
+        this.declaringSymbol = symbol;
     }
 
     public interface StatementMatcher {
@@ -213,7 +224,7 @@ public class CallableUnit implements Function {
             if (currentLine == null) {
                 return false;
             }
-            while (index >= currentLine.getValue().statements.size()) {
+            while (index >= currentLine.getValue().length()) {
                 if (!lineIterator.hasNext()) {
                     return false;
                 }
@@ -223,7 +234,7 @@ public class CallableUnit implements Function {
             if (currentLine.getKey() == toLine && index >= toIndex) {
                 return false;
             }
-            next = currentLine.getValue().statements.get(index++);
+            next = currentLine.getValue().get(index++);
             return true;
         }
 
@@ -266,12 +277,12 @@ public class CallableUnit implements Function {
                     return false;
                 }
                 currentLine = lineIterator.next();
-                index = currentLine.getValue().statements.size() - 1;
+                index = currentLine.getValue().length() - 1;
             }
             if (currentLine.getKey() == toLine && index <= toIndex) {
                 return false;
             }
-            next = currentLine.getValue().statements.get(index--);
+            next = currentLine.getValue().get(index--);
             return true;
         }
 

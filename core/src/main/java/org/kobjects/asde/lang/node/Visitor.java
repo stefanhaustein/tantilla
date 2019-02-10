@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.node;
 
-import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.FunctionImplementation;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.GlobalSymbol;
@@ -20,22 +20,22 @@ public abstract class Visitor {
         visitNode(identifier);
     }
 
-    public void visitCallableUnit(CallableUnit callableUnit) {
-        for (Map.Entry<Integer,CodeLine> entry : callableUnit.entrySet()) {
-            visitCodeLine(entry.getKey(), entry.getValue());
+    public void visitCallableUnit(FunctionImplementation functionImplementation) {
+        for (Map.Entry<Integer,CodeLine> entry : functionImplementation.entrySet()) {
+            visitCodeLine(entry.getValue());
         }
 
     }
 
-    public void visitCodeLine(int lineNumber, CodeLine codeLine) {
-        for (Node node : codeLine.statements) {
+    public void visitCodeLine(CodeLine codeLine) {
+        for (Node node : codeLine) {
             node.accept(this);
         }
     }
 
     public void visitSymbol(GlobalSymbol symbol) {
-        if (symbol.getValue() instanceof CallableUnit) {
-            visitCallableUnit((CallableUnit) symbol.getValue());
+        if (symbol.getValue() instanceof FunctionImplementation) {
+            visitCallableUnit((FunctionImplementation) symbol.getValue());
         }
     }
 

@@ -8,14 +8,13 @@ import org.kobjects.asde.lang.event.ProgramChangeListener;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.TitleView;
-import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.FunctionImplementation;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.event.StartStopListener;
 import org.kobjects.asde.lang.GlobalSymbol;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 public class ProgramView extends LinearLayout implements ExpandListener {
 
@@ -163,13 +162,13 @@ public class ProgramView extends LinearLayout implements ExpandListener {
             }
             String name = symbol.getName();
             String qualifiedName = name + " " + symbol.getType();
-            if (symbol.getValue() instanceof CallableUnit) {
-                qualifiedName += Arrays.toString(((CallableUnit) symbol.getValue()).parameterNames);
+            if (symbol.getValue() instanceof FunctionImplementation) {
+                qualifiedName += Arrays.toString(((FunctionImplementation) symbol.getValue()).parameterNames);
             }
             SymbolView symbolView = symbolViewMap.get(qualifiedName);
 
             int index;
-            if (symbol.getValue() instanceof CallableUnit) {
+            if (symbol.getValue() instanceof FunctionImplementation) {
                 if (!(symbolView instanceof FunctionView)) {
                     FunctionView functionView = new FunctionView(mainActivity, symbol);
                     symbolView = functionView;
@@ -216,20 +215,19 @@ public class ProgramView extends LinearLayout implements ExpandListener {
             }
             currentSymbolView = symbolView;
             currentFunctionView = symbolView instanceof FunctionView ? (FunctionView) symbolView : mainFunctionView;
-            mainActivity.shell.setCurrentFunction(currentFunctionView.symbol);
         }
     }
 
-    public void highlight(CallableUnit function, int lineNumber) {
+    public void highlight(FunctionImplementation function, int lineNumber) {
         unHighlight();
         FunctionView targetView = null;
-        if (currentFunctionView != null && currentFunctionView.callableUnit == function) {
+        if (currentFunctionView != null && currentFunctionView.functionImplementation == function) {
             targetView = currentFunctionView;
         } else {
             for (int i = 0; i < symbolList.getChildCount(); i++) {
                 if (symbolList.getChildAt(i) instanceof FunctionView) {
                     FunctionView functionView = (FunctionView) symbolList.getChildAt(i);
-                    if (functionView.callableUnit == function) {
+                    if (functionView.functionImplementation == function) {
                         targetView = functionView;
                         break;
                     }

@@ -7,7 +7,7 @@ import org.kobjects.asde.android.ide.editor.DeleteFlow;
 import org.kobjects.asde.android.ide.editor.FunctionSignatureFlow;
 import org.kobjects.asde.android.ide.editor.RenameFlow;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
-import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.FunctionImplementation;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.GlobalSymbol;
@@ -16,15 +16,15 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class FunctionView extends SymbolView {
-    public CallableUnit callableUnit;
+    public FunctionImplementation functionImplementation;
     OnLongClickListener lineClickListener;
 
     public FunctionView(final MainActivity mainActivity, GlobalSymbol symbol) {
         super(mainActivity, symbol);
-        this.callableUnit = (CallableUnit) symbol.getValue();
+        this.functionImplementation = (FunctionImplementation) symbol.getValue();
 
-        boolean isMain = callableUnit == callableUnit.program.main;
-        boolean isVoid = callableUnit.getType().getReturnType() == Types.VOID;
+        boolean isMain = functionImplementation == functionImplementation.program.main;
+        boolean isVoid = functionImplementation.getType().getReturnType() == Types.VOID;
 
         titleView.setTypeIndicator(
                 isMain ? 'M' : isVoid ? 'S' : 'F',
@@ -37,7 +37,7 @@ public class FunctionView extends SymbolView {
                return true;
             });
             popupMenu.getMenu().add("Change Signature").setOnMenuItemClickListener(item -> {
-                new FunctionSignatureFlow(mainActivity).changeSignature(symbol.getName(), callableUnit);
+                new FunctionSignatureFlow(mainActivity).changeSignature(symbol.getName(), functionImplementation);
                 return true;
             });
             popupMenu.getMenu().add("Delete").setOnMenuItemClickListener(item -> {
@@ -48,11 +48,11 @@ public class FunctionView extends SymbolView {
         });
 
         ArrayList<String> subtitles = new ArrayList<>();
-        for (int i = 0; i < callableUnit.getType().getParameterCount(); i++) {
-            subtitles.add(" " + callableUnit.parameterNames[i] + ": " + callableUnit.getType().getParameterType(i));
+        for (int i = 0; i < functionImplementation.getType().getParameterCount(); i++) {
+            subtitles.add(" " + functionImplementation.parameterNames[i] + ": " + functionImplementation.getType().getParameterType(i));
         }
         if (!isVoid) {
-            subtitles.add("-> " + callableUnit.getType().getReturnType());
+            subtitles.add("-> " + functionImplementation.getType().getReturnType());
         }
 
         titleView.setSubtitles(subtitles);
@@ -69,7 +69,7 @@ public class FunctionView extends SymbolView {
             return;
         }
         int index = 0;
-        for (Map.Entry<Integer, CodeLine> entry : callableUnit.entrySet()) {
+        for (Map.Entry<Integer, CodeLine> entry : functionImplementation.entrySet()) {
             CodeLineView codeLineView;
             if (index < codeView.getChildCount()) {
                 codeLineView = (CodeLineView) codeView.getChildAt(index);

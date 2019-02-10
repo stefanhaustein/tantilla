@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.io;
 
-import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.FunctionImplementation;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -12,7 +12,7 @@ public interface Console {
     void clearOutput();
     void clearCanvas();
 
-    void highlight(CallableUnit function, int lineNumber);
+    void highlight(FunctionImplementation function, int lineNumber);
 
     InputStream openInputStream(String url);
 

@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.FunctionImplementation;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
@@ -27,7 +27,7 @@ public class ElseStatement extends Node {
         if (multiline) {
             EndifMatcher matcher = new EndifMatcher();
             int[] pos = new int[] {line + 1, 0};
-            resolutionContext.callableUnit.find(matcher, pos);
+            resolutionContext.functionImplementation.find(matcher, pos);
             resolvedLine = pos[0];
             resolvedIndex = pos[1] + 1;
         } else {
@@ -57,7 +57,7 @@ public class ElseStatement extends Node {
     /**
      * Else is reached only after a successful if and hence always goes to the end
      */
-    static class EndifMatcher implements CallableUnit.StatementMatcher {
+    static class EndifMatcher implements FunctionImplementation.StatementMatcher {
         int level;
 
         @Override

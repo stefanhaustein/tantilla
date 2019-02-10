@@ -37,7 +37,7 @@ public class GotoStatement extends Node {
             // we also can't skip into a block.
             // However, extra "ends" are ok
             int skippedVars = 0;
-            for (Node node : resolutionContext.callableUnit.statements(line, index, resolvedTarget, 0)) {
+            for (Node node : resolutionContext.functionImplementation.statements(line, index, resolvedTarget, 0)) {
                 if (node instanceof NextStatement || node instanceof EndIfStatement) {
                     depth = depth - 1;
                     if (depth < 0) {
@@ -57,7 +57,7 @@ public class GotoStatement extends Node {
                 throw new RuntimeException("Can't skip variable declarations.");
             }
         } else {
-            for (Node node : resolutionContext.callableUnit.descendingStatements(line, index, resolvedTarget, 0)) {
+            for (Node node : resolutionContext.functionImplementation.descendingStatements(line, index, resolvedTarget, 0)) {
                 if (node instanceof EndIfStatement || node instanceof NextStatement) {
                     depth = depth + 1;
                 } else if (node instanceof ForStatement || node instanceof IfStatement && ((IfStatement) node).multiline) {

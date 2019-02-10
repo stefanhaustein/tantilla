@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.FunctionImplementation;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
@@ -77,9 +77,10 @@ public class LegacyStatement extends Node {
           parameterNames[i] = parameterNode.getName();
           parameterTypes[i] = parameterNode.getName().endsWith("$") ? Types.STRING : Types.NUMBER;
         }
-        CallableUnit fn = new CallableUnit(program, new FunctionType(name.endsWith("$") ? Types.STRING : Types.NUMBER, parameterTypes), parameterNames);
-        fn.setLine(10, new CodeLine(Collections.singletonList(new FunctionReturnStatement(assignment.children[1]))));
+        FunctionImplementation fn = new FunctionImplementation(program, new FunctionType(name.endsWith("$") ? Types.STRING : Types.NUMBER, parameterTypes), parameterNames);
+        fn.setLine(new CodeLine(10, new FunctionReturnStatement(assignment.children[1])));
         program.setValue(interpreter.getSymbolScope(), name, fn);
+        fn.setDeclaringSymbol(program.getSymbol(name));
         break;
       }
 

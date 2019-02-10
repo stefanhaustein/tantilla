@@ -34,7 +34,7 @@ public class ForStatement extends Node {
             double step = children.length > 2 ? evalChildToDouble(interpreter, 2) : 1.0;
             if (Math.signum(step) == Math.signum(Double.compare(current, end))) {
                 int nextPosition[] = new int[3];
-                if (interpreter.callableUnit.find((Node statement) -> (statement instanceof NextStatement
+                if (interpreter.functionImplementation.find((Node statement) -> (statement instanceof NextStatement
                         && (((NextStatement) statement).varName == null || ((NextStatement) statement).varName.equals(varName))), nextPosition) == null) {
                     throw new RuntimeException("FOR without NEXT");
                 }

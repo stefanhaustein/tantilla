@@ -2,6 +2,7 @@ package org.kobjects.asde.lang;
 
 import org.kobjects.asde.lang.event.StartStopListener;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.type.CodeLine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,10 +81,10 @@ public class ProgramControl {
 
 
     // Called from the shell
-    public void runStatementsAsync(final List<? extends Node> statements, final ProgramControl programInterpreterControl, Consumer resultConsumer) {
+    public void runStatementsAsync(CodeLine codeLine, final ProgramControl programInterpreterControl, Consumer resultConsumer) {
         runAsync(() -> {
                 rootInterprter.currentLine = -2;
-                Object result = rootInterprter.runStatementsImpl(statements);
+                Object result = rootInterprter.runCodeLineImpl(codeLine);
                 if (rootInterprter.currentLine >= 0) {
                     programInterpreterControl.runAsync(rootInterprter.currentLine);
                 } else {
@@ -96,14 +97,7 @@ public class ProgramControl {
         runAsync(new Runnable() {
             @Override
             public void run() {
-                if (runLine != 0) {
-                    throw new RuntimeException("Run line must be 0 in non-legacy mode");
-                }
-
-                // TODO(haustein) In legacy mode:
-                // rootInterprter.currentLine = runLine;
-                // rootInterprter.runCallableUnit();
-                rootInterprter.callableUnit.call(rootInterprter, 0);
+                rootInterprter.functionImplementation.call(rootInterprter, 0, runLine);
             }
         });
     }

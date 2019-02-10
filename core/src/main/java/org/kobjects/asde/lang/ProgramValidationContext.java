@@ -8,7 +8,7 @@ public class ProgramValidationContext {
     final Program program;
     final HashSet<GlobalSymbol> validated = new HashSet<>();
 
-    ProgramValidationContext(Program program) {
+    public ProgramValidationContext(Program program) {
         this.program = program;
     }
 

@@ -12,7 +12,7 @@ import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.LetStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Builtin;
-import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.FunctionImplementation;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.expressionparser.ExpressionParser;
@@ -56,7 +56,7 @@ public class Program {
     public ProgramReference reference;
 
     public final Parser parser = new Parser(this);
-    public final CallableUnit main = new CallableUnit(this, new FunctionType(Types.VOID));
+    public final FunctionImplementation main = new FunctionImplementation(this, new FunctionType(Types.VOID));
     public final GlobalSymbol mainSymbol = new GlobalSymbol(this, "", GlobalSymbol.Scope.PERSISTENT, main);
     private final ArrayList<ProgramChangeListener> programChangeListeners = new ArrayList<>();
     private final ArrayList<ProgramRenameListener> programRenameListeners = new ArrayList<>();
@@ -72,14 +72,12 @@ public class Program {
 
     public Program(Console console) {
       this.console = console;
-      // init();
+      main.setDeclaringSymbol(mainSymbol);
       this.reference = new ProgramReference("Scratch", null, false);
-
       for (Builtin builtin : Builtin.values()) {
           setValue(GlobalSymbol.Scope.BUILTIN, builtin.name().toLowerCase(), builtin);
-        }
+      }
     }
-
 
     public synchronized void renameGlobalSymbol(String oldName, String newName) {
         if (newName == null || newName.isEmpty() || newName.equals(oldName)) {
@@ -175,7 +173,7 @@ public class Program {
   public synchronized void toString(AnnotatedStringBuilder sb) {
       for (GlobalSymbol symbol : symbolMap.values()) {
           if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
-              if (!(symbol.value instanceof CallableUnit)) {
+              if (!(symbol.value instanceof FunctionImplementation)) {
                 sb.append(symbol.toString(false)).append('\n');
               }
           }
@@ -183,8 +181,8 @@ public class Program {
 
       for (GlobalSymbol symbol : symbolMap.values()) {
           if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
-              if (symbol.value instanceof CallableUnit) {
-                  ((CallableUnit) symbol.value).toString(sb, symbol.getName(), symbol.getErrors());
+              if (symbol.value instanceof FunctionImplementation) {
+                  ((FunctionImplementation) symbol.value).toString(sb, symbol.getName(), symbol.getErrors());
               }
           }
       }
@@ -265,18 +263,18 @@ public class Program {
     }
 
 
-    public void processDeclarations(List<? extends Node> statements) {
-        CallableUnit wrapper = new CallableUnit(this, new FunctionType(Types.VOID));
-        wrapper.setLine(-2, new CodeLine(statements));
-        boolean syncNeeded = false;
-        for (int i = 0; i < statements.size(); i++) {
-            Node node = statements.get(i);
+    // Can't include validate -- wouldn't work for loading.
+    public void processDeclarations(CodeLine codeLine) {
+        FunctionImplementation wrapper = new FunctionImplementation(this, new FunctionType(Types.VOID));
+        wrapper.setLine(codeLine);
+        for (int i = 0; i < codeLine.length(); i++) {
+            Node node = codeLine.get(i);
             if (node instanceof LetStatement) {
                 LetStatement let = (LetStatement) node;
-                setInitializer(GlobalSymbol.Scope.PERSISTENT, let.varName, let);
+                setPersistentInitializer(let.varName, let);
             } else if (node instanceof DimStatement) {
                 DimStatement dim = (DimStatement) node;
-                setInitializer(GlobalSymbol.Scope.PERSISTENT, dim.varName, dim);
+                setPersistentInitializer(dim.varName, dim);
             }
         }
     }
@@ -295,10 +293,10 @@ public class Program {
           deleteAll();
           this.reference = fileReference;
           notifyProgramRenamed();
-          HashSet<CallableUnit> callableUnits = new HashSet<>();
+          HashSet<FunctionImplementation> functionImplementations = new HashSet<>();
 
-          CallableUnit currentFunction = main;
-          callableUnits.add(main);
+          FunctionImplementation currentFunction = main;
+          functionImplementations.add(main);
           while (true) {
               String line = reader.readLine();
               if (line == null) {
@@ -312,28 +310,29 @@ public class Program {
                   int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
                   tokenizer.nextToken();
                   List<? extends Node> statements = parser.parseStatementList(tokenizer, currentFunction);
-                  currentFunction.setLine(lineNumber, new CodeLine(statements));
+                  currentFunction.setLine(new CodeLine(lineNumber, statements));
               } else if (tokenizer.tryConsume("FUNCTION")) {
                   String functionName = tokenizer.consumeIdentifier();
                   console.updateProgress("Parsing function " + functionName);
                   ArrayList<String> parameterNames = new ArrayList();
                   FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames);
-                  currentFunction = new CallableUnit(this, functionType, parameterNames.toArray(new String[0]));
-                  callableUnits.add(currentFunction);
-                  setValue(GlobalSymbol.Scope.PERSISTENT, functionName, currentFunction);
+                  currentFunction = new FunctionImplementation(this, functionType, parameterNames.toArray(new String[0]));
+                  functionImplementations.add(currentFunction);
+                  setPersistentFunction(functionName, currentFunction);
               } else if (tokenizer.tryConsume("SUB")) {
                   String functionName = tokenizer.consumeIdentifier();
                   console.updateProgress("Parsing subroutine " + functionName);
                   ArrayList<String> parameterNames = new ArrayList();
                   FunctionType functionType = parseSubroutineSignature(tokenizer, parameterNames);
-                  currentFunction = new CallableUnit(this, functionType, parameterNames.toArray(new String[0]));
-                  callableUnits.add(currentFunction);
-                  setValue(GlobalSymbol.Scope.PERSISTENT, functionName, currentFunction);
+                  currentFunction = new FunctionImplementation(this, functionType, parameterNames.toArray(new String[0]));
+                  functionImplementations.add(currentFunction);
+                  setPersistentFunction(functionName, currentFunction);
               } else if (tokenizer.tryConsume("END")) {
                   currentFunction = main;
               } else if (!tokenizer.tryConsume("")) {
                   List<? extends Node> statements = parser.parseStatementList(tokenizer, null);
-                  processDeclarations(statements);
+                  CodeLine codeLine = new CodeLine(-2, statements);
+                  processDeclarations(codeLine);
               }
           }
 
@@ -370,23 +369,49 @@ public class Program {
         }
     }
 
-    public void setInitializer(GlobalSymbol.Scope scope, String name, Node expr) {
+    public synchronized void setPersistentFunction(String name, FunctionImplementation implementation) {
+        GlobalSymbol symbol = getSymbol(name);
+        if (symbol == null) {
+            symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, implementation);
+            symbolMap.put(name, symbol);
+        } else {
+            if (symbol.getScope() == GlobalSymbol.Scope.BUILTIN) {
+                throw new RuntimeException("Can't overwriter builtin '" + name + "'");
+            }
+            symbol.value = implementation;
+        }
+        implementation.setDeclaringSymbol(symbol);
+
+        notifySymbolChanged(symbol);
+    }
+
+    public synchronized void setPersistentInitializer(String name, Node expr) {
       GlobalSymbol symbol = getSymbol(name);
       if (symbol == null) {
-          symbol = new GlobalSymbol(this, name, scope, null);
+          symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, null);
           symbolMap.put(name, symbol);
+      } else if (symbol.getScope() == GlobalSymbol.Scope.BUILTIN) {
+          throw new RuntimeException("Can't overwriter builtin '" + name + "'");
       }
       symbol.initializer = expr;
       notifyProgramChanged();
     }
 
-    public void setLine(GlobalSymbol symbol, int lineNumber, CodeLine codeLine) {
-        if (symbol.value instanceof CallableUnit) {
-            CallableUnit callableUnit = (CallableUnit) symbol.value;
-            callableUnit.setLine(lineNumber, codeLine);
+    public void setLine(GlobalSymbol symbol, CodeLine codeLine) {
+        if (symbol.value instanceof FunctionImplementation) {
+            FunctionImplementation functionImplementation = (FunctionImplementation) symbol.value;
+            functionImplementation.setLine(codeLine);
             notifySymbolChanged(symbol);
         }
     }
+
+    public void deleteLine(GlobalSymbol symbol, int line) {
+        if (symbol.value instanceof FunctionImplementation) {
+            FunctionImplementation functionImplementation = (FunctionImplementation) symbol.value;
+            functionImplementation.deleteLine(line);
+        }
+    }
+
 
     public void addProgramRenameListener(ProgramRenameListener listener) {
         programRenameListeners.add(listener);
@@ -425,4 +450,5 @@ public class Program {
     public void deleteSymbol(String name) {
         symbolMap.remove(name);
     }
+
 }
