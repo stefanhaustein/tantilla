@@ -1,4 +1,4 @@
-package org.kobjects.asde.lang;
+package org.kobjects.asde.lang.type;
 
 import org.kobjects.typesystem.Type;
 import org.kobjects.typesystem.Typed;

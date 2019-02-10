@@ -1,9 +1,14 @@
-package org.kobjects.asde.lang;
+package org.kobjects.asde.lang.io;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.annotatedtext.Annotations;
+import org.kobjects.asde.lang.Consumer;
+import org.kobjects.asde.lang.GlobalSymbol;
+import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.symbol.GlobalSymbol;
+import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.expressionparser.ExpressionParser;
 
 import java.util.List;
@@ -46,7 +51,7 @@ public class Shell {
                     tokenizer.nextToken();
                     if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER
                             || "?".equals(tokenizer.currentValue)) {
-                        program.setLine(currentFunction, lineNumber, new CodeLine(program.parser.parseStatementList(tokenizer, (CallableUnit) currentFunction.value)));
+                        program.setLine(currentFunction, lineNumber, new CodeLine(program.parser.parseStatementList(tokenizer, (CallableUnit) currentFunction.getValue())));
 /*                        if (program.reference.urlWritable) {
                             try {
                                 program.save(program.reference);

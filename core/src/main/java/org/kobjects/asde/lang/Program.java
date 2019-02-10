@@ -1,12 +1,20 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.io.Console;
+import org.kobjects.asde.lang.event.ProgramChangeListener;
+import org.kobjects.asde.lang.event.ProgramRenameListener;
+import org.kobjects.asde.lang.io.Formatting;
+import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.node.Visitor;
 import org.kobjects.asde.lang.refactor.RenameGlobal;
 import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.LetStatement;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.symbol.GlobalSymbol;
+import org.kobjects.asde.lang.type.Builtin;
+import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.CodeLine;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.asde.lang.parser.Parser;
 import org.kobjects.typesystem.FunctionType;
@@ -22,7 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
 
 
 /**
@@ -50,7 +57,7 @@ public class Program {
 
     public final Parser parser = new Parser(this);
     public final CallableUnit main = new CallableUnit(this, new FunctionType(Types.VOID));
-    public final GlobalSymbol mainSymbol = new GlobalSymbol(GlobalSymbol.Scope.PERSISTENT, main);
+    public final GlobalSymbol mainSymbol = new GlobalSymbol(this, "", GlobalSymbol.Scope.PERSISTENT, main);
     private final ArrayList<ProgramChangeListener> programChangeListeners = new ArrayList<>();
     private final ArrayList<ProgramRenameListener> programRenameListeners = new ArrayList<>();
 
@@ -74,12 +81,17 @@ public class Program {
     }
 
 
-    public void renameGlobalSymbol(String oldName, String newName) {
+    public synchronized void renameGlobalSymbol(String oldName, String newName) {
         if (newName == null || newName.isEmpty() || newName.equals(oldName)) {
             return;
         }
-        symbolMap.put(newName, symbolMap.get(oldName));
+        GlobalSymbol symbol = symbolMap.get(oldName);
+        if (symbol == null) {
+            throw new RuntimeException("Symbol '" + oldName + "' does not exist.");
+        }
         symbolMap.remove(oldName);
+        symbol.setName(newName);
+        symbolMap.put(newName, symbol);
         accept(new RenameGlobal(oldName, newName));
     }
 
@@ -88,46 +100,37 @@ public class Program {
         visitor.visitProgram(this);
     }
 
-  public void deleteAll() {
+  public synchronized void deleteAll() {
       main.clear();
       TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
-      synchronized (symbolMap) {
-          for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
-              GlobalSymbol symbol = entry.getValue();
-              if (symbol != null && symbol.scope == GlobalSymbol.Scope.BUILTIN) {
-                  cleared.put(entry.getKey(), symbol);
-              }
+      for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
+          GlobalSymbol symbol = entry.getValue();
+          if (symbol != null && symbol.scope == GlobalSymbol.Scope.BUILTIN) {
+               cleared.put(entry.getKey(), symbol);
           }
-          symbolMap = cleared;
       }
+      symbolMap = cleared;
       notifyProgramChanged();
       reference = console.nameToReference("Unnamed");
       notifyProgramRenamed();
   }
 
 
-  public void init(Interpreter interpreter) {
+  public synchronized void init(Interpreter interpreter) {
       TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
-      synchronized (symbolMap) {
-          for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
-              GlobalSymbol symbol = entry.getValue();
-              if (symbol != null && symbol.scope != GlobalSymbol.Scope.TRANSIENT) {
-                  cleared.put(entry.getKey(), symbol);
-              }
+      for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
+          GlobalSymbol symbol = entry.getValue();
+          if (symbol != null && symbol.scope != GlobalSymbol.Scope.TRANSIENT) {
+              cleared.put(entry.getKey(), symbol);
           }
-          symbolMap = cleared;
       }
-
+      symbolMap = cleared;
 
       HashSet<GlobalSymbol> initialized = new HashSet<>();
 
-      // It's a new symbolMap now!
-      synchronized (symbolMap) {
-          for (GlobalSymbol symbol : symbolMap.values()) {
-              symbol.init(interpreter, initialized);
-          }
+      for (GlobalSymbol symbol : symbolMap.values()) {
+          symbol.init(interpreter, initialized);
       }
-
       Arrays.fill(interpreter.dataPosition, 0);
   }
 
@@ -161,30 +164,20 @@ public class Program {
     }
   }
 
-  public TreeMap<String, GlobalSymbol> getSymbolMap() {
-      synchronized (symbolMap) {
-          return new TreeMap<>(symbolMap);
-      }
+  public synchronized TreeMap<String, GlobalSymbol> getSymbolMap() {
+      return new TreeMap<>(symbolMap);
   }
 
-  public GlobalSymbol getSymbol(String name) {
-      synchronized (symbolMap) {
-          return symbolMap.get(name);
-      }
+  public synchronized GlobalSymbol getSymbol(String name) {
+      return symbolMap.get(name);
   }
 
-  private void setSymbol(String name, GlobalSymbol symbol) {
-      synchronized (symbolMap) {
-          symbolMap.put(name, symbol);
-      }
-  }
-
-  public void toString(AnnotatedStringBuilder sb) {
+  public synchronized void toString(AnnotatedStringBuilder sb) {
       for (Map.Entry<String, GlobalSymbol> entry : getSymbolMap().entrySet()) {
           GlobalSymbol symbol = entry.getValue();
           if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
               if (!(symbol.value instanceof CallableUnit)) {
-                sb.append(symbol.toString(entry.getKey(), false)).append('\n');
+                sb.append(symbol.toString(false)).append('\n');
               }
           }
       }
@@ -194,15 +187,11 @@ public class Program {
           if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
               String name = entry.getKey();
               if (symbol.value instanceof CallableUnit) {
-                  ((CallableUnit) symbol.value).toString(sb, name, symbol.errors);
+                  ((CallableUnit) symbol.value).toString(sb, name, symbol.getErrors());
               }
           }
       }
-      main.toString(sb, null, mainSymbol.errors);
-  }
-
-  public void println() {
-    print("\n");
+      main.toString(sb, null, mainSymbol.getErrors());
   }
 
 
@@ -226,7 +215,7 @@ public class Program {
 
     // move to parser
    private Type parseType(ExpressionParser.Tokenizer tokenizer) {
-       String typeName = Case.toUpperCamel(tokenizer.consumeIdentifier());
+       String typeName = Formatting.toUpperCamel(tokenizer.consumeIdentifier());
        if (typeName.equals("Number")) {
            return Types.NUMBER;
        }
@@ -364,19 +353,17 @@ public class Program {
     public void validate() {
         ProgramValidationContext context = new ProgramValidationContext(this);
         for (Map.Entry<String,GlobalSymbol> entry : symbolMap.entrySet()) {
-            context.resetChain(entry.getKey());
+            context.startChain(entry.getKey());
             entry.getValue().validate(context);
         }
         main.validate(context);
     }
 
-
-
-    public void setValue(GlobalSymbol.Scope scope, String name, Object value) {
+    public synchronized void setValue(GlobalSymbol.Scope scope, String name, Object value) {
         GlobalSymbol symbol = getSymbol(name);
         if (symbol == null) {
-            symbol = new GlobalSymbol(scope, value);
-            setSymbol(name, symbol);
+            symbol = new GlobalSymbol(this, name, scope, value);
+            symbolMap.put(name, symbol);
         } else {
             // TODO: check scope!
             symbol.value = value;
@@ -389,8 +376,8 @@ public class Program {
     public void setInitializer(GlobalSymbol.Scope scope, String name, Node expr) {
       GlobalSymbol symbol = getSymbol(name);
       if (symbol == null) {
-          symbol = new GlobalSymbol(scope, null);
-          setSymbol(name, symbol);
+          symbol = new GlobalSymbol(this, name, scope, null);
+          symbolMap.put(name, symbol);
       }
       symbol.initializer = expr;
       notifyProgramChanged();
@@ -421,7 +408,8 @@ public class Program {
     public void notifySymbolChanged(GlobalSymbol symbol) {
         if (loading) {
             return;
-        }validate();
+        }
+        symbol.validate();
         for (ProgramChangeListener changeListener : programChangeListeners) {
             changeListener.symbolChangedByUser(this, symbol);
         }

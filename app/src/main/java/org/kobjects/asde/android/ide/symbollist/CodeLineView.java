@@ -12,10 +12,11 @@ import com.vanniktech.emoji.EmojiTextView;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.lang.CodeLine;
+import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.node.Node;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class CodeLineView extends LinearLayout {
     TextView lineNumberView;
@@ -48,7 +49,7 @@ public class CodeLineView extends LinearLayout {
         lineNumberView.setText(lineNumber + " ");
     }
 
-    void setCodeLine(CodeLine codeLine, HashMap<Node, Exception> errors) {
+    void setCodeLine(CodeLine codeLine, Map<Node, Exception> errors) {
         AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
         codeLine.toString(asb, errors);
         statementView.setText(context.annotatedStringToSpanned(asb.build(), true));

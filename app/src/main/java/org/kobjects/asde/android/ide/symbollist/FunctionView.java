@@ -1,6 +1,5 @@
 package org.kobjects.asde.android.ide.symbollist;
 
-import android.view.View;
 import android.widget.PopupMenu;
 
 import org.kobjects.asde.android.ide.MainActivity;
@@ -8,11 +7,10 @@ import org.kobjects.asde.android.ide.editor.DeleteFlow;
 import org.kobjects.asde.android.ide.editor.FunctionSignatureFlow;
 import org.kobjects.asde.android.ide.editor.RenameFlow;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
-import org.kobjects.asde.android.ide.widget.SymbolTitleView;
-import org.kobjects.asde.lang.CallableUnit;
-import org.kobjects.asde.lang.CodeLine;
-import org.kobjects.asde.lang.Types;
-import org.kobjects.asde.lang.symbol.GlobalSymbol;
+import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.CodeLine;
+import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.GlobalSymbol;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -21,9 +19,9 @@ public class FunctionView extends SymbolView {
     public CallableUnit callableUnit;
     OnLongClickListener lineClickListener;
 
-    public FunctionView(final MainActivity mainActivity, String name, GlobalSymbol symbol) {
-        super(mainActivity, name, symbol);
-        this.callableUnit = (CallableUnit) symbol.value;
+    public FunctionView(final MainActivity mainActivity, GlobalSymbol symbol) {
+        super(mainActivity, symbol);
+        this.callableUnit = (CallableUnit) symbol.getValue();
 
         boolean isMain = callableUnit == callableUnit.program.main;
         boolean isVoid = callableUnit.getType().getReturnType() == Types.VOID;
@@ -35,15 +33,15 @@ public class FunctionView extends SymbolView {
         titleView.setMoreClickListener(clicked -> {
             PopupMenu popupMenu = new PopupMenu(mainActivity, clicked);
             popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {
-                new RenameFlow(mainActivity, name).start();
+                new RenameFlow(mainActivity, symbol.getName()).start();
                return true;
             });
             popupMenu.getMenu().add("Change Signature").setOnMenuItemClickListener(item -> {
-                new FunctionSignatureFlow(mainActivity).changeSignature(name, callableUnit);
+                new FunctionSignatureFlow(mainActivity).changeSignature(symbol.getName(), callableUnit);
                 return true;
             });
             popupMenu.getMenu().add("Delete").setOnMenuItemClickListener(item -> {
-                new DeleteFlow(mainActivity, name).start();
+                new DeleteFlow(mainActivity, symbol.getName()).start();
                 return true;
             });
             popupMenu.show();
@@ -80,7 +78,7 @@ public class FunctionView extends SymbolView {
                 codeView.addView(codeLineView);
             }
             codeLineView.setLineNumber(entry.getKey());
-            codeLineView.setCodeLine(entry.getValue(), symbol.errors);
+            codeLineView.setCodeLine(entry.getValue(), symbol.getErrors());
             codeLineView.setOnLongClickListener(lineClickListener);
             index++;
         }

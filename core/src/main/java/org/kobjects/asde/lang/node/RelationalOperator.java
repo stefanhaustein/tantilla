@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
 

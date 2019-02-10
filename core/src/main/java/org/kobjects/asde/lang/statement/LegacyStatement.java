@@ -1,12 +1,12 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.CallableUnit;
-import org.kobjects.asde.lang.CodeLine;
+import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.StackEntry;
-import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.JumpStackEntry;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.node.Identifier;
@@ -92,7 +92,7 @@ public class LegacyStatement extends Node {
         break;
 
       case GOSUB: {
-        StackEntry entry = new StackEntry();
+        JumpStackEntry entry = new JumpStackEntry();
         entry.lineNumber = interpreter.currentLine;
         entry.statementIndex = interpreter.currentIndex;
         interpreter.stack.add(entry);
@@ -105,7 +105,7 @@ public class LegacyStatement extends Node {
         int index = (int) Math.round(evalChildToDouble(interpreter,0));
         if (index < children.length && index > 0) {
           if (delimiter[0].equals(" GOSUB ")) {
-            StackEntry entry = new StackEntry();
+            JumpStackEntry entry = new JumpStackEntry();
             entry.lineNumber = interpreter.currentLine;
             entry.statementIndex = interpreter.currentIndex;
             interpreter.stack.add(entry);
@@ -145,7 +145,7 @@ public class LegacyStatement extends Node {
           if (interpreter.stack.isEmpty()) {
             throw new RuntimeException("RETURN without GOSUB.");
           }
-          StackEntry entry = interpreter.stack.remove(interpreter.stack.size() - 1);
+          JumpStackEntry entry = interpreter.stack.remove(interpreter.stack.size() - 1);
           if (entry.forVariable == null) {
             interpreter.currentLine = entry.lineNumber;
             interpreter.currentIndex = entry.statementIndex + 1;

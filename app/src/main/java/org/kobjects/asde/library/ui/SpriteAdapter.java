@@ -1,8 +1,8 @@
 package org.kobjects.asde.library.ui;
 
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.Method;
-import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.type.Method;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Animated;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.FunctionType;

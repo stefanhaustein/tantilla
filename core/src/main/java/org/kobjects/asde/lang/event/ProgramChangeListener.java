@@ -1,6 +1,7 @@
-package org.kobjects.asde.lang;
+package org.kobjects.asde.lang.event;
 
-import org.kobjects.asde.lang.symbol.GlobalSymbol;
+import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.GlobalSymbol;
 
 public interface ProgramChangeListener {
     void programChanged(Program program);

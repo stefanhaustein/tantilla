@@ -4,15 +4,14 @@ import android.view.View;
 import android.view.ViewParent;
 import android.widget.LinearLayout;
 
-import org.kobjects.asde.lang.ProgramChangeListener;
+import org.kobjects.asde.lang.event.ProgramChangeListener;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.TitleView;
-import org.kobjects.asde.lang.CallableUnit;
+import org.kobjects.asde.lang.type.CallableUnit;
 import org.kobjects.asde.lang.Program;
-import org.kobjects.asde.lang.ProgramReference;
-import org.kobjects.asde.lang.StartStopListener;
-import org.kobjects.asde.lang.symbol.GlobalSymbol;
+import org.kobjects.asde.lang.event.StartStopListener;
+import org.kobjects.asde.lang.GlobalSymbol;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -52,7 +51,7 @@ public class ProgramView extends LinearLayout implements ExpandListener {
         symbolList = new ExpandableList(context);
         addView(symbolList);
 
-        mainFunctionView = new FunctionView(context, "Main", program.mainSymbol);
+        mainFunctionView = new FunctionView(context, program.mainSymbol);
         mainFunctionView.addExpandListener(this);
         mainFunctionView.setExpanded(true, false);
         currentFunctionView = mainFunctionView;
@@ -134,7 +133,7 @@ public class ProgramView extends LinearLayout implements ExpandListener {
         if (program.main.getLineCount() == 0 && (program.reference == null || "Unnamed".equals(program.reference.name))) {
             boolean empty = true;
             for (GlobalSymbol symbol : program.getSymbolMap().values()) {
-                if (symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
+                if (symbol.getScope() == GlobalSymbol.Scope.PERSISTENT) {
                     empty = false;
                     break;
                 }
@@ -160,20 +159,20 @@ public class ProgramView extends LinearLayout implements ExpandListener {
         HashMap<String, SymbolView> newSymbolViewMap = new HashMap<>();
         for (Map.Entry<String, GlobalSymbol> entry : program.getSymbolMap().entrySet()) {
             GlobalSymbol symbol = entry.getValue();
-            if (symbol == null || symbol.scope != GlobalSymbol.Scope.PERSISTENT) {
+            if (symbol == null || symbol.getScope() != GlobalSymbol.Scope.PERSISTENT) {
                 continue;
             }
             String name = entry.getKey();
             String qualifiedName = name + " " + symbol.getType();
-            if (symbol.value instanceof CallableUnit) {
-                qualifiedName += Arrays.toString(((CallableUnit) symbol.value).parameterNames);
+            if (symbol.getValue() instanceof CallableUnit) {
+                qualifiedName += Arrays.toString(((CallableUnit) symbol.getValue()).parameterNames);
             }
             SymbolView symbolView = symbolViewMap.get(qualifiedName);
 
             int index;
-            if (symbol.value instanceof CallableUnit) {
+            if (symbol.getValue() instanceof CallableUnit) {
                 if (!(symbolView instanceof FunctionView)) {
-                    FunctionView functionView = new FunctionView(mainActivity, name, symbol);
+                    FunctionView functionView = new FunctionView(mainActivity, symbol);
                     symbolView = functionView;
                     functionView.addExpandListener(this);
                 }
@@ -182,7 +181,7 @@ public class ProgramView extends LinearLayout implements ExpandListener {
                 if (symbolView instanceof VariableView) {
                     symbolView.syncContent();
                 } else {
-                    VariableView variableView = new VariableView(mainActivity, name, symbol);
+                    VariableView variableView = new VariableView(mainActivity, symbol);
                     variableView.addExpandListener(this);
                     symbolView = variableView;
                 }

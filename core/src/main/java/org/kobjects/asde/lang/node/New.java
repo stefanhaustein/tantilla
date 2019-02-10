@@ -4,7 +4,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.FunctionValidationContext;
-import org.kobjects.asde.lang.symbol.GlobalSymbol;
+import org.kobjects.asde.lang.GlobalSymbol;
 import org.kobjects.typesystem.Classifier;
 
 import java.util.Map;
@@ -19,7 +19,7 @@ public class New extends Node {
         if (symbol == null) {
             throw new Exception("'" + name + "' is not defined");
         }
-        Object value = symbol.value;
+        Object value = symbol.getValue();
         if (!(value instanceof Classifier)) {
             throw new Exception("'" + name + "' is not a classifier");
         }

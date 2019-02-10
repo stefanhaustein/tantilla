@@ -4,7 +4,7 @@ import android.widget.LinearLayout;
 
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.widget.IconButton;
-import org.kobjects.asde.lang.StartStopListener;
+import org.kobjects.asde.lang.event.StartStopListener;
 
 public class RunControlView extends LinearLayout {
     private final IconButton startButton;

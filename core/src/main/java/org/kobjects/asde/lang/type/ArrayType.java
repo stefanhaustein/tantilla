@@ -1,10 +1,7 @@
-package org.kobjects.asde.lang;
+package org.kobjects.asde.lang.type;
 
-import org.kobjects.asde.lang.Types;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
-
-import java.util.Arrays;
 
 public class ArrayType extends FunctionType{
 

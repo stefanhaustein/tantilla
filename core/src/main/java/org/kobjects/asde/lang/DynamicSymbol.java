@@ -1,7 +1,5 @@
-package org.kobjects.asde.lang.symbol;
+package org.kobjects.asde.lang;
 
-import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
 
 public class DynamicSymbol implements ResolvedSymbol {

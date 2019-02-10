@@ -3,7 +3,7 @@ package org.kobjects.asde.android.ide;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import org.kobjects.asde.lang.ProgramReference;
+import org.kobjects.asde.lang.io.ProgramReference;
 
 public class AsdePreferences {
 

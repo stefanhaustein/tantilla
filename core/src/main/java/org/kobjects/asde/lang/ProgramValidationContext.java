@@ -1,21 +1,18 @@
 package org.kobjects.asde.lang;
 
-import org.kobjects.asde.lang.symbol.GlobalSymbol;
-
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 public class ProgramValidationContext {
-
-    LinkedHashSet<String> dependencyChain = new LinkedHashSet<>();
-    Program program;
-    public HashSet<GlobalSymbol> validated = new HashSet<>();
+    final LinkedHashSet<String> dependencyChain = new LinkedHashSet<>();
+    final Program program;
+    final HashSet<GlobalSymbol> validated = new HashSet<>();
 
     ProgramValidationContext(Program program) {
         this.program = program;
     }
 
-    void resetChain(String name) {
+    void startChain(String name) {
         dependencyChain.clear();
         dependencyChain.add(name);
     }

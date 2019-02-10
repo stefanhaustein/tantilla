@@ -1,6 +1,7 @@
-package org.kobjects.asde.lang;
+package org.kobjects.asde.lang.type;
 
-import org.kobjects.typesystem.FunctionType;
+import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.LocalStack;
 import org.kobjects.typesystem.Type;
 
 import java.util.Arrays;

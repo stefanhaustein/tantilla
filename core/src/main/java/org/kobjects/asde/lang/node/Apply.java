@@ -1,10 +1,10 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Array;
-import org.kobjects.asde.lang.Function;
+import org.kobjects.asde.lang.type.Array;
+import org.kobjects.asde.lang.type.Function;
 import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;

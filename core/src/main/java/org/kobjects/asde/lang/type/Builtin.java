@@ -1,5 +1,10 @@
-package org.kobjects.asde.lang;
+package org.kobjects.asde.lang.type;
 
+import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.LocalStack;
+import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.type.Function;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Parameter;
 import org.kobjects.typesystem.Type;

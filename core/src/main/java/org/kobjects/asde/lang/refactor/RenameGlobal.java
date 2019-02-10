@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.refactor;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Visitor;
-import org.kobjects.asde.lang.symbol.LocalSymbol;
+import org.kobjects.asde.lang.LocalSymbol;
 
 public class RenameGlobal extends Visitor {
 

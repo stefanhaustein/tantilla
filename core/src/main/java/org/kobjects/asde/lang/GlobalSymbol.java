@@ -1,46 +1,20 @@
-package org.kobjects.asde.lang.symbol;
+package org.kobjects.asde.lang;
 
-import org.kobjects.asde.lang.ArrayType;
-import org.kobjects.asde.lang.CallableUnit;
-import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.ProgramValidationContext;
-import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.type.ArrayType;
+import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.LetStatement;
 import org.kobjects.typesystem.Type;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class GlobalSymbol implements ResolvedSymbol {
-
-    public int stamp;
-    public Node initializer;
-    public Object value;
-    public Scope scope;
-    public Type type;
-    boolean immutable;
-    public HashMap<Node, Exception> errors = new HashMap<>();
-    public HashSet<GlobalSymbol> dependencies;
-
-
-    @Override
-    public Object get(Interpreter interpreter) {
-        return value;
-    }
-
-    @Override
-    public void set(Interpreter interpreter, Object value) {
-        this.value = value;
-    }
-
-    @Override
-    public Type getType() {
-        return type;
-    }
-
 
     public enum Scope {
         BUILTIN,
@@ -48,23 +22,92 @@ public class GlobalSymbol implements ResolvedSymbol {
         TRANSIENT
     }
 
+    private final Program program;
+    private String name;
+    Node initializer;
+    Object value;
+    Scope scope;
+    Type type;
+    boolean immutable;
+    private Map<Node, Exception> errors = Collections.emptyMap();
+    Set<GlobalSymbol> dependencies = Collections.emptySet();
 
-    public GlobalSymbol(Scope scope, Object value) {
+    GlobalSymbol(Program program, String name, Scope scope, Object value) {
+        this.program = program;
+        this.name = name;
         this.scope = scope;
         this.value = value;
         this.type = value == null ? null : Types.of(value);
     }
 
+    @Override
+    public Object get(Interpreter interpreter) {
+        return value;
+    }
 
-    public String toString(String name, boolean showValue) {
+    public Map<Node, Exception> getErrors() {
+        return errors;
+    }
+
+    public Node getInitializer() {
+        return initializer;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public Type getType() {
+        return type;
+    }
+
+    public Scope getScope() {
+        return scope;
+    }
+
+    public Object getValue() {
+        return value;
+    }
+
+    void init(Interpreter interpreter, HashSet<GlobalSymbol> initialized) {
+        if (initialized.contains(this)) {
+            return;
+        }
+        if (dependencies != null) {
+            for (GlobalSymbol dep : dependencies) {
+                dep.init(interpreter, initialized);
+            }
+        }
+        if (initializer != null) {
+            initializer.eval(interpreter);
+        }
+        initialized.add(this);
+    }
+
+    @Override
+    public void set(Interpreter interpreter, Object value) {
+        this.value = value;
+    }
+
+    void setName(String name) {
+        this.name = name;
+    }
+
+    public String toString(boolean showValue) {
         if (initializer == null) {
             return name+ " = " + value;
         }
         return initializer.toString() + (showValue && value != null ? (" ' " + value) : "");
     }
 
+    void validate() {
+        ProgramValidationContext context = new ProgramValidationContext(program);
+        context.startChain(name);
+        validate(context);
+    }
 
-    public void validate(ProgramValidationContext programValidationContext) {
+    void validate(ProgramValidationContext programValidationContext) {
         if (programValidationContext.validated.contains(this)) {
             return;
         }
@@ -92,18 +135,4 @@ public class GlobalSymbol implements ResolvedSymbol {
         programValidationContext.validated.add(this);
     }
 
-    public void init(Interpreter interpreter, HashSet<GlobalSymbol> initialized) {
-        if (initialized.contains(this)) {
-            return;
-        }
-        if (dependencies != null) {
-            for (GlobalSymbol dep : dependencies) {
-                dep.init(interpreter, initialized);
-            }
-        }
-        if (initializer != null) {
-            initializer.eval(interpreter);
-        }
-        initialized.add(this);
-    }
 }

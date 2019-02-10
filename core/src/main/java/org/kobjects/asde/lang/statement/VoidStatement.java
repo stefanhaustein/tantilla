@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Function;
+import org.kobjects.asde.lang.type.Function;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;

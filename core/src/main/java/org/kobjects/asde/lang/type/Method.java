@@ -1,8 +1,7 @@
-package org.kobjects.asde.lang;
+package org.kobjects.asde.lang.type;
 
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Property;
-import org.kobjects.typesystem.PropertyDescriptor;
 
 public abstract class Method extends Property implements Function {
     final FunctionType type;

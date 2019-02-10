@@ -8,12 +8,12 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.editor.DeleteFlow;
 import org.kobjects.asde.android.ide.editor.RenameFlow;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
-import org.kobjects.asde.lang.ArrayType;
+import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.node.ArrayLiteral;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.LetStatement;
-import org.kobjects.asde.lang.symbol.GlobalSymbol;
+import org.kobjects.asde.lang.GlobalSymbol;
 import org.kobjects.typesystem.Type;
 
 import java.util.Collections;
@@ -23,23 +23,23 @@ public class VariableView extends SymbolView {
     Object cache = this;
     MainActivity mainActivity;
 
-    public VariableView(MainActivity mainActivity, String name, GlobalSymbol symbol) {
-        super(mainActivity, name, symbol);
+    public VariableView(MainActivity mainActivity, GlobalSymbol symbol) {
+        super(mainActivity, symbol);
         this.mainActivity = mainActivity;
         this.symbol = symbol;
         titleView.setTypeIndicator('V', mainActivity.colors.yellow);
         titleView.setMoreClickListener(view -> {
             PopupMenu popupMenu = new PopupMenu(getContext(), view);
             popupMenu.getMenu().add("Edit").setOnMenuItemClickListener(item -> {
-                mainActivity.controlView.codeEditText.setText(String.valueOf(symbol.initializer));
+                mainActivity.controlView.codeEditText.setText(String.valueOf(symbol.getInitializer()));
                 return true;
             });
             popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {
-                new RenameFlow(mainActivity, name).start();
+                new RenameFlow(mainActivity, symbol.getName()).start();
                 return true;
             });
             popupMenu.getMenu().add("Delete").setOnMenuItemClickListener(item -> {
-                new DeleteFlow(mainActivity, name).start();
+                new DeleteFlow(mainActivity, symbol.getName()).start();
                 return true;
             });
 
@@ -83,20 +83,20 @@ public class VariableView extends SymbolView {
 
     public void refresh() {
         super.refresh();
-        if (symbol.value == cache || symbol.initializer == cache) {
+        if (symbol.getValue() == cache || symbol.getInitializer() == cache) {
             return;
         }
         StringBuilder sb = new StringBuilder(" ");
-        if (symbol.value != null) {
-            sb.append(symbol.value);
-        } else if (symbol.initializer instanceof LetStatement && symbol.initializer.children[0] instanceof Literal) {
-            sb.append(((Literal) symbol.initializer.children[0]).value);
+        if (symbol.getValue() != null) {
+            sb.append(symbol.getValue());
+        } else if (symbol.getInitializer() instanceof LetStatement && symbol.getInitializer().children[0] instanceof Literal) {
+            sb.append(((Literal) symbol.getInitializer().children[0]).value);
         } else if (symbol.getType() != null) {
             sb.append('(').append(symbol.getType()).append(')');
         } else {
             sb.append("?");
         }
-        cache = symbol.value != null ? symbol.value : symbol.initializer;
+        cache = symbol.getValue() != null ? symbol.getValue() : symbol.getInitializer();
         titleView.setSubtitles(Collections.singletonList(sb.toString()));
     }
 
@@ -108,12 +108,12 @@ public class VariableView extends SymbolView {
 
         codeView.removeAllViews();
         if (expanded) {
-            if (symbol.initializer instanceof LetStatement && isMultiDim(symbol.type)) {
-                addLine(codeView, 1, "LET " + name + " = {");
-                addChildList(codeView, 2, symbol.initializer.children[0]);
+            if (symbol.getInitializer() instanceof LetStatement && isMultiDim(symbol.getType())) {
+                addLine(codeView, 1, "LET " + symbol.getName() + " = {");
+                addChildList(codeView, 2, symbol.getInitializer().children[0]);
                 addLine(codeView, 1, "}");
             } else {
-                addLine(codeView, 1, symbol.initializer);
+                addLine(codeView, 1, symbol.getInitializer());
             }
 
         }

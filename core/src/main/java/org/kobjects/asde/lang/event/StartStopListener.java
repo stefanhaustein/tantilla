@@ -1,4 +1,4 @@
-package org.kobjects.asde.lang;
+package org.kobjects.asde.lang.event;
 
 public interface StartStopListener {
     void programStarted();

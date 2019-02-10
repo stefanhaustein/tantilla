@@ -26,7 +26,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.editor.FunctionSignatureFlow;
 import org.kobjects.asde.android.ide.widget.IconButton;
-import org.kobjects.asde.lang.ProgramReference;
+import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.expressionparser.ExpressionParser;
 
 import java.io.IOException;

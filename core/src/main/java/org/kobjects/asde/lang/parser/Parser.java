@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.parser;
 
-import org.kobjects.asde.lang.CallableUnit;
+import org.kobjects.asde.lang.type.CallableUnit;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Group;

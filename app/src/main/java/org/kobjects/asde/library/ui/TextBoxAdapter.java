@@ -1,13 +1,12 @@
 package org.kobjects.asde.library.ui;
 
-import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.TextBox;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.Instance;
 import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
-import org.w3c.dom.Text;
 
 public class TextBoxAdapter extends Instance {
 

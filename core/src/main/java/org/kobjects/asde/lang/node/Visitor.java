@@ -1,9 +1,9 @@
 package org.kobjects.asde.lang.node;
 
-import org.kobjects.asde.lang.CallableUnit;
-import org.kobjects.asde.lang.CodeLine;
+import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.Program;
-import org.kobjects.asde.lang.symbol.GlobalSymbol;
+import org.kobjects.asde.lang.GlobalSymbol;
 
 import java.util.Map;
 
@@ -34,8 +34,8 @@ public abstract class Visitor {
     }
 
     public void visitSymbol(String name, GlobalSymbol symbol) {
-        if (symbol.value instanceof CallableUnit) {
-            visitCallableUnit((CallableUnit) symbol.value);
+        if (symbol.getValue() instanceof CallableUnit) {
+            visitCallableUnit((CallableUnit) symbol.getValue());
         }
     }
 

@@ -4,7 +4,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.FunctionValidationContext;
-import org.kobjects.asde.lang.symbol.ResolvedSymbol;
+import org.kobjects.asde.lang.ResolvedSymbol;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;

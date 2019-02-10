@@ -1,8 +1,8 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Array;
-import org.kobjects.asde.lang.ArrayType;
+import org.kobjects.asde.lang.type.Array;
+import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;

@@ -1,13 +1,8 @@
 package org.kobjects.asde.lang;
 
 
-import org.kobjects.asde.lang.CallableUnit;
-import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.type.CallableUnit;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.symbol.DynamicSymbol;
-import org.kobjects.asde.lang.symbol.GlobalSymbol;
-import org.kobjects.asde.lang.symbol.LocalSymbol;
-import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.typesystem.Type;
 
 import java.util.HashMap;

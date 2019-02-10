@@ -2,10 +2,9 @@ package org.kobjects.asde.android.ide.editor;
 
 import android.support.v7.widget.AppCompatSpinner;
 import android.widget.ArrayAdapter;
-import android.widget.SpinnerAdapter;
 
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.lang.Types;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.typesystem.Type;
 
 import java.util.ArrayList;

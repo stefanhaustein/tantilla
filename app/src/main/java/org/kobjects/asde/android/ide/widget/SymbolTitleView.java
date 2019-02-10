@@ -9,12 +9,8 @@ import android.support.v7.widget.AppCompatTextView;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import org.kobjects.asde.R;
-import org.kobjects.asde.android.ide.widget.Dimensions;
-import org.kobjects.asde.lang.CallableUnit;
-import org.kobjects.asde.lang.Types;
 
 import java.util.List;
 

@@ -1,16 +1,19 @@
-package org.kobjects.asde.lang;
+package org.kobjects.asde.demo;
 
-import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.WrappedExecutionException;
+import org.kobjects.asde.lang.io.Console;
+import org.kobjects.asde.lang.io.ProgramReference;
+import org.kobjects.asde.lang.io.Shell;
+import org.kobjects.asde.lang.type.CallableUnit;
 import org.kobjects.expressionparser.ExpressionParser;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.List;
 
 public class AsdeShell  {
 
@@ -45,9 +48,12 @@ public class AsdeShell  {
         System.out.println(new String(fill) + '^');
         System.out.println("?SYNTAX ERROR: " + e.getMessage());
         program.lastException = e;
+      } catch (WrappedExecutionException e) {
+          System.out.println("\nERROR in " + e.lineNumber +  ": " + e.getMessage());
+          System.out.println("\nREADY.");
+          program.lastException = e;
       } catch (Exception e) {
-        System.out.println("\nERROR in " + shell.mainInterpreter.rootInterprter.currentLine + ':'
-            + shell.mainInterpreter.rootInterprter.currentIndex + ": " + e.getMessage());
+        System.out.println("\nERROR in : " + e.getMessage());
         System.out.println("\nREADY.");
         program.lastException = e;
       }

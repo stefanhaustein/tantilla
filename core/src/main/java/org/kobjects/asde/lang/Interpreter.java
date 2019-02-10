@@ -2,7 +2,8 @@ package org.kobjects.asde.lang;
 
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.LegacyStatement;
-import org.kobjects.asde.lang.symbol.GlobalSymbol;
+import org.kobjects.asde.lang.type.CallableUnit;
+import org.kobjects.asde.lang.type.CodeLine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ public class Interpreter {
     public int currentLine;
     public int currentIndex;
     public int nextSubIndex;  // index within next when skipping a for loop; reset in next
-    public ArrayList<StackEntry> stack = new ArrayList<>();
+    public ArrayList<JumpStackEntry> stack = new ArrayList<>();
 
     public int[] dataPosition = new int[3];
     public LegacyStatement dataStatement;
@@ -50,7 +51,7 @@ public class Interpreter {
         return result;
     }
 
-    void runCallableUnit() {
+    public void runCallableUnit() {
         if (currentLine > -1) {
             Map.Entry<Integer, CodeLine> entry;
             while (null != (entry = callableUnit.ceilingEntry(currentLine)) && !Thread.currentThread().isInterrupted()) {
