@@ -164,8 +164,8 @@ public class Program {
     }
   }
 
-  public synchronized TreeMap<String, GlobalSymbol> getSymbolMap() {
-      return new TreeMap<>(symbolMap);
+  public synchronized Iterable<GlobalSymbol> getSymbols() {
+      return new ArrayList<>(symbolMap.values());
   }
 
   public synchronized GlobalSymbol getSymbol(String name) {
@@ -173,8 +173,7 @@ public class Program {
   }
 
   public synchronized void toString(AnnotatedStringBuilder sb) {
-      for (Map.Entry<String, GlobalSymbol> entry : getSymbolMap().entrySet()) {
-          GlobalSymbol symbol = entry.getValue();
+      for (GlobalSymbol symbol : symbolMap.values()) {
           if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
               if (!(symbol.value instanceof CallableUnit)) {
                 sb.append(symbol.toString(false)).append('\n');
@@ -182,12 +181,10 @@ public class Program {
           }
       }
 
-      for (Map.Entry<String, GlobalSymbol> entry : getSymbolMap().entrySet()) {
-          GlobalSymbol symbol = entry.getValue();
+      for (GlobalSymbol symbol : symbolMap.values()) {
           if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
-              String name = entry.getKey();
               if (symbol.value instanceof CallableUnit) {
-                  ((CallableUnit) symbol.value).toString(sb, name, symbol.getErrors());
+                  ((CallableUnit) symbol.value).toString(sb, symbol.getName(), symbol.getErrors());
               }
           }
       }

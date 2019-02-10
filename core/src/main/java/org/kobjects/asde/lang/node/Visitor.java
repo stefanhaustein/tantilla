@@ -33,15 +33,15 @@ public abstract class Visitor {
         }
     }
 
-    public void visitSymbol(String name, GlobalSymbol symbol) {
+    public void visitSymbol(GlobalSymbol symbol) {
         if (symbol.getValue() instanceof CallableUnit) {
             visitCallableUnit((CallableUnit) symbol.getValue());
         }
     }
 
     public void visitProgram(Program program) {
-        for (Map.Entry<String, GlobalSymbol> entry : program.getSymbolMap().entrySet()) {
-            visitSymbol(entry.getKey(), entry.getValue());
+        for (GlobalSymbol symbol : program.getSymbols()) {
+            visitSymbol(symbol);
         }
 
         visitCallableUnit(program.main);

@@ -132,7 +132,7 @@ public class ProgramView extends LinearLayout implements ExpandListener {
     void synchronize() {
         if (program.main.getLineCount() == 0 && (program.reference == null || "Unnamed".equals(program.reference.name))) {
             boolean empty = true;
-            for (GlobalSymbol symbol : program.getSymbolMap().values()) {
+            for (GlobalSymbol symbol : program.getSymbols()) {
                 if (symbol.getScope() == GlobalSymbol.Scope.PERSISTENT) {
                     empty = false;
                     break;
@@ -157,12 +157,11 @@ public class ProgramView extends LinearLayout implements ExpandListener {
         SymbolView expandView = null;
 
         HashMap<String, SymbolView> newSymbolViewMap = new HashMap<>();
-        for (Map.Entry<String, GlobalSymbol> entry : program.getSymbolMap().entrySet()) {
-            GlobalSymbol symbol = entry.getValue();
+        for (GlobalSymbol symbol : program.getSymbols()) {
             if (symbol == null || symbol.getScope() != GlobalSymbol.Scope.PERSISTENT) {
                 continue;
             }
-            String name = entry.getKey();
+            String name = symbol.getName();
             String qualifiedName = name + " " + symbol.getType();
             if (symbol.getValue() instanceof CallableUnit) {
                 qualifiedName += Arrays.toString(((CallableUnit) symbol.getValue()).parameterNames);

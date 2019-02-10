@@ -54,7 +54,7 @@ public class Command extends Node {
                     program.lastException.printStackTrace();
                     program.lastException = null;
                 } else {
-                    program.println("\n" + program.getSymbolMap());
+                    program.println("\n" + program.getSymbols());
 
         /*  for (int i = 0; i < program.arrays.length; i++) {
             if (!program.arrays[i].isEmpty()) {
