@@ -1,7 +1,6 @@
 package org.kobjects.asde.lang;
 
 
-import org.kobjects.asde.lang.type.FunctionImplementation;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.typesystem.Type;
 
@@ -81,7 +80,9 @@ public class FunctionValidationContext {
 
             case SHELL:
                 if (symbol != null && (symbol.scope != GlobalSymbol.Scope.TRANSIENT)) {
-                    dependencies.add(symbol);
+                    if (!forDeclaration) {
+                        dependencies.add(symbol);
+                    }
                     return symbol;
                 }
                 return new DynamicSymbol(name, mode);

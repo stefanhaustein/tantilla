@@ -1,7 +1,6 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.asde.lang.event.StartStopListener;
-import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.CodeLine;
 
 import java.util.ArrayList;
@@ -11,7 +10,7 @@ public class ProgramControl {
     Thread interpreterThread;
     private final List<StartStopListener> startStopListeners = new ArrayList<>();
     public Program program;
-    Interpreter rootInterprter;
+    EvaluationContext rootInterprter;
 
     public enum State {
         PAUSED, ABORTING, ABORTED, ENDED, RUNNING, STEP
@@ -22,7 +21,7 @@ public class ProgramControl {
 
     public ProgramControl(Program program) {
         this.program = program;
-        rootInterprter = new Interpreter(this, program.main, new LocalStack());
+        rootInterprter = new EvaluationContext(this, program.main, new LocalStack());
     }
 
     public void addStartStopListener(StartStopListener startStopListener) {
@@ -80,11 +79,29 @@ public class ProgramControl {
     }
 
 
+    public static Object runCodeLineImpl(CodeLine codeLine, EvaluationContext evaluationContext) {
+        int line = evaluationContext.currentLine;
+        Object result = null;
+        while (evaluationContext.currentIndex < codeLine.length() && evaluationContext.control.state != State.ABORTING) {
+            int index = evaluationContext.currentIndex;
+            result = codeLine.get(index).eval(evaluationContext);
+            if (evaluationContext.currentLine != line) {
+                return result;  // Goto or similar out of the current line
+            }
+            if (evaluationContext.currentIndex == index) {
+                evaluationContext.currentIndex++;
+            }
+        }
+        evaluationContext.currentIndex = 0;
+        evaluationContext.currentLine++;
+        return result;
+    }
+
     // Called from the shell
     public void runStatementsAsync(CodeLine codeLine, final ProgramControl programInterpreterControl, Consumer resultConsumer) {
         runAsync(() -> {
                 rootInterprter.currentLine = -2;
-                Object result = rootInterprter.runCodeLineImpl(codeLine);
+                Object result = runCodeLineImpl(codeLine, rootInterprter);
                 if (rootInterprter.currentLine >= 0) {
                     programInterpreterControl.runAsync(rootInterprter.currentLine);
                 } else {

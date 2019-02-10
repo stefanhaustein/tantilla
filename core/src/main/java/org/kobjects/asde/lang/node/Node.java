@@ -1,8 +1,8 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.Program;
-import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
@@ -38,15 +38,15 @@ public abstract class Node {
 
   }
 
-  public abstract Object eval(Interpreter interpreter);
+  public abstract Object eval(EvaluationContext evaluationContext);
 
   /** eval without null substitution */
-  public Object evalRaw(Interpreter interpreter) {
-    return eval(interpreter);
+  public Object evalRaw(EvaluationContext evaluationContext) {
+    return eval(evaluationContext);
   }
 
-  public boolean evalChildToBoolean(Interpreter interpreter, int i) {
-    Object o = children[i].eval(interpreter);
+  public boolean evalChildToBoolean(EvaluationContext evaluationContext, int i) {
+    Object o = children[i].eval(evaluationContext);
     if (o instanceof Boolean) {
       return (Boolean) o;
     }
@@ -57,8 +57,8 @@ public abstract class Node {
   }
 
 
-  public double evalChildToDouble(Interpreter interpreter, int i) {
-    Object o = children[i].eval(interpreter);
+  public double evalChildToDouble(EvaluationContext evaluationContext, int i) {
+    Object o = children[i].eval(evaluationContext);
     if (o instanceof Double) {
       return (Double) o;
     }
@@ -68,12 +68,12 @@ public abstract class Node {
     throw new EvaluationException(children[i], "Number expected.");
   }
 
-  public int evalChildToInt(Interpreter interpreter, int i) {
-    return (int) evalChildToDouble(interpreter, i);
+  public int evalChildToInt(EvaluationContext evaluationContext, int i) {
+    return (int) evalChildToDouble(evaluationContext, i);
   }
 
-  public String evalChildToString(Interpreter interpreter, int i) {
-    return Program.toString(children[i].eval(interpreter));
+  public String evalChildToString(EvaluationContext evaluationContext, int i) {
+    return Program.toString(children[i].eval(evaluationContext));
   }
 
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {

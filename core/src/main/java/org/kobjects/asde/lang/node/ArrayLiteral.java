@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.type.Array;
 import org.kobjects.asde.lang.type.ArrayType;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
 
@@ -32,10 +32,10 @@ public class ArrayLiteral extends Node {
     }
 
     @Override
-    public Object eval(Interpreter interpreter) {
+    public Object eval(EvaluationContext evaluationContext) {
         Object[] values = new Object[children.length];
         for (int i = 0; i < children.length; i++) {
-            values[i] = children[i].eval(interpreter);
+            values[i] = children[i].eval(evaluationContext);
         }
         return new Array(resolvedType.getReturnType(), values);
     }

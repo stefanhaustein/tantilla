@@ -5,7 +5,7 @@ import org.kobjects.asde.lang.WrappedExecutionException;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.io.Shell;
-import org.kobjects.asde.lang.type.FunctionImplementation;
+import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.expressionparser.ExpressionParser;
 
 import java.io.BufferedReader;

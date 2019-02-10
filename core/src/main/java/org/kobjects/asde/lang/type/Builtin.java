@@ -1,10 +1,8 @@
 package org.kobjects.asde.lang.type;
 
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.LocalStack;
 import org.kobjects.asde.lang.Program;
-import org.kobjects.asde.lang.type.Function;
-import org.kobjects.asde.lang.type.Types;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Parameter;
 import org.kobjects.typesystem.Type;
@@ -44,8 +42,8 @@ public enum Builtin implements Function {
     return signature;
   }
 
-  public Object call(Interpreter interpreter, int paramCount) {
-    LocalStack localStack = interpreter.localStack;
+  public Object call(EvaluationContext evaluationContext, int paramCount) {
+    LocalStack localStack = evaluationContext.localStack;
     switch (this) {
       case ABS: return Math.abs((Double) localStack.getParameter(0, paramCount));
       case ASC: {
@@ -81,7 +79,7 @@ public enum Builtin implements Function {
         return s.substring(Math.min(s.length(), s.length() - asInt(localStack.getParameter(1, paramCount))));
       }
       case RND: return Math.random();
-      case TAB: return interpreter.control.program.tab(asInt(localStack.getParameter(1, paramCount)));
+      case TAB: return evaluationContext.control.program.tab(asInt(localStack.getParameter(1, paramCount)));
       case TAN: return Math.tan((Double) localStack.getParameter(0, paramCount));
       case VAL: return Double.parseDouble((String) localStack.getParameter(0, paramCount));
       default:

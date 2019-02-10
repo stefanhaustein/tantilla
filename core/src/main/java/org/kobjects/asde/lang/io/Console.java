@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.io;
 
-import org.kobjects.asde.lang.type.FunctionImplementation;
+import org.kobjects.asde.lang.FunctionImplementation;
 
 import java.io.InputStream;
 import java.io.OutputStream;

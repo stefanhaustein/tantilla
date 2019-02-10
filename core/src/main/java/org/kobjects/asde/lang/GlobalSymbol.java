@@ -1,7 +1,6 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.asde.lang.type.ArrayType;
-import org.kobjects.asde.lang.type.FunctionImplementation;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.DimStatement;
@@ -40,7 +39,7 @@ public class GlobalSymbol implements ResolvedSymbol {
     }
 
     @Override
-    public Object get(Interpreter interpreter) {
+    public Object get(EvaluationContext evaluationContext) {
         return value;
     }
 
@@ -69,23 +68,23 @@ public class GlobalSymbol implements ResolvedSymbol {
         return value;
     }
 
-    void init(Interpreter interpreter, HashSet<GlobalSymbol> initialized) {
+    void init(EvaluationContext evaluationContext, HashSet<GlobalSymbol> initialized) {
         if (initialized.contains(this)) {
             return;
         }
         if (dependencies != null) {
             for (GlobalSymbol dep : dependencies) {
-                dep.init(interpreter, initialized);
+                dep.init(evaluationContext, initialized);
             }
         }
         if (initializer != null) {
-            initializer.eval(interpreter);
+            initializer.eval(evaluationContext);
         }
         initialized.add(this);
     }
 
     @Override
-    public void set(Interpreter interpreter, Object value) {
+    public void set(EvaluationContext evaluationContext, Object value) {
         this.value = value;
     }
 

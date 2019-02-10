@@ -1,26 +1,25 @@
-package org.kobjects.asde.lang.type;
+package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.FunctionValidationContext;
-import org.kobjects.asde.lang.GlobalSymbol;
-import org.kobjects.asde.lang.Interpreter;
-import org.kobjects.asde.lang.Program;
-import org.kobjects.asde.lang.ProgramValidationContext;
-import org.kobjects.asde.lang.WrappedExecutionException;
 import org.kobjects.asde.lang.statement.ElseStatement;
 import org.kobjects.asde.lang.statement.EndIfStatement;
 import org.kobjects.asde.lang.statement.ForStatement;
 import org.kobjects.asde.lang.statement.IfStatement;
 import org.kobjects.asde.lang.statement.NextStatement;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.type.CodeLine;
+import org.kobjects.asde.lang.type.Function;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.typesystem.FunctionType;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * In the main package because of the direct interaction with programControl.
+ */
 public class FunctionImplementation implements Function {
     public final Program program;
     FunctionType type;
@@ -77,26 +76,51 @@ public class FunctionImplementation implements Function {
 
 
     /**
-     * Calls this method with a new interpreter.
+     * Calls this method with a new evaluationContext.
      */
     @Override
-    public Object call(Interpreter interpreter, int paramCount) {
-        return call(interpreter, paramCount, 0);
+    public Object call(EvaluationContext evaluationContext, int paramCount) {
+        return call(evaluationContext, paramCount, 0);
     }
 
-    public Object call(Interpreter interpreter, int paramCount, int runLine) {
-        int oldFrameStart = interpreter.localStack.frame(paramCount, localVariableCount);
-        Interpreter sub = new Interpreter(interpreter.control, this, interpreter.localStack);
+    public Object call(EvaluationContext evaluationContext, int paramCount, int runLine) {
+        int oldFrameStart = evaluationContext.localStack.frame(paramCount, localVariableCount);
+        EvaluationContext sub = new EvaluationContext(evaluationContext.control, this, evaluationContext.localStack);
         sub.currentLine = runLine;
         try {
-            // This is called from inside ast evaluation, we can't push interpreter state
-            // and keep
-            sub.runCallableUnit();
+            if (sub.currentLine > -1) {
+                Map.Entry<Integer, CodeLine> entry;
+                while (null != (entry = sub.functionImplementation.ceilingEntry(sub.currentLine)) && !Thread.currentThread().isInterrupted()) {
+                    sub.currentLine = entry.getKey();
+                    if (sub.control.getState() != ProgramControl.State.PAUSED) {
+                        ProgramControl.runCodeLineImpl(entry.getValue(), sub);
+                    } else {
+                        sub.control.program.console.highlight(sub.functionImplementation, sub.currentLine);
+
+                        while (sub.control.state == ProgramControl.State.PAUSED) {
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                break;
+                            }
+                        }
+
+                        if (sub.control.state == ProgramControl.State.STEP) {
+                            sub.control.state = ProgramControl.State.PAUSED;
+                        }
+
+                        if (sub.control.state != ProgramControl.State.ABORTING && sub.control.state != ProgramControl.State.ENDED) {
+                            ProgramControl.runCodeLineImpl(entry.getValue(), sub);
+                        }
+                    }
+                }
+            }
+
             return sub.returnValue;
         } catch (Exception e) {
             throw new WrappedExecutionException(this, sub.currentLine, e);
         } finally {
-            interpreter.localStack.release(oldFrameStart, paramCount);
+            evaluationContext.localStack.release(oldFrameStart, paramCount);
         }
     }
 

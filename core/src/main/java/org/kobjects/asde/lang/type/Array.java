@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.type;
 
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.LocalStack;
 import org.kobjects.typesystem.Type;
 
@@ -44,8 +44,8 @@ public class Array implements Function {
     }
 
     @Override
-    public Object call(Interpreter interpreter, int paramCount) {
-        LocalStack localStack = interpreter.localStack;
+    public Object call(EvaluationContext evaluationContext, int paramCount) {
+        LocalStack localStack = evaluationContext.localStack;
         Object result = this;
         for (int i = 0; i < paramCount; i++) {
             result = ((Array) result).data[((Number) localStack.getParameter(i, paramCount)).intValue()];

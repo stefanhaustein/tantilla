@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
@@ -54,23 +54,23 @@ public class MathOperator extends Node {
   }
 
   @Override
-  public Object eval(Interpreter interpreter) {
+  public Object eval(EvaluationContext evaluationContext) {
     double l;
     if (kind == Kind.ADD) {
-      Object lVal = children[0].eval(interpreter);
+      Object lVal = children[0].eval(evaluationContext);
       if (lVal instanceof Double) {
         l = ((Double) lVal).doubleValue();
       } else if (lVal instanceof Boolean) {
         l = ((Boolean) lVal) ? 1.0 : 0.0;
       } else if (lVal instanceof String) {
-        return "" + lVal + evalChildToString(interpreter, 1);
+        return "" + lVal + evalChildToString(evaluationContext, 1);
       } else {
         throw new EvaluationException(children[0], "Number or String expected for operator '+'");
       }
     } else {
-      l = evalChildToDouble(interpreter, 0);
+      l = evalChildToDouble(evaluationContext, 0);
     }
-    double r = evalChildToDouble(interpreter, 1);
+    double r = evalChildToDouble(evaluationContext, 1);
     switch (kind) {
       case POW:
         return Math.pow(l, r);

@@ -14,17 +14,15 @@ import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.TextValidator;
-import org.kobjects.asde.lang.type.FunctionImplementation;
+import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.refactor.ChangeSignature;
 import org.kobjects.asde.lang.statement.RemStatement;
-import org.kobjects.asde.lang.GlobalSymbol;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class FunctionSignatureFlow {
 

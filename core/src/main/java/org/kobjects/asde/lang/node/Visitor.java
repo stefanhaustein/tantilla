@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.node;
 
-import org.kobjects.asde.lang.type.FunctionImplementation;
+import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.GlobalSymbol;

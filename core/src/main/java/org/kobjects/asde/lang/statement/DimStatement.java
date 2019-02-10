@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.type.Array;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
@@ -25,13 +25,13 @@ public class DimStatement extends Node {
     }
 
     @Override
-    public Object eval(Interpreter interpreter) {
+    public Object eval(EvaluationContext evaluationContext) {
         int[] dims = new int[children.length];
         for (int i = 0; i < children.length; i++) {
              // TODO: evalChildToInt
-             dims[i] = evalChildToInt(interpreter, i);
+             dims[i] = evalChildToInt(evaluationContext, i);
         }
-        interpreter.control.program.setValue(interpreter.getSymbolScope(), varName, new Array(varName.endsWith("$") ? Types.STRING : Types.NUMBER, dims));
+        evaluationContext.control.program.setValue(evaluationContext.getSymbolScope(), varName, new Array(varName.endsWith("$") ? Types.STRING : Types.NUMBER, dims));
         return null;
     }
 

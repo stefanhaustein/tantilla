@@ -12,7 +12,6 @@ import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.LetStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Builtin;
-import org.kobjects.asde.lang.type.FunctionImplementation;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.expressionparser.ExpressionParser;
@@ -114,7 +113,7 @@ public class Program {
   }
 
 
-  public synchronized void init(Interpreter interpreter) {
+  public synchronized void init(EvaluationContext evaluationContext) {
       TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
       for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
           GlobalSymbol symbol = entry.getValue();
@@ -127,9 +126,9 @@ public class Program {
       HashSet<GlobalSymbol> initialized = new HashSet<>();
 
       for (GlobalSymbol symbol : symbolMap.values()) {
-          symbol.init(interpreter, initialized);
+          symbol.init(evaluationContext, initialized);
       }
-      Arrays.fill(interpreter.dataPosition, 0);
+      Arrays.fill(evaluationContext.dataPosition, 0);
   }
 
 

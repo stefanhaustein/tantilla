@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
@@ -26,9 +26,9 @@ public class LetStatement extends Node {
     }
 
     @Override
-    public Object eval(Interpreter interpreter) {
-        Object value = children[0].eval(interpreter);
-        resolved.set(interpreter, value);
+    public Object eval(EvaluationContext evaluationContext) {
+        Object value = children[0].eval(evaluationContext);
+        resolved.set(evaluationContext, value);
         return null;
     }
 

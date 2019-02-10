@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
@@ -40,9 +40,9 @@ public class RelationalOperator extends Node {
   }
 
   @Override
-  public Object eval(Interpreter interpreter) {
-    Object lVal = children[0].eval(interpreter);
-    Object rVal = children[1].eval(interpreter);
+  public Object eval(EvaluationContext evaluationContext) {
+    Object lVal = children[0].eval(evaluationContext);
+    Object rVal = children[1].eval(evaluationContext);
     if (lVal.getClass() != rVal.getClass()) {
       throw new RuntimeException("Types don't match for relational operator '" + getName() + "'");
     }

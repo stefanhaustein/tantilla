@@ -1,10 +1,10 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.type.FunctionImplementation;
+import org.kobjects.asde.lang.EvaluationContext;
+import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.Program;
-import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.JumpStackEntry;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Apply;
@@ -17,7 +17,6 @@ import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Map;
 
 
@@ -54,11 +53,11 @@ public class LegacyStatement extends Node {
     }
   }
 
-  public Object eval(Interpreter interpreter) {
+  public Object eval(EvaluationContext evaluationContext) {
     if (kind == null) {
       return null;
     }
-    Program program = interpreter.control.program;
+    Program program = evaluationContext.control.program;
     switch (kind) {
       case DEF: {
         Node assignment = children[0];
@@ -79,7 +78,7 @@ public class LegacyStatement extends Node {
         }
         FunctionImplementation fn = new FunctionImplementation(program, new FunctionType(name.endsWith("$") ? Types.STRING : Types.NUMBER, parameterTypes), parameterNames);
         fn.setLine(new CodeLine(10, new FunctionReturnStatement(assignment.children[1])));
-        program.setValue(interpreter.getSymbolScope(), name, fn);
+        program.setValue(evaluationContext.getSymbolScope(), name, fn);
         fn.setDeclaringSymbol(program.getSymbol(name));
         break;
       }
@@ -88,75 +87,75 @@ public class LegacyStatement extends Node {
         break;
 
       case END:
-        interpreter.currentLine = Integer.MAX_VALUE;
-        interpreter.currentIndex = 0;
+        evaluationContext.currentLine = Integer.MAX_VALUE;
+        evaluationContext.currentIndex = 0;
         break;
 
       case GOSUB: {
         JumpStackEntry entry = new JumpStackEntry();
-        entry.lineNumber = interpreter.currentLine;
-        entry.statementIndex = interpreter.currentIndex;
-        interpreter.stack.add(entry);
-        interpreter.currentLine = evalChildToInt(interpreter, 0);
-        interpreter.currentIndex = 0;
+        entry.lineNumber = evaluationContext.currentLine;
+        entry.statementIndex = evaluationContext.currentIndex;
+        evaluationContext.stack.add(entry);
+        evaluationContext.currentLine = evalChildToInt(evaluationContext, 0);
+        evaluationContext.currentIndex = 0;
         break;
       }
 
       case ON: {
-        int index = (int) Math.round(evalChildToDouble(interpreter,0));
+        int index = (int) Math.round(evalChildToDouble(evaluationContext,0));
         if (index < children.length && index > 0) {
           if (delimiter[0].equals(" GOSUB ")) {
             JumpStackEntry entry = new JumpStackEntry();
-            entry.lineNumber = interpreter.currentLine;
-            entry.statementIndex = interpreter.currentIndex;
-            interpreter.stack.add(entry);
+            entry.lineNumber = evaluationContext.currentLine;
+            entry.statementIndex = evaluationContext.currentIndex;
+            evaluationContext.stack.add(entry);
           }
-          interpreter.currentLine = (int) evalChildToDouble(interpreter, index);
-          interpreter.currentIndex = 0;
+          evaluationContext.currentLine = (int) evalChildToDouble(evaluationContext, index);
+          evaluationContext.currentIndex = 0;
         }
         break;
       }
       case READ:
         for (int i = 0; i < children.length; i++) {
-          while (interpreter.dataStatement == null
-              || interpreter.dataPosition[2] >= interpreter.dataStatement.children.length) {
-            interpreter.dataPosition[2] = 0;
-            if (interpreter.dataStatement != null) {
-              interpreter.dataPosition[1]++;
+          while (evaluationContext.dataStatement == null
+              || evaluationContext.dataPosition[2] >= evaluationContext.dataStatement.children.length) {
+            evaluationContext.dataPosition[2] = 0;
+            if (evaluationContext.dataStatement != null) {
+              evaluationContext.dataPosition[1]++;
             }
-            interpreter.dataStatement = (LegacyStatement) program.main.find((Node statement)->(statement instanceof LegacyStatement && ((LegacyStatement) statement).kind == Kind.DATA), interpreter.dataPosition);
-            if (interpreter.dataStatement == null) {
+            evaluationContext.dataStatement = (LegacyStatement) program.main.find((Node statement)->(statement instanceof LegacyStatement && ((LegacyStatement) statement).kind == Kind.DATA), evaluationContext.dataPosition);
+            if (evaluationContext.dataStatement == null) {
               throw new RuntimeException("Out of data.");
             }
           }
-          ((AssignableNode) children[i]).set(interpreter, interpreter.dataStatement.children[interpreter.dataPosition[2]++].eval(interpreter));
+          ((AssignableNode) children[i]).set(evaluationContext, evaluationContext.dataStatement.children[evaluationContext.dataPosition[2]++].eval(evaluationContext));
         }
         break;
 
       case RESTORE:
-        interpreter.dataStatement = null;
-        Arrays.fill(interpreter.dataPosition, 0);
+        evaluationContext.dataStatement = null;
+        Arrays.fill(evaluationContext.dataPosition, 0);
         if (children.length > 0) {
-          interpreter.dataPosition[0] = (int) evalChildToDouble(interpreter, 0);
+          evaluationContext.dataPosition[0] = (int) evalChildToDouble(evaluationContext, 0);
         }
         break;
 
       case RETURN:
         while (true) {
-          if (interpreter.stack.isEmpty()) {
+          if (evaluationContext.stack.isEmpty()) {
             throw new RuntimeException("RETURN without GOSUB.");
           }
-          JumpStackEntry entry = interpreter.stack.remove(interpreter.stack.size() - 1);
+          JumpStackEntry entry = evaluationContext.stack.remove(evaluationContext.stack.size() - 1);
           if (entry.forVariable == null) {
-            interpreter.currentLine = entry.lineNumber;
-            interpreter.currentIndex = entry.statementIndex + 1;
+            evaluationContext.currentLine = entry.lineNumber;
+            evaluationContext.currentIndex = entry.statementIndex + 1;
             break;
           }
         }
         break;
 
       case STOP:
-        interpreter.control.pause();
+        evaluationContext.control.pause();
         break;
 
       default:

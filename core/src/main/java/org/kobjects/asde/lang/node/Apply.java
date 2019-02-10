@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.type.Array;
 import org.kobjects.asde.lang.type.Function;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.FunctionType;
@@ -27,15 +27,15 @@ public class Apply extends AssignableNode {
     }
 
 
-    public void set(Interpreter interpreter, Object value) {
-        Object base = children[0].evalRaw(interpreter);
+    public void set(EvaluationContext evaluationContext, Object value) {
+        Object base = children[0].evalRaw(evaluationContext);
         if (!(base instanceof Array)) {
             throw new EvaluationException(this, "Can't set indexed value to non-array: " + value);
         }
         Array array = (Array) base;
         int[] indices = new int[children.length - 1];
         for (int i = 1; i < children.length; i++) {
-            indices[i - 1] = evalChildToInt(interpreter, i);
+            indices[i - 1] = evalChildToInt(evaluationContext, i);
         }
         array.setValueAt(value, indices);
     }
@@ -66,21 +66,21 @@ public class Apply extends AssignableNode {
         }
     }
 
-    public Object eval(Interpreter interpreter) {
-        Object base = children[0].evalRaw(interpreter);
+    public Object eval(EvaluationContext evaluationContext) {
+        Object base = children[0].evalRaw(evaluationContext);
         if (!(base instanceof Function)) {
             throw new EvaluationException(this, "Can't apply parameters to " + base);
         }
         Function function = (Function) base;
         for (int i = 1; i < children.length; i++) {
-            interpreter.localStack.push(children[i].eval(interpreter));
+            evaluationContext.localStack.push(children[i].eval(evaluationContext));
         }
         try {
-            return function.call(interpreter, children.length - 1);
+            return function.call(evaluationContext, children.length - 1);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage() + " in " + children[0], e);
         } finally {
-            interpreter.localStack.drop(children.length - 1);
+            evaluationContext.localStack.drop(children.length - 1);
         }
     }
 

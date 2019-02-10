@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.parser;
 
-import org.kobjects.asde.lang.type.FunctionImplementation;
+import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Group;
@@ -109,6 +109,9 @@ public class Parser {
       case "NEXT":
         parseNext(tokenizer, result);
         return;
+      case "ON":
+        result.add(parseOn(tokenizer));
+        return;
       case "PRINT":
         result.add(parseIo(IoStatement.Kind.PRINT, tokenizer));
         return;
@@ -147,7 +150,7 @@ public class Parser {
 
     for (LegacyStatement.Kind kind : LegacyStatement.Kind.values()) {
       if (name.equalsIgnoreCase(kind.name())) {
-        result.add(parseStatement(tokenizer, kind));
+        result.add(parseLegacyStatement(tokenizer, kind));
         return;
       }
     }
@@ -187,7 +190,7 @@ public class Parser {
     }
   }
 
-  LegacyStatement parseStatement(ExpressionParser.Tokenizer tokenizer, LegacyStatement.Kind kind) {
+  LegacyStatement parseLegacyStatement(ExpressionParser.Tokenizer tokenizer, LegacyStatement.Kind kind) {
     tokenizer.nextToken();
     switch (kind) {
       case RESTORE: // 0 or 1 param; Default is 0
@@ -209,24 +212,6 @@ public class Parser {
           expressions.add(expressionParser.parse(tokenizer));
         } while (tokenizer.tryConsume(","));
         return new LegacyStatement(kind, expressions.toArray(new Node[expressions.size()]));
-      }
-
-      case ON: {
-        List<Node> expressions = new ArrayList<Node>();
-        expressions.add(expressionParser.parse(tokenizer));
-        String[] suffix = new String[1];
-        if (tryConsume(tokenizer, "GOTO")) {
-          suffix[0] = " GOTO ";
-        } else if (tryConsume(tokenizer, "GOSUB")) {
-          suffix[0] = " GOSUB ";
-        } else {
-          throw tokenizer.exception("GOTO or GOSUB expected.", null);
-        }
-        do {
-          expressions.add(expressionParser.parse(tokenizer));
-        } while (tokenizer.tryConsume(","));
-        return new LegacyStatement(kind, suffix,
-            expressions.toArray(new Node[expressions.size()]));
       }
       default:
         return new LegacyStatement(kind);
@@ -288,6 +273,31 @@ public class Parser {
       result.add(new GotoStatement(new Literal(target)));
     }
   }
+
+  private Node parseOn(ExpressionParser.Tokenizer tokenizer) {
+    tokenizer.nextToken();
+    Node expr = expressionParser.parse(tokenizer);
+    String[] suffix = new String[1];
+    if (tryConsume(tokenizer, "GOTO")) {
+      suffix[0] = " GOTO ";
+    } else if (tryConsume(tokenizer, "GOSUB")) {
+      suffix[0] = " GOSUB ";
+    } else {
+      return parseOn(tokenizer, expr);
+    }
+    List<Node> expressions = new ArrayList<Node>();
+    expressions.add(expr);
+    do {
+      expressions.add(expressionParser.parse(tokenizer));
+    } while (tokenizer.tryConsume(","));
+    return new LegacyStatement(LegacyStatement.Kind.ON, suffix,
+            expressions.toArray(new Node[expressions.size()]));
+  }
+
+  private Node parseOn(ExpressionParser.Tokenizer tokenizer, Node expr) {
+    throw tokenizer.exception("GOTO or GOSUB expected.", null);
+  }
+
 
   private IoStatement parseIo(IoStatement.Kind kind, ExpressionParser.Tokenizer tokenizer) {
     tokenizer.nextToken();

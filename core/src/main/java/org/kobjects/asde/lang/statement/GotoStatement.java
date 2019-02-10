@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
@@ -74,9 +74,9 @@ public class GotoStatement extends Node {
     }
 
     @Override
-    public Object eval(Interpreter interpreter) {
-        interpreter.currentLine = resolvedTarget == -1 ? evalChildToInt(interpreter, 0) : resolvedTarget;
-        interpreter.currentIndex = 0;
+    public Object eval(EvaluationContext evaluationContext) {
+        evaluationContext.currentLine = resolvedTarget == -1 ? evalChildToInt(evaluationContext, 0) : resolvedTarget;
+        evaluationContext.currentIndex = 0;
         return null;
     }
 

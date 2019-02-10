@@ -1,8 +1,8 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.Program;
-import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.asde.lang.ResolvedSymbol;
 import org.kobjects.typesystem.Type;
@@ -24,8 +24,8 @@ public class Identifier extends AssignableNode {
       resolved = resolutionContext.resolve(name);
   }
 
-  public void set(Interpreter interpreter, Object value) {
-    resolved.set(interpreter, value);
+  public void set(EvaluationContext evaluationContext, Object value) {
+    resolved.set(evaluationContext, value);
   }
 
   @Override
@@ -34,14 +34,14 @@ public class Identifier extends AssignableNode {
   }
 
   @Override
-  public Object eval(Interpreter interpreter) {
-    Object result = evalRaw(interpreter);
+  public Object eval(EvaluationContext evaluationContext) {
+    Object result = evalRaw(evaluationContext);
     return result == null ? name.endsWith("$") ? "" : 0.0 : result;
   }
 
   @Override
-  public Object evalRaw(Interpreter interpreter) {
-    return resolved.get(interpreter);
+  public Object evalRaw(EvaluationContext evaluationContext) {
+    return resolved.get(evaluationContext);
   }
 
   public Type returnType() {

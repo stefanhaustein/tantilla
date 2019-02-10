@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.node;
 
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 
 public abstract class AssignableNode extends Node {
 
@@ -9,7 +9,7 @@ public abstract class AssignableNode extends Node {
     }
 
 
-    public abstract void set(Interpreter interpreter, Object value);
+    public abstract void set(EvaluationContext evaluationContext, Object value);
 
     public abstract boolean isConstant();
 }

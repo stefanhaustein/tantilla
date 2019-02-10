@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Program;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.asde.lang.GlobalSymbol;
 import org.kobjects.typesystem.Classifier;
@@ -32,7 +32,7 @@ public class New extends Node {
     }
 
     @Override
-    public Object eval(Interpreter interpreter) {
+    public Object eval(EvaluationContext evaluationContext) {
         return classifier.createInstance();
     }
 

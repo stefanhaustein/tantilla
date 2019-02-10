@@ -1,6 +1,6 @@
 package org.kobjects.asde.library.ui;
 
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Method;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Animated;
@@ -80,8 +80,8 @@ public class SpriteAdapter extends Instance implements Animated {
             case rotation: return rotation;
             case say: return new Method((FunctionType) SpriteMetaProperty.say.type()) {
                         @Override
-                        public Object call(Interpreter interpreter, int paramCount) {
-                            sprite.say((String) (interpreter.localStack.getParameter(0, paramCount)));
+                        public Object call(EvaluationContext evaluationContext, int paramCount) {
+                            sprite.say((String) (evaluationContext.localStack.getParameter(0, paramCount)));
                             return null;
                         }
                 };

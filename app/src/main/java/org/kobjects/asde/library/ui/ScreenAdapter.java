@@ -2,7 +2,7 @@ package org.kobjects.asde.library.ui;
 
 import android.view.View;
 
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Method;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Screen;
@@ -50,19 +50,19 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
             case height: return heightProperty;
             case createPen: return new Method((FunctionType) ScreenMetaProperty.createPen.type) {
                 @Override
-                public Object call(Interpreter interpreter, int paramCount) {
+                public Object call(EvaluationContext evaluationContext, int paramCount) {
                     return new PenAdapter(screen.createPen());
                 }
             };
             case newSprite: return new Method((FunctionType) ScreenMetaProperty.newSprite.type) {
                 @Override
-                public Object call(Interpreter interpreter, int paramCount) {
+                public Object call(EvaluationContext evaluationContext, int paramCount) {
                     return new SpriteAdapter(ScreenAdapter.this);
                 }
             };
             case newTextBox: return new Method((FunctionType) ScreenMetaProperty.newTextBox.type) {
                 @Override
-                public Object call(Interpreter interpreter, int paramCount) {
+                public Object call(EvaluationContext evaluationContext, int paramCount) {
                     return new TextBoxAdapter(ScreenAdapter.this);
                 }
             };

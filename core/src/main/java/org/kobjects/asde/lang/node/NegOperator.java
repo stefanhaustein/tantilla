@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
@@ -21,8 +21,8 @@ public class NegOperator extends Node {
     }
   }
 
-  public Object eval(Interpreter interpreter) {
-    return -evalChildToDouble(interpreter, 0);
+  public Object eval(EvaluationContext evaluationContext) {
+    return -evalChildToDouble(evaluationContext, 0);
   }
 
   @Override

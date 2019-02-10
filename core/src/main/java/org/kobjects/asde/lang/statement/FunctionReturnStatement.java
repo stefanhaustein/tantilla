@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
@@ -32,12 +32,12 @@ public class FunctionReturnStatement extends Node {
     }
 
     @Override
-    public Object eval(Interpreter interpreter) {
+    public Object eval(EvaluationContext evaluationContext) {
         if (children.length > 0) {
-            interpreter.returnValue = children[0].eval(interpreter);
+            evaluationContext.returnValue = children[0].eval(evaluationContext);
         }
-        interpreter.currentLine = Integer.MAX_VALUE;
-        interpreter.currentIndex = 0;
+        evaluationContext.currentLine = Integer.MAX_VALUE;
+        evaluationContext.currentIndex = 0;
         return null;
     }
 

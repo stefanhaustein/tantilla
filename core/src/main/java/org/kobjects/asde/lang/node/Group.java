@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
 
@@ -18,8 +18,8 @@ public class Group extends Node {
     }
 
     @Override
-    public Object eval(Interpreter interpreter) {
-        return children[0].eval(interpreter);
+    public Object eval(EvaluationContext evaluationContext) {
+        return children[0].eval(evaluationContext);
     }
 
     @Override

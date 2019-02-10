@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.node.Node;
@@ -32,8 +32,8 @@ public class AssignStatement extends Node {
     }
 
     @Override
-    public Object eval(Interpreter interpreter) {
-        ((AssignableNode) children[0]).set(interpreter, children[1].eval(interpreter));
+    public Object eval(EvaluationContext evaluationContext) {
+        ((AssignableNode) children[0]).set(evaluationContext, children[1].eval(evaluationContext));
         return null;
     }
 

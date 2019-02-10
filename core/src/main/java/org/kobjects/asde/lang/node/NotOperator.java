@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
@@ -22,8 +22,8 @@ public class NotOperator extends Node {
     }
   }
 
-  public Object eval(Interpreter interpreter) {
-    Object lVal = children[0].eval(interpreter);
+  public Object eval(EvaluationContext evaluationContext) {
+    Object lVal = children[0].eval(evaluationContext);
     if (lVal instanceof Boolean) {
       return !((Boolean) lVal);
     }

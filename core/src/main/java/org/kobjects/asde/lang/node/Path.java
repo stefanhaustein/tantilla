@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.Instance;
@@ -24,8 +24,8 @@ public class Path extends AssignableNode {
         pathName = ((Identifier) right).name;
     }
 
-    Property evalProperty(Interpreter interpreter) {
-        Object base = children[0].eval(interpreter);
+    Property evalProperty(EvaluationContext evaluationContext) {
+        Object base = children[0].eval(evaluationContext);
         if (!(base instanceof Instance)) {
             throw new RuntimeException("instance expected; was: " + (base == null ? null : base.getClass()) + " expr: " + children[0]);
         }
@@ -47,8 +47,8 @@ public class Path extends AssignableNode {
     }
 
     @Override
-    public Object eval(Interpreter interpreter) {
-        return evalProperty(interpreter).get();
+    public Object eval(EvaluationContext evaluationContext) {
+        return evalProperty(evaluationContext).get();
     }
 
     @Override
@@ -64,8 +64,8 @@ public class Path extends AssignableNode {
     }
 
     @Override
-    public void set(Interpreter interpreter, Object value) {
-        evalProperty(interpreter).set(value);
+    public void set(EvaluationContext evaluationContext, Object value) {
+        evalProperty(evaluationContext).set(value);
     }
 
     @Override

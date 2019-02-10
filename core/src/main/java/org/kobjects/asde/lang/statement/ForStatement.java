@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.JumpStackEntry;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
@@ -27,29 +27,29 @@ public class ForStatement extends Node {
     }
 
     @Override
-    public Object eval(Interpreter interpreter) {
-            double current = evalChildToDouble(interpreter,0);
-            resolved.set(interpreter, current);
-            double end = evalChildToDouble(interpreter, 1);
-            double step = children.length > 2 ? evalChildToDouble(interpreter, 2) : 1.0;
+    public Object eval(EvaluationContext evaluationContext) {
+            double current = evalChildToDouble(evaluationContext,0);
+            resolved.set(evaluationContext, current);
+            double end = evalChildToDouble(evaluationContext, 1);
+            double step = children.length > 2 ? evalChildToDouble(evaluationContext, 2) : 1.0;
             if (Math.signum(step) == Math.signum(Double.compare(current, end))) {
                 int nextPosition[] = new int[3];
-                if (interpreter.functionImplementation.find((Node statement) -> (statement instanceof NextStatement
+                if (evaluationContext.functionImplementation.find((Node statement) -> (statement instanceof NextStatement
                         && (((NextStatement) statement).varName == null || ((NextStatement) statement).varName.equals(varName))), nextPosition) == null) {
                     throw new RuntimeException("FOR without NEXT");
                 }
-                interpreter.currentLine = nextPosition[0];
-                interpreter.currentIndex = nextPosition[1];
-                interpreter.nextSubIndex = nextPosition[2] + 1;
+                evaluationContext.currentLine = nextPosition[0];
+                evaluationContext.currentIndex = nextPosition[1];
+                evaluationContext.nextSubIndex = nextPosition[2] + 1;
             } else {
                 JumpStackEntry entry = new JumpStackEntry();
                 entry.forVariable = resolved;
                 entry.forVariableName = varName;
                 entry.end = end;
                 entry.step = step;
-                entry.lineNumber = interpreter.currentLine;
-                entry.statementIndex = interpreter.currentIndex;
-                interpreter.stack.add(entry);
+                entry.lineNumber = evaluationContext.currentLine;
+                entry.statementIndex = evaluationContext.currentIndex;
+                evaluationContext.stack.add(entry);
             }
             return null;
     }

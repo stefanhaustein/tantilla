@@ -44,10 +44,10 @@ import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.android.ide.widget.TitleView;
-import org.kobjects.asde.lang.type.FunctionImplementation;
+import org.kobjects.asde.lang.EvaluationContext;
+import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Function;
-import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.io.Shell;
@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements Console {
             return FUNCTION_VOID_0;
         }
         @Override
-        public Object call(Interpreter interpreter, int paramCount) {
+        public Object call(EvaluationContext evaluationContext, int paramCount) {
             clearOutput();
             clearCanvas();
             return null;
@@ -243,9 +243,9 @@ public class MainActivity extends AppCompatActivity implements Console {
         }
 
         @Override
-        public Object call(Interpreter interpreter, int paramCount) {
+        public Object call(EvaluationContext evaluationContext, int paramCount) {
             try {
-                Thread.sleep(((Number) interpreter.localStack.getParameter(0, paramCount)).intValue());
+                Thread.sleep(((Number) evaluationContext.localStack.getParameter(0, paramCount)).intValue());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

@@ -10,7 +10,7 @@ import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.ProgramValidationContext;
 import org.kobjects.asde.lang.event.StartStopListener;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.type.FunctionImplementation;
+import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.expressionparser.ExpressionParser;
 

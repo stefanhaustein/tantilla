@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
@@ -16,7 +16,7 @@ public class EndIfStatement extends Node {
     }
 
     @Override
-    public Object eval(Interpreter interpreter) {
+    public Object eval(EvaluationContext evaluationContext) {
         return null;
     }
 

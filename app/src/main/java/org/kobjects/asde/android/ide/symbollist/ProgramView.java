@@ -8,7 +8,7 @@ import org.kobjects.asde.lang.event.ProgramChangeListener;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.TitleView;
-import org.kobjects.asde.lang.type.FunctionImplementation;
+import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.event.StartStopListener;
 import org.kobjects.asde.lang.GlobalSymbol;

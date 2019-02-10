@@ -1,8 +1,8 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Function;
-import org.kobjects.asde.lang.Interpreter;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
@@ -20,10 +20,10 @@ public class VoidStatement extends Node {
     }
 
     @Override
-    public Object eval(Interpreter interpreter) {
-        Object result = children[0].eval(interpreter);
+    public Object eval(EvaluationContext evaluationContext) {
+        Object result = children[0].eval(evaluationContext);
         if (result instanceof Function) {
-            ((Function) result).call(interpreter, 0);
+            ((Function) result).call(evaluationContext, 0);
         }
         return result;
     }

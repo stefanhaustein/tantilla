@@ -1,6 +1,6 @@
 package org.kobjects.asde.library.ui;
 
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.LocalStack;
 import org.kobjects.asde.lang.type.Method;
 import org.kobjects.asde.lang.type.Types;
@@ -79,8 +79,8 @@ public class PenAdapter extends Instance {
             case clear:
                 return new Method((FunctionType) PenPropertyDescriptor.clear.type()) {
                     @Override
-                    public Object call(Interpreter interpreter, int paramCount) {
-                        LocalStack localStack = interpreter.localStack;
+                    public Object call(EvaluationContext evaluationContext, int paramCount) {
+                        LocalStack localStack = evaluationContext.localStack;
                         pen.clearRect(
                                 ((Number) localStack.getParameter(0, paramCount)).floatValue(),
                                 ((Number) localStack.getParameter(1, paramCount)).floatValue(),
@@ -92,8 +92,8 @@ public class PenAdapter extends Instance {
             case rect:
                 return new Method((FunctionType) PenPropertyDescriptor.rect.type()) {
                     @Override
-                    public Object call(Interpreter interpreter, int paramCount) {
-                        LocalStack localStack = interpreter.localStack;
+                    public Object call(EvaluationContext evaluationContext, int paramCount) {
+                        LocalStack localStack = evaluationContext.localStack;
                         pen.drawRect(
                                 ((Number) localStack.getParameter(0, paramCount)).floatValue(),
                                 ((Number) localStack.getParameter(1, paramCount)).floatValue(),
@@ -105,8 +105,8 @@ public class PenAdapter extends Instance {
             case write:
                 return new Method((FunctionType) PenPropertyDescriptor.write.type()) {
                     @Override
-                    public Object call(Interpreter interpreter, int paramCount) {
-                        LocalStack localStack = interpreter.localStack;
+                    public Object call(EvaluationContext evaluationContext, int paramCount) {
+                        LocalStack localStack = evaluationContext.localStack;
                         pen.drawText(
                                 ((Number) localStack.getParameter(0, paramCount)).floatValue(),
                                 ((Number) localStack.getParameter(1, paramCount)).floatValue(),
@@ -117,8 +117,8 @@ public class PenAdapter extends Instance {
             case line:
                 return new Method((FunctionType) PenPropertyDescriptor.line.type()) {
                     @Override
-                    public Object call(Interpreter interpreter, int paramCount) {
-                        LocalStack localStack = interpreter.localStack;
+                    public Object call(EvaluationContext evaluationContext, int paramCount) {
+                        LocalStack localStack = evaluationContext.localStack;
                         pen.drawLine(
                                 ((Number) localStack.getParameter(0, paramCount)).floatValue(),
                                 ((Number) localStack.getParameter(1, paramCount)).floatValue(),

@@ -1,9 +1,9 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.type.FunctionImplementation;
+import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.type.CodeLine;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
@@ -53,10 +53,10 @@ public class IfStatement extends Node {
     }
 
     @Override
-    public Object eval(Interpreter interpreter) {
-        if (!evalChildToBoolean(interpreter, 0)) {
-            interpreter.currentLine = resolvedLine;
-            interpreter.currentIndex = resolvedIndex;
+    public Object eval(EvaluationContext evaluationContext) {
+        if (!evalChildToBoolean(evaluationContext, 0)) {
+            evaluationContext.currentLine = resolvedLine;
+            evaluationContext.currentIndex = resolvedIndex;
         }
         return null;
     }

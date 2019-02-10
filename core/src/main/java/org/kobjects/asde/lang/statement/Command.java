@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
@@ -34,19 +34,19 @@ public class Command extends Node {
     }
 
     @Override
-    public Object eval(Interpreter interpreter) {
-        Program program = interpreter.control.program;
+    public Object eval(EvaluationContext evaluationContext) {
+        Program program = evaluationContext.control.program;
         switch (kind) {
             case CONTINUE:
                 // This needs to go to the main control!!
-                interpreter.control.resume();
+                evaluationContext.control.resume();
 
             case CLEAR:
-                program.init(interpreter);
+                program.init(evaluationContext);
                 break;
 
             case DELETE:
-                program.console.delete(evalChildToInt(interpreter, 0));
+                program.console.delete(evalChildToInt(evaluationContext, 0));
                 break;
 
             case DUMP:
@@ -65,7 +65,7 @@ public class Command extends Node {
                 break;
 
             case EDIT:
-                program.console.edit(evalChildToInt(interpreter, 0));
+                program.console.edit(evalChildToInt(evaluationContext, 0));
                 break;
 
             case LIST: {
@@ -75,7 +75,7 @@ public class Command extends Node {
 
             case LOAD:
                 try {
-                    program.load(program.console.nameToReference(evalChildToString(interpreter, 0)));
+                    program.load(program.console.nameToReference(evalChildToString(evaluationContext, 0)));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -83,25 +83,25 @@ public class Command extends Node {
 
 
             case RUN:
-                program.init(interpreter);
+                program.init(evaluationContext);
 
-                interpreter.currentLine = children.length == 0 ? 0 : (int) evalChildToDouble(interpreter,0);
-                interpreter.currentIndex = 0;
+                evaluationContext.currentLine = children.length == 0 ? 0 : (int) evalChildToDouble(evaluationContext,0);
+                evaluationContext.currentIndex = 0;
                 break;
 
             case SAVE:
                 try {
-                    program.save(children.length == 0 ? program.reference : program.console.nameToReference(evalChildToString(interpreter, 0)));
+                    program.save(children.length == 0 ? program.reference : program.console.nameToReference(evalChildToString(evaluationContext, 0)));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
                 break;
 
             case TRON:
-                interpreter.control.setTrace(true);
+                evaluationContext.control.setTrace(true);
                 break;
             case TROFF:
-                interpreter.control.setTrace(false);
+                evaluationContext.control.setTrace(false);
                 break;
 
         }

@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
@@ -14,13 +14,13 @@ public class AndOperator extends Node {
     super(child1, child2);
   }
 
-  public Object eval(Interpreter interpreter) {
-    Object lVal = children[0].eval(interpreter);
+  public Object eval(EvaluationContext evaluationContext) {
+    Object lVal = children[0].eval(evaluationContext);
     if (lVal instanceof Boolean) {
-      return ((Boolean) lVal) ? evalChildToBoolean(interpreter, 1) : Boolean.FALSE;
+      return ((Boolean) lVal) ? evalChildToBoolean(evaluationContext, 1) : Boolean.FALSE;
     }
     if (lVal instanceof Double) {
-      return ((Double) lVal).intValue() & evalChildToInt(interpreter,1);
+      return ((Double) lVal).intValue() & evalChildToInt(evaluationContext,1);
     }
     throw new EvaluationException(children[0], "Boolean or Number expected for AND.");
   }

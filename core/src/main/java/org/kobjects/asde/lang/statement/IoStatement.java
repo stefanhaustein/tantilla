@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Identifier;
@@ -32,13 +32,13 @@ public class IoStatement extends Node {
     }
 
     @Override
-    public Object eval(Interpreter interpreter) {
+    public Object eval(EvaluationContext evaluationContext) {
         switch (kind) {
             case PRINT:
-                print(interpreter);
+                print(evaluationContext);
                 break;
             case INPUT:
-                input(interpreter);
+                input(evaluationContext);
                 break;
         }
         return null;
@@ -49,8 +49,8 @@ public class IoStatement extends Node {
         return Types.VOID;
     }
 
-    void input(Interpreter interpreter) {
-        Program program = interpreter.control.program;
+    void input(EvaluationContext evaluationContext) {
+        Program program = evaluationContext.control.program;
         for (int i = 0; i < children.length; i++) {
             Node child = children[i];
             if (child instanceof Identifier) {
@@ -71,17 +71,17 @@ public class IoStatement extends Node {
                         program.print("Not a number. Please enter a number: ");
                     }
                 }
-                variable.set(interpreter, value);
+                variable.set(evaluationContext, value);
             } else {
-                program.print(Program.toString(child.eval(interpreter)));
+                program.print(Program.toString(child.eval(evaluationContext)));
             }
         }
     }
 
-    void print(Interpreter interpreter) {
-        Program program = interpreter.control.program;
+    void print(EvaluationContext evaluationContext) {
+        Program program = evaluationContext.control.program;
         for (int i = 0; i < children.length; i++) {
-            Object val = children[i].eval(interpreter);
+            Object val = children[i].eval(evaluationContext);
             if (val instanceof Double) {
                 double d = (Double) val;
                 program.print((d < 0 ? "" : " ") + Program.toString(d) + " ");

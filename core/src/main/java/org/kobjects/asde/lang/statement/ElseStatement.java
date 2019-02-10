@@ -1,8 +1,8 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.type.FunctionImplementation;
-import org.kobjects.asde.lang.Interpreter;
+import org.kobjects.asde.lang.EvaluationContext;
+import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
@@ -37,9 +37,9 @@ public class ElseStatement extends Node {
     }
 
     @Override
-    public Object eval(Interpreter interpreter) {
-        interpreter.currentLine = resolvedLine;
-        interpreter.currentIndex = resolvedIndex;
+    public Object eval(EvaluationContext evaluationContext) {
+        evaluationContext.currentLine = resolvedLine;
+        evaluationContext.currentIndex = resolvedIndex;
         return null;
     }
 
