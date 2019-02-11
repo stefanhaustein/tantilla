@@ -1,7 +1,6 @@
 package org.kobjects.asde.lang.type;
 
 import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.LocalStack;
 import org.kobjects.typesystem.Type;
 
 import java.util.Arrays;

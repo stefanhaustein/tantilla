@@ -1,5 +1,5 @@
 package org.kobjects.typesystem;
 
-public interface PropertyChangeListener<T> {
-    void propertyChanged(Property<T> property);
+public interface PropertyChangeListener {
+    void propertyChanged(Property<?> property);
 }

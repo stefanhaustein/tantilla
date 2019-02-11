@@ -1,7 +1,6 @@
 package org.kobjects.asde.library.ui;
 
 import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.LocalStack;
 import org.kobjects.asde.lang.type.Method;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Pen;
@@ -92,7 +91,6 @@ public class PenAdapter extends Instance {
                 return new Method((FunctionType) PenPropertyDescriptor.rect.type()) {
                     @Override
                     public Object call(EvaluationContext evaluationContext, int paramCount) {
-                        LocalStack localStack = evaluationContext.localStack;
                         pen.drawRect(
                                 ((Number) evaluationContext.getParameter(0)).floatValue(),
                                 ((Number) evaluationContext.getParameter(1)).floatValue(),

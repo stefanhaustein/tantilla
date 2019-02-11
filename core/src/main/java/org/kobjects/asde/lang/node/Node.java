@@ -20,7 +20,7 @@ public abstract class Node {
     this.children = children == null || children.length == 0 ? EMPTY_ARRAY : children;
   }
 
-  void accept(Visitor visitor) {
+  public void accept(Visitor visitor) {
     visitor.visitNode(this);
   }
 

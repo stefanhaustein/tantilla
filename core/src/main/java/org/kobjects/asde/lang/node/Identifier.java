@@ -52,7 +52,7 @@ public class Identifier extends AssignableNode {
     appendLinked(asb, name, errors);
   }
 
-  void accept(Visitor visitor) {
+  public void accept(Visitor visitor) {
     visitor.visitIdentifier(this);
   }
 

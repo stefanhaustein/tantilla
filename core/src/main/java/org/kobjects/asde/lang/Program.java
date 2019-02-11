@@ -128,7 +128,7 @@ public class Program {
       for (GlobalSymbol symbol : symbolMap.values()) {
           symbol.init(evaluationContext, initialized);
       }
-      Arrays.fill(evaluationContext.dataPosition, 0);
+      Arrays.fill(evaluationContext.getDataPosition(), 0);
   }
 
 

@@ -50,4 +50,8 @@ public abstract class Visitor {
     public void visitApply(Apply apply) {
         visitNode(apply);
     }
+
+    public void visitPath(Path path) {
+        visitNode(path);
+    }
 }

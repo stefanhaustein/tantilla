@@ -22,7 +22,7 @@ public class Apply extends AssignableNode {
     }
 
 
-    void accept(Visitor visitor) {
+    public void accept(Visitor visitor) {
         visitor.visitApply(this);
     }
 

@@ -24,7 +24,11 @@ public class Path extends AssignableNode {
         pathName = ((Identifier) right).name;
     }
 
-    Property evalProperty(EvaluationContext evaluationContext) {
+    public void accept(Visitor visitor) {
+        visitor.visitPath(this);
+    }
+
+    public Property evalProperty(EvaluationContext evaluationContext) {
         Object base = children[0].eval(evaluationContext);
         if (!(base instanceof Instance)) {
             throw new RuntimeException("instance expected; was: " + (base == null ? null : base.getClass()) + " expr: " + children[0]);

@@ -34,7 +34,7 @@ public class ForStatement extends Node {
             double step = children.length > 2 ? evalChildToDouble(evaluationContext, 2) : 1.0;
             if (Math.signum(step) == Math.signum(Double.compare(current, end))) {
                 int nextPosition[] = new int[3];
-                if (evaluationContext.functionImplementation.find((Node statement) -> (statement instanceof NextStatement
+                if (evaluationContext.function.find((Node statement) -> (statement instanceof NextStatement
                         && (((NextStatement) statement).varName == null || ((NextStatement) statement).varName.equals(varName))), nextPosition) == null) {
                     throw new RuntimeException("FOR without NEXT");
                 }
@@ -49,7 +49,7 @@ public class ForStatement extends Node {
                 entry.step = step;
                 entry.lineNumber = evaluationContext.currentLine;
                 entry.statementIndex = evaluationContext.currentIndex;
-                evaluationContext.stack.add(entry);
+                evaluationContext.getJumpStack().add(entry);
             }
             return null;
     }

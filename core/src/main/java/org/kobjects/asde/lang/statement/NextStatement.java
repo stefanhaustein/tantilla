@@ -8,6 +8,7 @@ import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class NextStatement extends Node {
@@ -21,12 +22,13 @@ public class NextStatement extends Node {
     @Override
     public Object eval(EvaluationContext evaluationContext) {
         JumpStackEntry entry;
+        ArrayList<JumpStackEntry> jumpStack = evaluationContext.getJumpStack();
         while (true) {
-            if (evaluationContext.stack.isEmpty()
-                    || evaluationContext.stack.get(evaluationContext.stack.size() - 1).forVariable == null) {
+            if (jumpStack.isEmpty()
+                    || jumpStack.get(jumpStack.size() - 1).forVariable == null) {
                 throw new RuntimeException("NEXT " + varName+ " without FOR.");
             }
-            entry = evaluationContext.stack.remove(evaluationContext.stack.size() - 1);
+            entry = jumpStack.remove(jumpStack.size() - 1);
             if (varName == null || entry.forVariableName.equals(varName)) {
                 break;
             }
@@ -34,7 +36,7 @@ public class NextStatement extends Node {
         double current = ((Double) entry.forVariable.get(evaluationContext)) + entry.step;
         entry.forVariable.set(evaluationContext, current);
         if (Math.signum(entry.step) != Math.signum(Double.compare(current, entry.end))) {
-            evaluationContext.stack.add(entry);
+            jumpStack.add(entry);
             evaluationContext.currentLine = entry.lineNumber;
             evaluationContext.currentIndex = entry.statementIndex + 1;
             return null;

@@ -3,7 +3,7 @@ package org.kobjects.typesystem;
 import java.util.ArrayList;
 
 public abstract class Property<T> {
-    ArrayList<PropertyChangeListener<T>> listeners;
+    ArrayList<PropertyChangeListener> listeners;
 
     /**
      * Returns true if the value changed.
@@ -20,7 +20,7 @@ public abstract class Property<T> {
 
     public void notifyChanged() {
                 if (listeners != null) {
-                    for (PropertyChangeListener<T> listener : listeners) {
+                    for (PropertyChangeListener listener : listeners) {
                         listener.propertyChanged(this);
                     }
                 }
@@ -28,7 +28,7 @@ public abstract class Property<T> {
 
     }
 
-    public synchronized void addListener(PropertyChangeListener<T> listener) {
+    public synchronized void addListener(PropertyChangeListener listener) {
         if (listeners == null) {
             listeners = new ArrayList<>();
         }

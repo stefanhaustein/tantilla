@@ -10,7 +10,7 @@ import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
-public class AssignStatement extends Node {
+public class AssignStatement extends Statement {
     public AssignStatement(Node target, Node value) throws Exception {
         super(target, value);
         if (!(target instanceof AssignableNode)) {
@@ -37,10 +37,6 @@ public class AssignStatement extends Node {
         return null;
     }
 
-    @Override
-    public Type returnType() {
-        return Types.VOID;
-    }
 
     @Override
     public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {

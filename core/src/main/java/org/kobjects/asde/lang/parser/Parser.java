@@ -22,6 +22,7 @@ import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.statement.NextStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.MathOperator;
+import org.kobjects.asde.lang.statement.OnStatement;
 import org.kobjects.asde.lang.statement.RemStatement;
 import org.kobjects.asde.lang.statement.FunctionReturnStatement;
 import org.kobjects.asde.lang.statement.LegacyStatement;
@@ -283,7 +284,7 @@ public class Parser {
     } else if (tryConsume(tokenizer, "GOSUB")) {
       suffix[0] = " GOSUB ";
     } else {
-      return parseOn(tokenizer, expr);
+      return new OnStatement(expr);
     }
     List<Node> expressions = new ArrayList<Node>();
     expressions.add(expr);
@@ -292,10 +293,6 @@ public class Parser {
     } while (tokenizer.tryConsume(","));
     return new LegacyStatement(LegacyStatement.Kind.ON, suffix,
             expressions.toArray(new Node[expressions.size()]));
-  }
-
-  private Node parseOn(ExpressionParser.Tokenizer tokenizer, Node expr) {
-    throw tokenizer.exception("GOTO or GOSUB expected.", null);
   }
 
 

@@ -16,6 +16,7 @@ import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -95,7 +96,7 @@ public class LegacyStatement extends Node {
         JumpStackEntry entry = new JumpStackEntry();
         entry.lineNumber = evaluationContext.currentLine;
         entry.statementIndex = evaluationContext.currentIndex;
-        evaluationContext.stack.add(entry);
+        evaluationContext.getJumpStack().add(entry);
         evaluationContext.currentLine = evalChildToInt(evaluationContext, 0);
         evaluationContext.currentIndex = 0;
         break;
@@ -108,7 +109,7 @@ public class LegacyStatement extends Node {
             JumpStackEntry entry = new JumpStackEntry();
             entry.lineNumber = evaluationContext.currentLine;
             entry.statementIndex = evaluationContext.currentIndex;
-            evaluationContext.stack.add(entry);
+            evaluationContext.getJumpStack().add(entry);
           }
           evaluationContext.currentLine = (int) evalChildToDouble(evaluationContext, index);
           evaluationContext.currentIndex = 0;
@@ -117,35 +118,38 @@ public class LegacyStatement extends Node {
       }
       case READ:
         for (int i = 0; i < children.length; i++) {
+          int[] dataPosition = evaluationContext.getDataPosition();
           while (evaluationContext.dataStatement == null
-              || evaluationContext.dataPosition[2] >= evaluationContext.dataStatement.children.length) {
-            evaluationContext.dataPosition[2] = 0;
+              || dataPosition[2] >= evaluationContext.dataStatement.children.length) {
+            dataPosition[2] = 0;
             if (evaluationContext.dataStatement != null) {
-              evaluationContext.dataPosition[1]++;
+              dataPosition[1]++;
             }
-            evaluationContext.dataStatement = (LegacyStatement) program.main.find((Node statement)->(statement instanceof LegacyStatement && ((LegacyStatement) statement).kind == Kind.DATA), evaluationContext.dataPosition);
+            evaluationContext.dataStatement = (LegacyStatement) program.main.find((Node statement)->(statement instanceof LegacyStatement && ((LegacyStatement) statement).kind == Kind.DATA), dataPosition);
             if (evaluationContext.dataStatement == null) {
               throw new RuntimeException("Out of data.");
             }
           }
-          ((AssignableNode) children[i]).set(evaluationContext, evaluationContext.dataStatement.children[evaluationContext.dataPosition[2]++].eval(evaluationContext));
+          ((AssignableNode) children[i]).set(evaluationContext, evaluationContext.dataStatement.children[dataPosition[2]++].eval(evaluationContext));
         }
         break;
 
       case RESTORE:
         evaluationContext.dataStatement = null;
-        Arrays.fill(evaluationContext.dataPosition, 0);
+        int[] dataPosition = evaluationContext.getDataPosition();
+        Arrays.fill(dataPosition, 0);
         if (children.length > 0) {
-          evaluationContext.dataPosition[0] = (int) evalChildToDouble(evaluationContext, 0);
+          dataPosition[0] = (int) evalChildToDouble(evaluationContext, 0);
         }
         break;
 
-      case RETURN:
+      case RETURN: {
+        ArrayList<JumpStackEntry> jumpStack = evaluationContext.getJumpStack();
         while (true) {
-          if (evaluationContext.stack.isEmpty()) {
+          if (jumpStack.isEmpty()) {
             throw new RuntimeException("RETURN without GOSUB.");
           }
-          JumpStackEntry entry = evaluationContext.stack.remove(evaluationContext.stack.size() - 1);
+          JumpStackEntry entry = jumpStack.remove(jumpStack.size() - 1);
           if (entry.forVariable == null) {
             evaluationContext.currentLine = entry.lineNumber;
             evaluationContext.currentIndex = entry.statementIndex + 1;
@@ -153,6 +157,7 @@ public class LegacyStatement extends Node {
           }
         }
         break;
+      }
 
       case STOP:
         evaluationContext.control.pause();

@@ -11,7 +11,7 @@ import org.kobjects.typesystem.Type;
 import java.io.IOException;
 import java.util.Map;
 
-public class Command extends Node {
+public class Command extends Statement {
 
     public enum Kind {
         CLEAR, CONTINUE,
