@@ -12,7 +12,9 @@ import org.kobjects.asde.lang.event.StartStopListener;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.type.CodeLine;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.expressionparser.ExpressionParser;
+import org.kobjects.typesystem.FunctionType;
 
 import java.util.List;
 
@@ -83,28 +85,23 @@ public class Shell {
                 CodeLine codeLine = new CodeLine(-2, statements);
                 program.processDeclarations(codeLine);
 
+                FunctionImplementation wrapper = new FunctionImplementation(program, new FunctionType(Types.VOID));
+                wrapper.setLine(codeLine);
                 ProgramValidationContext programValidationContext = new ProgramValidationContext(program);
-                FunctionValidationContext functionValidationContext = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.SHELL, program.main);
-                int index = 0;
-                for (Node node : codeLine) {
-                    node.resolve(functionValidationContext, -2, index++);
-                    if (functionValidationContext.errors.size() > 0) {
-                        Exception exception = functionValidationContext.errors.values().iterator().next();
+                FunctionValidationContext functionValidationContext = wrapper.validate(programValidationContext);
+
+                if (functionValidationContext.errors.size() > 0) {
+                    for (Exception exception : functionValidationContext.errors.values()) {
                         throw new RuntimeException(exception);
                     }
                 }
 
                 AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-                if (functionValidationContext.errors.size() == 0) {
-                    asb.append(codeLine.toString(), Annotations.ACCENT_COLOR);
-                } else {
-                    // Show error like a syntax error instead?
-                    codeLine.toString(asb, functionValidationContext.errors);
-                }
+                asb.append(codeLine.toString(), Annotations.ACCENT_COLOR);
                 asb.append("\n");
                 program.console.print(asb.build());
 
-                shellInterpreter.runStatementsAsync(codeLine, mainInterpreter, resultConsumer);
+                shellInterpreter.runStatementsAsync(wrapper, mainInterpreter, resultConsumer);
                 break;
         }
     }
