@@ -88,8 +88,8 @@ public class Shell {
                 FunctionImplementation wrapper = new FunctionImplementation(program, new FunctionType(Types.VOID));
                 wrapper.setLine(codeLine);
                 ProgramValidationContext programValidationContext = new ProgramValidationContext(program);
-                FunctionValidationContext functionValidationContext = wrapper.validate(programValidationContext);
-
+                FunctionValidationContext functionValidationContext = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.SHELL, wrapper);
+                wrapper.validate(functionValidationContext);
                 if (functionValidationContext.errors.size() > 0) {
                     for (Exception exception : functionValidationContext.errors.values()) {
                         throw new RuntimeException(exception);

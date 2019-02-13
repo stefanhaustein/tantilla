@@ -25,17 +25,19 @@ public class OnStatement extends Statement implements PropertyChangeListener {
     @Override
     public Object eval(EvaluationContext evaluationContext) {
         context = new EvaluationContext(evaluationContext);
+        context.currentIndex++;
         children[0].accept(new ListenerAttachmentVisitor(evaluationContext));
 
-        // jump to END
-
+        // TODO: jump to END instead if available
+        evaluationContext.currentLine++;
         return null;
     }
 
     @Override
     public void propertyChanged(Property<?> property) {
-        // TODO: Evaluate expr in context
-        System.out.println("Property changed: " + property);
+        if (evalChildToBoolean(context, 0)) {
+            context.function.callImpl(new EvaluationContext(context));
+        }
     }
 
 

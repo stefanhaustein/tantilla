@@ -34,11 +34,7 @@ public class FunctionImplementation implements Function {
         this.parameterNames = parameterNames;
     }
 
-    public FunctionValidationContext validate(ProgramValidationContext programValidationContext) {
-        FunctionValidationContext resolutionContext = new FunctionValidationContext(programValidationContext,
-                this == program.main && program.legacyMode ? FunctionValidationContext.ResolutionMode.LEGACY : FunctionValidationContext.ResolutionMode.STRICT,
-                this, parameterNames);
-
+    public void validate(FunctionValidationContext functionValidationContext) {
         int indent = 0;
         for (Map.Entry<Integer,CodeLine> entry : code.entrySet()) {
             int addLater = 0;
@@ -60,13 +56,12 @@ public class FunctionImplementation implements Function {
                         indent--;
                     }
                 }
-                statement.resolve(resolutionContext, entry.getKey(), i);
+                statement.resolve(functionValidationContext, entry.getKey(), i);
             }
             line.setIndent(indent);
             indent += addLater;
         }
-        localVariableCount = resolutionContext.getLocalVariableCount();
-        return resolutionContext;
+        localVariableCount = functionValidationContext.getLocalVariableCount();
     }
 
     @Override
@@ -87,10 +82,10 @@ public class FunctionImplementation implements Function {
         return localVariableCount;
     }
 
-    Object callImpl(EvaluationContext newContext) {
+    public Object callImpl(EvaluationContext newContext) {
         try {
             ProgramControl control = newContext.control;
-            if (newContext.currentLine > -1) {
+      //      if (newContext.currentLine > -1) {
                 Map.Entry<Integer, CodeLine> entry;
                 while (null != (entry = ceilingEntry(newContext.currentLine)) && !Thread.currentThread().isInterrupted()) {
                     newContext.currentLine = entry.getKey();
@@ -116,7 +111,7 @@ public class FunctionImplementation implements Function {
                         }
                     }
                 }
-            }
+        //    }
             return newContext.returnValue;
         } catch (Exception e) {
             throw new WrappedExecutionException(this, newContext.currentLine, e);

@@ -114,7 +114,9 @@ public class GlobalSymbol implements ResolvedSymbol {
             return;
         }
         if (value instanceof FunctionImplementation) {
-            FunctionValidationContext context = ((FunctionImplementation) value).validate(programValidationContext);
+            FunctionImplementation function = (FunctionImplementation) value;
+            FunctionValidationContext context = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.STRICT, function);
+            function.validate(context);
             this.errors = context.errors;
             this.dependencies = context.dependencies;
         } else if (initializer != null) {

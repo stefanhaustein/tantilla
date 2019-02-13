@@ -16,6 +16,8 @@ public class FunctionValidationContext {
     public final Program program;
     public HashMap<Node, Exception> errors = new HashMap<>();
     public final ResolutionMode mode;
+
+    /** Will be null when validating symbols! */
     public final FunctionImplementation functionImplementation;
 
     private int localSymbolCount;
@@ -23,14 +25,16 @@ public class FunctionValidationContext {
     public HashSet<GlobalSymbol> dependencies = new HashSet<>();
     private final ProgramValidationContext programValidationContext;
 
-    public FunctionValidationContext(ProgramValidationContext programValidationContext, ResolutionMode mode, FunctionImplementation functionImplementation, String... parameterNames) {
+    public FunctionValidationContext(ProgramValidationContext programValidationContext, ResolutionMode mode, FunctionImplementation functionImplementation) {
         this.programValidationContext = programValidationContext;
         this.program = programValidationContext.program;
         this.mode = mode;
         this.functionImplementation = functionImplementation;
         startBlock(BlockType.ROOT);
-        for (int i = 0; i < parameterNames.length; i++) {
-            currentBlock.localSymbols.put(parameterNames[i], new LocalSymbol(localSymbolCount++, functionImplementation.getType().getParameterType(i), false));
+        if (functionImplementation != null) {
+            for (int i = 0; i < functionImplementation.parameterNames.length; i++) {
+                currentBlock.localSymbols.put(functionImplementation.parameterNames[i], new LocalSymbol(localSymbolCount++, functionImplementation.getType().getParameterType(i), false));
+            }
         }
     }
 

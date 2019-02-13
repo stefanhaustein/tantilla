@@ -1,9 +1,10 @@
 package org.kobjects.typesystem;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 public abstract class Property<T> {
-    ArrayList<PropertyChangeListener> listeners;
+    LinkedHashSet<PropertyChangeListener> listeners;
 
     /**
      * Returns true if the value changed.
@@ -30,7 +31,7 @@ public abstract class Property<T> {
 
     public synchronized void addListener(PropertyChangeListener listener) {
         if (listeners == null) {
-            listeners = new ArrayList<>();
+            listeners = new LinkedHashSet<>();
         }
         listeners.add(listener);
     }

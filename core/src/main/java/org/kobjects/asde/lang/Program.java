@@ -351,7 +351,10 @@ public class Program {
             context.startChain(entry.getKey());
             entry.getValue().validate(context);
         }
-        main.validate(context);
+        FunctionValidationContext functionValidationContext = new FunctionValidationContext(context,
+                FunctionValidationContext.ResolutionMode.STRICT,
+                main);
+        main.validate(functionValidationContext);
     }
 
     public synchronized void setValue(GlobalSymbol.Scope scope, String name, Object value) {
