@@ -5,6 +5,7 @@ import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
+import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -61,7 +62,7 @@ public class ElseStatement extends Node {
         int level;
 
         @Override
-        public boolean statementMatches(Node statement) {
+        public boolean statementMatches(CodeLine line, int index, Node statement) {
             if (statement instanceof IfStatement && ((IfStatement) statement).multiline && !((IfStatement) statement).elseIf) {
                 level++;
             } else if (statement instanceof EndIfStatement) {

@@ -190,7 +190,7 @@ public class FunctionImplementation implements Function {
             CodeLine line = entry.getValue();
             while (position[1] < line.length()) {
                 Node statement = line.get(position[1]);
-                if (matcher.statementMatches(statement)) {
+                if (matcher.statementMatches(line, position[1], statement)) {
                         return statement;
                 }
                 position[1]++;
@@ -218,7 +218,7 @@ public class FunctionImplementation implements Function {
     }
 
     public interface StatementMatcher {
-        boolean statementMatches(Node statement);
+        boolean statementMatches(CodeLine line, int index, Node statement);
     }
 
     class StatementIterator implements Iterator<Node> {

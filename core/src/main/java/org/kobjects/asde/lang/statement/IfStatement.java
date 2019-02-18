@@ -77,7 +77,7 @@ public class IfStatement extends Node {
         int skip;
 
         @Override
-        public boolean statementMatches(Node statement) {
+        public boolean statementMatches(CodeLine line, int index, Node statement) {
             if (statement instanceof IfStatement && ((IfStatement) statement).multiline && !((IfStatement) statement).elseIf) {
                 skip++;
             } else if (statement instanceof ElseStatement && ((ElseStatement) statement).multiline && skip == 0) {

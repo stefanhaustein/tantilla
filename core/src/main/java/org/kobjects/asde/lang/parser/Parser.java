@@ -13,6 +13,7 @@ import org.kobjects.asde.lang.statement.Command;
 import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.ElseStatement;
 import org.kobjects.asde.lang.statement.EndIfStatement;
+import org.kobjects.asde.lang.statement.EndStatement;
 import org.kobjects.asde.lang.statement.ForStatement;
 import org.kobjects.asde.lang.statement.GotoStatement;
 import org.kobjects.asde.lang.statement.IfStatement;
@@ -89,7 +90,7 @@ public class Parser {
           result.add(new EndIfStatement());
           return;
         }
-        result.add(new LegacyStatement(LegacyStatement.Kind.END));
+        result.add(new EndStatement());
         return;
       case "ENDIF":
         tokenizer.consumeIdentifier();

@@ -25,7 +25,6 @@ public class LegacyStatement extends Node {
 
   public enum Kind {
     DATA, DEF, DUMP,
-    END,
     GOSUB,
     ON,
     READ, RESTORE, RETURN,
@@ -87,11 +86,6 @@ public class LegacyStatement extends Node {
       case DATA:
         break;
 
-      case END:
-        evaluationContext.currentLine = Integer.MAX_VALUE;
-        evaluationContext.currentIndex = 0;
-        break;
-
       case GOSUB: {
         JumpStackEntry entry = new JumpStackEntry();
         entry.lineNumber = evaluationContext.currentLine;
@@ -125,7 +119,7 @@ public class LegacyStatement extends Node {
             if (evaluationContext.dataStatement != null) {
               dataPosition[1]++;
             }
-            evaluationContext.dataStatement = (LegacyStatement) program.main.find((Node statement)->(statement instanceof LegacyStatement && ((LegacyStatement) statement).kind == Kind.DATA), dataPosition);
+            evaluationContext.dataStatement = (LegacyStatement) program.main.find((line, index, statement)->(statement instanceof LegacyStatement && ((LegacyStatement) statement).kind == Kind.DATA), dataPosition);
             if (evaluationContext.dataStatement == null) {
               throw new RuntimeException("Out of data.");
             }
