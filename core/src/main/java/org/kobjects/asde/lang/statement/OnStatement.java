@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.statement;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.FunctionValidationContext;
@@ -10,6 +11,8 @@ import org.kobjects.asde.lang.node.Visitor;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.PropertyChangeListener;
+
+import java.util.Map;
 
 public class OnStatement extends Statement implements PropertyChangeListener {
 
@@ -52,6 +55,12 @@ public class OnStatement extends Statement implements PropertyChangeListener {
         }
     }
 
+
+    @Override
+    public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+        appendLinked(asb, "ON ", errors);
+        children[0].toString(asb, errors);
+    }
 
     class ListenerAttachmentVisitor extends Visitor {
 

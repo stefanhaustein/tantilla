@@ -1,0 +1,9 @@
+LET ship = screen.newSprite()
+
+10 ship.size = 30
+20 ship.face = "🚀"
+25 dpad.visible = TRUE
+30 on dpad.right : ship.rotation = 90
+35 on not dpad.right and not dpad.left : ship.rotation = 0
+60 on dpad.left : ship.rotation = -90
+80 end
