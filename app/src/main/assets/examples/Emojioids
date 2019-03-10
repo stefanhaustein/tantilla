@@ -1,14 +1,23 @@
 LET ship = screen.newSprite()
 
+SUB shoot()
+10 Let shot = screen.newSprite()
+15 shot.size = 5
+20 shot.face = "🔴"
+30 shot.direction = ship.angle + 45
+40 shot.speed = 200
+END SUB
+
 10 ship.size = 30
 20 ship.face = "🚀"
 25 dpad.visible = TRUE
 30 on dpad.right :
-31 ship.rotation = 90
+31   ship.rotation = 90
 32 end
 40 on dpad.left :
-43 ship.rotation = -90
+43   ship.rotation = -90
 46 end
 60 on not dpad.right and not dpad.left :
-63 ship.rotation = 0
+63   ship.rotation = 0
 66 end
+70 on dpad.fire : shoot
