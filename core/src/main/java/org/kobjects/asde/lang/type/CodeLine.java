@@ -4,6 +4,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.ElseStatement;
 import org.kobjects.asde.lang.statement.IfStatement;
+import org.kobjects.asde.lang.statement.OnStatement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +37,9 @@ public class CodeLine implements Iterable<Node> {
                      || statements[i - 1] instanceof ElseStatement ? " " : " : ");
             }
             statements[i].toString(sb, errors);
+        }
+        if (statements.length > 0 && statements[statements.length - 1] instanceof OnStatement) {
+            sb.append(" :");
         }
     }
 

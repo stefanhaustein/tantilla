@@ -3,10 +3,12 @@ package org.kobjects.asde.lang;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.statement.ElseStatement;
 import org.kobjects.asde.lang.statement.EndIfStatement;
+import org.kobjects.asde.lang.statement.EndStatement;
 import org.kobjects.asde.lang.statement.ForStatement;
 import org.kobjects.asde.lang.statement.IfStatement;
 import org.kobjects.asde.lang.statement.NextStatement;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.statement.OnStatement;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Function;
 import org.kobjects.asde.lang.type.Types;
@@ -41,15 +43,17 @@ public class FunctionImplementation implements Function {
             CodeLine line = entry.getValue();
             for (int i = 0; i < line.length(); i++) {
                 Node statement = line.get(i);
+                boolean isLast = i == line.length() - 1;
                 if (statement instanceof ElseStatement && ((ElseStatement) statement).multiline) {
                     addLater++;
                     indent--;
                 } else if (statement instanceof ForStatement
+                        || (statement instanceof OnStatement && isLast)
                         || (statement instanceof IfStatement
-                        && ((IfStatement) statement).multiline
-                        && !((IfStatement) statement).elseIf)) {
+                            && ((IfStatement) statement).multiline
+                            && !((IfStatement) statement).elseIf)) {
                     addLater++;
-                } else if (statement instanceof NextStatement || statement instanceof EndIfStatement) {
+                } else if (statement instanceof NextStatement || statement instanceof EndIfStatement || statement instanceof EndStatement) {
                     if (addLater > 0) {
                         addLater--;
                     } else {

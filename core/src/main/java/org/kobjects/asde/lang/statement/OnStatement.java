@@ -42,9 +42,7 @@ public class OnStatement extends Statement implements PropertyChangeListener {
         context = new EvaluationContext(evaluationContext);
         context.currentIndex++;
         children[0].accept(new ListenerAttachmentVisitor(evaluationContext));
-
-        // TODO: jump to END instead if available
-        evaluationContext.currentLine++;
+        evaluationContext.currentLine = lineBeyondEnd;
         return null;
     }
 
