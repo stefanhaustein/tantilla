@@ -1,5 +1,17 @@
 LET ship = screen.newSprite()
 
+
+SUB createAsteroid()
+10 LET asteroid = screen.newSprite()
+20 asteroid.face = "🥔"
+25 asteroid.size = 40
+30 asteroid.left = 0
+40 asteroid.top = 0
+50 asteroid.rotation = 10
+60 asteroid.dx = rnd() * 10
+70 asteroid.dy = rnd() * 10
+END SUB
+
 SUB shoot()
 10 Let shot = screen.newSprite()
 15 shot.size = 5
@@ -20,4 +32,7 @@ END SUB
 60 on not dpad.right and not dpad.left :
 63   ship.rotation = 0
 66 end
-70 on dpad.fire : shoot
+70 on dpad.fire :
+80   shoot
+90 end
+100 createAsteroid

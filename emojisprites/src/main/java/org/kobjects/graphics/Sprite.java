@@ -3,6 +3,9 @@ package org.kobjects.graphics;
 import android.content.Context;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 
 public class Sprite extends PositionedViewHolder<ImageView> implements Animated {
@@ -181,5 +184,24 @@ public class Sprite extends PositionedViewHolder<ImageView> implements Animated 
         if (tag instanceof Animated) {
             ((Animated) tag).animate(dt);
         }
+    }
+
+    public Collection<Sprite> collisions() {
+        if (anchor != screen) {
+            return Collections.emptyList();
+        }
+        ArrayList<Sprite> result = new ArrayList<>();
+        for(PositionedViewHolder<?> widget : screen.widgets) {
+            if (widget != this && widget instanceof Sprite) {
+                Sprite other = (Sprite) widget;
+                double distX = other.x - x;
+                double distY = other.y - y;
+                double minDist = (other.size + size) * 0.4;
+                if (distX * distX + distY * distY < minDist * minDist) {
+                    result.add(other);
+                }
+            }
+        }
+        return result;
     }
 }

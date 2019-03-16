@@ -1,17 +1,23 @@
 package org.kobjects.asde.library.ui;
 
 import org.kobjects.asde.lang.EvaluationContext;
+import org.kobjects.asde.lang.type.Array;
+import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.type.Method;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Animated;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Instance;
+import org.kobjects.typesystem.LazyProperty;
 import org.kobjects.typesystem.PhysicalProperty;
 import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.Type;
 import org.kobjects.graphics.Sprite;
+
+import java.util.Collection;
+import java.util.List;
 
 public class SpriteAdapter extends Instance implements Animated {
 
@@ -45,6 +51,18 @@ public class SpriteAdapter extends Instance implements Animated {
     final PhysicalProperty<Double> speed = new PhysicalProperty<>(0.0);
     final PhysicalProperty<Double> direction = new PhysicalProperty<>(0.0);
     final PhysicalProperty<Double> rotation = new PhysicalProperty<>(0.0);
+    final LazyProperty<Array> collisions = new LazyProperty<Array>() {
+        @Override
+        protected Array compute() {
+            Collection<Sprite> collisions = sprite.collisions();
+            Object[] adapters = new Object[collisions.size()];
+            int index = 0;
+            for (Sprite sprite : collisions) {
+                adapters[index++] = sprite.getTag();
+            }
+            return new Array(SpriteAdapter.CLASSIFIER, adapters);
+        }
+    };
 
     public SpriteAdapter(final ScreenAdapter screen) {
         super(CLASSIFIER);
@@ -78,6 +96,7 @@ public class SpriteAdapter extends Instance implements Animated {
             case speed: return speed;
             case direction: return direction;
             case rotation: return rotation;
+            case collisions: return collisions;
             case say: return new Method((FunctionType) SpriteMetaProperty.say.type()) {
                         @Override
                         public Object call(EvaluationContext evaluationContext, int paramCount) {
@@ -102,6 +121,7 @@ public class SpriteAdapter extends Instance implements Animated {
         if (r != 0.0) {
             angle.set(angle.get() + r * dt / 1000);
         }
+        collisions.invalidate();
     }
 
 
@@ -237,7 +257,7 @@ public class SpriteAdapter extends Instance implements Animated {
         left(Types.NUMBER), right(Types.NUMBER), top(Types.NUMBER), bottom(Types.NUMBER),
         speed(Types.NUMBER), direction(Types.NUMBER), dx(Types.NUMBER), dy(Types.NUMBER),
         angle(Types.NUMBER), label(TextBoxAdapter.CLASSIFIER), bubble(TextBoxAdapter.CLASSIFIER), face(Types.STRING),
-        rotation(Types.NUMBER),
+        rotation(Types.NUMBER), collisions(new ArrayType(SpriteAdapter.CLASSIFIER)),
         anchor(SpriteAdapter.CLASSIFIER),
         say(new FunctionType(Types.VOID, Types.STRING));
 
