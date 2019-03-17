@@ -12,7 +12,7 @@ public enum Builtin implements Function {
     CHR$(1, Types.NUMBER), COS(1, Types.NUMBER),
     EXP(1, Types.NUMBER),
     INT(1, Types.NUMBER),
-    LEFT$(2, Types.STRING, Types.NUMBER), LEN(1, Types.STRING), LOG(1, Types.NUMBER),
+    LEFT$(2, Types.STRING, Types.NUMBER), LEN(1, (Type) null), LOG(1, Types.NUMBER),
     MID$(2, Types.STRING, Types.NUMBER, Types.NUMBER),
     RIGHT$(2, Types.STRING, Types.NUMBER), RND(0, Types.NUMBER),
     SGN(1, Types.NUMBER), STR$(1, Types.NUMBER), SQR(1, Types.NUMBER), SIN(1, Types.NUMBER),
@@ -56,7 +56,16 @@ public enum Builtin implements Function {
         String s = (String) evaluationContext.getParameter(0);
         return s.substring(0, Math.min(s.length(), asInt(evaluationContext.getParameter(1))));
       }
-      case LEN: return (double) ((String) evaluationContext.getParameter(0)).length();
+      case LEN: {
+        Object value = evaluationContext.getParameter(0);
+        if (value instanceof String) {
+          return ((String) value).length();
+        }
+        if (value instanceof Array) {
+          return ((Array) value).length();
+        }
+        return value == null ? 0 : 1;
+      }
       case LOG: return Math.log((Double) evaluationContext.getParameter(0));
       case MID$: {
         String s = (String) evaluationContext.getParameter(0);

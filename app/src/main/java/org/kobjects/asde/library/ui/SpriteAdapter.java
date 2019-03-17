@@ -31,7 +31,6 @@ public class SpriteAdapter extends Instance implements Animated {
 
 
     final Sprite sprite;
-    private ScreenAdapter screen;
 
     final NumberProperty x = new NumberProperty(SpriteMetaProperty.x);
     final NumberProperty y = new NumberProperty(SpriteMetaProperty.y);
@@ -66,7 +65,6 @@ public class SpriteAdapter extends Instance implements Animated {
 
     public SpriteAdapter(final ScreenAdapter screen) {
         super(CLASSIFIER);
-        this.screen = screen;
         sprite = new Sprite(screen.getScreen());
         sprite.setTag(this);
         sprite.setSize(10);

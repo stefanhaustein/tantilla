@@ -72,4 +72,8 @@ public class Array implements Function {
         sb.append("}");
         return sb.toString();
     }
+
+    public int length() {
+        return data.length;
+    }
 }
