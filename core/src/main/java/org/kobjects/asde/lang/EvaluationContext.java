@@ -41,9 +41,9 @@ public class EvaluationContext {
     public EvaluationContext(EvaluationContext parentContext) {
         control = parentContext.control;
         function = parentContext.function;
-        dataStack = new DataStack(stackTop);
         stackBase = 0;
         stackTop = parentContext.stackTop - parentContext.stackBase;
+        dataStack = new DataStack(stackTop);
         currentLine = parentContext.currentLine;
         currentIndex = parentContext.currentIndex;
         System.arraycopy(parentContext.dataStack.data, parentContext.stackBase, dataStack.data, stackBase, stackTop);

@@ -15,7 +15,7 @@ public abstract class LazyProperty<T> extends Property<T> {
             value = compute();
             valid = true;
         }
-        return null;
+        return value;
     }
 
     public synchronized void invalidate() {

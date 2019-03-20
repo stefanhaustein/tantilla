@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -93,9 +94,11 @@ public class Screen extends ViewHolder<FrameLayout> implements Animated {
 
     @Override
     public void animate(float dt) {
-        for(PositionedViewHolder<?> widget : widgets) {
-            if (widget instanceof Animated) {
-                ((Animated) widget).animate(dt);
+        synchronized (widgets) {
+            for (PositionedViewHolder<?> widget : widgets) {
+                if (widget instanceof Animated) {
+                    ((Animated) widget).animate(dt);
+                }
             }
         }
     }

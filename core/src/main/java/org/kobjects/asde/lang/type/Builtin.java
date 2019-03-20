@@ -59,12 +59,13 @@ public enum Builtin implements Function {
       case LEN: {
         Object value = evaluationContext.getParameter(0);
         if (value instanceof String) {
-          return ((String) value).length();
+          return (double) ((String) value).length();
         }
         if (value instanceof Array) {
-          return ((Array) value).length();
+          return (double) ((Array) value).length();
         }
-        return value == null ? 0 : 1;
+        System.err.println("undefined len of " + value);
+        return value == null ? 0.0 : 1.0;
       }
       case LOG: return Math.log((Double) evaluationContext.getParameter(0));
       case MID$: {

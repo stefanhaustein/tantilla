@@ -8,8 +8,11 @@ SUB createAsteroid()
 30 asteroid.left = 0
 40 asteroid.top = 0
 50 asteroid.rotation = 10
-60 asteroid.dx = rnd() * 10
-70 asteroid.dy = rnd() * 10
+60 asteroid.dx = 1
+70 asteroid.dy = -1
+80 on len(asteroid.collisions) > 0 :
+90   asteroid.label.text = "" + asteroid.collisions
+100 end
 END SUB
 
 SUB shoot()

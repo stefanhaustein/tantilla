@@ -44,7 +44,7 @@ public class RelationalOperator extends Node {
     Object lVal = children[0].eval(evaluationContext);
     Object rVal = children[1].eval(evaluationContext);
     if (lVal.getClass() != rVal.getClass()) {
-      throw new RuntimeException("Types don't match for relational operator '" + getName() + "'");
+      throw new RuntimeException("Types (" + lVal.getClass() + " and " + rVal.getClass() + ") don't match for relational operator '" + getName() + "'");
     }
     int cmp = (((Comparable) lVal).compareTo(rVal));
     return cmp == val1 || cmp == val2;
