@@ -3,18 +3,15 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.FunctionValidationContext;
-import org.kobjects.typesystem.Classifier;
-import org.kobjects.typesystem.Instance;
-import org.kobjects.typesystem.Property;
-import org.kobjects.typesystem.PropertyDescriptor;
-import org.kobjects.typesystem.Type;
+import org.kobjects.typesystem.*;
 
 import java.util.Map;
 
 
 public class Path extends AssignableNode {
     String pathName;
-    PropertyDescriptor resolved;
+    PropertyDescriptor resolvedPropertyDescriptor;
+    Object resolvedConstant;
 
     public Path(Node left, Node right) {
         super(left);
@@ -34,7 +31,7 @@ public class Path extends AssignableNode {
             throw new RuntimeException("instance expected; was: " + (base == null ? null : base.getClass()) + " expr: " + children[0]);
         }
         Instance instance = (Instance) base;
-        PropertyDescriptor propertyDescriptor = resolved != null ? resolved : instance.getType().getPropertyDescriptor(pathName);
+        PropertyDescriptor propertyDescriptor = resolvedPropertyDescriptor != null ? resolvedPropertyDescriptor : instance.getType().getPropertyDescriptor(pathName);
         if (propertyDescriptor == null) {
             throw new RuntimeException("Property '" + pathName + "' does not exist.");
         }
@@ -44,20 +41,31 @@ public class Path extends AssignableNode {
     @Override
     protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
         if (children[0].returnType() instanceof Classifier) {
-            resolved = ((Classifier) children[0].returnType()).getPropertyDescriptor(pathName);
-        } else if (children[0].returnType() != null) {
-            throw new RuntimeException("Classifier expected as path base.");
+            resolvedPropertyDescriptor = ((Classifier) children[0].returnType()).getPropertyDescriptor(pathName);
+            return;
+        }
+        if (children[0].returnType() instanceof MetaType) {
+            Type type = ((MetaType) children[0].returnType()).getType();
+            if (type instanceof EnumType) {
+                EnumType enumType = (EnumType) type;
+                resolvedConstant = enumType.getLiteral(pathName);
+                return;
+            }
+        }
+
+        if (children[0].returnType() != null) {
+            throw new RuntimeException("Classifier or Enum expected as path base.");
         }
     }
 
     @Override
     public Object eval(EvaluationContext evaluationContext) {
-        return evalProperty(evaluationContext).get();
+        return resolvedConstant != null ? resolvedConstant : evalProperty(evaluationContext).get();
     }
 
     @Override
     public Type returnType() {
-        return resolved == null ? null : resolved.type();
+        return resolvedPropertyDescriptor == null ? null : resolvedPropertyDescriptor.type();
     }
 
     @Override

@@ -6,13 +6,8 @@ import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Method;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Screen;
-import org.kobjects.typesystem.Classifier;
-import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.Instance;
-import org.kobjects.typesystem.PhysicalProperty;
-import org.kobjects.typesystem.PropertyDescriptor;
-import org.kobjects.typesystem.Property;
-import org.kobjects.typesystem.Type;
+import org.kobjects.typesystem.*;
+
 
 public class ScreenAdapter extends Instance implements View.OnLayoutChangeListener{
     private final Screen screen;
@@ -25,7 +20,7 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
     final PhysicalProperty<Double> widthProperty = new PhysicalProperty<>(0.0);
     final PhysicalProperty<Double> heightProperty = new PhysicalProperty<>(0.0);
 
-    public static Classifier CLASSIFIER =
+  public static Classifier CLASSIFIER =
             new Classifier(ScreenMetaProperty.values()) {
         @Override
         public ScreenAdapter createInstance() {

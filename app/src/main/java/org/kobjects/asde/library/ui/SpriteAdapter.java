@@ -6,64 +6,56 @@ import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.type.Method;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Animated;
-import org.kobjects.typesystem.Classifier;
-import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.Instance;
-import org.kobjects.typesystem.LazyProperty;
-import org.kobjects.typesystem.PhysicalProperty;
-import org.kobjects.typesystem.PropertyDescriptor;
-import org.kobjects.typesystem.Property;
-import org.kobjects.typesystem.Type;
+import org.kobjects.typesystem.*;
 import org.kobjects.graphics.Sprite;
 
 import java.util.Collection;
 import java.util.List;
 
 public class SpriteAdapter extends Instance implements Animated {
-
-    public static final Classifier CLASSIFIER =
-            new Classifier(SpriteAdapter.SpriteMetaProperty.values()) {
-                @Override
-                public SpriteAdapter createInstance() {
+  public static final Classifier CLASSIFIER =
+      new Classifier(SpriteAdapter.SpriteMetaProperty.values()) {
+        @Override
+        public SpriteAdapter createInstance() {
                     throw new RuntimeException("Use screen.createSprite()");
                 }
-            };
+  };
+  public static EnumType EDGE_MODE = new EnumType(EdgeMode.values());
 
+  final Sprite sprite;
 
-    final Sprite sprite;
-
-    final NumberProperty x = new NumberProperty(SpriteMetaProperty.x);
-    final NumberProperty y = new NumberProperty(SpriteMetaProperty.y);
-    final NumberProperty z = new NumberProperty(SpriteMetaProperty.z);
-    final NumberProperty dx = new NumberProperty(SpriteMetaProperty.dx);
-    final NumberProperty dy = new NumberProperty(SpriteMetaProperty.dy);
-    final NumberProperty size = new NumberProperty(SpriteMetaProperty.size);
-    final NumberProperty angle = new NumberProperty(SpriteMetaProperty.angle);
-    final NumberProperty left = new NumberProperty(SpriteMetaProperty.left);
-    final NumberProperty right = new NumberProperty(SpriteMetaProperty.right);
-    final NumberProperty top = new NumberProperty(SpriteMetaProperty.top);
-    final NumberProperty bottom = new NumberProperty(SpriteMetaProperty.bottom);
-    final ObjectProperty bubble = new ObjectProperty(SpriteMetaProperty.bubble);
-    final ObjectProperty label = new ObjectProperty(SpriteMetaProperty.label);
-    final ObjectProperty face = new ObjectProperty(SpriteMetaProperty.face);
-    final ObjectProperty anchor = new ObjectProperty(SpriteMetaProperty.anchor);
-    final PhysicalProperty<Double> speed = new PhysicalProperty<>(0.0);
-    final PhysicalProperty<Double> direction = new PhysicalProperty<>(0.0);
-    final PhysicalProperty<Double> rotation = new PhysicalProperty<>(0.0);
-    final LazyProperty<Array> collisions = new LazyProperty<Array>() {
+  final NumberProperty x = new NumberProperty(SpriteMetaProperty.x);
+  final NumberProperty y = new NumberProperty(SpriteMetaProperty.y);
+  final NumberProperty z = new NumberProperty(SpriteMetaProperty.z);
+  final NumberProperty dx = new NumberProperty(SpriteMetaProperty.dx);
+  final NumberProperty dy = new NumberProperty(SpriteMetaProperty.dy);
+  final NumberProperty size = new NumberProperty(SpriteMetaProperty.size);
+  final NumberProperty angle = new NumberProperty(SpriteMetaProperty.angle);
+  final NumberProperty left = new NumberProperty(SpriteMetaProperty.left);
+  final NumberProperty right = new NumberProperty(SpriteMetaProperty.right);
+  final NumberProperty top = new NumberProperty(SpriteMetaProperty.top);
+  final NumberProperty bottom = new NumberProperty(SpriteMetaProperty.bottom);
+  final ObjectProperty bubble = new ObjectProperty(SpriteMetaProperty.bubble);
+  final ObjectProperty label = new ObjectProperty(SpriteMetaProperty.label);
+  final ObjectProperty face = new ObjectProperty(SpriteMetaProperty.face);
+  final ObjectProperty anchor = new ObjectProperty(SpriteMetaProperty.anchor);
+  final PhysicalProperty<EdgeMode> edgeMode = new PhysicalProperty<>(EdgeMode.NONE);
+  final PhysicalProperty<Double> speed = new PhysicalProperty<>(0.0);
+  final PhysicalProperty<Double> direction = new PhysicalProperty<>(0.0);
+  final PhysicalProperty<Double> rotation = new PhysicalProperty<>(0.0);
+  final LazyProperty<Array> collisions = new LazyProperty<Array>() {
         @Override
         protected Array compute() {
-            Collection<Sprite> collisions = sprite.collisions();
-            Object[] adapters = new Object[collisions.size()];
-            int index = 0;
-            for (Sprite sprite : collisions) {
-                adapters[index++] = sprite.getTag();
-            }
-            return new Array(SpriteAdapter.CLASSIFIER, adapters);
-        }
-    };
+      Collection<Sprite> collisions = sprite.collisions();
+      Object[] adapters = new Object[collisions.size()];
+      int index = 0;
+      for (Sprite sprite : collisions) {
+        adapters[index++] = sprite.getTag();
+      }
+      return new Array(SpriteAdapter.CLASSIFIER, adapters); }
+  };
 
-    public SpriteAdapter(final ScreenAdapter screen) {
+  public SpriteAdapter(final ScreenAdapter screen) {
         super(CLASSIFIER);
         sprite = new Sprite(screen.getScreen());
         sprite.setTag(this);
@@ -71,40 +63,40 @@ public class SpriteAdapter extends Instance implements Animated {
 
         speed.addListener(p -> {dx.notifyChanged(); dy.notifyChanged();});
         direction.addListener(p -> {dx.notifyChanged(); dy.notifyChanged();});
-    }
+   }
 
-    @Override
-    public Property getProperty(PropertyDescriptor property) {
-        switch ((SpriteMetaProperty) property) {
-            case x: return x;
-            case y: return y;
-            case z: return z;
-            case dx: return dx;
-            case dy: return dy;
-            case left: return left;
-            case right: return right;
-            case top: return top;
-            case bottom: return bottom;
-            case size: return size;
-            case angle: return angle;
-            case label: return label;
-            case bubble: return bubble;
-            case face: return face;
-            case anchor: return anchor;
-            case speed: return speed;
-            case direction: return direction;
-            case rotation: return rotation;
-            case collisions: return collisions;
-            case say: return new Method((FunctionType) SpriteMetaProperty.say.type()) {
-                        @Override
-                        public Object call(EvaluationContext evaluationContext, int paramCount) {
-                            sprite.say((String) (evaluationContext.getParameter(0)));
-                            return null;
-                        }
-                };
-        }
-        throw new IllegalArgumentException();
+  @Override
+  public Property getProperty(PropertyDescriptor property) {
+    switch ((SpriteMetaProperty) property) {
+      case x: return x;
+      case y: return y;
+      case z: return z;
+      case dx: return dx;
+      case dy: return dy;
+      case left: return left;
+      case right: return right;
+      case top: return top;
+      case bottom: return bottom;
+      case size: return size;
+      case angle: return angle;
+      case label: return label;
+      case bubble: return bubble;
+      case face: return face;
+      case anchor: return anchor;
+      case speed: return speed;
+      case direction: return direction;
+      case rotation: return rotation;
+      case collisions: return collisions;
+      case edgeMode: return edgeMode;
+      case say: return new Method((FunctionType) SpriteMetaProperty.say.type()) {
+        @Override
+        public Object call(EvaluationContext evaluationContext, int paramCount) {
+          sprite.say((String) (evaluationContext.getParameter(0)));
+          return null;
+        }};
     }
+    throw new IllegalArgumentException();
+  }
 
     @Override
     public void animate(float dt) {
@@ -112,8 +104,38 @@ public class SpriteAdapter extends Instance implements Animated {
         if (s != 0.0) {
             double theta = Math.toRadians(90 - direction.get());
             double delta = dt * s / 1000;
-            x.set(x.get() + Math.cos(theta) * delta);
-            y.set(y.get() + Math.sin(theta) * delta);
+            double dx = Math.cos(theta) * delta;
+            double dy = Math.sin(theta) * delta;
+            x.set(x.get() + dx);
+            y.set(y.get() + dy);
+
+            EdgeMode edgeMode = this.edgeMode.get();
+            if (edgeMode != EdgeMode.NONE && sprite.getAnchor() == sprite.getScreen()) {
+              float radius = sprite.getSize() / 2;
+              switch (edgeMode) {
+                case WRAP:
+                  if (dx > 0 && sprite.getX() - radius > sprite.getScreen().getWidth() / 2) {
+                    sprite.setX(-sprite.getScreen().getWidth() / 2 - radius);
+                  } else if (dx < 0 && sprite.getX() + radius < sprite.getScreen().getWidth() / -2) {
+                    sprite.setX(sprite.getScreen().getWidth() / 2 - radius);
+                  }
+                  if (dy > 0 && sprite.getY() - radius > sprite.getScreen().getHeight() / 2) {
+                    sprite.setY(-sprite.getScreen().getHeight() / 2 - radius);
+                  } else if (dy < 0 && sprite.getY() + radius < sprite.getScreen().getHeight() / -2) {
+                    sprite.setY(sprite.getScreen().getHeight() / 2 + radius);
+                  }
+                  break;
+                case BOUNCE:
+                  if (dx > 0 && sprite.getX() + radius > sprite.getScreen().getWidth() / 2 ||
+                      dy > 0 && sprite.getY() + radius > sprite.getScreen().getHeight() / 2) {
+                    direction.set(direction.get() + 90);
+                  } else if (dx < 0 && sprite.getX() - radius < sprite.getScreen().getWidth() / -2
+                      || dy < 0 && sprite.getY() - radius < sprite.getScreen().getHeight() / -2) {
+                    direction.set(direction.get() + 90);
+                  }
+                  break;
+              }
+            }
         }
         double r = rotation.get();
         if (r != 0.0) {
@@ -256,7 +278,7 @@ public class SpriteAdapter extends Instance implements Animated {
         speed(Types.NUMBER), direction(Types.NUMBER), dx(Types.NUMBER), dy(Types.NUMBER),
         angle(Types.NUMBER), label(TextBoxAdapter.CLASSIFIER), bubble(TextBoxAdapter.CLASSIFIER), face(Types.STRING),
         rotation(Types.NUMBER), collisions(new ArrayType(SpriteAdapter.CLASSIFIER)),
-        anchor(SpriteAdapter.CLASSIFIER),
+        anchor(SpriteAdapter.CLASSIFIER), edgeMode(EDGE_MODE),
         say(new FunctionType(Types.VOID, Types.STRING));
 
         final Type type;

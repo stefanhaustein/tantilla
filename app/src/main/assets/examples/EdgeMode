@@ -1,0 +1,12 @@
+100 let ghost = screen.newSprite()
+110 ghost.face = "👻"
+115 ghost.size = 30
+120 ghost.edgeMode = EdgeMode.WRAP
+130 ghost.dx = 17
+140 ghost.dy = 19
+200 let ball = screen.newSprite()
+210 ball.face = "🎱"
+215 ball.size = 30
+220 ball.edgeMode = EdgeMode.BOUNCE
+230 ball.dx = 23
+240 ball.dy = 19

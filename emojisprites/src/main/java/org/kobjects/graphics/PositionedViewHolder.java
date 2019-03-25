@@ -58,6 +58,18 @@ public abstract class PositionedViewHolder<T extends View> extends ViewHolder<An
         return anchor;
     }
 
+    public Screen getScreen() {
+        return screen;
+    }
+
+    public float getScreenX() {
+        return anchor instanceof PositionedViewHolder<?> ? x + ((PositionedViewHolder) anchor).getScreenX() : x;
+    }
+
+    public float getScreenY() {
+        return anchor instanceof PositionedViewHolder<?> ? y + ((PositionedViewHolder) anchor).getScreenX() : y;
+    }
+
     public float getX() {
         return x;
     }

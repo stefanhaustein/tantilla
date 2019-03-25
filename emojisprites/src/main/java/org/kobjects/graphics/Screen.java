@@ -82,14 +82,22 @@ public class Screen extends ViewHolder<FrameLayout> implements Animated {
         activity.runOnUiThread(() -> clsImpl());
     }
 
+    public float getWidth() {
+        return view.getWidth() / scale;
+    }
+
+    public float getHeight() {
+        return view.getHeight() / scale;
+    }
+
     @Override
     public float getWidthForAnchoring() {
-        return -view.getWidth() / scale;
+        return -getWidth();
     }
 
     @Override
     public float getHeightForAnchoring() {
-        return -view.getHeight() / scale;
+        return -getHeight();
     }
 
     @Override
