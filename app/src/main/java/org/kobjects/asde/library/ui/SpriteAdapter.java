@@ -98,54 +98,57 @@ public class SpriteAdapter extends Instance implements Animated {
     throw new IllegalArgumentException();
   }
 
-    @Override
-    public void animate(float dt) {
-        double s = speed.get();
-        if (s != 0.0) {
-            double theta = Math.toRadians(90 - direction.get());
-            double delta = dt * s / 1000;
-            double dx = Math.cos(theta) * delta;
-            double dy = Math.sin(theta) * delta;
-            x.set(x.get() + dx);
-            y.set(y.get() + dy);
+  @Override
+  public void animate(float dt) {
+    double s = speed.get();
+    if (s != 0.0) {
+      double theta = Math.toRadians(90 - direction.get());
+      double delta = dt * s / 1000;
+      double dx = Math.cos(theta) * delta;
+      double dy = Math.sin(theta) * delta;
+      x.set(x.get() + dx);
+      y.set(y.get() + dy);
 
-            EdgeMode edgeMode = this.edgeMode.get();
-            if (edgeMode != EdgeMode.NONE && sprite.getAnchor() == sprite.getScreen()) {
-              float radius = sprite.getSize() / 2;
-              switch (edgeMode) {
-                case WRAP:
-                  if (dx > 0 && sprite.getX() - radius > sprite.getScreen().getWidth() / 2) {
-                    sprite.setX(-sprite.getScreen().getWidth() / 2 - radius);
-                  } else if (dx < 0 && sprite.getX() + radius < sprite.getScreen().getWidth() / -2) {
-                    sprite.setX(sprite.getScreen().getWidth() / 2 - radius);
-                  }
-                  if (dy > 0 && sprite.getY() - radius > sprite.getScreen().getHeight() / 2) {
-                    sprite.setY(-sprite.getScreen().getHeight() / 2 - radius);
-                  } else if (dy < 0 && sprite.getY() + radius < sprite.getScreen().getHeight() / -2) {
-                    sprite.setY(sprite.getScreen().getHeight() / 2 + radius);
-                  }
-                  break;
-                case BOUNCE:
-                  if (dx > 0 && sprite.getX() + radius > sprite.getScreen().getWidth() / 2 ||
-                      dy > 0 && sprite.getY() + radius > sprite.getScreen().getHeight() / 2) {
-                    direction.set(direction.get() + 90);
-                  } else if (dx < 0 && sprite.getX() - radius < sprite.getScreen().getWidth() / -2
-                      || dy < 0 && sprite.getY() - radius < sprite.getScreen().getHeight() / -2) {
-                    direction.set(direction.get() + 90);
-                  }
-                  break;
-              }
+      EdgeMode edgeMode = this.edgeMode.get();
+      if (edgeMode != EdgeMode.NONE && sprite.getAnchor() == sprite.getScreen()) {
+        float radius = sprite.getSize() / 2;
+        switch (edgeMode) {
+          case WRAP:
+            if (dx > 0 && sprite.getX() - radius > sprite.getScreen().getWidth() / 2) {
+              sprite.setX(-sprite.getScreen().getWidth() / 2 - radius);
+            } else if (dx < 0 && sprite.getX() + radius < sprite.getScreen().getWidth() / -2) {
+              sprite.setX(sprite.getScreen().getWidth() / 2 - radius);
             }
+            if (dy > 0 && sprite.getY() - radius > sprite.getScreen().getHeight() / 2) {
+              sprite.setY(-sprite.getScreen().getHeight() / 2 - radius);
+            } else if (dy < 0 && sprite.getY() + radius < sprite.getScreen().getHeight() / -2) {
+              sprite.setY(sprite.getScreen().getHeight() / 2 + radius);
+            }
+            break;
+          case BOUNCE:
+            if (dx > 0 && sprite.getX() + radius > sprite.getScreen().getWidth() / 2) {
+              direction.set(direction.get() + (dy < 0 ? 90 : -90));
+            } else if (dx < 0 && sprite.getX() - radius < sprite.getScreen().getWidth() / -2) {
+              direction.set(direction.get() + (dy > 0 ? 90 : -90));
+            }
+            if (dy > 0 && sprite.getY() + radius > sprite.getScreen().getHeight() / 2) {
+              direction.set(direction.get() + (dx > 0 ? 90 : -90));
+            } else if (dy < 0 && sprite.getY() - radius < sprite.getScreen().getHeight() / -2) {
+              direction.set(direction.get() + (dx < 0 ? 90 : -90));
+            }
+            break;
         }
-        double r = rotation.get();
-        if (r != 0.0) {
-            angle.set(angle.get() + r * dt / 1000);
-        }
-        collisions.invalidate();
+      }
     }
+    double r = rotation.get();
+    if (r != 0.0) {
+      angle.set(angle.get() + r * dt / 1000);
+    }
+    collisions.invalidate();
+  }
 
 
-    class NumberProperty extends Property<Double> {
+  class NumberProperty extends Property<Double> {
         private final SpriteMetaProperty target;
 
         NumberProperty(SpriteMetaProperty target) {
@@ -233,9 +236,9 @@ public class SpriteAdapter extends Instance implements Animated {
             throw new RuntimeException();
         }
 
-    }
+  }
 
-    class ObjectProperty extends Property<Object> {
+  class ObjectProperty extends Property<Object> {
         private final SpriteMetaProperty target;
 
         ObjectProperty(SpriteMetaProperty target) {
@@ -269,27 +272,29 @@ public class SpriteAdapter extends Instance implements Animated {
             }
             throw new RuntimeException();
         }
-    }
+  }
 
 
-    enum SpriteMetaProperty implements PropertyDescriptor {
-        x(Types.NUMBER), y(Types.NUMBER), z(Types.NUMBER), size(Types.NUMBER),
-        left(Types.NUMBER), right(Types.NUMBER), top(Types.NUMBER), bottom(Types.NUMBER),
-        speed(Types.NUMBER), direction(Types.NUMBER), dx(Types.NUMBER), dy(Types.NUMBER),
-        angle(Types.NUMBER), label(TextBoxAdapter.CLASSIFIER), bubble(TextBoxAdapter.CLASSIFIER), face(Types.STRING),
-        rotation(Types.NUMBER), collisions(new ArrayType(SpriteAdapter.CLASSIFIER)),
-        anchor(SpriteAdapter.CLASSIFIER), edgeMode(EDGE_MODE),
-        say(new FunctionType(Types.VOID, Types.STRING));
+  enum SpriteMetaProperty implements PropertyDescriptor {
+    x(Types.NUMBER), y(Types.NUMBER), z(Types.NUMBER),
+    size(Types.NUMBER),
+    left(Types.NUMBER), right(Types.NUMBER), top(Types.NUMBER), bottom(Types.NUMBER),
+    speed(Types.NUMBER), direction(Types.NUMBER), dx(Types.NUMBER), dy(Types.NUMBER),
+    angle(Types.NUMBER),
+    label(TextBoxAdapter.CLASSIFIER), bubble(TextBoxAdapter.CLASSIFIER), face(Types.STRING),
+    rotation(Types.NUMBER), collisions(new ArrayType(SpriteAdapter.CLASSIFIER)),
+    anchor(SpriteAdapter.CLASSIFIER), edgeMode(EDGE_MODE),
+    say(new FunctionType(Types.VOID, Types.STRING));
 
-        final Type type;
+    final Type type;
 
-        SpriteMetaProperty(Type type) {
+    SpriteMetaProperty(Type type) {
             this.type = type;
         }
 
-        @Override
-        public Type type() {
+    @Override
+    public Type type() {
             return type;
         }
-    }
+  }
 }
