@@ -186,17 +186,22 @@ public class Sprite extends PositionedViewHolder<ImageView> implements Animated 
         }
     }
 
+    /**
+     * Checks all sprites, as widgets is flattened.
+     */
     public Collection<Sprite> collisions() {
         if (anchor != screen) {
             return Collections.emptyList();
         }
+        float sx = getScreenX();
+        float sy = getScreenY();
         ArrayList<Sprite> result = new ArrayList<>();
         synchronized (screen.widgets) {
             for (PositionedViewHolder<?> widget : screen.widgets) {
                 if (widget != this && widget instanceof Sprite) {
                     Sprite other = (Sprite) widget;
-                    double distX = other.x - x;
-                    double distY = other.y - y;
+                    double distX = other.getScreenX() - sx;
+                    double distY = other.getScreenY() - sy;
                     double minDist = (other.size + size) * 0.4;
                     if (distX * distX + distY * distY < minDist * minDist) {
                         result.add(other);
