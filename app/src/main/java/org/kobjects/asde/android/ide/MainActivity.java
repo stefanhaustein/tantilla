@@ -61,6 +61,8 @@ import org.kobjects.asde.library.ui.TextBoxAdapter;
 import org.kobjects.graphics.Screen;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.io.Console;
+import org.kobjects.sound.SampleManager;
+import org.kobjects.sound.Sound;
 import org.kobjects.typesystem.FunctionType;
 
 import java.io.File;
@@ -176,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     outputView = new LinearLayout(this);
     outputView.setOrientation(LinearLayout.VERTICAL);
     outputView.addView(outputTitleView);
+    SampleManager sampleManager = new SampleManager(this);
 
     resizableFrameLayout = new ResizableFrameLayout(this);
 
@@ -253,6 +256,19 @@ public class MainActivity extends AppCompatActivity implements Console {
             return null;
         }
     });
+    program.setValue(GlobalSymbol.Scope.BUILTIN, "play", new Function() {
+      @Override
+      public FunctionType getType() {
+        return new FunctionType(Types.VOID, Types.STRING);
+      }
+
+      @Override
+      public Object call(EvaluationContext evaluationContext, int paramCount) {
+        new Sound(sampleManager, String.valueOf(evaluationContext.getParameter(0))).play();
+        return null;
+      }
+    });
+
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
