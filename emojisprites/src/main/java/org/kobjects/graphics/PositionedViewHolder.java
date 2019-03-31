@@ -8,6 +8,7 @@ public abstract class PositionedViewHolder<T extends View> extends ViewHolder<An
     protected float x;
     protected float y;
     protected float z;
+    protected float opacity = 1;
 
     protected boolean visible = true;
 
@@ -43,6 +44,7 @@ public abstract class PositionedViewHolder<T extends View> extends ViewHolder<An
             screen.activity.runOnUiThread(() -> {
                 syncRequested = false;
                 view.setVisibility(visible ? View.VISIBLE : View.GONE);
+                view.setAlpha(opacity);
                 if (anchor.view != view.getParent()) {
                     if (view.getParent() != null) {
                         ((ViewGroup) view.getParent()).removeView(view);
@@ -82,6 +84,10 @@ public abstract class PositionedViewHolder<T extends View> extends ViewHolder<An
         return z;
     }
 
+    public float getOpacity() {
+        return opacity;
+    }
+
     public boolean setX(float x) {
         if (x == this.x) {
             return false;
@@ -97,6 +103,17 @@ public abstract class PositionedViewHolder<T extends View> extends ViewHolder<An
         }
          this.y = y;
          requestSync();
+        return true;
+    }
+
+
+    public boolean setOpacity(float opacity) {
+        opacity = Math.max(0, Math.min(opacity, 1));
+        if (opacity == this.opacity) {
+            return false;
+        }
+        this.opacity = opacity;
+        requestSync();
         return true;
     }
 

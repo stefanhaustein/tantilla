@@ -95,7 +95,9 @@ public class FunctionValidationContext {
                 if (symbol == null || symbol.scope == GlobalSymbol.Scope.TRANSIENT) {
                     throw new RuntimeException("Variable not found: \"" + name + "\"");
                 }
-                dependencies.add(symbol);
+                if (symbol.initializer != null) {
+                    dependencies.add(symbol);
+                }
                 return symbol;
         }
     }

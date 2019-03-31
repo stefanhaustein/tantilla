@@ -1,18 +1,43 @@
 LET ship = screen.newSprite()
 
+SUB gameOver()
+10 rem tbd
+END SUB
 
-SUB createAsteroid()
+SUB newAsteroid(Number x, Number y, Number size, Number direction, Number speed)
 10 LET asteroid = screen.newSprite()
 20 asteroid.face = "🥔"
-25 asteroid.size = 40
-30 asteroid.left = 0
-40 asteroid.top = 0
-50 asteroid.rotation = 10
-60 asteroid.dx = 1
-70 asteroid.dy = -1
-80 on len(asteroid.collisions) > 0 :
-90   asteroid.label.text = "" + asteroid.collisions
-100 end
+30 asteroid.x = x
+40 asteroid.y = y
+45 asteroid.size = size
+50 asteroid.direction = direction
+55 asteroid.speed = speed
+60 asteroid.rotation = rnd() * 20
+70 asteroid.edgeMode = EdgeMode.WRAP
+100 on len(asteroid.collisions) > 0 :
+105   if asteroid.face =  "🥔" then
+110     for i = 0 to len(asteroid.collisions) - 1
+120       let other = asteroid.collisions(i)
+130       if other.face = "🚀" then
+135         gameOver
+140       else if other.face = "🔴" then
+150         other.opacity = 0
+153         breakAsteroid asteroid
+160       end if
+170     next i
+180   end if
+200 end
+END SUB
+
+SUB breakAsteroid(Sprite asteroid)
+10 asteroid.face = "💥"
+12 asteroid.grow = 10
+14 asteroid.fade = -5
+20 play "💥"
+30 if asteroid.size > 20 then
+40   newAsteroid asteroid.x, asteroid.y, asteroid.size - 10, asteroid.direction + 45, asteroid.speed * 2
+50   newAsteroid asteroid.x, asteroid.y, asteroid.size - 10, asteroid.direction - 45, asteroid.speed * 2
+60 end if
 END SUB
 
 SUB shoot()
@@ -21,6 +46,7 @@ SUB shoot()
 20 shot.face = "🔴"
 30 shot.direction = ship.angle + 45
 40 shot.speed = 200
+50 play "🔫"
 END SUB
 
 10 ship.size = 30
@@ -38,4 +64,4 @@ END SUB
 70 on dpad.fire :
 80   shoot
 90 end
-100 createAsteroid
+100 newAsteroid screen.width / 2, screen.height / 2, 50, rnd() * 360, rnd() * 10 + 5

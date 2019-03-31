@@ -35,6 +35,7 @@ public class SpriteAdapter extends Instance implements Animated {
   final NumberProperty right = new NumberProperty(SpriteMetaProperty.right);
   final NumberProperty top = new NumberProperty(SpriteMetaProperty.top);
   final NumberProperty bottom = new NumberProperty(SpriteMetaProperty.bottom);
+  final NumberProperty opacity = new NumberProperty(SpriteMetaProperty.opacity);
   final ObjectProperty bubble = new ObjectProperty(SpriteMetaProperty.bubble);
   final ObjectProperty label = new ObjectProperty(SpriteMetaProperty.label);
   final ObjectProperty face = new ObjectProperty(SpriteMetaProperty.face);
@@ -43,6 +44,8 @@ public class SpriteAdapter extends Instance implements Animated {
   final PhysicalProperty<Double> speed = new PhysicalProperty<>(0.0);
   final PhysicalProperty<Double> direction = new PhysicalProperty<>(0.0);
   final PhysicalProperty<Double> rotation = new PhysicalProperty<>(0.0);
+  final PhysicalProperty<Double> grow = new PhysicalProperty<>(0.0);
+  final PhysicalProperty<Double> fade = new PhysicalProperty<>(0.0);
   final LazyProperty<Array> collisions = new LazyProperty<Array>() {
         @Override
         protected Array compute() {
@@ -88,6 +91,9 @@ public class SpriteAdapter extends Instance implements Animated {
       case rotation: return rotation;
       case collisions: return collisions;
       case edgeMode: return edgeMode;
+      case grow: return grow;
+      case opacity: return opacity;
+      case fade: return fade;
       case say: return new Method((FunctionType) SpriteMetaProperty.say.type()) {
         @Override
         public Object call(EvaluationContext evaluationContext, int paramCount) {
@@ -144,97 +150,109 @@ public class SpriteAdapter extends Instance implements Animated {
     if (r != 0.0) {
       angle.set(angle.get() + r * dt / 1000);
     }
+    double g = grow.get();
+    if (g != 0.0) {
+      size.set(size.get() + g * dt / 1000);
+    }
+    double f = fade.get();
+    if (f != 0.0) {
+      opacity.set(opacity.get() + f * dt / 1000);
+    }
+
     collisions.invalidate();
   }
 
 
   class NumberProperty extends Property<Double> {
-        private final SpriteMetaProperty target;
+    private final SpriteMetaProperty target;
 
-        NumberProperty(SpriteMetaProperty target) {
+    NumberProperty(SpriteMetaProperty target) {
             this.target = target;
         }
 
-        @Override
-        public Double get() {
-            switch (target) {
-                case x:
-                    return (double) sprite.getX();
-                case y:
-                    return (double) sprite.getY();
-                case z:
-                    return (double) sprite.getZ();
-                case angle:
-                    return (double) sprite.getAngle();
-                case size:
-                    return (double) sprite.getSize();
-                case left:
-                    return sprite.getX() - (sprite.getAnchor().getWidthForAnchoring() + sprite.getSize()) / 2.0;
-                case right:
-                    return -sprite.getX() - (sprite.getAnchor().getWidthForAnchoring() + sprite.getSize()) / 2.0;
-                case top:
-                    return -sprite.getY() - (sprite.getAnchor().getHeightForAnchoring() + sprite.getSize()) / 2.0;
-                case bottom:
-                    return sprite.getY() - (sprite.getAnchor().getHeightForAnchoring() + sprite.getSize()) / 2.0;
-                case dx:
-                    return speed.get() * Math.cos(Math.toRadians(90 - direction.get()));
-                case dy:
-                    return speed.get() * Math.sin(Math.toRadians(90 - direction.get()));
+    @Override
+    public Double get() {
+      switch (target) {
+        case x:
+          return (double) sprite.getX();
+        case y:
+          return (double) sprite.getY();
+        case z:
+          return (double) sprite.getZ();
+        case angle:
+          return (double) sprite.getAngle();
+        case size:
+          return (double) sprite.getSize();
+        case left:
+          return sprite.getX() - (sprite.getAnchor().getWidthForAnchoring() + sprite.getSize()) / 2.0;
+        case right:
+          return -sprite.getX() - (sprite.getAnchor().getWidthForAnchoring() + sprite.getSize()) / 2.0;
+        case top:
+          return -sprite.getY() - (sprite.getAnchor().getHeightForAnchoring() + sprite.getSize()) / 2.0;
+        case bottom:
+          return sprite.getY() - (sprite.getAnchor().getHeightForAnchoring() + sprite.getSize()) / 2.0;
+        case dx:
+          return speed.get() * Math.cos(Math.toRadians(90 - direction.get()));
+        case dy:
+          return speed.get() * Math.sin(Math.toRadians(90 - direction.get()));
+        case opacity:
+          return (double) sprite.getOpacity();
+      }
+      throw new RuntimeException();
+    }
 
-            }
-            throw new RuntimeException();
-        }
+    boolean changeDxy(double dx, double dy) {
+      double newSpeed = Math.sqrt(dx * dx + dy * dy);
 
-        boolean changeDxy(double dx, double dy) {
-            double newSpeed = Math.sqrt(dx * dx + dy * dy);
+      if (newSpeed == 0) {
+        return speed.set(0.0);
+      }
 
-            if (newSpeed == 0) {
-                return speed.set(0.0);
-            }
+      double newDirection = 90 - Math.toDegrees(Math.atan2(dy, dx));
 
-            double newDirection = 90 - Math.toDegrees(Math.atan2(dy, dx));
+      return speed.set(newSpeed) | direction.set(newDirection < 0 ? 360 + newDirection : newDirection);
+    }
 
-            return speed.set(newSpeed) | direction.set(newDirection < 0 ? 360 + newDirection : newDirection);
-        }
-
-        @Override
-        public boolean setImpl(Double value) {
-            switch (target) {
-                case x:
-                    if (!sprite.setX(value.floatValue())) {
-                        return false;
-                    }
-                    left.notifyChanged();
-                    right.notifyChanged();
-                    return true;
-                case y:
-                    if (!sprite.setY(value.floatValue())) {
-                        return false;
-                    }
-                    top.notifyChanged();
-                    bottom.notifyChanged();
-                    return true;
-                case dx:
-                    return changeDxy(value, dy.get());
-                case dy:
-                    return changeDxy(dx.get(), value);
-                case z:
-                    return sprite.setZ(value.floatValue());
-                case angle:
-                    return sprite.setAngle(value.floatValue());
-                case size:
-                        return sprite.setSize(value.floatValue());
-                case left:
-                    return sprite.setX(value.floatValue() + (sprite.getSize() + sprite.getAnchor().getWidthForAnchoring()) / 2);
-                case right:
-                    return sprite.setX(-(value.floatValue() + (sprite.getAnchor().getWidthForAnchoring() + sprite.getSize()) / 2));
-                case top:
-                    return sprite.setY(-(value.floatValue() + (sprite.getAnchor().getHeightForAnchoring() + sprite.getSize()) / 2));
-                case bottom:
-                    return sprite.setY(value.floatValue() + (sprite.getSize() + sprite.getAnchor().getHeightForAnchoring()) / 2);
-            }
-            throw new RuntimeException();
-        }
+    @Override
+    public boolean setImpl(Double value) {
+      switch (target) {
+        case x:
+          if (!sprite.setX(value.floatValue())) {
+            return false;
+          }
+          left.notifyChanged();
+          right.notifyChanged();
+          return true;
+        case y:
+          if (!sprite.setY(value.floatValue())) {
+            return false;
+          }
+          top.notifyChanged();
+          bottom.notifyChanged();
+          return true;
+        case dx:
+          return changeDxy(value, dy.get());
+        case dy:
+          return changeDxy(dx.get(), value);
+        case z:
+          return sprite.setZ(value.floatValue());
+        case angle:
+          return sprite.setAngle(value.floatValue());
+        case opacity:
+          return sprite.setOpacity(value.floatValue());
+        case size:
+          return sprite.setSize(value.floatValue());
+        case left:
+          return sprite.setX(value.floatValue() + (sprite.getSize() + sprite.getAnchor().getWidthForAnchoring()) / 2);
+        case right:
+          return sprite.setX(-(value.floatValue() + (sprite.getAnchor().getWidthForAnchoring() + sprite.getSize()) / 2));
+        case top:
+          return sprite.setY(-(value.floatValue() + (sprite.getAnchor().getHeightForAnchoring() + sprite.getSize()) / 2));
+        case bottom:
+          return sprite.setY(value.floatValue() + (sprite.getSize() + sprite.getAnchor().getHeightForAnchoring()) / 2);
+      }
+      throw new RuntimeException();
+    }
 
   }
 
@@ -277,9 +295,9 @@ public class SpriteAdapter extends Instance implements Animated {
 
   enum SpriteMetaProperty implements PropertyDescriptor {
     x(Types.NUMBER), y(Types.NUMBER), z(Types.NUMBER),
-    size(Types.NUMBER),
+    size(Types.NUMBER), opacity(Types.NUMBER),
     left(Types.NUMBER), right(Types.NUMBER), top(Types.NUMBER), bottom(Types.NUMBER),
-    speed(Types.NUMBER), direction(Types.NUMBER), dx(Types.NUMBER), dy(Types.NUMBER),
+    speed(Types.NUMBER), direction(Types.NUMBER), dx(Types.NUMBER), dy(Types.NUMBER), grow(Types.NUMBER), fade(Types.NUMBER),
     angle(Types.NUMBER),
     label(TextBoxAdapter.CLASSIFIER), bubble(TextBoxAdapter.CLASSIFIER), face(Types.STRING),
     rotation(Types.NUMBER), collisions(new ArrayType(SpriteAdapter.CLASSIFIER)),

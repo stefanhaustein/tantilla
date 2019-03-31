@@ -18,17 +18,19 @@ public class ProgramValidationContext {
     }
 
     GlobalSymbol resolve(String name) {
-        if (dependencyChain.contains(name)) {
-            throw new RuntimeException("Circular dependency: " + dependencyChain + " -> " + name);
-        }
         GlobalSymbol symbol = program.getSymbol(name);
         if (symbol == null) {
             return null;
         }
+        // We only check symbols with initializers for circles -- in constrast to constants, function dependencies
+        // work without explicit initialization.
+        if (dependencyChain.contains(name) && symbol.initializer != null) {
+            throw new RuntimeException("Circular dependency: " + dependencyChain + " -> " + name);
+        }
         if (!validated.contains(symbol)) {
-            dependencyChain.add(name);
-            symbol.validate(this);
-            dependencyChain.remove(name);
+           dependencyChain.add(name);
+           symbol.validate(this);
+           dependencyChain.remove(name);
         }
         return symbol;
     }
