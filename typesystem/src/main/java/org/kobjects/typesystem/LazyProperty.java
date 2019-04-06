@@ -19,12 +19,16 @@ public abstract class LazyProperty<T> extends Property<T> {
     }
 
     public synchronized void invalidate() {
-        valid = false;
-        value = null;
         if (listeners != null && listeners.size() != 0) {
-            value = compute();
-            valid = true;
-            notifyChanged();
+            T newValue = compute();
+            if (!valid || !newValue.equals(value)) {
+                value = newValue;
+                valid = true;
+                notifyChanged();
+            }
+        } else {
+            valid = false;
+            value = null;
         }
     }
 

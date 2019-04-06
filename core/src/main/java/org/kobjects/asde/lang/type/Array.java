@@ -10,6 +10,17 @@ public class Array implements Function {
     private final ArrayType arrayType;
     private final Object[] data;
 
+    public Array(Array array) {
+        this.arrayType = array.arrayType;
+        this.data = new Object[array.data.length];
+        System.arraycopy(array.data, 0, data, 0, array.data.length);
+        for (int i = 0; i < data.length; i++) {
+            if (data[i] instanceof Array) {
+                data[i] = new Array((Array) data[i]);
+            }
+        }
+    }
+
     public Array(Type elementType, int... sizes) {
         data = new Object[sizes[0]];
         this.arrayType = new ArrayType(elementType, sizes.length);
@@ -72,6 +83,24 @@ public class Array implements Function {
         sb.append("}");
         return sb.toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Array)) {
+            return false;
+        }
+        Array other = (Array) o;
+        if (other.length() != length()) {
+            return false;
+        }
+        for (int i = 0; i < length(); i++) {
+            if (!data[i].equals(other.data[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     public int length() {
         return data.length;

@@ -49,7 +49,13 @@ public class OnStatement extends Statement implements PropertyChangeListener {
     @Override
     public void propertyChanged(Property<?> property) {
         if (evalChildToBoolean(context, 0)) {
-            new Thread(() -> context.function.callImpl(new EvaluationContext(context))).start();
+            new Thread(() -> {
+                try {
+                    context.function.callImpl(new EvaluationContext(context));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
         }
     }
 
