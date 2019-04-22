@@ -174,6 +174,11 @@ public class FunctionImplementation implements Function {
         return code.ceilingEntry(i);
     }
 
+    public CodeLine findNextLine(int i) {
+        Map.Entry<Integer,CodeLine> entry = code.ceilingEntry(i);
+        return entry == null ? null : entry.getValue();
+    }
+
     public synchronized Iterable<Map.Entry<Integer, CodeLine>> entrySet() {
         return new LinkedHashSet<Map.Entry<Integer, CodeLine>>(code.entrySet());
     }
@@ -187,22 +192,13 @@ public class FunctionImplementation implements Function {
     }
 
 
-    public Node find(StatementMatcher matcher, int[] position) {
-        Map.Entry<Integer, CodeLine> entry;
-        while (null != (entry = ceilingEntry(position[0]))) {
-            position[0] = entry.getKey();
-            CodeLine line = entry.getValue();
-            while (position[1] < line.length()) {
-                Node statement = line.get(position[1]);
-                if (matcher.statementMatches(line, position[1], statement)) {
-                        return statement;
-                }
-                position[1]++;
+    public Node find(StatementMatcher matcher, int... position) {
+        return new StatementSearch(this) {
+            @Override
+            public boolean statementMatches(CodeLine line, int index, Node statement) {
+                return matcher.statementMatches(line, index, statement);
             }
-            position[0]++;
-            position[1] = 0;
-        }
-        return null;
+        }.find(position[0], position[1]);
     }
 
     public void setType(FunctionType functionType) {
@@ -219,10 +215,6 @@ public class FunctionImplementation implements Function {
 
     public void setDeclaringSymbol(GlobalSymbol symbol) {
         this.declaringSymbol = symbol;
-    }
-
-    public interface StatementMatcher {
-        boolean statementMatches(CodeLine line, int index, Node statement);
     }
 
     class StatementIterator implements Iterator<Node> {

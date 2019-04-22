@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.FunctionImplementation;
+import org.kobjects.asde.lang.StatementMatcher;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.asde.lang.type.CodeLine;
@@ -58,7 +58,7 @@ public class ElseStatement extends Node {
     /**
      * Else is reached only after a successful if and hence always goes to the end
      */
-    static class EndifMatcher implements FunctionImplementation.StatementMatcher {
+    static class EndifMatcher implements StatementMatcher {
         int level;
 
         @Override

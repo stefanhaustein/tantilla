@@ -2,8 +2,8 @@ package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.FunctionValidationContext;
+import org.kobjects.asde.lang.StatementMatcher;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Path;
@@ -16,97 +16,97 @@ import java.util.Map;
 
 public class OnStatement extends Statement implements PropertyChangeListener {
 
-    EvaluationContext context;
-    int lineBeyondEnd;
+  EvaluationContext context;
+  int lineBeyondEnd;
 
-    public OnStatement(Node condition) {
-        super(condition);
+  public OnStatement(Node condition) {
+    super(condition);
+  }
+
+  @Override
+  protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+    CodeLine codeLine = resolutionContext.functionImplementation.ceilingEntry(line).getValue();
+    if (codeLine.length() > index + 1) {
+      lineBeyondEnd = line + 1;
+    } else {
+      int[] pos = {line + 1, 0};
+      if (resolutionContext.functionImplementation.find(new EndMatcher(), pos) == null) {
+        throw new RuntimeException("END not found for multiline ON.");
+      }
+      lineBeyondEnd = pos[0] + 1;
     }
+  }
+
+  @Override
+  public Object eval(EvaluationContext evaluationContext) {
+    context = new EvaluationContext(evaluationContext);
+    context.currentIndex++;
+    children[0].accept(new ListenerAttachmentVisitor(evaluationContext));
+    evaluationContext.currentLine = lineBeyondEnd;
+    return null;
+  }
+
+  @Override
+  public void propertyChanged(Property<?> property) {
+    if (evalChildToBoolean(context, 0)) {
+      new Thread(() -> {
+        try {
+          context.function.callImpl(new EvaluationContext(context));
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }).start();
+    }
+  }
+
+
+  @Override
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+    appendLinked(asb, "ON ", errors);
+    children[0].toString(asb, errors);
+  }
+
+  class ListenerAttachmentVisitor extends Visitor {
+
+    EvaluationContext evaluationContext;
+
+    public ListenerAttachmentVisitor(EvaluationContext evaluationContext) {
+      this.evaluationContext = evaluationContext;
+    }
+
 
     @Override
-    protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
-        CodeLine codeLine = resolutionContext.functionImplementation.ceilingEntry(line).getValue();
-        if (codeLine.length() > index + 1) {
-            lineBeyondEnd = line + 1;
-        } else {
-            int[] pos = {line + 1, 0};
-            if (resolutionContext.functionImplementation.find(new EndMatcher(), pos) == null) {
-                throw new RuntimeException("END not found for multiline ON.");
-            }
-            lineBeyondEnd = pos[0] + 1;
-        }
-    }
+    public void visitIdentifier(Identifier identifier) {
+      identifier.eval(evaluationContext);
 
-    @Override
-    public Object eval(EvaluationContext evaluationContext) {
-        context = new EvaluationContext(evaluationContext);
-        context.currentIndex++;
-        children[0].accept(new ListenerAttachmentVisitor(evaluationContext));
-        evaluationContext.currentLine = lineBeyondEnd;
-        return null;
-    }
-
-    @Override
-    public void propertyChanged(Property<?> property) {
-        if (evalChildToBoolean(context, 0)) {
-            new Thread(() -> {
-                try {
-                    context.function.callImpl(new EvaluationContext(context));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }).start();
-        }
     }
 
 
     @Override
-    public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
-        appendLinked(asb, "ON ", errors);
-        children[0].toString(asb, errors);
+    public void visitPath(Path path) {
+      Property property = path.evalProperty(evaluationContext);
+      property.addListener(OnStatement.this);
     }
+  }
 
-    class ListenerAttachmentVisitor extends Visitor {
 
-        EvaluationContext evaluationContext;
+  static class EndMatcher implements StatementMatcher {
+    int skip;
 
-        public ListenerAttachmentVisitor(EvaluationContext evaluationContext) {
-            this.evaluationContext = evaluationContext;
+    @Override
+    public boolean statementMatches(CodeLine line, int index, Node statement) {
+      if (statement instanceof OnStatement) {
+        // Multiline?
+        if (index == line.length() - 1) {
+          skip++;
         }
-
-
-        @Override
-        public void visitIdentifier(Identifier identifier) {
-            identifier.eval(evaluationContext);
-
+      } else if (statement instanceof EndStatement) {
+        if (skip == 0) {
+          return true;
         }
-
-
-        @Override
-        public void visitPath(Path path) {
-            Property property = path.evalProperty(evaluationContext);
-            property.addListener(OnStatement.this);
-        }
+        skip--;
+      }
+      return false;
     }
-
-
-    static class EndMatcher implements FunctionImplementation.StatementMatcher {
-        int skip;
-
-        @Override
-        public boolean statementMatches(CodeLine line, int index, Node statement) {
-            if (statement instanceof OnStatement) {
-                // Multiline?
-                if (index == line.length() - 1) {
-                    skip++;
-                }
-            } else if (statement instanceof EndStatement) {
-                if (skip == 0) {
-                    return true;
-                }
-                skip--;
-            }
-            return false;
-        }
-    }
+  }
 }

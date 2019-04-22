@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.FunctionImplementation;
+import org.kobjects.asde.lang.StatementMatcher;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
@@ -73,7 +73,7 @@ public class IfStatement extends Node {
         asb.append(" THEN");
     }
 
-    static class EndifMatcher implements FunctionImplementation.StatementMatcher {
+    static class EndifMatcher implements StatementMatcher {
         int skip;
 
         @Override
