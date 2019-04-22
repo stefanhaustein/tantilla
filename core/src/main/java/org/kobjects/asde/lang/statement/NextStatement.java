@@ -13,35 +13,25 @@ import java.util.Map;
 
 public class NextStatement extends Node {
 
-    final String varName;
+  final String varName;
 
-    public NextStatement(String varName) {
+  public ForStatement resolvedForStatement;
+  public int resolvedForLine;
+  public int resolvedForIndex;
+
+  public NextStatement(String varName) {
         this.varName = varName;
     }
 
     @Override
     public Object eval(EvaluationContext evaluationContext) {
-        JumpStackEntry entry;
-        ArrayList<JumpStackEntry> jumpStack = evaluationContext.getJumpStack();
-        while (true) {
-            if (jumpStack.isEmpty()
-                    || jumpStack.get(jumpStack.size() - 1).forVariable == null) {
-                throw new RuntimeException("NEXT " + varName+ " without FOR.");
-            }
-            entry = jumpStack.remove(jumpStack.size() - 1);
-            if (varName == null || entry.forVariableName.equals(varName)) {
-                break;
-            }
+        double step = resolvedForStatement.evalStep(evaluationContext);
+        double current = ((Double) resolvedForStatement.resolvedVariable.get(evaluationContext)) + step;
+        resolvedForStatement.resolvedVariable.set(evaluationContext, current);
+        if (Math.signum(step) != Math.signum(Double.compare(current, resolvedForStatement.evalChildToDouble(evaluationContext, 1)))) {
+            evaluationContext.currentLine = resolvedForLine;
+            evaluationContext.currentIndex = resolvedForIndex + 1;
         }
-        double current = ((Double) entry.forVariable.get(evaluationContext)) + entry.step;
-        entry.forVariable.set(evaluationContext, current);
-        if (Math.signum(entry.step) != Math.signum(Double.compare(current, entry.end))) {
-            jumpStack.add(entry);
-            evaluationContext.currentLine = entry.lineNumber;
-            evaluationContext.currentIndex = entry.statementIndex + 1;
-            return null;
-        }
-        evaluationContext.nextSubIndex = 0;
         return null;
     }
 
@@ -51,6 +41,9 @@ public class NextStatement extends Node {
     }
 
     public void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+        if (resolvedForStatement == null) {
+          throw new RuntimeException("NEXT without FOR");
+        }
         resolutionContext.endBlock(FunctionValidationContext.BlockType.FOR);
     }
 

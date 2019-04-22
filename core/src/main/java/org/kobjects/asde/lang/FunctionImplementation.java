@@ -193,12 +193,16 @@ public class FunctionImplementation implements Function {
 
 
     public Node find(StatementMatcher matcher, int... position) {
-        return new StatementSearch(this) {
+        StatementSearch search = new StatementSearch(this) {
             @Override
             public boolean statementMatches(CodeLine line, int index, Node statement) {
                 return matcher.statementMatches(line, index, statement);
             }
-        }.find(position[0], position[1]);
+        };
+        Node result = search.find(position[0], position[1]);
+        position[0] = search.lineNumber;
+        position[1] = search.index;
+        return result;
     }
 
     public void setType(FunctionType functionType) {

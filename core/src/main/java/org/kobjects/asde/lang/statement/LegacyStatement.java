@@ -139,17 +139,12 @@ public class LegacyStatement extends Node {
 
       case RETURN: {
         ArrayList<JumpStackEntry> jumpStack = evaluationContext.getJumpStack();
-        while (true) {
-          if (jumpStack.isEmpty()) {
-            throw new RuntimeException("RETURN without GOSUB.");
-          }
-          JumpStackEntry entry = jumpStack.remove(jumpStack.size() - 1);
-          if (entry.forVariable == null) {
-            evaluationContext.currentLine = entry.lineNumber;
-            evaluationContext.currentIndex = entry.statementIndex + 1;
-            break;
-          }
+        if (jumpStack.isEmpty()) {
+          throw new RuntimeException("RETURN without GOSUB.");
         }
+        JumpStackEntry entry = jumpStack.remove(jumpStack.size() - 1);
+        evaluationContext.currentLine = entry.lineNumber;
+        evaluationContext.currentIndex = entry.statementIndex + 1;
         break;
       }
 
