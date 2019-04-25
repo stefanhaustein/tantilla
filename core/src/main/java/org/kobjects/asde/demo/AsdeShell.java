@@ -83,15 +83,9 @@ public class AsdeShell  {
       }
 
       @Override
-      public void clearOutput() {
+      public void clearScreen(ClearScreenType clearScreenType) {
 
       }
-
-      @Override
-      public void clearCanvas() {
-
-      }
-
 
       @Override
       public void highlight(FunctionImplementation function, int lineNumber) {

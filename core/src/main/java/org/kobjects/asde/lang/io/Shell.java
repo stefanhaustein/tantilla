@@ -22,14 +22,14 @@ public class Shell {
 
 
     final Program program;
-    final public ProgramControl mainInterpreter ;
-    public final ProgramControl shellInterpreter ;
+    final public ProgramControl mainControl;
+    public final ProgramControl shellControl;
 
     public Shell(Program program) {
         this.program = program;
-        mainInterpreter = new ProgramControl(program);
-        shellInterpreter = new ProgramControl(program);
-        shellInterpreter.addStartStopListener(new StartStopListener() {
+        mainControl = new ProgramControl(program);
+        shellControl = new ProgramControl(program);
+        shellControl.addStartStopListener(new StartStopListener() {
             @Override
             public void programStarted() {
             }
@@ -101,7 +101,7 @@ public class Shell {
                 asb.append("\n");
                 program.console.print(asb.build());
 
-                shellInterpreter.runStatementsAsync(wrapper, mainInterpreter, resultConsumer);
+                shellControl.runStatementsAsync(wrapper, mainControl, resultConsumer);
                 break;
         }
     }

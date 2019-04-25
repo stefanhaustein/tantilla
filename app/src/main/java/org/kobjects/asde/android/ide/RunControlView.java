@@ -5,6 +5,7 @@ import android.widget.LinearLayout;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.lang.event.StartStopListener;
+import org.kobjects.asde.lang.io.Console;
 
 public class RunControlView extends LinearLayout {
     private final IconButton startButton;
@@ -20,27 +21,27 @@ public class RunControlView extends LinearLayout {
         this.mainActivity = mainActivity;
         startButton = new IconButton(mainActivity, R.drawable.baseline_play_arrow_24, item -> {
            hideControlButtons();
-           mainActivity.shell.mainInterpreter.start();
+           mainActivity.shell.mainControl.start();
         });
         stopButton = new IconButton(mainActivity, R.drawable.baseline_stop_24, item -> {
            hideControlButtons();
-           mainActivity.shell.mainInterpreter.abort();
+           mainActivity.shell.mainControl.abort();
         });
         pauseButton = new IconButton(mainActivity, R.drawable.baseline_pause_24, item -> {
            hideControlButtons();
-           mainActivity.shell.mainInterpreter.pause();
+           mainActivity.shell.mainControl.pause();
         });
         resumeButton = new IconButton(mainActivity, R.drawable.baseline_play_arrow_24, item -> {
            hideControlButtons();
-           mainActivity.shell.mainInterpreter.resume();
+           mainActivity.shell.mainControl.resume();
         });
         stepButton = new IconButton(mainActivity, R.drawable.baseline_skip_next_24, item -> {
-            mainActivity.shell.mainInterpreter.step();
+            mainActivity.shell.mainControl.step();
         });
         closeButton = new IconButton(mainActivity, R.drawable.baseline_clear_24, item -> {
             hideControlButtons();
             startButton.setVisibility(VISIBLE);
-            mainActivity.clearCanvas();
+            mainActivity.clearScreen(Console.ClearScreenType.PROGRAM_CLOSED);
             mainActivity.fullScreenMode = false;
             mainActivity.arrangeUi();
         });
@@ -55,7 +56,7 @@ public class RunControlView extends LinearLayout {
         hideControlButtons();
         startButton.setVisibility(VISIBLE);
 
-        mainActivity.shell.mainInterpreter.addStartStopListener(new StartStopListener() {
+        mainActivity.shell.mainControl.addStartStopListener(new StartStopListener() {
             @Override
             public void programStarted() {
                 mainActivity.runOnUiThread(() -> {
@@ -72,7 +73,7 @@ public class RunControlView extends LinearLayout {
             public void programAborted(Exception cause) {
                 mainActivity.runOnUiThread(() -> {
                     hideControlButtons();
-                    mainActivity.clearCanvas();
+                    mainActivity.clearScreen(Console.ClearScreenType.PROGRAM_CLOSED);
                     startButton.setVisibility(VISIBLE);
                     mainActivity.fullScreenMode = false;
                     mainActivity.arrangeUi();

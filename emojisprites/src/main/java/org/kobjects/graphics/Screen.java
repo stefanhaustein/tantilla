@@ -44,7 +44,7 @@ public class Screen extends ViewHolder<FrameLayout> implements Animated {
 
         dpad = new Dpad(this);
 
-        clsImpl();
+        clearAllImpl();
 
         view.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -67,7 +67,13 @@ public class Screen extends ViewHolder<FrameLayout> implements Animated {
         return false;
     }
 
-    private void clsImpl() {
+    public void clearAll() {
+        dpad.setVisible(false);
+        cls();
+        activity.runOnUiThread(() -> clearAllImpl());
+    }
+
+    private void clearAllImpl() {
         view.removeAllViews();
         view.addView(imageView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
@@ -78,8 +84,6 @@ public class Screen extends ViewHolder<FrameLayout> implements Animated {
 
     public void cls() {
         bitmap.eraseColor(0);
-        dpad.setVisible(false);
-        activity.runOnUiThread(() -> clsImpl());
     }
 
     public float getWidth() {

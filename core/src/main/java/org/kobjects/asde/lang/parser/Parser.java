@@ -361,7 +361,7 @@ public class Parser {
         result.add(new NextStatement(tokenizer.consumeIdentifier()));
       } while (tokenizer.tryConsume(","));
     } else {
-      result.add(new NextStatement(null));
+      throw tokenizer.exception("Variable name expected after NEXT.", null);
     }
   }
 

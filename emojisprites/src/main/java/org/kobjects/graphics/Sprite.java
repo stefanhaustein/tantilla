@@ -27,27 +27,8 @@ public class Sprite extends PositionedViewHolder<ImageView> implements Animated 
         view.wrapped.setAdjustViewBounds(true);
         view.wrapped.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
-        /*
-        backgroundPaint.setStyle(Paint.Style.FILL);
-        backgroundPaint.setColor(Color.WHITE);
-        borderPaint.setStyle(Paint.Style.STROKE);
-        borderPaint.setColor(Color.BLACK);
-        borderPaint.setStrokeWidth(Dimensions.dpToPx(context, 1));
-
-        int basePx = Dimensions.dpToPx(context, 4);
-
-        bubble.setPadding(2 * basePx ,  basePx,2*basePx , basePx);
-        BubbleDrawable bubbleDrawable = new BubbleDrawable();
-        bubbleDrawable.cornerBox = 3 * basePx;
-        bubbleDrawable.backgroundPaint = backgroundPaint;
-        bubbleDrawable.strokePaint = borderPaint;
-        bubble.setBackground(bubbleDrawable);
-        bubble.setTextColor(Color.BLACK);
-        bubble.setVisibility(View.GONE);*/
 
         setFace(DEFAULT_FACE);
-
-//        bubble.setClipToOutline(false);
 
     }
     public String getFace() {

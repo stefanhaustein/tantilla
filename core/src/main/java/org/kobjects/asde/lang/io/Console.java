@@ -6,11 +6,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public interface Console {
+    enum ClearScreenType {
+        CLS_STATEMENT, CLEAR_STATEMENT, PROGRAM_CLOSED
+    }
+
     void print(CharSequence s);
     String input();
 
-    void clearOutput();
-    void clearCanvas();
+    void clearScreen(ClearScreenType clearScreenType);
 
     void highlight(FunctionImplementation function, int lineNumber);
 

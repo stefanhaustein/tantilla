@@ -71,3 +71,5 @@ END SUB
 80   shoot
 90 end
 100 newAsteroid screen.width / 2, screen.height / 2, 50, rnd() * 360, rnd() * 10 + 5
+200 sleep 100
+210 goto 200

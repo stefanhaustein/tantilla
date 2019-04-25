@@ -78,8 +78,8 @@ public class ProgramView extends LinearLayout implements ExpandListener {
             }
         };
 
-        context.shell.mainInterpreter.addStartStopListener(startStopRefresher);
-        context.shell.shellInterpreter.addStartStopListener(startStopRefresher);
+        context.shell.mainControl.addStartStopListener(startStopRefresher);
+        context.shell.shellControl.addStartStopListener(startStopRefresher);
 
         program.addProgramChangeListener(new ProgramChangeListener() {
             @Override

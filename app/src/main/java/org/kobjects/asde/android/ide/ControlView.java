@@ -26,6 +26,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.editor.FunctionSignatureFlow;
 import org.kobjects.asde.android.ide.widget.IconButton;
+import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.expressionparser.ExpressionParser;
 
@@ -285,8 +286,7 @@ public class ControlView extends LinearLayout  {
 
         SubMenu displayMenu = mainMenu.addSubMenu("Display");
         displayMenu.add("Clear").setOnMenuItemClickListener(item -> {
-                mainActivity.clearOutput();
-            mainActivity.clearCanvas();
+            mainActivity.clearScreen(Console.ClearScreenType.CLS_STATEMENT);
             return true;
         });
         displayMenu.add(1, 0, 0, "Overlay mode").setChecked(!mainActivity.windowMode).setOnMenuItemClickListener(item -> {

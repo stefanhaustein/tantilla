@@ -97,8 +97,8 @@ public class MainActivity extends AppCompatActivity implements Console {
   public String readLine;
   ResizableFrameLayout resizableFrameLayout;
   ScreenAdapter screenAdapter;
-//  public ProgramControl mainInterpreter = new ProgramControl(program);
- // ProgramControl shellInterpreter = new ProgramControl(program);
+//  public ProgramControl mainControl = new ProgramControl(program);
+ // ProgramControl shellControl = new ProgramControl(program);
   AsdePreferences preferences;
   boolean autoScroll = true;
   public boolean fullScreenMode;
@@ -210,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
     new Thread(() -> {
         while (true) {
-            if (shell.mainInterpreter.getState() != ProgramControl.State.PAUSED) {
+            if (shell.mainControl.getState() != ProgramControl.State.PAUSED) {
                 screen.animate(15);
             }
             try {
@@ -235,8 +235,7 @@ public class MainActivity extends AppCompatActivity implements Console {
         }
         @Override
         public Object call(EvaluationContext evaluationContext, int paramCount) {
-            clearOutput();
-            clearCanvas();
+            clearScreen(ClearScreenType.CLS_STATEMENT);
             return null;
         }
     });
@@ -567,7 +566,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
     public void onBackPressed () {
       if (fullScreenMode && !runningFromShortcut) {
-          shell.mainInterpreter.abort();
+          shell.mainControl.abort();
       } else {
           super.onBackPressed();
       }
@@ -685,7 +684,20 @@ public class MainActivity extends AppCompatActivity implements Console {
     }
 
     @Override
-    public void clearOutput() {
+    public void clearScreen(ClearScreenType clearScreenType) {
+      switch (clearScreenType) {
+        case CLS_STATEMENT:
+          clearOutput();
+          screen.cls();
+          break;
+        case PROGRAM_CLOSED:
+        case CLEAR_STATEMENT:
+          screen.clearAll();
+          break;
+      }
+    }
+
+    void clearOutput() {
         runOnUiThread(new Runnable() {
             public void run() {
                 for (int i = outputView.getChildCount() - 1; i > 0; i--) {
@@ -697,11 +709,6 @@ public class MainActivity extends AppCompatActivity implements Console {
         });
     }
 
-    @Override
-    public void clearCanvas() {
-        //
-        screen.cls();
-    }
 
 
     @Override
@@ -733,17 +740,17 @@ public class MainActivity extends AppCompatActivity implements Console {
     }
 
     public void eraseProgram() {
-        shell.mainInterpreter.abort();
+        shell.mainControl.abort();
         program.deleteAll();
     }
 
     public void load(ProgramReference programReference, boolean showErrors, boolean run) {
         new Thread(() -> {
-            shell.mainInterpreter.abort();
+            shell.mainControl.abort();
             try {
                 program.load(programReference);
                 if (run) {
-                    shell.mainInterpreter.start();
+                    shell.mainControl.start();
                 }
             } catch (Exception e) {
                 if (showErrors) {
