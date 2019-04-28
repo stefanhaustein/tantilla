@@ -28,4 +28,5 @@ public abstract class ViewHolder<T extends ViewGroup> {
      * Returns the normalized height of the view. For the screen, this value is negative.
      */
     public abstract float getHeightForAnchoring();
+
 }

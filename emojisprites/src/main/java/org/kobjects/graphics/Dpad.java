@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+/**
+ * Handled separately from sprites because it scales differently
+ */
 public class Dpad  {
 
     static final int BUTTON_SIZE = 30;

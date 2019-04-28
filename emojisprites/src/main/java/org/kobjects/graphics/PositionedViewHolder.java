@@ -10,6 +10,7 @@ public abstract class PositionedViewHolder<T extends View> extends ViewHolder<An
     protected float z;
     protected float opacity = 1;
 
+    // For internal use!
     protected boolean visible = true;
 
     final Screen screen;
@@ -45,16 +46,29 @@ public abstract class PositionedViewHolder<T extends View> extends ViewHolder<An
                 syncRequested = false;
                 view.setVisibility(visible ? View.VISIBLE : View.GONE);
                 view.setAlpha(opacity);
-                if (anchor.view != view.getParent()) {
+                // visible is used internally to handle bubble visibility and to remove everything on clear, so it
+                // gets special treatment here.
+                boolean shouldBeAttached = visible && shouldBeAttached();
+                ViewGroup expectedParent = shouldBeAttached ? anchor.view : null;
+                if (view.getParent() != expectedParent) {
                     if (view.getParent() != null) {
                         ((ViewGroup) view.getParent()).removeView(view);
                     }
-                    anchor.view.addView(view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                    if (expectedParent == null) {
+                        return;
+                    }
+                    expectedParent.addView(view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 }
                 syncUi();
             });
         }
     }
+
+
+    boolean shouldBeAttached() {
+        return opacity > 0 || view.getChildCount() > 0;
+    }
+
 
     public ViewHolder<?> getAnchor() {
         return anchor;
@@ -136,11 +150,13 @@ public abstract class PositionedViewHolder<T extends View> extends ViewHolder<An
         return true;
     }
 
-    public boolean getVisible() {
+    // Used internally
+    boolean getVisible() {
         return visible;
     }
 
-    public boolean setVisible(boolean value) {
+    // Used for bubble management internally -- clients should use opacity
+    boolean setVisible(boolean value) {
         if (value == visible) {
             return false;
         }

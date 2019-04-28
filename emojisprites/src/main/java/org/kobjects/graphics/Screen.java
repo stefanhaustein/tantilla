@@ -25,6 +25,10 @@ public class Screen extends ViewHolder<FrameLayout> implements Animated {
     Bitmap bitmap;
     float bitmapScale;
     public Dpad dpad;
+
+    /**
+     * Contains all positioned view holders including children.
+     */
     Set<PositionedViewHolder<?>> widgets = Collections.newSetFromMap(new WeakHashMap<>());
 
 
@@ -44,8 +48,6 @@ public class Screen extends ViewHolder<FrameLayout> implements Animated {
 
         dpad = new Dpad(this);
 
-        clearAllImpl();
-
         view.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
@@ -55,6 +57,12 @@ public class Screen extends ViewHolder<FrameLayout> implements Animated {
         });
 
         view.setFocusableInTouchMode(true);
+
+        view.addView(imageView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        FrameLayout.LayoutParams dpadLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dpadLayoutParams.gravity = Gravity.BOTTOM;
+        view.addView(dpad.view, dpadLayoutParams);
     }
 
     public Pen createPen() {
@@ -68,22 +76,17 @@ public class Screen extends ViewHolder<FrameLayout> implements Animated {
     }
 
     public void clearAll() {
-        dpad.setVisible(false);
         cls();
-        activity.runOnUiThread(() -> clearAllImpl());
-    }
-
-    private void clearAllImpl() {
-        view.removeAllViews();
-        view.addView(imageView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        FrameLayout.LayoutParams dpadLayoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        dpadLayoutParams.gravity = Gravity.BOTTOM;
-        view.addView(dpad.view, dpadLayoutParams);
+        synchronized (widgets) {
+            for (PositionedViewHolder<?> widget : widgets) {
+                widget.setVisible(false);
+            }
+        }
     }
 
     public void cls() {
         bitmap.eraseColor(0);
+        dpad.setVisible(false);
     }
 
     public float getWidth() {
