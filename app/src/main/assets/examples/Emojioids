@@ -15,15 +15,19 @@ SUB newAsteroid(Number x, Number y, Number size, Number direction, Number speed)
 55 asteroid.speed = speed
 60 asteroid.rotation = rnd() * 20
 70 asteroid.edgeMode = EdgeMode.WRAP
-100 on len(asteroid.collisions) > 0 :
+100 on len(asteroid.collisions) <> 10000 :
+101   print "hit", len(asteroid.collisions), asteroid.face
 105   if asteroid.face = "🥔" then
+106     print "potato"
 107     let collisions = asteroid.collisions
-109     if len(collisions) > 0 then
+108     print "len: ",len(collisions)
+109     if len(collisions) <> 10000 then
 110       for i = 0 to len(collisions) - 1
 120         let other = collisions(i)
+125         print "loop",i, other.face
 130         if other.face = "🚀" then
 135           gameOver
-140         else if other.face = "🔴" then
+140         else if other.face = "🔴" and other.opacity > 0 then
 150           other.opacity = 0
 153           breakAsteroid asteroid
 160         end if
@@ -38,11 +42,13 @@ END SUB
 SUB breakAsteroid(Sprite asteroid)
 10 asteroid.face = "💥"
 12 asteroid.grow = 10
-14 asteroid.fade = -5
+14 asteroid.fade = -1
+15 asteroid.edgeMode = EdgeMode.NONE
 20 play "💥"
 30 if asteroid.size > 20 then
-40   newAsteroid asteroid.x, asteroid.y, asteroid.size - 10, asteroid.direction + 45, asteroid.speed * 2
-50   newAsteroid asteroid.x, asteroid.y, asteroid.size - 10, asteroid.direction - 45, asteroid.speed * 2
+35   LET angle = 60 * rnd()
+40   newAsteroid asteroid.x, asteroid.y, asteroid.size - 10, asteroid.direction + angle, asteroid.speed * 1.5
+50   newAsteroid asteroid.x, asteroid.y, asteroid.size - 10, asteroid.direction - angle, asteroid.speed * 1.5
 60 end if
 END SUB
 

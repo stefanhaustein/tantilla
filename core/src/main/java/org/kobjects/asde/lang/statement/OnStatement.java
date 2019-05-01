@@ -3,6 +3,7 @@ package org.kobjects.asde.lang.statement;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.FunctionValidationContext;
+import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.StatementMatcher;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
@@ -14,9 +15,8 @@ import org.kobjects.typesystem.PropertyChangeListener;
 
 import java.util.Map;
 
-public class OnStatement extends Statement implements PropertyChangeListener {
+public class OnStatement extends Statement  {
 
-  EvaluationContext context;
   int lineBeyondEnd;
 
   public OnStatement(Node condition) {
@@ -39,26 +39,12 @@ public class OnStatement extends Statement implements PropertyChangeListener {
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
-    context = new EvaluationContext(evaluationContext);
-    context.currentIndex++;
-    children[0].accept(new ListenerAttachmentVisitor(evaluationContext));
+    EvaluationContext newContectBase = new EvaluationContext(evaluationContext);
+    newContectBase.currentIndex++;
+    children[0].accept(new ListenerAttachmentVisitor(newContectBase));
     evaluationContext.currentLine = lineBeyondEnd;
     return null;
   }
-
-  @Override
-  public void propertyChanged(Property<?> property) {
-    if (evalChildToBoolean(context, 0)) {
-      new Thread(() -> {
-        try {
-          context.function.callImpl(new EvaluationContext(context));
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      }).start();
-    }
-  }
-
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
@@ -66,26 +52,51 @@ public class OnStatement extends Statement implements PropertyChangeListener {
     children[0].toString(asb, errors);
   }
 
-  class ListenerAttachmentVisitor extends Visitor {
+  class ListenerAttachmentVisitor extends Visitor implements PropertyChangeListener {
 
-    EvaluationContext evaluationContext;
+    final EvaluationContext evaluationContext;
 
     public ListenerAttachmentVisitor(EvaluationContext evaluationContext) {
       this.evaluationContext = evaluationContext;
     }
 
 
+    /*
     @Override
     public void visitIdentifier(Identifier identifier) {
-      identifier.eval(evaluationContext);
+      // identifier.eval(evaluationContext);
 
+    }
+    */
+
+
+    @Override
+    public void propertyChanged(Property<?> property) {
+      if (evaluationContext.control.getState() == ProgramControl.State.ABORTED ||
+          evaluationContext.control.getState() == ProgramControl.State.ENDED) {
+        return;
+      }
+      if (evalChildToBoolean(evaluationContext, 0)) {
+        System.out.println("Condition did trigger");
+        new Thread(() -> {
+          try {
+            System.out.println("Thread started");
+            evaluationContext.function.callImpl(new EvaluationContext(evaluationContext));
+            System.out.println("Thread ended");
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }).start();
+      } else {
+        System.out.println("*** condition did not trigger ***");
+      }
     }
 
 
     @Override
     public void visitPath(Path path) {
       Property property = path.evalProperty(evaluationContext);
-      property.addListener(OnStatement.this);
+      property.addListener(this);
     }
   }
 

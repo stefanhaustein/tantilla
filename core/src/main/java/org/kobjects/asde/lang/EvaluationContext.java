@@ -16,7 +16,6 @@ public class EvaluationContext {
 
     public int currentLine;
     public int currentIndex;
-    public int nextSubIndex;  // index within next when skipping a for loop; reset in next
 
     private ArrayList<JumpStackEntry> jumpStack;
 
