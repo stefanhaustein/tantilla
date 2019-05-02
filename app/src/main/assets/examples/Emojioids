@@ -15,16 +15,12 @@ SUB newAsteroid(Number x, Number y, Number size, Number direction, Number speed)
 55 asteroid.speed = speed
 60 asteroid.rotation = rnd() * 20
 70 asteroid.edgeMode = EdgeMode.WRAP
-100 on len(asteroid.collisions) <> 10000 :
-101   print "hit", len(asteroid.collisions), asteroid.face
+100 on len(asteroid.collisions) > 0 :
 105   if asteroid.face = "🥔" then
-106     print "potato"
 107     let collisions = asteroid.collisions
-108     print "len: ",len(collisions)
 109     if len(collisions) <> 10000 then
 110       for i = 0 to len(collisions) - 1
 120         let other = collisions(i)
-125         print "loop",i, other.face
 130         if other.face = "🚀" then
 135           gameOver
 140         else if other.face = "🔴" and other.opacity > 0 then

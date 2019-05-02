@@ -28,6 +28,10 @@ public class OnStatement extends Statement  {
     CodeLine codeLine = resolutionContext.functionImplementation.ceilingEntry(line).getValue();
     if (codeLine.length() > index + 1) {
       lineBeyondEnd = line + 1;
+      if (!(codeLine.get(codeLine.length() - 1) instanceof EndStatement)) {
+        codeLine.append(new EndStatement(true));
+      }
+
     } else {
       int[] pos = {line + 1, 0};
       if (resolutionContext.functionImplementation.find(new EndMatcher(), pos) == null) {

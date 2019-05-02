@@ -11,6 +11,7 @@ import java.util.Objects;
 public class Sprite extends PositionedViewHolder<ImageView> implements Animated {
 
   public static final String DEFAULT_FACE = "\ud83d\ude03";
+  public static final double MIN_OPACITY = 0.0001;
 
   TextBox label;
   TextBox bubble;
@@ -22,7 +23,6 @@ public class Sprite extends PositionedViewHolder<ImageView> implements Animated 
 
   public Sprite(Screen screen) {
     super(screen, new ImageView(screen.activity));
-    Context context = screen.activity;
 
     view.wrapped.setAdjustViewBounds(true);
     view.wrapped.setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -46,7 +46,7 @@ public class Sprite extends PositionedViewHolder<ImageView> implements Animated 
   boolean shouldBeAttached() {
     // Top level sprites without children will get checked for physical removal
     if (view.getChildCount() == 0 && anchor instanceof Screen) {
-      return opacity > 0
+      return opacity > MIN_OPACITY
           && x - size / 2 < 200 && x + size / 2 > -200
           && y - size / 2 < 200 && y + size / 2 > -200;
     }
@@ -187,7 +187,7 @@ public class Sprite extends PositionedViewHolder<ImageView> implements Animated 
     float sy = getScreenY();
     synchronized (screen.widgets) {
       ArrayList<Sprite> result = new ArrayList<>();
-      StringBuilder debug = new StringBuilder();
+      // StringBuilder debug = new StringBuilder();
       for (PositionedViewHolder<?> widget : screen.widgets) {
         if (widget != this && widget instanceof Sprite && widget.shouldBeAttached()) {
           Sprite other = (Sprite) widget;
@@ -196,11 +196,11 @@ public class Sprite extends PositionedViewHolder<ImageView> implements Animated 
           double minDist = (other.size + size) * 0.4;
           if (distX * distX + distY * distY < minDist * minDist) {
             result.add(other);
-            debug.append(other.face);
+            // debug.append(other.face);
           }
         }
       }
-      say(debug.toString());
+      // say(debug.toString());
       return result;
     }
   }

@@ -90,7 +90,7 @@ public class Parser {
           result.add(new EndIfStatement());
           return;
         }
-        result.add(new EndStatement());
+        result.add(new EndStatement(/* invisible: */ false));
         return;
       case "ENDIF":
         tokenizer.consumeIdentifier();
