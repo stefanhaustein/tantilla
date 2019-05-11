@@ -82,6 +82,7 @@ public class Screen extends ViewHolder<FrameLayout> implements Animated {
                 widget.setVisible(false);
             }
         }
+        widgets = Collections.newSetFromMap(new WeakHashMap<>());
     }
 
     public void cls() {
@@ -109,11 +110,13 @@ public class Screen extends ViewHolder<FrameLayout> implements Animated {
 
     @Override
     public void animate(float dt) {
+        ArrayList<PositionedViewHolder<?>> copy = new ArrayList<>(widgets.size());
         synchronized (widgets) {
-            for (PositionedViewHolder<?> widget : widgets) {
-                if (widget instanceof Animated) {
-                    ((Animated) widget).animate(dt);
-                }
+            copy.addAll(widgets);
+        }
+        for (PositionedViewHolder<?> widget : copy) {
+            if (widget instanceof Animated) {
+                ((Animated) widget).animate(dt);
             }
         }
     }

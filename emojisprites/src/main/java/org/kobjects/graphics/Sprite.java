@@ -11,7 +11,6 @@ import java.util.Objects;
 public class Sprite extends PositionedViewHolder<ImageView> implements Animated {
 
   public static final String DEFAULT_FACE = "\ud83d\ude03";
-  public static final double MIN_OPACITY = 0.0001;
 
   TextBox label;
   TextBox bubble;
@@ -45,7 +44,7 @@ public class Sprite extends PositionedViewHolder<ImageView> implements Animated 
   @Override
   boolean shouldBeAttached() {
     // Top level sprites without children will get checked for physical removal
-    if (view.getChildCount() == 0 && anchor instanceof Screen) {
+    if (view.getChildCount() == 1 && anchor instanceof Screen) {
       return opacity > MIN_OPACITY
           && x - size / 2 < 200 && x + size / 2 > -200
           && y - size / 2 < 200 && y + size / 2 > -200;

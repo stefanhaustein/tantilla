@@ -44,22 +44,17 @@ import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.android.ide.widget.TitleView;
-import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.FunctionImplementation;
+import org.kobjects.asde.lang.*;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Function;
-import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.io.Shell;
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.asde.lang.WrappedExecutionException;
-import org.kobjects.asde.lang.GlobalSymbol;
 import org.kobjects.asde.library.ui.DpadAdapter;
 import org.kobjects.asde.library.ui.ScreenAdapter;
 import org.kobjects.asde.library.ui.SpriteAdapter;
 import org.kobjects.asde.library.ui.TextBoxAdapter;
 import org.kobjects.graphics.Screen;
-import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.sound.SampleManager;
 import org.kobjects.sound.Sound;
@@ -140,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements Console {
                       public void onClick(View widget) {
                           android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
                           builder.setTitle("Error");
-                          builder.setMessage(span.annotation.toString());
+                          builder.setMessage(Format.exceptionToString((Exception) span.annotation));
                           builder.show();
                       }
                   }, span.start, span.end, 0);
@@ -209,9 +204,12 @@ public class MainActivity extends AppCompatActivity implements Console {
     screen = new Screen(this);
 
     new Thread(() -> {
+        long callTime = System.currentTimeMillis();
         while (true) {
-            if (shell.mainControl.getState() != ProgramControl.State.PAUSED) {
-                screen.animate(15);
+            long lastCall = callTime;
+            callTime = System.currentTimeMillis();
+            if (shell.mainControl.getState() != ProgramControl.State.PAUSED && callTime - lastCall > 5) {
+                screen.animate(callTime - lastCall);
             }
             try {
                 Thread.sleep(15);
@@ -777,7 +775,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
             AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
             alertBuilder.setTitle(s == null ? "Error" : s);
-            alertBuilder.setMessage("" + e.getMessage());
+            alertBuilder.setMessage(Format.exceptionToString(e));
             alertBuilder.show();
         });
     }

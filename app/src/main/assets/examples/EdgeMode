@@ -4,9 +4,11 @@
 120 ghost.edgeMode = EdgeMode.WRAP
 130 ghost.dx = 17
 140 ghost.dy = 19
+150 ghost.say "EdgeMode.WRAP"
 200 let ball = screen.newSprite()
 210 ball.face = "🎱"
 215 ball.size = 30
 220 ball.edgeMode = EdgeMode.BOUNCE
-230 ball.dx = 23
+230 ball.dx = -23
 240 ball.dy = 19
+250 ball.say "EdgeMode.BOUNCE"

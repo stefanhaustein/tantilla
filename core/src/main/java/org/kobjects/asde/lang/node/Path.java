@@ -42,6 +42,9 @@ public class Path extends AssignableNode {
     protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
         if (children[0].returnType() instanceof Classifier) {
             resolvedPropertyDescriptor = ((Classifier) children[0].returnType()).getPropertyDescriptor(pathName);
+            if (resolvedPropertyDescriptor == null) {
+                throw new RuntimeException("Property '" + pathName + "' not found in " + children[0].returnType());
+            }
             return;
         }
         if (children[0].returnType() instanceof MetaType) {
