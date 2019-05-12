@@ -453,6 +453,7 @@ public class Program {
 
     public void deleteSymbol(String name) {
         symbolMap.remove(name);
+        notifyProgramChanged();
     }
 
 }
