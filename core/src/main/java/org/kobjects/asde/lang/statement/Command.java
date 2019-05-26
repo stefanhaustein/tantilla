@@ -42,7 +42,7 @@ public class Command extends Statement {
                 evaluationContext.control.resume();
 
             case CLEAR:
-                program.init(evaluationContext);
+                program.clear(evaluationContext);
                 break;
 
             case DELETE:
@@ -83,7 +83,7 @@ public class Command extends Statement {
 
 
             case RUN:
-                program.init(evaluationContext);
+                program.clear(evaluationContext);
 
                 evaluationContext.currentLine = children.length == 0 ? 0 : (int) evalChildToDouble(evaluationContext,0);
                 evaluationContext.currentIndex = 0;

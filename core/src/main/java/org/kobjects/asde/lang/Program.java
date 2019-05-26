@@ -4,7 +4,6 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.event.ProgramChangeListener;
 import org.kobjects.asde.lang.event.ProgramRenameListener;
-import org.kobjects.asde.lang.io.Formatting;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.node.Visitor;
 import org.kobjects.asde.lang.refactor.RenameGlobal;
@@ -113,7 +112,8 @@ public class Program {
   }
 
 
-  public synchronized void init(EvaluationContext evaluationContext) {
+  public synchronized void clear(EvaluationContext evaluationContext) {
+      console.clearScreen(Console.ClearScreenType.CLEAR_STATEMENT);
       TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
       for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
           GlobalSymbol symbol = entry.getValue();
@@ -209,7 +209,7 @@ public class Program {
 
     // move to parser
    private Type parseType(ExpressionParser.Tokenizer tokenizer) {
-       String typeName = Formatting.toUpperCamel(tokenizer.consumeIdentifier());
+       String typeName = Format.toUpperCamel(tokenizer.consumeIdentifier());
        if (typeName.equals("Number")) {
            return Types.NUMBER;
        }

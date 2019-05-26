@@ -73,7 +73,7 @@ public class ProgramControl {
 
     public void start() {
         EvaluationContext context = new EvaluationContext(this, program.main);
-        program.init(context);
+        program.clear(context);
         runAsync(() -> context.function.callImpl(context));
     }
 
