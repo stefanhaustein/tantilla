@@ -3,9 +3,9 @@ package org.kobjects.typesystem;
 import java.util.Arrays;
 
 public class EnumType implements Type, Typed {
-  public final EnumLiteral[] literals;
+  public final Object[] literals;
 
-  public EnumType(EnumLiteral... literals) {
+  public EnumType(Object... literals) {
     this.literals = literals;
   }
 
@@ -14,12 +14,12 @@ public class EnumType implements Type, Typed {
     return new MetaType(this);
   }
 
-  public EnumLiteral getLiteral(String pathName) {
-    for (EnumLiteral literal : literals) {
-      if (pathName.equals(literal.name())) {
+  public Object getLiteral(String name) {
+    for (Object literal : literals) {
+      if (name.equals(literal.toString())) {
         return literal;
       }
     }
-    throw new RuntimeException("Enum literal named '" + pathName + "' not found. Valid literals are: " + Arrays.toString(literals));
+    throw new RuntimeException("Enum literal named '" + name + "' not found. Valid literals are: " + Arrays.toString(literals));
   }
 }

@@ -1,5 +1,5 @@
 package org.kobjects.graphics;
 
 public interface Animated {
-    void animate(float dt);
+    void animate(float dt, boolean propertiesChanged);
 }

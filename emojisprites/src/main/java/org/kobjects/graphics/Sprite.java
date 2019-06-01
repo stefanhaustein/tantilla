@@ -1,6 +1,5 @@
 package org.kobjects.graphics;
 
-import android.content.Context;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
@@ -8,7 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
-public class Sprite extends PositionedViewHolder<ImageView> implements Animated {
+public class Sprite extends PositionedViewHolder<ImageView>  {
 
   public static final String DEFAULT_FACE = "\ud83d\ude03";
 
@@ -17,8 +16,15 @@ public class Sprite extends PositionedViewHolder<ImageView> implements Animated 
   private float size;
   private String face;
   private float angle;
+  private float speed;
+  private float direction;
+  private float grow;
+  private float fade;
+  private float rotation;
 
-  boolean textDirty;
+  private EdgeMode edgeMode = EdgeMode.NONE;
+
+  private boolean textDirty;
 
   public Sprite(Screen screen) {
     super(screen, new ImageView(screen.activity));
@@ -54,8 +60,8 @@ public class Sprite extends PositionedViewHolder<ImageView> implements Animated 
 
   @Override
   public void syncUi() {
-    if (textDirty) {
-      textDirty = false;
+    if (isTextDirty()) {
+      setTextDirty(false);
       view.wrapped.setImageDrawable(Emojis.getDrawable(view.getContext(), face));
     }
 
@@ -133,12 +139,20 @@ public class Sprite extends PositionedViewHolder<ImageView> implements Animated 
     return true;
   }
 
+  public boolean setEdgeMode(EdgeMode newValue) {
+    if (edgeMode == newValue) {
+      return false;
+    }
+    edgeMode = newValue;
+    return true;
+  }
+
   public boolean setFace(String face) {
     if (Objects.equals(face, this.face)) {
       return false;
     }
     this.face = face;
-    textDirty = true;
+    setTextDirty(true);
     requestSync();
     return true;
   }
@@ -168,10 +182,67 @@ public class Sprite extends PositionedViewHolder<ImageView> implements Animated 
     getBubble().setVisible(!text.isEmpty());
   }
 
-  @Override
   public void animate(float dt) {
+    boolean propertiesChanged = false;
+
+    if (speed != 0.0) {
+      propertiesChanged = true;
+      double theta = Math.toRadians(90 - direction);
+      double delta = dt * speed / 1000;
+      double dx = Math.cos(theta) * delta;
+      double dy = Math.sin(theta) * delta;
+      x += dx;
+      y += dy;
+
+       if (edgeMode != EdgeMode.NONE && anchor == screen) {
+        float radius = size / 2;
+        switch (edgeMode) {
+          case WRAP:
+            if (dx > 0 && x - radius > screen.getWidth() / 2) {
+              x = -screen.getWidth() / 2 - radius;
+            } else if (dx < 0 && x + radius < screen.getWidth() / -2) {
+              x = screen.getWidth() / 2 - radius;
+            }
+            if (dy > 0 && y - radius > screen.getHeight() / 2) {
+              y = -screen.getHeight() / 2 - radius;
+            } else if (dy < 0 && y + radius < screen.getHeight() / -2) {
+              y = screen.getHeight() / 2 + radius;
+            }
+            break;
+          case BOUNCE:
+            if (dx > 0 && x + radius > screen.getWidth() / 2) {
+              direction += dy < 0 ? 90 : -90;
+            } else if (dx < 0 && x - radius < screen.getWidth() / -2) {
+              direction += dy > 0 ? 90 : -90;
+            }
+            if (dy > 0 && y + radius > screen.getHeight() / 2) {
+              direction += dx > 0 ? 90 : -90;
+            } else if (dy < 0 && y - radius < screen.getHeight() / -2) {
+              direction += dx < 0 ? 90 : -90;
+            }
+            break;
+        }
+      }
+    }
+    if (rotation != 0F) {
+      propertiesChanged = true;
+      angle += rotation * dt / 1000F;
+    }
+    if (grow != 0F) {
+      propertiesChanged = true;
+      size += grow * dt / 1000F;
+    }
+    if (fade != 0F) {
+      propertiesChanged = true;
+      opacity += fade * dt / 1000F;
+    }
+
+    if (propertiesChanged) {
+      requestSync();
+    }
+
     if (tag instanceof Animated) {
-      ((Animated) tag).animate(dt);
+      ((Animated) tag).animate(dt, propertiesChanged);
     }
   }
 
@@ -202,5 +273,77 @@ public class Sprite extends PositionedViewHolder<ImageView> implements Animated 
       // say(debug.toString());
       return result;
     }
+  }
+
+  public float getSpeed() {
+    return speed;
+  }
+
+  public boolean setSpeed(float speed) {
+    if (speed != this.speed) {
+      this.speed = speed;
+      return true;
+    }
+    return false;
+  }
+
+  public float getDirection() {
+    return direction;
+  }
+
+  public boolean setDirection(float direction) {
+    if (this.direction != direction) {
+      this.direction = direction;
+      return true;
+    }
+    return false;
+  }
+
+  public EdgeMode getEdgeMode() {
+    return edgeMode;
+  }
+
+  public float getGrow() {
+    return grow;
+  }
+
+  public boolean setGrow(float grow) {
+    if (this.grow == grow) {
+      this.grow = grow;
+      return true;
+    }
+    return false;
+  }
+
+  public float getFade() {
+    return fade;
+  }
+
+  public boolean setFade(float fade) {
+    if (this.fade == fade) {
+      this.fade = fade;
+      return true;
+    }
+    return false;
+  }
+
+  public boolean isTextDirty() {
+    return textDirty;
+  }
+
+  public void setTextDirty(boolean textDirty) {
+    this.textDirty = textDirty;
+  }
+
+  public float getRotation() {
+    return rotation;
+  }
+  
+  public boolean setRotation(float rotation) {
+    if (this.rotation != rotation) {
+      this.rotation = rotation;
+      return true;
+    }
+    return false;
   }
 }
