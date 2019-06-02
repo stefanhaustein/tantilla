@@ -346,4 +346,63 @@ public class Sprite extends PositionedViewHolder<ImageView>  {
     }
     return false;
   }
+
+  public float getLeft() {
+    return x - (getAnchor().getWidthForAnchoring() + size) / 2f;
+  }
+
+  public float getRight() {
+    return -x - (getAnchor().getWidthForAnchoring() + size) / 2f;
+  }
+
+  public float getTop() {
+    return -y - (getAnchor().getHeightForAnchoring() + size) / 2f;
+  }
+
+  public float getBottom() {
+    return y - (getAnchor().getHeightForAnchoring() + size) / 2f;
+  }
+
+  public float getDx() {
+    return speed * (float) Math.cos(Math.toRadians(90 - direction));
+  }
+
+  public float getDy() {
+    return speed *  (float) Math.sin(Math.toRadians(90 - direction));
+  }
+
+  boolean setDxy(float dx, float dy) {
+    float newSpeed = (float) Math.sqrt(dx * dx + dy * dy);
+
+    if (newSpeed == 0) {
+      return setSpeed(0);
+    }
+
+    float newDirection = 90 - (float) Math.toDegrees(Math.atan2(dy, dx));
+    return setSpeed(newSpeed) | setDirection(newDirection < 0 ? 360 + newDirection : newDirection);
+  }
+
+  public boolean setDx(float dx) {
+    return setDxy(dx, getDy());
+  }
+
+  public boolean setDy(float dy) {
+    return setDxy(getDx(), dy);
+  }
+
+  public boolean setLeft(float value) {
+    return setX(value + (size + getAnchor().getWidthForAnchoring()) / 2f);
+  }
+
+  public boolean setRight(float value) {
+    return setX(-(value + (getAnchor().getWidthForAnchoring() + size) / 2f));
+  }
+
+  public boolean setTop(float value) {
+    return setY(-(value + (getAnchor().getHeightForAnchoring() + size) / 2f));
+  }
+
+  public boolean setBottom(float value) {
+    return setY(value + (size + getAnchor().getHeightForAnchoring()) / 2f);
+  }
 }
