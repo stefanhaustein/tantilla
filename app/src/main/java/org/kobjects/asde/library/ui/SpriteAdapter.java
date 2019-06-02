@@ -86,9 +86,6 @@ public class SpriteAdapter extends Instance implements Animated {
   @Override
   public Property getProperty(PropertyDescriptor property) {
     switch ((SpriteMetaProperty) property) {
-      case x: return x;
-      case y: return y;
-      case z: return z;
       case dx: return dx;
       case dy: return dy;
       case left: return left;
@@ -115,6 +112,9 @@ public class SpriteAdapter extends Instance implements Animated {
           sprite.say((String) (evaluationContext.getParameter(0)));
           return null;
         }};
+      case x: return x;
+      case y: return y;
+      case z: return z;
     }
     throw new IllegalArgumentException();
   }
@@ -123,6 +123,13 @@ public class SpriteAdapter extends Instance implements Animated {
   public void animate(float dt, boolean propertiesChanged) {
 
     collisions.invalidate();
+    if (propertiesChanged) {
+      x.invalidate();
+      y.invalidate();
+      angle.invalidate();
+      opacity.invalidate();
+
+    }
   }
 
   class WriteThroughProperty extends LazyProperty<Double> {
@@ -253,6 +260,9 @@ public class SpriteAdapter extends Instance implements Animated {
           return sprite.setGrow(value.floatValue());
         case rotation:
           return sprite.setRotation(value.floatValue());
+        case fade:
+          return sprite.setFade(value.floatValue());
+
       }
       throw new RuntimeException("setImpl called for uncovered property " + target);
     }

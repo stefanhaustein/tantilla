@@ -308,7 +308,7 @@ public class Sprite extends PositionedViewHolder<ImageView>  {
   }
 
   public boolean setGrow(float grow) {
-    if (this.grow == grow) {
+    if (this.grow != grow) {
       this.grow = grow;
       return true;
     }
@@ -320,7 +320,7 @@ public class Sprite extends PositionedViewHolder<ImageView>  {
   }
 
   public boolean setFade(float fade) {
-    if (this.fade == fade) {
+    if (this.fade != fade) {
       this.fade = fade;
       return true;
     }
