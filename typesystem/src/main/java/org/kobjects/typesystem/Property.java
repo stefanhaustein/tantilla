@@ -8,11 +8,12 @@ public abstract class Property<T> {
   /**
    * Returns true if the value changed.
    */
-  public final boolean set(T newValue) {
+  public boolean set(T newValue) {
     if (setImpl(newValue)) {
       notifyChanged();
+      return true;
     }
-    return true;
+    return false;
   }
 
   public abstract boolean setImpl(T t);

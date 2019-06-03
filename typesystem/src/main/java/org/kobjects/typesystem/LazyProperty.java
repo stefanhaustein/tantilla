@@ -9,6 +9,17 @@ public abstract class LazyProperty<T> extends Property<T> {
     throw new UnsupportedOperationException();
   }
 
+  public boolean set(T newValue) {
+    if (setImpl(newValue)) {
+      value = newValue;
+      valid = true;
+      notifyChanged();
+      return true;
+    }
+    return false;
+  }
+
+
   @Override
   public synchronized T get() {
     if (!valid) {
