@@ -2,6 +2,7 @@ LET ship = screen.newSprite()
 LET gameOver = false
 LET score = 0
 LET count = 0
+LET scoreDisplay = screen.newTextBox()
 
 SUB newAsteroid(Number x, Number y, Number size, Number direction, Number speed)
 10 LET asteroid = screen.newSprite()
@@ -59,24 +60,28 @@ SUB shoot()
 50 play "🔫"
 END SUB
 
-10 ship.size = 30
-20 ship.face = "🚀"
-25 dpad.visible = TRUE
-30 on dpad.right :
-31   ship.rotation = 90
-32 end
-40 on dpad.left :
-43   ship.rotation = -90
-46 end
-60 on not dpad.right and not dpad.left :
-63   ship.rotation = 0
-66 end
-70 on dpad.fire :
-80   shoot
-90 end
 
-100 if count = 0 then
-110   newAsteroid screen.width / 2, screen.height / 2, 50, rnd() * 360, rnd() * 10 + 5
-120 endif
-130 sleep 100
-150 if not gameOver goto 100
+210 ship.size = 30
+220 ship.face = "🚀"
+225 dpad.visible = TRUE
+230 on dpad.right :
+231   ship.rotation = 90
+232 end
+240 on dpad.left :
+243   ship.rotation = -90
+246 end
+260 on not dpad.right and not dpad.left :
+263   ship.rotation = 0
+266 end
+270 on dpad.fire :
+280   shoot
+290 end
+
+1000 if count = 0 then
+1010   newAsteroid screen.width / 2, screen.height / 2, 50, rnd() * 360, rnd() * 10 + 5
+1020 endif
+1030 sleep 100
+1040 scoreDisplay.text = "Score: " + score
+1045 scoreDisplay.right = 10
+1047 scoreDisplay.top = 10
+1050 if not gameOver goto 1000

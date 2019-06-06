@@ -11,74 +11,74 @@ import android.graphics.drawable.Drawable;
 import static android.graphics.PixelFormat.TRANSLUCENT;
 
 class BubbleDrawable extends Drawable {
-    float cornerBox;
-    float arrowDx;
-    float arrowDy;
-    Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  float cornerBox;
+  float arrowDx;
+  float arrowDy;
+  Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+  Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-    BubbleDrawable() {
-        strokePaint.setStyle(Paint.Style.STROKE);
-        backgroundPaint.setStyle(Paint.Style.FILL);
-    }
+  BubbleDrawable() {
+    strokePaint.setStyle(Paint.Style.STROKE);
+    backgroundPaint.setStyle(Paint.Style.FILL);
+  }
 
 
-    @Override
-    public void setBounds(Rect bounds) {
-        super.setBounds(bounds);
-    }
+  @Override
+  public void setBounds(Rect bounds) {
+    super.setBounds(bounds);
+  }
 
-    @Override
-    public void draw(Canvas canvas) {
+  @Override
+  public void draw(Canvas canvas) {
 
-        RectF bounds = new RectF(getBounds());
-        /*  canvas.drawRoundRect(bounds, 16, 16 , paint);
-*/
+    RectF bounds = new RectF(getBounds());
+    /*  canvas.drawRoundRect(bounds, 16, 16 , paint);
+     */
 
-        Path path = new Path();
-        RectF arcBox = new RectF();
+    Path path = new Path();
+    RectF arcBox = new RectF();
 
-        // Top left
-        path.moveTo(bounds.left + cornerBox, bounds.top);
+    // Top left
+    path.moveTo(bounds.left + cornerBox, bounds.top);
 
-        // top right corner
-        arcBox.set(bounds.right - cornerBox, bounds.top, bounds.right, bounds.top + cornerBox);
-        path.arcTo(arcBox, 270, 90, false);
+    // top right corner
+    arcBox.set(bounds.right - cornerBox, bounds.top, bounds.right, bounds.top + cornerBox);
+    path.arcTo(arcBox, 270, 90, false);
 
-        // bottom right corner
-        arcBox.set(bounds.right - cornerBox, bounds.bottom - cornerBox, bounds.right, bounds.bottom);
-        path.arcTo(arcBox, 0, 90, false);
+    // bottom right corner
+    arcBox.set(bounds.right - cornerBox, bounds.bottom - cornerBox, bounds.right, bounds.bottom);
+    path.arcTo(arcBox, 0, 90, false);
 
-        path.lineTo(bounds.centerX() + cornerBox/2, bounds.bottom);
-        path.lineTo(bounds.centerX() + arrowDx, bounds.bottom + arrowDy);
-        path.lineTo(bounds.centerX() - cornerBox/2, bounds.bottom);
+    path.lineTo(bounds.centerX() + cornerBox/2, bounds.bottom);
+    path.lineTo(bounds.centerX() + arrowDx, bounds.bottom + arrowDy);
+    path.lineTo(bounds.centerX() - cornerBox/2, bounds.bottom);
 
-        // bottom left corner
-        arcBox.set(bounds.left, bounds.bottom - cornerBox, bounds.left + cornerBox, bounds.bottom);
-        path.arcTo(arcBox, 90, 90, false);
+    // bottom left corner
+    arcBox.set(bounds.left, bounds.bottom - cornerBox, bounds.left + cornerBox, bounds.bottom);
+    path.arcTo(arcBox, 90, 90, false);
 
-        arcBox.set(bounds.left, bounds.top, bounds.left + cornerBox, bounds.top + cornerBox);
-        path.arcTo(arcBox, 180, 90, false);
+    arcBox.set(bounds.left, bounds.top, bounds.left + cornerBox, bounds.top + cornerBox);
+    path.arcTo(arcBox, 180, 90, false);
 
-        path.close();
+    path.close();
 
-        canvas.drawPath(path, backgroundPaint);
-        canvas.drawPath(path, strokePaint);
-    }
+    canvas.drawPath(path, backgroundPaint);
+    canvas.drawPath(path, strokePaint);
+  }
 
-    @Override
-    public void setAlpha(int i) {
+  @Override
+  public void setAlpha(int i) {
 
-    }
+  }
 
-    @Override
-    public void setColorFilter(ColorFilter colorFilter) {
+  @Override
+  public void setColorFilter(ColorFilter colorFilter) {
 
-    }
+  }
 
-    @Override
-    public int getOpacity() {
-        return TRANSLUCENT;
-    }
+  @Override
+  public int getOpacity() {
+    return TRANSLUCENT;
+  }
 
 }

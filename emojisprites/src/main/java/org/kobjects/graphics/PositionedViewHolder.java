@@ -10,6 +10,8 @@ public abstract class PositionedViewHolder<T extends View> extends ViewHolder<An
   protected float x;
   protected float y;
   protected float z;
+  protected VAlign vAlign = VAlign.CENTER;
+  protected HAlign hAlign = HAlign.CENTER;
   protected float opacity = 1;
 
   // For internal use!
