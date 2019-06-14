@@ -1,5 +1,5 @@
 package org.kobjects.graphics;
 
-public enum HAlign {
+public enum XAlign {
   CENTER, LEFT, RIGHT
 }

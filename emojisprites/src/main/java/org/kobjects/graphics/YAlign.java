@@ -1,5 +1,5 @@
 package org.kobjects.graphics;
 
-public enum VAlign {
+public enum YAlign {
   CENTER, TOP, BOTTOM
 }
