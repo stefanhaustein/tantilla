@@ -2,6 +2,8 @@ package org.kobjects.asde.library.ui;
 
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.TextBox;
+import org.kobjects.graphics.XAlign;
+import org.kobjects.graphics.YAlign;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.Instance;
 import org.kobjects.typesystem.Property;
@@ -24,10 +26,6 @@ public class TextBoxAdapter extends Instance {
     final NumberProperty x = new NumberProperty(TextMetaProperty.x);
     final NumberProperty y = new NumberProperty(TextMetaProperty.y);
     final NumberProperty z = new NumberProperty(TextMetaProperty.z);
-    final NumberProperty left = new NumberProperty(TextMetaProperty.left);
-    final NumberProperty right = new NumberProperty(TextMetaProperty.right);
-    final NumberProperty top = new NumberProperty(TextMetaProperty.top);
-    final NumberProperty bottom = new NumberProperty(TextMetaProperty.bottom);
     final NumberProperty fillColor = new NumberProperty(TextMetaProperty.fillColor);
     final NumberProperty lineColor = new NumberProperty(TextMetaProperty.lineColor);
     final NumberProperty textColor = new NumberProperty(TextMetaProperty.textColor);
@@ -36,6 +34,8 @@ public class TextBoxAdapter extends Instance {
     final NumberProperty size = new NumberProperty(TextMetaProperty.size);
     final StringProperty text = new StringProperty(TextMetaProperty.text);
     final ObjectProperty anchor = new ObjectProperty(TextMetaProperty.anchor);
+    final ObjectProperty xAlign = new ObjectProperty(TextMetaProperty.xAlign);
+    final ObjectProperty yAlign = new ObjectProperty(TextMetaProperty.yAlign);
 
     public TextBoxAdapter(final ScreenAdapter screen) {
         this(new TextBox(screen.getScreen()));
@@ -51,19 +51,18 @@ public class TextBoxAdapter extends Instance {
     public Property getProperty(PropertyDescriptor property) {
         switch ((TextMetaProperty) property) {
             case anchor: return anchor;
-            case bottom: return bottom;
             case x: return x;
             case y: return y;
             case size: return size;
             case text: return text;
-            case left: return left;
-            case right: return right;
-            case top: return top;
             case lineColor: return lineColor;
             case lineWidth: return lineWidth;
             case fillColor: return fillColor;
             case textColor: return textColor;
             case cornerRadius: return cornerRadius;
+            case xAlign: return xAlign;
+            case yAlign: return yAlign;
+
         }
         throw new IllegalArgumentException();
     }
@@ -97,15 +96,6 @@ public class TextBoxAdapter extends Instance {
                     return Double.valueOf(textBox.getCornerRadius());
                 case textColor:
                     return Double.valueOf(textBox.getTextColor() & 0xffffffffL);
-                case left:
-                    return textBox.getX() - (textBox.getAnchor().getWidthForAnchoring() + textBox.getWidthForAnchoring()) / 2.0;
-                case right:
-                    return -textBox.getX() - (textBox.getAnchor().getWidthForAnchoring() + textBox.getWidthForAnchoring()) / 2.0;
-                case top:
-                    return -textBox.getY() - (textBox.getAnchor().getHeightForAnchoring() + textBox.getHeightForAnchoring()) / 2.0;
-                case bottom:
-                    return textBox.getY() - (textBox.getAnchor().getHeightForAnchoring() + textBox.getHeightForAnchoring()) / 2.0;
-
             }
             throw new RuntimeException();
         }
@@ -131,17 +121,9 @@ public class TextBoxAdapter extends Instance {
                     return textBox.setTextColor((int) value.longValue());
                 case size:
                     return textBox.setSize(value.floatValue());
-                case left:
-                    return textBox.setX(value.floatValue() + (textBox.getWidthForAnchoring() + textBox.getAnchor().getWidthForAnchoring()) / 2);
-                case right:
-                    return textBox.setX(-(value.floatValue() + (textBox.getAnchor().getWidthForAnchoring() + textBox.getWidthForAnchoring()) / 2));
-                case top:
-                    return textBox.setY(-(value.floatValue() + (textBox.getAnchor().getHeightForAnchoring() + textBox.getHeightForAnchoring()) / 2));
-                case bottom:
-                    return textBox.setY(value.floatValue() + (textBox.getHeightForAnchoring() + textBox.getAnchor().getHeightForAnchoring()) / 2);            }
+            }
             throw new RuntimeException();
         }
-
     }
 
     private class StringProperty extends Property<String> {
@@ -179,6 +161,10 @@ public class TextBoxAdapter extends Instance {
             switch (target) {
                 case anchor:
                     return textBox.getAnchor().getTag();
+                case xAlign:
+                    return textBox.getXAlign();
+                case yAlign:
+                    return textBox.getYAlign();
             }
             throw new RuntimeException();
         }
@@ -186,6 +172,9 @@ public class TextBoxAdapter extends Instance {
         public boolean setImpl(Object value) {
             switch (target) {
                 case anchor: return textBox.setAnchor(((SpriteAdapter) value).sprite);
+                case xAlign: return textBox.setXAlign((XAlign) value);
+                case yAlign: return textBox.setYAlign((YAlign) value);
+
             }
             throw new RuntimeException();
         }
@@ -193,9 +182,10 @@ public class TextBoxAdapter extends Instance {
 
 
     enum TextMetaProperty implements PropertyDescriptor {
-        x(Types.NUMBER), y(Types.NUMBER), z(Types.NUMBER), size(Types.NUMBER),
+        x(Types.NUMBER), y(Types.NUMBER), z(Types.NUMBER),
+        xAlign(ScreenAdapter.X_ALIGN), yAlign(ScreenAdapter.Y_ALIGN),
+        size(Types.NUMBER),
         lineWidth(Types.NUMBER), lineColor(Types.NUMBER), fillColor(Types.NUMBER),
-        left(Types.NUMBER), right(Types.NUMBER), top(Types.NUMBER), bottom(Types.NUMBER),
         textColor(Types.NUMBER), cornerRadius(Types.NUMBER),
         text(Types.STRING), anchor(SpriteAdapter.CLASSIFIER);
 

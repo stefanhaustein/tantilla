@@ -28,6 +28,12 @@ public class TextBox extends PositionedViewHolder<TextView> {
   public TextBox(Screen screen) {
     super(screen, new TextView(screen.activity));
     this.textPaint = view.wrapped.getPaint();
+    view.wrapped.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+      @Override
+      public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+        requestSync();
+      }
+    });
   }
 
   @Override
@@ -40,6 +46,7 @@ public class TextBox extends PositionedViewHolder<TextView> {
       view.wrapped.setTextSize(TypedValue.COMPLEX_UNIT_PX, size * screen.scale);
       view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
       view.wrapped.requestLayout();
+      view.requestLayout();
     }
 
     view.wrapped.setTextColor(textColor);
@@ -63,9 +70,8 @@ public class TextBox extends PositionedViewHolder<TextView> {
       bubbleDrawable.strokePaint.setStrokeWidth(lineWidth * screen.scale);
       bubbleDrawable.backgroundPaint.setColor(fillColor);
 
-      float spaceBetween = (anchor.getHeightForAnchoring() + getHeightForAnchoring()) / 2;
-      if (anchor != screen && y > spaceBetween) {
-        bubbleDrawable.arrowDy = screen.scale * (y - spaceBetween);
+      if (yAlign == YAlign.BOTTOM && anchor != screen && getY() > 0) {
+        bubbleDrawable.arrowDy = screen.scale * y;
         bubbleDrawable.arrowDx = screen.scale * -x / 2;
       } else {
         bubbleDrawable.arrowDy = 0;
@@ -74,13 +80,6 @@ public class TextBox extends PositionedViewHolder<TextView> {
       bubbleDrawable.invalidateSelf();
 //            view.wrapped.invalidate();
     }
-
-    float centerXpx = anchor.view.getWidth() / 2 + x * screen.scale;
-    float centerYpx = anchor.view.getHeight() / 2 - y * screen.scale;
-
-    view.setTranslationX(centerXpx - view.getMeasuredWidth() / 2);
-    view.setTranslationY(centerYpx - view.getMeasuredHeight() / 2);
-    view.setTranslationZ(z);
   }
 
   public boolean setSize(float size) {
@@ -169,13 +168,13 @@ public class TextBox extends PositionedViewHolder<TextView> {
   }
 
   @Override
-  public float getWidthForAnchoring() {
-    return layoutDirty ? calculateSize()[0] / screen.scale + 2 * padding : view.getHeight() / screen.scale;
+  public float getWidth() {
+    return /*layoutDirty||true ? calculateSize()[0] / screen.scale + 2 * padding :*/ view.wrapped.getMeasuredWidth() / screen.scale;
   }
 
   @Override
-  public float getHeightForAnchoring() {
-    return layoutDirty ? calculateSize()[1] / screen.scale + 2 * padding : view.getHeight() / screen.scale;
+  public float getHeight() {
+    return /*layoutDirty||true ? calculateSize()[1] / screen.scale + 2 * padding :*/ view.wrapped.getMeasuredHeight() / screen.scale;
   }
 
   float[] calculateSize() {

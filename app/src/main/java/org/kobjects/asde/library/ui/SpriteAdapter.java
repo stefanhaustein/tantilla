@@ -8,6 +8,8 @@ import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Animated;
 import org.kobjects.graphics.EdgeMode;
 import org.kobjects.graphics.Sprite;
+import org.kobjects.graphics.XAlign;
+import org.kobjects.graphics.YAlign;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.EnumType;
 import org.kobjects.typesystem.FunctionType;
@@ -52,15 +54,14 @@ public class SpriteAdapter extends Instance implements Animated {
 
   // Other properties
 
-  final WriteThroughProperty left = new WriteThroughProperty(SpriteMetaProperty.left);
-  final WriteThroughProperty right = new WriteThroughProperty(SpriteMetaProperty.right);
-  final WriteThroughProperty top = new WriteThroughProperty(SpriteMetaProperty.top);
-  final WriteThroughProperty bottom = new WriteThroughProperty(SpriteMetaProperty.bottom);
   final ObjectProperty bubble = new ObjectProperty(SpriteMetaProperty.bubble);
   final ObjectProperty label = new ObjectProperty(SpriteMetaProperty.label);
   final ObjectProperty face = new ObjectProperty(SpriteMetaProperty.face);
   final ObjectProperty anchor = new ObjectProperty(SpriteMetaProperty.anchor);
   final ObjectProperty edgeMode = new ObjectProperty(SpriteMetaProperty.edgeMode);
+  final ObjectProperty xAlign = new ObjectProperty(SpriteMetaProperty.xAlign);
+  final ObjectProperty yAlign = new ObjectProperty(SpriteMetaProperty.yAlign);
+
   final LazyProperty<Array> collisions = new LazyProperty<Array>() {
         @Override
         protected Array compute() {
@@ -88,10 +89,6 @@ public class SpriteAdapter extends Instance implements Animated {
     switch ((SpriteMetaProperty) property) {
       case dx: return dx;
       case dy: return dy;
-      case left: return left;
-      case right: return right;
-      case top: return top;
-      case bottom: return bottom;
       case size: return size;
       case angle: return angle;
       case label: return label;
@@ -115,6 +112,8 @@ public class SpriteAdapter extends Instance implements Animated {
       case x: return x;
       case y: return y;
       case z: return z;
+      case xAlign: return xAlign;
+      case yAlign: return yAlign;
     }
     throw new IllegalArgumentException();
   }
@@ -142,15 +141,6 @@ public class SpriteAdapter extends Instance implements Animated {
     @Override
     protected Double compute() {
       switch (target) {
-
-        case left:
-          return (double) sprite.getLeft();
-        case right:
-          return (double) sprite.getRight();
-        case top:
-          return (double) sprite.getTop();
-        case bottom:
-          return (double) sprite.getBottom();
         case dx:
           return (double) sprite.getDx();
         case dy:
@@ -189,19 +179,9 @@ public class SpriteAdapter extends Instance implements Animated {
       float f = value.floatValue();
       switch (target) {
         case x:
-          if (!sprite.setX(f)) {
-            return false;
-          }
-          left.invalidate();
-          right.invalidate();
-          return true;
+          return sprite.setX(f);
         case y:
-          if (!sprite.setY(f)) {
-            return false;
-          }
-          top.invalidate();
-          bottom.invalidate();
-          return true;
+          return sprite.setY(f);
         case z:
           return sprite.setZ(f);
         case angle:
@@ -210,10 +190,8 @@ public class SpriteAdapter extends Instance implements Animated {
           return sprite.setOpacity(f);
         case size:
           if (sprite.setSize(f)) {
-            left.invalidate();
-            top.invalidate();
-            right.invalidate();
-            bottom.invalidate();
+            x.invalidate();
+            y.invalidate();
             return true;
           }
           return false;
@@ -235,34 +213,6 @@ public class SpriteAdapter extends Instance implements Animated {
           if (sprite.setDirection(f)) {
             dx.invalidate();
             dy.invalidate();
-            return true;
-          }
-          return false;
-        case left:
-          if (sprite.setLeft(f)) {
-            right.invalidate();
-            x.invalidate();
-            return true;
-          }
-          return false;
-        case right:
-          if (sprite.setRight(f)) {
-            x.invalidate();
-            left.invalidate();
-            return true;
-          }
-          return false;
-        case top:
-          if (sprite.setTop(f)) {
-            y.invalidate();
-            bottom.invalidate();
-            return true;
-          }
-          return false;
-        case bottom:
-          if (sprite.setBottom(f)) {
-            y.invalidate();
-            top.invalidate();
             return true;
           }
           return false;
@@ -309,6 +259,10 @@ public class SpriteAdapter extends Instance implements Animated {
           return sprite.getAnchor().getTag();
         case edgeMode:
           return sprite.getEdgeMode();
+        case xAlign:
+          return sprite.getXAlign();
+        case yAlign:
+          return sprite.getYAlign();
       }
       throw new RuntimeException();
     }
@@ -320,6 +274,8 @@ public class SpriteAdapter extends Instance implements Animated {
         case edgeMode: return sprite.setEdgeMode((EdgeMode) value);
         case face:return sprite.setFace((String) value);
         case label: return sprite.setLabel(((TextBoxAdapter) value).textBox);
+        case xAlign: return sprite.setXAlign((XAlign) value);
+        case yAlign: return sprite.setYAlign((YAlign) value);
       }
       throw new RuntimeException();
     }
@@ -327,8 +283,8 @@ public class SpriteAdapter extends Instance implements Animated {
 
   enum SpriteMetaProperty implements PropertyDescriptor {
     x(Types.NUMBER), y(Types.NUMBER), z(Types.NUMBER),
+    xAlign(ScreenAdapter.X_ALIGN), yAlign(ScreenAdapter.Y_ALIGN),
     size(Types.NUMBER), opacity(Types.NUMBER),
-    left(Types.NUMBER), right(Types.NUMBER), top(Types.NUMBER), bottom(Types.NUMBER),
     speed(Types.NUMBER), direction(Types.NUMBER), dx(Types.NUMBER), dy(Types.NUMBER), grow(Types.NUMBER), fade(Types.NUMBER),
     angle(Types.NUMBER),
     label(TextBoxAdapter.CLASSIFIER), bubble(TextBoxAdapter.CLASSIFIER), face(Types.STRING),

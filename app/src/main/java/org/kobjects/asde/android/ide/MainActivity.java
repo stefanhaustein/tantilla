@@ -68,21 +68,21 @@ import java.util.Map;
 import java.util.concurrent.SynchronousQueue;
 
 public class MainActivity extends AppCompatActivity implements Console {
-    static final int SAVE_EXTERNALLY_REQUEST_CODE = 420;
-    static final int LOAD_EXTERNALLY_REQUEST_CODE = 421;
-    static final int OPEN_EXTERNALLY_REQUEST_CODE = 422;
-    static final int PICK_SHORTCUT_ICON_REQUEST_CODE = 423;
+  static final int SAVE_EXTERNALLY_REQUEST_CODE = 420;
+  static final int LOAD_EXTERNALLY_REQUEST_CODE = 421;
+  static final int OPEN_EXTERNALLY_REQUEST_CODE = 422;
+  static final int PICK_SHORTCUT_ICON_REQUEST_CODE = 423;
 
-    static final FunctionType FUNCTION_VOID_0 = new FunctionType(Types.VOID);
+  static final FunctionType FUNCTION_VOID_0 = new FunctionType(Types.VOID);
 
-    public static void removeFromParent(View view) {
-        if (view != null && view.getParent() instanceof ViewGroup) {
-            ((ViewGroup) view.getParent()).removeView(view);
-        }
+  public static void removeFromParent(View view) {
+    if (view != null && view.getParent() instanceof ViewGroup) {
+      ((ViewGroup) view.getParent()).removeView(view);
     }
+  }
 
-    public Colors colors;
-    LinearLayout scrollContentView;
+  public Colors colors;
+  LinearLayout scrollContentView;
   public View rootView;
   ScrollView mainScrollView;
   ScrollView leftScrollView;
@@ -223,6 +223,8 @@ public class MainActivity extends AppCompatActivity implements Console {
 
     program.setValue(GlobalSymbol.Scope.BUILTIN,"screen", screenAdapter);
     program.setValue(GlobalSymbol.Scope.BUILTIN, "EdgeMode", SpriteAdapter.EDGE_MODE);
+    program.setValue(GlobalSymbol.Scope.BUILTIN, "XAlign", ScreenAdapter.X_ALIGN);
+    program.setValue(GlobalSymbol.Scope.BUILTIN, "YAlign", ScreenAdapter.Y_ALIGN);
     program.setValue(GlobalSymbol.Scope.BUILTIN,"Sprite", SpriteAdapter.CLASSIFIER);
     program.setValue(GlobalSymbol.Scope.BUILTIN, "TextBox", TextBoxAdapter.CLASSIFIER);
     program.setValue(GlobalSymbol.Scope.BUILTIN, "dpad", new DpadAdapter(screen.dpad));
@@ -303,10 +305,10 @@ public class MainActivity extends AppCompatActivity implements Console {
   }
 
   public void addShortcut() {
-        if (shortcutHandler == null) {
-            shortcutHandler = new ShortcutHandler(this);
-        }
-        shortcutHandler.run();
+    if (shortcutHandler == null) {
+      shortcutHandler = new ShortcutHandler(this);
+    }
+    shortcutHandler.run();
   }
 
   public void restart() {

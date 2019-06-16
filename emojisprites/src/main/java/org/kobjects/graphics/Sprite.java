@@ -1,5 +1,6 @@
 package org.kobjects.graphics;
 
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
@@ -24,13 +25,14 @@ public class Sprite extends PositionedViewHolder<ImageView>  {
 
   private EdgeMode edgeMode = EdgeMode.NONE;
 
-  private boolean textDirty;
+  private boolean textDirty = true;
+  private boolean sizeDirty = true;
 
   public Sprite(Screen screen) {
-    super(screen, new ImageView(screen.activity));
+    super(screen, new android.support.v7.widget.AppCompatImageView(screen.activity));
 
-    view.wrapped.setAdjustViewBounds(true);
-    view.wrapped.setScaleType(ImageView.ScaleType.FIT_CENTER);
+   // view.wrapped.setAdjustViewBounds(true);
+   view.wrapped.setScaleType(ImageView.ScaleType.FIT_XY);
 
     setFace(DEFAULT_FACE);
   }
@@ -58,31 +60,22 @@ public class Sprite extends PositionedViewHolder<ImageView>  {
     return super.shouldBeAttached();
   }
 
+
   @Override
   public void syncUi() {
-    if (isTextDirty()) {
-      setTextDirty(false);
+    if (textDirty) {
+      textDirty = false;
       view.wrapped.setImageDrawable(Emojis.getDrawable(view.getContext(), face));
     }
 
-    int intrinsicWidth = view.wrapped.getDrawable().getIntrinsicWidth();
-    int intrinsicHeight = view.wrapped.getDrawable().getIntrinsicHeight();
-    int intrinsicSize = Math.max(intrinsicWidth, intrinsicHeight);
-
-    float imageScale = (screen.scale * size) / intrinsicSize;
-    view.wrapped.setScaleX(imageScale);
-    view.wrapped.setScaleY(imageScale);
+    if (sizeDirty) {
+      sizeDirty = false;
+      // view.wrapped.setBackgroundColor((int) (Math.random() * 0xffffff) | 0xff000000);
+      view.wrapped.setLayoutParams(new FrameLayout.LayoutParams(Math.round(screen.scale * size), Math.round(screen.scale * size)));
+      view.wrapped.requestLayout();
+      view.requestLayout();
+    }
     view.wrapped.setRotation(angle);
-
-    float screenX = x * screen.scale + anchor.view.getWidth() / 2;
-
-    view.setTranslationX(screenX - intrinsicWidth / 2);
-
-    float scrY = anchor.view.getHeight() / 2 - y * screen.scale;
-
-    view.setTranslationY(scrY - intrinsicHeight / 2);
-
-    view.setTranslationZ(z);
   }
 
 
@@ -91,6 +84,7 @@ public class Sprite extends PositionedViewHolder<ImageView>  {
       return false;
     }
     this.size = size;
+    sizeDirty = true;
     requestSync();
     return true;
   }
@@ -102,16 +96,17 @@ public class Sprite extends PositionedViewHolder<ImageView>  {
       label.setTextColor(0xff000000);
       label.setFillColor(0xffffffff);
       label.setLineColor(0xff000000);
-      label.setY((getHeightForAnchoring() + this.label.getHeightForAnchoring()) / -2);
+      label.setY((getHeight() + this.label.getHeight()) / -2);
+      label.setYAlign(YAlign.TOP);
     }
     return label;
   }
 
   public boolean setLabel(TextBox bubble) {
-    if (label == this.label) {
+    if (bubble == this.label) {
       return false;
     }
-    this.label = label;
+    this.label = bubble;
     label.anchor = this;
     return true;
   }
@@ -124,7 +119,8 @@ public class Sprite extends PositionedViewHolder<ImageView>  {
       bubble.setTextColor(0xff000000);
       bubble.setFillColor(0xffffffff);
       bubble.setLineColor(0xff000000);
-      bubble.setY(10 + (getHeightForAnchoring() + bubble.getHeightForAnchoring()) / 2);
+      bubble.setY(10);
+      bubble.setYAlign(YAlign.BOTTOM);
       bubble.setCornerRadius(3);
     }
     return bubble;
@@ -152,7 +148,7 @@ public class Sprite extends PositionedViewHolder<ImageView>  {
       return false;
     }
     this.face = face;
-    setTextDirty(true);
+    textDirty = true;
     requestSync();
     return true;
   }
@@ -168,12 +164,12 @@ public class Sprite extends PositionedViewHolder<ImageView>  {
 
 
   @Override
-  public float getWidthForAnchoring() {
+  public float getWidth() {
     return size;
   }
 
   @Override
-  public float getHeightForAnchoring() {
+  public float getHeight() {
     return size;
   }
 
@@ -253,16 +249,16 @@ public class Sprite extends PositionedViewHolder<ImageView>  {
     if (!shouldBeAttached()) {
       return Collections.emptyList();
     }
-    float sx = getScreenX();
-    float sy = getScreenY();
+    float sx = getScreenCX();
+    float sy = getScreenCY();
     synchronized (screen.widgets) {
       ArrayList<Sprite> result = new ArrayList<>();
       // StringBuilder debug = new StringBuilder();
       for (PositionedViewHolder<?> widget : screen.widgets) {
         if (widget != this && widget instanceof Sprite && widget.shouldBeAttached()) {
           Sprite other = (Sprite) widget;
-          double distX = other.getScreenX() - sx;
-          double distY = other.getScreenY() - sy;
+          double distX = other.getScreenCX() - sx;
+          double distY = other.getScreenCY() - sy;
           double minDist = (other.size + size) * 0.4;
           if (distX * distX + distY * distY < minDist * minDist) {
             result.add(other);
@@ -327,14 +323,6 @@ public class Sprite extends PositionedViewHolder<ImageView>  {
     return false;
   }
 
-  public boolean isTextDirty() {
-    return textDirty;
-  }
-
-  public void setTextDirty(boolean textDirty) {
-    this.textDirty = textDirty;
-  }
-
   public float getRotation() {
     return rotation;
   }
@@ -345,22 +333,6 @@ public class Sprite extends PositionedViewHolder<ImageView>  {
       return true;
     }
     return false;
-  }
-
-  public float getLeft() {
-    return x - (getAnchor().getWidthForAnchoring() + size) / 2f;
-  }
-
-  public float getRight() {
-    return -x - (getAnchor().getWidthForAnchoring() + size) / 2f;
-  }
-
-  public float getTop() {
-    return -y - (getAnchor().getHeightForAnchoring() + size) / 2f;
-  }
-
-  public float getBottom() {
-    return y - (getAnchor().getHeightForAnchoring() + size) / 2f;
   }
 
   public float getDx() {
@@ -388,21 +360,5 @@ public class Sprite extends PositionedViewHolder<ImageView>  {
 
   public boolean setDy(float dy) {
     return setDxy(getDx(), dy);
-  }
-
-  public boolean setLeft(float value) {
-    return setX(value + (size + getAnchor().getWidthForAnchoring()) / 2f);
-  }
-
-  public boolean setRight(float value) {
-    return setX(-(value + (getAnchor().getWidthForAnchoring() + size) / 2f));
-  }
-
-  public boolean setTop(float value) {
-    return setY(-(value + (getAnchor().getHeightForAnchoring() + size) / 2f));
-  }
-
-  public boolean setBottom(float value) {
-    return setY(value + (size + getAnchor().getHeightForAnchoring()) / 2f);
   }
 }

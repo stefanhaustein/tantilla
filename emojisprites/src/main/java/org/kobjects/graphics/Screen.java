@@ -90,22 +90,14 @@ public class Screen extends ViewHolder<FrameLayout> {
     dpad.setVisible(false);
   }
 
+  @Override
   public float getWidth() {
     return view.getWidth() / scale;
   }
 
+  @Override
   public float getHeight() {
     return view.getHeight() / scale;
-  }
-
-  @Override
-  public float getWidthForAnchoring() {
-    return -getWidth();
-  }
-
-  @Override
-  public float getHeightForAnchoring() {
-    return -getHeight();
   }
 
   public void animate(float dt) {

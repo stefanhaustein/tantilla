@@ -22,11 +22,11 @@ public abstract class ViewHolder<T extends ViewGroup> {
   /**
    * Returns the normalized width of the view. For the screen, this value is negative.
    */
-  public abstract float getWidthForAnchoring();
+  public abstract float getWidth();
 
   /**
    * Returns the normalized height of the view. For the screen, this value is negative.
    */
-  public abstract float getHeightForAnchoring();
+  public abstract float getHeight();
 
 }

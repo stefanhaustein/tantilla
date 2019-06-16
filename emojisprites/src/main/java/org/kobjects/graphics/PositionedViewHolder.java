@@ -43,6 +43,7 @@ public abstract class PositionedViewHolder<T extends View> extends ViewHolder<An
 
   abstract void syncUi();
 
+
   void requestSync() {
     if (!syncRequested) {
       syncRequested = true;
@@ -64,6 +65,13 @@ public abstract class PositionedViewHolder<T extends View> extends ViewHolder<An
           expectedParent.addView(view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
         syncUi();
+
+        view.setTranslationX(getRelativeX() * screen.scale);
+        view.setTranslationY(getRelativeY() * screen.scale);
+
+        view.setTranslationZ(z);
+
+
       });
     }
   }
@@ -82,12 +90,68 @@ public abstract class PositionedViewHolder<T extends View> extends ViewHolder<An
     return screen;
   }
 
-  public float getScreenX() {
-    return anchor instanceof PositionedViewHolder<?> ? x + ((PositionedViewHolder) anchor).getScreenX() : x;
+  public float getRelativeX() {
+    if (anchor == screen) {
+      switch (xAlign) {
+        case LEFT:
+          return x;
+        case RIGHT:
+          return screen.getWidth() - x - getWidth();
+        default:
+          return (screen.getWidth() - getWidth()) / 2 + x;
+      }
+    } else {
+      switch (xAlign) {
+        case LEFT:
+          return anchor.getWidth() + x;
+        case RIGHT:
+          return -x - getWidth();
+        default:
+          return (anchor.getWidth() - getWidth()) / 2 + x;
+      }
+    }
   }
 
-  public float getScreenY() {
-    return anchor instanceof PositionedViewHolder<?> ? y + ((PositionedViewHolder) anchor).getScreenX() : y;
+  public float getRelativeY() {
+    if (anchor == screen) {
+      switch (yAlign) {
+        case TOP:
+          return y;
+        case BOTTOM:
+          return screen.getHeight() - getHeight() - y;
+        default:
+          return (screen.getHeight() - getHeight()) / 2 - y;
+      }
+    } else {
+      switch (yAlign) {
+        case TOP:
+          return anchor.getHeight() + y;
+        case BOTTOM:
+          return -y - getHeight();
+        default:
+          return (anchor.getHeight() - getHeight()) / 2 - y;
+      }
+    }
+  }
+
+  public float getScreenCX() {
+    float result = getRelativeX() + getWidth() / 2;
+    ViewHolder current = anchor;
+    while (current instanceof PositionedViewHolder) {
+      result += ((PositionedViewHolder) current).getRelativeX();
+      current = ((PositionedViewHolder) current).anchor;
+    }
+    return result;
+  }
+
+  public float getScreenCY() {
+    float result = getRelativeY() + getHeight() / 2;
+    ViewHolder current = anchor;
+    while (current instanceof PositionedViewHolder) {
+      result += ((PositionedViewHolder) current).getRelativeY();
+      current = ((PositionedViewHolder) current).anchor;
+    }
+    return result;
   }
 
   public float getX() {
@@ -168,4 +232,32 @@ public abstract class PositionedViewHolder<T extends View> extends ViewHolder<An
     requestSync();
     return true;
   }
+
+  public XAlign getXAlign() {
+    return xAlign;
+  }
+
+  public YAlign getYAlign() {
+    return yAlign;
+  }
+
+  public boolean setXAlign(XAlign newValue) {
+    if (xAlign == newValue) {
+      return false;
+    }
+    xAlign = newValue;
+    requestSync();
+    return true;
+  }
+
+
+  public boolean setYAlign(YAlign newValue) {
+    if (yAlign == newValue) {
+      return false;
+    }
+    yAlign = newValue;
+    requestSync();
+    return true;
+  }
+
 }

@@ -6,10 +6,16 @@ import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Method;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Screen;
+import org.kobjects.graphics.XAlign;
+import org.kobjects.graphics.YAlign;
 import org.kobjects.typesystem.*;
 
 
 public class ScreenAdapter extends Instance implements View.OnLayoutChangeListener{
+
+  public static EnumType X_ALIGN = Types.wrapEnum(XAlign.values());
+  public static EnumType Y_ALIGN = Types.wrapEnum(YAlign.values());
+
     private final Screen screen;
     private float scale;
 
