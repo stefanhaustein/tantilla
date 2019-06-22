@@ -1,30 +1,26 @@
 package org.kobjects.asde.lang.type;
 
+import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;
+import org.kobjects.typesystem.Instance;
 import org.kobjects.typesystem.Type;
 
-public class ArrayType extends FunctionTypeImpl {
+public class ArrayType implements FunctionType {
 
-    static Type[] createParameterTypes(Type type) {
-        Type[] result;
-        if (type instanceof ArrayType) {
-            Type[] inner = createParameterTypes(((ArrayType) type).getReturnType());
-            result = new Type[inner.length + 1];
-            System.arraycopy(inner, 0, result, 1, inner.length);
-        } else {
-            result = new Type[1];
-        }
-        result[0] = Types.NUMBER;
-        return result;
-    }
+    private final Type elementType;
 
     public ArrayType(Type elementType) {
-        super(elementType, 1, createParameterTypes(elementType));
+        this.elementType = elementType;
     }
 
     public ArrayType(Type elementType, int dimensionality) {
-        this(dimensionality == 1 ? elementType : new ArrayType(elementType, dimensionality - 1));
+        this.elementType = dimensionality == 1 ? elementType : new ArrayType(elementType, dimensionality - 1);
+    }
+
+    @Override
+    public Type getReturnType() {
+        return elementType;
     }
 
     public Type getReturnType(int parameterCount) {
@@ -33,6 +29,21 @@ public class ArrayType extends FunctionTypeImpl {
             returnType = ((ArrayType) returnType).getReturnType();
         }
         return returnType;
+    }
+
+    @Override
+    public Type getParameterType(int index) {
+        return Types.NUMBER;
+    }
+
+    @Override
+    public int getMinParameterCount() {
+        return 1;
+    }
+
+    @Override
+    public int getParameterCount() {
+        return elementType instanceof ArrayType ? ((ArrayType) elementType).getParameterCount() + 1 : 1;
     }
 
     @Override
@@ -47,4 +58,5 @@ public class ArrayType extends FunctionTypeImpl {
     public String toString() {
         return getReturnType() + "[]";
     }
+
 }
