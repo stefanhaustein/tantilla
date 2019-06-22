@@ -59,6 +59,7 @@ import org.kobjects.asde.lang.io.Console;
 import org.kobjects.sound.SampleManager;
 import org.kobjects.sound.Sound;
 import org.kobjects.typesystem.FunctionType;
+import org.kobjects.typesystem.FunctionTypeImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   static final int OPEN_EXTERNALLY_REQUEST_CODE = 422;
   static final int PICK_SHORTCUT_ICON_REQUEST_CODE = 423;
 
-  static final FunctionType FUNCTION_VOID_0 = new FunctionType(Types.VOID);
+  static final FunctionType FUNCTION_VOID_0 = new FunctionTypeImpl(Types.VOID);
 
   public static void removeFromParent(View view) {
     if (view != null && view.getParent() instanceof ViewGroup) {
@@ -242,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     program.setValue(GlobalSymbol.Scope.BUILTIN, "sleep", new Function() {
         @Override
         public FunctionType getType() {
-            return new FunctionType(Types.VOID, Types.NUMBER);
+            return new FunctionTypeImpl(Types.VOID, Types.NUMBER);
         }
 
         @Override
@@ -258,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     program.setValue(GlobalSymbol.Scope.BUILTIN, "play", new Function() {
       @Override
       public FunctionType getType() {
-        return new FunctionType(Types.VOID, Types.STRING);
+        return new FunctionTypeImpl(Types.VOID, Types.STRING);
       }
 
       @Override

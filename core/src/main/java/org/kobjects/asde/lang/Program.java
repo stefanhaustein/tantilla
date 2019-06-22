@@ -16,6 +16,7 @@ import org.kobjects.asde.lang.type.Types;
 import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.asde.lang.parser.Parser;
 import org.kobjects.typesystem.FunctionType;
+import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
 
 import java.io.BufferedReader;
@@ -54,7 +55,7 @@ public class Program {
     public ProgramReference reference;
 
     public final Parser parser = new Parser(this);
-    public final FunctionImplementation main = new FunctionImplementation(this, new FunctionType(Types.VOID));
+    public final FunctionImplementation main = new FunctionImplementation(this, new FunctionTypeImpl(Types.VOID));
     public final GlobalSymbol mainSymbol = new GlobalSymbol(this, "", GlobalSymbol.Scope.PERSISTENT, main);
     private final ArrayList<ProgramChangeListener> programChangeListeners = new ArrayList<>();
     private final ArrayList<ProgramRenameListener> programRenameListeners = new ArrayList<>();
@@ -252,19 +253,19 @@ public class Program {
       tokenizer.consume("->");
       Type returnType = parseType(tokenizer);
 
-      return new FunctionType(returnType, parameterTypes);
+      return new FunctionTypeImpl(returnType, parameterTypes);
     }
 
     // move to parser
     private FunctionType parseSubroutineSignature(ExpressionParser.Tokenizer tokenizer, ArrayList<String> parameterNames) {
         Type[] parameterTypes = parseParameterList(tokenizer, parameterNames);
-        return new FunctionType(Types.VOID, parameterTypes);
+        return new FunctionTypeImpl(Types.VOID, parameterTypes);
     }
 
 
     // Can't include validate -- wouldn't work for loading.
     public void processDeclarations(CodeLine codeLine) {
-        FunctionImplementation wrapper = new FunctionImplementation(this, new FunctionType(Types.VOID));
+        FunctionImplementation wrapper = new FunctionImplementation(this, new FunctionTypeImpl(Types.VOID));
         wrapper.setLine(codeLine);
         for (int i = 0; i < codeLine.length(); i++) {
             Node node = codeLine.get(i);

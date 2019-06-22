@@ -6,6 +6,7 @@ import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Pen;
 import org.kobjects.typesystem.Classifier;
 import org.kobjects.typesystem.FunctionType;
+import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Instance;
 import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.PropertyDescriptor;
@@ -132,10 +133,10 @@ public class PenAdapter extends Instance {
         fillColor(Types.NUMBER),
         strokeColor(Types.NUMBER),
         textSize(Types.NUMBER),
-        clear(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER)),
-        rect(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER)),
-        write(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.STRING)),
-        line(new FunctionType(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER));
+        clear(new FunctionTypeImpl(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER)),
+        rect(new FunctionTypeImpl(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER)),
+        write(new FunctionTypeImpl(Types.VOID, Types.NUMBER, Types.NUMBER, Types.STRING)),
+        line(new FunctionTypeImpl(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER));
 
         private final Type type;
 

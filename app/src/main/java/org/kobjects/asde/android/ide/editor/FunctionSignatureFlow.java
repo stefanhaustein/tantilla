@@ -20,6 +20,7 @@ import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.refactor.ChangeSignature;
 import org.kobjects.asde.lang.statement.RemStatement;
 import org.kobjects.typesystem.FunctionType;
+import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
 
 import java.util.ArrayList;
@@ -338,13 +339,13 @@ public class FunctionSignatureFlow {
             types[i] = parameter.type;
         }
 
-        functionImplementation.setType(new FunctionType(functionImplementation.getType().getReturnType(), types));
+        functionImplementation.setType(new FunctionTypeImpl(functionImplementation.getType().getReturnType(), types));
 
         mainActivity.program.accept(new ChangeSignature(name, oldIndices));
     }
 
     void commitNewFunction() {
-        FunctionType functionType = new FunctionType(returnType, getParameterTypeArray());
+        FunctionType functionType = new FunctionTypeImpl(returnType, getParameterTypeArray());
         FunctionImplementation functionImplementation = new FunctionImplementation(mainActivity.program, functionType, getParameterNameArray());
 
         RemStatement remStatement = new RemStatement("This comment should document this function.");

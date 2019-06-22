@@ -14,6 +14,7 @@ import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.RelationalOperator;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.FunctionType;
+import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
 
 import java.util.ArrayList;
@@ -76,7 +77,7 @@ public class LegacyStatement extends Node {
           parameterNames[i] = parameterNode.getName();
           parameterTypes[i] = parameterNode.getName().endsWith("$") ? Types.STRING : Types.NUMBER;
         }
-        FunctionImplementation fn = new FunctionImplementation(program, new FunctionType(name.endsWith("$") ? Types.STRING : Types.NUMBER, parameterTypes), parameterNames);
+        FunctionImplementation fn = new FunctionImplementation(program, new FunctionTypeImpl(name.endsWith("$") ? Types.STRING : Types.NUMBER, parameterTypes), parameterNames);
         fn.setLine(new CodeLine(10, new FunctionReturnStatement(assignment.children[1])));
         program.setValue(evaluationContext.getSymbolScope(), name, fn);
         fn.setDeclaringSymbol(program.getSymbol(name));

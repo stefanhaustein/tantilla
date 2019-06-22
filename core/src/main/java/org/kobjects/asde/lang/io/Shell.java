@@ -15,6 +15,7 @@ import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.typesystem.FunctionType;
+import org.kobjects.typesystem.FunctionTypeImpl;
 
 import java.util.List;
 
@@ -85,7 +86,7 @@ public class Shell {
                 CodeLine codeLine = new CodeLine(-2, statements);
                 program.processDeclarations(codeLine);
 
-                FunctionImplementation wrapper = new FunctionImplementation(program, new FunctionType(Types.VOID));
+                FunctionImplementation wrapper = new FunctionImplementation(program, new FunctionTypeImpl(Types.VOID));
                 wrapper.setLine(codeLine);
                 ProgramValidationContext programValidationContext = new ProgramValidationContext(program);
                 FunctionValidationContext functionValidationContext = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.SHELL, wrapper);

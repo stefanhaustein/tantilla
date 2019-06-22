@@ -1,9 +1,10 @@
 package org.kobjects.asde.lang.type;
 
 import org.kobjects.typesystem.FunctionType;
+import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
 
-public class ArrayType extends FunctionType{
+public class ArrayType extends FunctionTypeImpl {
 
     static Type[] createParameterTypes(Type type) {
         Type[] result;

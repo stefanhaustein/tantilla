@@ -3,6 +3,8 @@ LET gameOver = false
 LET score = 0
 LET count = 0
 LET scoreDisplay = screen.newTextBox()
+LET gameOverDisplay = screen.newTextBox()
+LET continueDisplay = screen.newTextBox()
 
 SUB newAsteroid(Number x, Number y, Number size, Number direction, Number speed)
 10 LET asteroid = screen.newSprite()
@@ -43,11 +45,10 @@ SUB breakAsteroid(Sprite asteroid)
 20 play "💥"
 25 count = count - 1
 27 score = score + 50 - asteroid.size
-30 if asteroid.size > 20 then
+30 if asteroid.size > 30 then
 35   LET angle = 60 * rnd()
 40   newAsteroid asteroid.x, asteroid.y, asteroid.size - 10, asteroid.direction + angle, asteroid.speed * 1.5
 50   newAsteroid asteroid.x, asteroid.y, asteroid.size - 10, asteroid.direction - angle, asteroid.speed * 1.5
-55   count = count + 2
 60 end if
 END SUB
 
@@ -78,12 +79,23 @@ END SUB
 263   ship.rotation = 0
 266 end
 270 on dpad.fire :
-280   shoot
+280   if not gameOver then shoot
 290 end
 
 1000 if count = 0 then
 1010   newAsteroid screen.width / 2, screen.height / 2, 50, rnd() * 360, rnd() * 10 + 5
 1020 endif
 1030 sleep 100
-1040 scoreDisplay.text = "Score: " + score
+1040 scoreDisplay.text = "Score: " + score + " #: " + count
 1050 if not gameOver goto 1000
+1060 gameOverDisplay.text = "GAME OVER"
+1100 sleep 1000
+1105 continueDisplay.y = -20
+1110 continueDisplay.text = "Press fire to restart."
+1200 sleep 100
+1230 if not dpad.fire then goto 1200
+1240 gameOverDisplay.text = ""
+1250 continueDisplay.text = ""
+1255 score = 0
+1257 gameOver = false
+1260 goto 1000
