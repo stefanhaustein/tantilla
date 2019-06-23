@@ -1,17 +1,32 @@
 package org.kobjects.asde.lang.type;
 
 import org.kobjects.asde.lang.EvaluationContext;
+import org.kobjects.typesystem.Instance;
+import org.kobjects.typesystem.Property;
+import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
 
 import java.util.Arrays;
 
-public class Array implements Function {
+public class Array extends Instance implements Function {
 
-    private final ArrayType arrayType;
     private final Object[] data;
 
+    private Property<Double> length = new Property<Double>() {
+        @Override
+        public boolean setImpl(Double aDouble) {
+            throw new UnsupportedOperationException("length is read-only");
+        }
+
+        @Override
+        public Double get() {
+            return Double.valueOf(data.length);
+        }
+    };
+
+
     public Array(Array array) {
-        this.arrayType = array.arrayType;
+        super(array.getType());
         this.data = new Object[array.data.length];
         System.arraycopy(array.data, 0, data, 0, array.data.length);
         for (int i = 0; i < data.length; i++) {
@@ -22,8 +37,8 @@ public class Array implements Function {
     }
 
     public Array(Type elementType, int... sizes) {
+        super(new ArrayType(elementType, sizes.length));
         data = new Object[sizes[0]];
-        this.arrayType = new ArrayType(elementType, sizes.length);
         if (sizes.length == 1) {
             Object fillElement;
             if (elementType == Types.NUMBER) {
@@ -44,13 +59,22 @@ public class Array implements Function {
     }
 
     public Array(Type elementType, Object[] data) {
-        this.arrayType = new ArrayType(elementType);
+        super(new ArrayType(elementType));
         this.data = data;
     }
 
     @Override
+    public Property getProperty(PropertyDescriptor property) {
+        switch ((ArrayType.ArrayMetaProperty) property) {
+            case length: return length;
+            default:
+                throw new IllegalArgumentException("Unrecognized property: " + property);
+        }
+    }
+
+    @Override
     public ArrayType getType() {
-        return arrayType;
+        return (ArrayType) super.getType();
     }
 
     @Override

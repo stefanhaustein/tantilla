@@ -4,9 +4,19 @@ import org.kobjects.typesystem.InstanceType;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Instance;
 import org.kobjects.typesystem.MetaType;
+import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
 
-public class ArrayType implements FunctionType {
+import java.util.TreeMap;
+
+public class ArrayType implements FunctionType, InstanceType {
+
+    static final TreeMap<String,PropertyDescriptor> PROPERTIES = new TreeMap<>();
+    static {
+        for(ArrayMetaProperty metaProperty : ArrayMetaProperty.values()) {
+            PROPERTIES.put(metaProperty.name(), metaProperty);
+        }
+    }
 
     private final Type elementType;
 
@@ -62,5 +72,25 @@ public class ArrayType implements FunctionType {
     @Override
     public Type getType() {
         return new MetaType(this);
+    }
+
+    @Override
+    public PropertyDescriptor getPropertyDescriptor(String name) {
+        return PROPERTIES.get(name);
+    }
+
+    enum ArrayMetaProperty implements PropertyDescriptor {
+        length(Types.NUMBER);
+
+        private final Type type;
+
+        ArrayMetaProperty(Type type) {
+            this.type = type;
+        }
+
+        @Override
+        public Type type() {
+            return type;
+        }
     }
 }
