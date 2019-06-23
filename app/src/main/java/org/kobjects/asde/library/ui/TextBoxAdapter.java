@@ -14,7 +14,7 @@ import org.kobjects.typesystem.Type;
 public class TextBoxAdapter extends Instance {
 
     public static final InstanceType TYPE =
-            new InstanceTypeImpl(TextBoxAdapter.TextMetaProperty.values());
+            new InstanceTypeImpl("Sprite", TextBoxAdapter.TextMetaProperty.values());
 
 
     final TextBox textBox;

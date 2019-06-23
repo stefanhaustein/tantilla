@@ -27,7 +27,7 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
     final PhysicalProperty<Double> heightProperty = new PhysicalProperty<>(0.0);
 
   public static final InstanceType TYPE =
-            new InstanceTypeImpl(ScreenMetaProperty.values());
+            new InstanceTypeImpl("Screen", ScreenMetaProperty.values());
 
     public ScreenAdapter(Screen screen) {
         super(TYPE);

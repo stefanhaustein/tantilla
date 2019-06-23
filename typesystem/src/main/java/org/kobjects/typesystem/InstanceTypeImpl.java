@@ -2,11 +2,12 @@ package org.kobjects.typesystem;
 
 import java.util.TreeMap;
 
-public class InstanceTypeImpl implements InstanceType {
+public class InstanceTypeImpl extends TypeImpl implements InstanceType {
 
   TreeMap<String, PropertyDescriptor> propertyDescriptors = new TreeMap<>();
 
-  public InstanceTypeImpl(PropertyDescriptor... properties) {
+  public InstanceTypeImpl(String name, PropertyDescriptor... properties) {
+    super(name);
     for (PropertyDescriptor property : properties) {
         this.propertyDescriptors.put(property.name(), property);
     }
@@ -14,9 +15,5 @@ public class InstanceTypeImpl implements InstanceType {
 
   public PropertyDescriptor getPropertyDescriptor(String name) {
         return propertyDescriptors.get(name);
-    }
-
-  public Type getType() {
-        return new MetaType(this);
     }
 }

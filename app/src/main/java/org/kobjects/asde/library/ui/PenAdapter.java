@@ -15,12 +15,7 @@ import org.kobjects.typesystem.Type;
 
 public class PenAdapter extends Instance {
 
-    static final InstanceType TYPE = new InstanceTypeImpl(PenAdapter.PenPropertyDescriptor.values()) {
-        @Override
-        public String toString() {
-            return "Pen";
-        }
-    };
+    static final InstanceType TYPE = new InstanceTypeImpl("Pen", PenAdapter.PenPropertyDescriptor.values());
 
     private final Pen pen;
 

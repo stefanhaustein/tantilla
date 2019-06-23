@@ -23,7 +23,7 @@ public class DpadAdapter extends Instance {
     final TouchProperty fire;
     final Property<Boolean> visible;
 
-    static InstanceType TYPE = new InstanceTypeImpl(DpadMetaProperty.values());
+    static InstanceType TYPE = new InstanceTypeImpl("Dpad", DpadMetaProperty.values());
 
     public DpadAdapter(final Dpad dpad) {
         super(TYPE);

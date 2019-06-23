@@ -25,7 +25,7 @@ import java.util.Collection;
 
 public class SpriteAdapter extends Instance implements Animated {
   public static final InstanceType TYPE =
-      new InstanceTypeImpl(SpriteAdapter.SpriteMetaProperty.values());
+      new InstanceTypeImpl("Sprite", SpriteAdapter.SpriteMetaProperty.values());
   public static EnumType EDGE_MODE = Types.wrapEnum(EdgeMode.values());
 
   final Sprite sprite;
