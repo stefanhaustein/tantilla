@@ -14,4 +14,8 @@ public class TypeImpl implements Type {
   public Type getType() {
     return new MetaType(this);
   }
+
+  public String toString() {
+    return name;
+  }
 }
