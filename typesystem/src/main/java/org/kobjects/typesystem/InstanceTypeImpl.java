@@ -4,7 +4,7 @@ import java.util.TreeMap;
 
 public class InstanceTypeImpl extends TypeImpl implements InstanceType {
 
-  TreeMap<String, PropertyDescriptor> propertyDescriptors = new TreeMap<>();
+  private final TreeMap<String, PropertyDescriptor> propertyDescriptors = new TreeMap<>();
 
   public InstanceTypeImpl(String name, PropertyDescriptor... properties) {
     super(name);
