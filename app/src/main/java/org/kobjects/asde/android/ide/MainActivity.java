@@ -226,8 +226,8 @@ public class MainActivity extends AppCompatActivity implements Console {
     program.setValue(GlobalSymbol.Scope.BUILTIN, "EdgeMode", SpriteAdapter.EDGE_MODE);
     program.setValue(GlobalSymbol.Scope.BUILTIN, "XAlign", ScreenAdapter.X_ALIGN);
     program.setValue(GlobalSymbol.Scope.BUILTIN, "YAlign", ScreenAdapter.Y_ALIGN);
-    program.setValue(GlobalSymbol.Scope.BUILTIN,"Sprite", SpriteAdapter.CLASSIFIER);
-    program.setValue(GlobalSymbol.Scope.BUILTIN, "TextBox", TextBoxAdapter.CLASSIFIER);
+    program.setValue(GlobalSymbol.Scope.BUILTIN,"Sprite", SpriteAdapter.TYPE);
+    program.setValue(GlobalSymbol.Scope.BUILTIN, "TextBox", TextBoxAdapter.TYPE);
     program.setValue(GlobalSymbol.Scope.BUILTIN, "dpad", new DpadAdapter(screen.dpad));
     program.setValue(GlobalSymbol.Scope.BUILTIN, "cls", new Function() {
         @Override

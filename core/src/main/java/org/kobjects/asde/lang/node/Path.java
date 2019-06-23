@@ -40,15 +40,15 @@ public class Path extends AssignableNode {
 
     @Override
     protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
-        if (children[0].returnType() instanceof Classifier) {
-            resolvedPropertyDescriptor = ((Classifier) children[0].returnType()).getPropertyDescriptor(pathName);
+        if (children[0].returnType() instanceof InstanceType) {
+            resolvedPropertyDescriptor = ((InstanceType) children[0].returnType()).getPropertyDescriptor(pathName);
             if (resolvedPropertyDescriptor == null) {
                 throw new RuntimeException("Property '" + pathName + "' not found in " + children[0].returnType());
             }
             return;
         }
         if (children[0].returnType() instanceof MetaType) {
-            Type type = ((MetaType) children[0].returnType()).getType();
+            Type type = ((MetaType) children[0].returnType()).getWrapped();
             if (type instanceof EnumType) {
                 EnumType enumType = (EnumType) type;
                 resolvedConstant = enumType.getLiteral(pathName);
@@ -57,7 +57,7 @@ public class Path extends AssignableNode {
         }
 
         if (children[0].returnType() != null) {
-            throw new RuntimeException("Classifier or Enum expected as path base.");
+            throw new RuntimeException("InstanceType or Enum expected as path base.");
         }
     }
 

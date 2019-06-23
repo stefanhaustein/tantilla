@@ -5,13 +5,13 @@ import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.asde.lang.GlobalSymbol;
-import org.kobjects.typesystem.Classifier;
+import org.kobjects.typesystem.InstantiableType;
 
 import java.util.Map;
 
 public class New extends Node {
     final String name;
-    Classifier classifier;
+    InstantiableType instantiableType;
 
     public New(Program program, String name) throws Exception {
         this.name = name;
@@ -20,10 +20,10 @@ public class New extends Node {
             throw new Exception("'" + name + "' is not defined");
         }
         Object value = symbol.getValue();
-        if (!(value instanceof Classifier)) {
-            throw new Exception("'" + name + "' is not a classifier");
+        if (!(value instanceof InstantiableType)) {
+            throw new Exception("'" + name + "' is not an instantiable type.");
         }
-        classifier = (Classifier) value;
+        instantiableType = (InstantiableType) value;
     }
 
     @Override
@@ -33,12 +33,12 @@ public class New extends Node {
 
     @Override
     public Object eval(EvaluationContext evaluationContext) {
-        return classifier.createInstance();
+        return instantiableType.createInstance();
     }
 
     @Override
-    public Classifier returnType() {
-        return classifier;
+    public InstantiableType returnType() {
+        return instantiableType;
     }
 
     @Override

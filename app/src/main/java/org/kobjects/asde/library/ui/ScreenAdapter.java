@@ -26,16 +26,11 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
     final PhysicalProperty<Double> widthProperty = new PhysicalProperty<>(0.0);
     final PhysicalProperty<Double> heightProperty = new PhysicalProperty<>(0.0);
 
-  public static Classifier CLASSIFIER =
-            new Classifier(ScreenMetaProperty.values()) {
-        @Override
-        public ScreenAdapter createInstance() {
-            throw new RuntimeException("Singleton");
-        }
-    };
+  public static final InstanceType TYPE =
+            new InstanceTypeImpl(ScreenMetaProperty.values());
 
     public ScreenAdapter(Screen screen) {
-        super(CLASSIFIER);
+        super(TYPE);
         this.screen = screen;
         screen.view.addOnLayoutChangeListener(this);
     }
@@ -92,9 +87,9 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
 
     private enum ScreenMetaProperty implements PropertyDescriptor {
         width(Types.NUMBER), height(Types.NUMBER),
-        createPen(new FunctionTypeImpl(PenAdapter.CLASSIFIER)),
-        newSprite(new FunctionTypeImpl(SpriteAdapter.CLASSIFIER)),
-        newTextBox(new FunctionTypeImpl(TextBoxAdapter.CLASSIFIER));
+        createPen(new FunctionTypeImpl(PenAdapter.TYPE)),
+        newSprite(new FunctionTypeImpl(SpriteAdapter.TYPE)),
+        newTextBox(new FunctionTypeImpl(TextBoxAdapter.TYPE));
 
         private final Type type;
 

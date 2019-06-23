@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.type;
 
 import org.kobjects.typesystem.EnumType;
+import org.kobjects.typesystem.MetaType;
 import org.kobjects.typesystem.Type;
 import org.kobjects.typesystem.Typed;
 
@@ -9,34 +10,15 @@ import java.util.HashMap;
 public class Types {
   private static HashMap<Object, Type> typeMap = new HashMap<>();
 
-  public static final Type BOOLEAN = new Type() {
-        @Override
-        public String toString() {
-            return "Boolean";
-        }
-    };
-  public static final Type NUMBER = new Type() {
-        @Override
-        public String toString() {
-            return "Number";
-        }
-    };
-  public static final Type STRING = new Type() {
-        @Override
-        public String toString() {
-            return "String";
-        }
-    };
-  public static final Type VOID = new Type() {
-        @Override
-        public String toString() {
-            return "Void";
-        }
-
-    };
-
+  public static final Type BOOLEAN = new TypeImpl("Boolean");
+  public static final Type NUMBER = new TypeImpl("Number");
+  public static final Type STRING = new TypeImpl("String");
+  public static final Type VOID = new TypeImpl("Void");
 
   public static Type of(Object o) {
+    if (o == null) {
+      return VOID;
+    }
     if (o instanceof Typed) {
       return ((Typed) o).getType();
     }

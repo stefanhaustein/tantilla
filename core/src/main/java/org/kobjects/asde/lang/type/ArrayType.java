@@ -1,9 +1,9 @@
 package org.kobjects.asde.lang.type;
 
-import org.kobjects.typesystem.Classifier;
+import org.kobjects.typesystem.InstanceType;
 import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Instance;
+import org.kobjects.typesystem.MetaType;
 import org.kobjects.typesystem.Type;
 
 public class ArrayType implements FunctionType {
@@ -59,4 +59,8 @@ public class ArrayType implements FunctionType {
         return getReturnType() + "[]";
     }
 
+    @Override
+    public Type getType() {
+        return new MetaType(this);
+    }
 }

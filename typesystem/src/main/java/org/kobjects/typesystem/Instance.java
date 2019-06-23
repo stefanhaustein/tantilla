@@ -1,19 +1,19 @@
 package org.kobjects.typesystem;
 
 public abstract class Instance implements Typed {
-    private final Classifier classifier;
+    private final InstanceType instanceType;
 
-    public Instance(Classifier classifier) {
-        this.classifier = classifier;
+    public Instance(InstanceType instanceType) {
+        this.instanceType = instanceType;
     }
 
 
 
     public abstract Property getProperty(PropertyDescriptor property);
 
-/*    public Classifier getClassifier() {
-        return classifier;
+/*    public InstanceType getClassifier() {
+        return instanceType;
     }*/
 
-    public Classifier getType() { return classifier; }
+    public InstanceType getType() { return instanceType; }
 }

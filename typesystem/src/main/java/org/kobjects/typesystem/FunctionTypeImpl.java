@@ -47,4 +47,8 @@ public class FunctionTypeImpl implements FunctionType {
     return sb.toString();
   }
 
+  @Override
+  public Type getType() {
+    return new MetaType(this);
+  }
 }

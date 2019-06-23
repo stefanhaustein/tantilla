@@ -10,11 +10,12 @@ import org.kobjects.graphics.EdgeMode;
 import org.kobjects.graphics.Sprite;
 import org.kobjects.graphics.XAlign;
 import org.kobjects.graphics.YAlign;
-import org.kobjects.typesystem.Classifier;
+import org.kobjects.typesystem.InstanceType;
 import org.kobjects.typesystem.EnumType;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Instance;
+import org.kobjects.typesystem.InstanceTypeImpl;
 import org.kobjects.typesystem.LazyProperty;
 import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.PropertyDescriptor;
@@ -23,13 +24,8 @@ import org.kobjects.typesystem.Type;
 import java.util.Collection;
 
 public class SpriteAdapter extends Instance implements Animated {
-  public static final Classifier CLASSIFIER =
-      new Classifier(SpriteAdapter.SpriteMetaProperty.values()) {
-        @Override
-        public SpriteAdapter createInstance() {
-                    throw new RuntimeException("Use screen.createSprite()");
-                }
-  };
+  public static final InstanceType TYPE =
+      new InstanceTypeImpl(SpriteAdapter.SpriteMetaProperty.values());
   public static EnumType EDGE_MODE = Types.wrapEnum(EdgeMode.values());
 
   final Sprite sprite;
@@ -72,11 +68,11 @@ public class SpriteAdapter extends Instance implements Animated {
       for (Sprite sprite : collisions) {
         adapters[index++] = sprite.getTag();
       }
-      return new Array(SpriteAdapter.CLASSIFIER, adapters); }
+      return new Array(SpriteAdapter.TYPE, adapters); }
   };
 
   public SpriteAdapter(final ScreenAdapter screen) {
-    super(CLASSIFIER);
+    super(TYPE);
     sprite = new Sprite(screen.getScreen());
     sprite.setTag(this);
     sprite.setSize(10);
@@ -288,9 +284,9 @@ public class SpriteAdapter extends Instance implements Animated {
     size(Types.NUMBER), opacity(Types.NUMBER),
     speed(Types.NUMBER), direction(Types.NUMBER), dx(Types.NUMBER), dy(Types.NUMBER), grow(Types.NUMBER), fade(Types.NUMBER),
     angle(Types.NUMBER),
-    label(TextBoxAdapter.CLASSIFIER), bubble(TextBoxAdapter.CLASSIFIER), face(Types.STRING),
-    rotation(Types.NUMBER), collisions(new ArrayType(SpriteAdapter.CLASSIFIER)),
-    anchor(SpriteAdapter.CLASSIFIER), edgeMode(EDGE_MODE),
+    label(TextBoxAdapter.TYPE), bubble(TextBoxAdapter.TYPE), face(Types.STRING),
+    rotation(Types.NUMBER), collisions(new ArrayType(SpriteAdapter.TYPE)),
+    anchor(SpriteAdapter.TYPE), edgeMode(EDGE_MODE),
     say(new FunctionTypeImpl(Types.VOID, Types.STRING));
 
     final Type type;

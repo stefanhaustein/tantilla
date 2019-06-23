@@ -4,21 +4,17 @@ import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.TextBox;
 import org.kobjects.graphics.XAlign;
 import org.kobjects.graphics.YAlign;
-import org.kobjects.typesystem.Classifier;
+import org.kobjects.typesystem.InstanceType;
 import org.kobjects.typesystem.Instance;
+import org.kobjects.typesystem.InstanceTypeImpl;
 import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
 
 public class TextBoxAdapter extends Instance {
 
-    public static final Classifier CLASSIFIER =
-            new Classifier(TextBoxAdapter.TextMetaProperty.values()) {
-                @Override
-                public TextBoxAdapter createInstance() {
-                    throw new RuntimeException("call screen.newTextBox");
-                }
-            };
+    public static final InstanceType TYPE =
+            new InstanceTypeImpl(TextBoxAdapter.TextMetaProperty.values());
 
 
     final TextBox textBox;
@@ -42,7 +38,7 @@ public class TextBoxAdapter extends Instance {
     }
 
     public TextBoxAdapter(TextBox textBox) {
-        super(CLASSIFIER);
+        super(TYPE);
         this.textBox = textBox;
         textBox.setTag(this);
     }
@@ -187,7 +183,7 @@ public class TextBoxAdapter extends Instance {
         size(Types.NUMBER),
         lineWidth(Types.NUMBER), lineColor(Types.NUMBER), fillColor(Types.NUMBER),
         textColor(Types.NUMBER), cornerRadius(Types.NUMBER),
-        text(Types.STRING), anchor(SpriteAdapter.CLASSIFIER);
+        text(Types.STRING), anchor(SpriteAdapter.TYPE);
 
         private final Type type;
 

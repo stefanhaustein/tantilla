@@ -1,14 +1,18 @@
 package org.kobjects.typesystem;
 
-public class MetaType implements Typed, Type {
-    private final Type type;
+public class MetaType implements Type {
+    private final Type wrapped;
 
-    MetaType(Type type) {
-        this.type = type;
+    public MetaType(Type wrapped) {
+        this.wrapped = wrapped;
     }
 
     @Override
     public Type getType() {
-        return type;
+        return new MetaType(this);
+    }
+
+    public Type getWrapped() {
+        return wrapped;
     }
 }

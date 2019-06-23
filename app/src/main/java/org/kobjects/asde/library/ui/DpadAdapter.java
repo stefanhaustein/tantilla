@@ -5,8 +5,9 @@ import android.view.View;
 
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Dpad;
-import org.kobjects.typesystem.Classifier;
+import org.kobjects.typesystem.InstanceType;
 import org.kobjects.typesystem.Instance;
+import org.kobjects.typesystem.InstanceTypeImpl;
 import org.kobjects.typesystem.PhysicalProperty;
 import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.PropertyDescriptor;
@@ -22,16 +23,10 @@ public class DpadAdapter extends Instance {
     final TouchProperty fire;
     final Property<Boolean> visible;
 
-    static Classifier CLASSIFER = new Classifier(DpadMetaProperty.values()) {
-        @Override
-        public Instance createInstance() {
-            throw new RuntimeException("Singleton");
-        }
-    };
-
+    static InstanceType TYPE = new InstanceTypeImpl(DpadMetaProperty.values());
 
     public DpadAdapter(final Dpad dpad) {
-        super(CLASSIFER);
+        super(TYPE);
         this.dpad = dpad;
         left = new TouchProperty(dpad.left);
         up = new TouchProperty(dpad.up);

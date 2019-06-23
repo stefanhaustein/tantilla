@@ -4,22 +4,18 @@ import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Method;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Pen;
-import org.kobjects.typesystem.Classifier;
+import org.kobjects.typesystem.InstanceType;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Instance;
+import org.kobjects.typesystem.InstanceTypeImpl;
 import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
 
 public class PenAdapter extends Instance {
 
-    static final Classifier CLASSIFIER = new Classifier(PenAdapter.PenPropertyDescriptor.values()) {
-        @Override
-        public PenAdapter createInstance() {
-            throw new RuntimeException("Use screen.createPen()");
-        }
-
+    static final InstanceType TYPE = new InstanceTypeImpl(PenAdapter.PenPropertyDescriptor.values()) {
         @Override
         public String toString() {
             return "Pen";
@@ -66,7 +62,7 @@ public class PenAdapter extends Instance {
 
 
     PenAdapter(Pen pen) {
-        super(CLASSIFIER);
+        super(TYPE);
         this.pen = pen;
     }
 
