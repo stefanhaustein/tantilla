@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.type;
 
 import org.kobjects.asde.lang.EvaluationContext;
+import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Instance;
 import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.PropertyDescriptor;
@@ -10,7 +11,7 @@ import java.util.Arrays;
 
 public class Array extends Instance implements Function {
 
-    private final Object[] data;
+    private Object[] data;
 
     private Property<Double> length = new Property<Double>() {
         @Override
@@ -65,8 +66,17 @@ public class Array extends Instance implements Function {
 
     @Override
     public Property getProperty(PropertyDescriptor property) {
-        switch ((ArrayType.ArrayMetaProperty) property) {
+        switch (((ArrayType.ArrayPropertyDescriptor) property).propertyEnum) {
             case length: return length;
+            case append:  return new Method((FunctionType) property.type()) {
+                @Override
+                public Object call(EvaluationContext evaluationContext, int paramCount) {
+                    Object[] newData = new Object[data.length + 1];
+                    System.arraycopy(data, 0, newData, 0, data.length);
+                    newData[data.length] = evaluationContext.getParameter(0);
+                    data = newData;
+                    return null;
+                }};
             default:
                 throw new IllegalArgumentException("Unrecognized property: " + property);
         }
