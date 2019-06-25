@@ -73,6 +73,8 @@ public class ArrayType implements FunctionType, InstanceType {
     switch (name) {
       case "append":
         return new ArrayPropertyDescriptor(ArrayPropertyEnum.append, new FunctionTypeImpl(Types.VOID, elementType));
+      case "remove":
+        return new ArrayPropertyDescriptor(ArrayPropertyEnum.remove, new FunctionTypeImpl(Types.VOID, elementType));
       case "length":
         return new ArrayPropertyDescriptor(ArrayPropertyEnum.length, Types.NUMBER);
       default:
@@ -101,6 +103,6 @@ public class ArrayType implements FunctionType, InstanceType {
   }
 
   enum ArrayPropertyEnum {
-    append, length
+    append, length, remove
   }
 }
