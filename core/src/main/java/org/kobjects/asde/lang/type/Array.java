@@ -133,7 +133,7 @@ public class Array extends Instance implements Function {
             return false;
         }
         Array other = (Array) o;
-        return this.equals(other);
+        return data.equals(other.data);
     }
 
 
