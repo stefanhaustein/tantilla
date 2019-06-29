@@ -1,7 +1,6 @@
 LET ship = screen.newSprite()
 LET gameOver = false
 LET score = 0
-LET count = 0
 LET scoreDisplay = screen.newTextBox()
 LET gameOverDisplay = screen.newTextBox()
 LET continueDisplay = screen.newTextBox()
@@ -9,7 +8,7 @@ DIM asteroids(0) as Sprite
 
 SUB newAsteroid(Number x, Number y, Number size, Number direction, Number speed)
 10 LET asteroid = screen.newSprite()
-15 count = count + 1
+15 asteroids.append(asteroid)
 20 asteroid.face = "🥔"
 30 asteroid.x = x
 40 asteroid.y = y
@@ -44,7 +43,7 @@ SUB breakAsteroid(Sprite asteroid)
 14 asteroid.fade = -1
 15 asteroid.edgeMode = EdgeMode.NONE
 20 play "💥"
-25 count = count - 1
+25 asteroids.remove(asteroid)
 27 score = score + 50 - asteroid.size
 30 if asteroid.size > 30 then
 35   LET angle = 60 * rnd()
@@ -83,11 +82,11 @@ END SUB
 280   if not gameOver then shoot
 290 end
 
-1000 if count = 0 then
+1000 if asteroids.length = 0 then
 1010   newAsteroid screen.width / 2, screen.height / 2, 50, rnd() * 360, rnd() * 10 + 5
 1020 endif
 1030 sleep 100
-1040 scoreDisplay.text = "Score: " + score + " #: " + count
+1040 scoreDisplay.text = "Score: " + score + " #: " + asteroids.length
 1050 if not gameOver goto 1000
 1060 gameOverDisplay.text = "GAME OVER"
 1100 sleep 1000
