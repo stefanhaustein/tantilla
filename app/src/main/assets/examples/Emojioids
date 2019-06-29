@@ -98,4 +98,10 @@ END SUB
 1250 continueDisplay.text = ""
 1255 score = 0
 1257 gameOver = false
-1260 goto 1000
+1300 for i = asteroids.length - 1 to 0 step -1
+1310   LET asteroid = asteroids(i)
+1320   asteroid.opacity = 0
+1330   asteroid.face = "💥"
+1330   asteroids.remove(asteroid)
+1340 next i
+1500 goto 1000
