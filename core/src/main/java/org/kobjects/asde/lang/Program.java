@@ -209,7 +209,7 @@ public class Program {
    }
 
     // move to parser
-   private Type parseType(ExpressionParser.Tokenizer tokenizer) {
+    public Type parseType(ExpressionParser.Tokenizer tokenizer) {
        String typeName = Format.toUpperCamel(tokenizer.consumeIdentifier());
        if (typeName.equals("Number")) {
            return Types.NUMBER;

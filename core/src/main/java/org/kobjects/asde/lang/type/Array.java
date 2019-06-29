@@ -41,16 +41,18 @@ public class Array extends Instance implements Function {
         super(new ArrayType(elementType, sizes.length));
         data = new ArrayList<>(sizes[0]);
         if (sizes.length == 1) {
-            Object fillElement;
-            if (elementType == Types.NUMBER) {
-                fillElement = 0.0;
-            } else if (elementType == Types.STRING) {
-                fillElement = "";
-            } else {
-                throw new RuntimeException("Can't create a static array of " + elementType);
-            }
-            for (int i = 0; i < sizes[0]; i++) {
-                data.add(fillElement);
+            if (sizes[0] > 0) {
+                Object fillElement;
+                if (elementType == Types.NUMBER) {
+                    fillElement = 0.0;
+                } else if (elementType == Types.STRING) {
+                    fillElement = "";
+                } else {
+                    throw new RuntimeException("Can't create a static array of " + elementType);
+                }
+                for (int i = 0; i < sizes[0]; i++) {
+                    data.add(fillElement);
+                }
             }
         } else {
             int[] subSizes = new int[sizes.length - 1];

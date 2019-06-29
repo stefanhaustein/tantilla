@@ -29,7 +29,9 @@ import org.kobjects.asde.lang.statement.FunctionReturnStatement;
 import org.kobjects.asde.lang.statement.LegacyStatement;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.statement.VoidStatement;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.expressionparser.ExpressionParser;
+import org.kobjects.typesystem.Type;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -251,13 +253,25 @@ public class Parser {
       if (!(dimExpr.children[0] instanceof Identifier)) {
         throw tokenizer.exception("DIM: Identifier expected, got: " + dimExpr.children[0], null);
       }
+      String varName = ((Identifier) dimExpr.children[0]).getName();
       if (dimExpr.children.length < 2) {
         throw tokenizer.exception("DIM: At least one dimension expected", null);
       }
       Node[] dimensions = new Node[dimExpr.children.length - 1];
       System.arraycopy(dimExpr.children, 1, dimensions, 0, dimensions.length);
-      result.add(new DimStatement(((Identifier) dimExpr.children[0]).getName(), dimensions));
+
+      Type elementType;
+      if (tokenizer.tryConsume("as") || tokenizer.tryConsume("AS") || tokenizer.tryConsume("As")) {
+        elementType = program.parseType(tokenizer);
+      } else {
+        elementType = varName.endsWith("$") ? Types.STRING : Types.NUMBER;
+      }
+      result.add(new DimStatement(elementType, varName, dimensions));
     } while (tokenizer.tryConsume(","));
+  }
+
+  private String parseType(ExpressionParser.Tokenizer tokenizer) {
+    return tokenizer.consumeIdentifier();
   }
 
   private void parseIf(ExpressionParser.Tokenizer tokenizer, List<Node> result) {

@@ -5,6 +5,7 @@ LET count = 0
 LET scoreDisplay = screen.newTextBox()
 LET gameOverDisplay = screen.newTextBox()
 LET continueDisplay = screen.newTextBox()
+DIM asteroids(0) as Sprite
 
 SUB newAsteroid(Number x, Number y, Number size, Number direction, Number speed)
 10 LET asteroid = screen.newSprite()

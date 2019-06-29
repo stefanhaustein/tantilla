@@ -6,22 +6,24 @@ import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
+import org.kobjects.typesystem.MetaType;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
 public class DimStatement extends Node {
     public final String varName;
+    private Type elementType;
 
-    public DimStatement(String varName, Node... children) {
+    public DimStatement(Type elementType, String varName, Node... children) {
         super(children);
+        this.elementType = elementType;
         this.varName = varName;
     }
 
     @Override
     protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
-        // TODO: Implement
-        System.err.println("TODO: DimStatement.onResolve");
+        // Don't need to do anything -- child resolution is handled in resolve()
     }
 
     @Override
@@ -31,11 +33,9 @@ public class DimStatement extends Node {
              // TODO: evalChildToInt
              dims[i] = evalChildToInt(evaluationContext, i);
         }
-        evaluationContext.control.program.setValue(evaluationContext.getSymbolScope(), varName, new Array(varName.endsWith("$") ? Types.STRING : Types.NUMBER, dims));
+        evaluationContext.control.program.setValue(evaluationContext.getSymbolScope(), varName, new Array(elementType, dims));
         return null;
     }
-
-
 
     @Override
     public Type returnType() {
