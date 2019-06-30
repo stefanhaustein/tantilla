@@ -108,23 +108,22 @@ public class SpriteAdapter extends Instance implements Animated {
 
   @Override
   public void animate(float dt, boolean propertiesChanged) {
-    boolean collisonsChanged = false;
-    Collection newCollisions = sprite.collisions();
-    for (int i = collisionsArray.length() - 1; i >= 0; i--) {
-      if (!newCollisions.contains(((SpriteAdapter) collisionsArray.data.get(i)).sprite)) {
-        collisionsArray.data.remove(i);
-        collisonsChanged = true;
+    Collection<Sprite> newCollisions = sprite.collisions();
+    synchronized (collisionsArray) {
+      for (int i = collisionsArray.length() - 1; i >= 0; i--) {
+        if (!newCollisions.contains(((SpriteAdapter) collisionsArray.get(i)).sprite)) {
+          synchronized (this) {
+            collisionsArray.remove(i);
+          }
+        }
       }
-    }
-    for (Sprite colliding : sprite.collisions()) {
-      if (!collisionsArray.data.contains(colliding.getTag())) {
-        collisionsArray.data.add(colliding.getTag());
-        collisonsChanged = true;
+      for (Sprite colliding : newCollisions) {
+        if (!collisionsArray.contains(colliding.getTag())) {
+          synchronized (this) {
+            collisionsArray.append(colliding.getTag());
+          }
+        }
       }
-    }
-    if (collisonsChanged) {
-      collisions.notifyChanged();
-      collisionsArray.length.notifyChanged();
     }
 
     if (propertiesChanged) {
@@ -132,7 +131,6 @@ public class SpriteAdapter extends Instance implements Animated {
       y.invalidate();
       angle.invalidate();
       opacity.invalidate();
-
     }
   }
 

@@ -8,12 +8,10 @@ import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
 public class Array extends Instance implements Function {
 
-    public final ArrayList<Object> data;
+    private final ArrayList<Object> data;
 
     public Property<Double> length = new Property<Double>() {
         @Override
@@ -72,21 +70,19 @@ public class Array extends Instance implements Function {
     }
 
     @Override
-    public Property getProperty(PropertyDescriptor property) {
+    synchronized public Property getProperty(PropertyDescriptor property) {
         switch (((ArrayType.ArrayPropertyDescriptor) property).propertyEnum) {
             case length: return length;
             case append:  return new Method((FunctionType) property.type()) {
                 @Override
                 public Object call(EvaluationContext evaluationContext, int paramCount) {
-                    data.add(evaluationContext.getParameter(0));
-                    length.notifyChanged();
+                    append(evaluationContext.getParameter(0));
                     return null;
                 }};
             case remove:  return new Method((FunctionType) property.type()) {
                 @Override
                 public Object call(EvaluationContext evaluationContext, int paramCount) {
-                    data.remove(evaluationContext.getParameter(0));
-                    length.notifyChanged();
+                    remove(evaluationContext.getParameter(0));
                     return null;
                 }};
 
@@ -100,8 +96,27 @@ public class Array extends Instance implements Function {
         return (ArrayType) super.getType();
     }
 
+    public synchronized Object get(int index) {
+        return data.get(index);
+    }
+
+    public synchronized void remove(int index) {
+        data.remove(index);
+        length.notifyChanged();
+    }
+
+    public synchronized void remove(Object object) {
+        data.remove(object);
+        length.notifyChanged();
+    }
+
+    public synchronized void append(Object object) {
+        data.add(object);
+        length.notifyChanged();
+    }
+
     @Override
-    public Object call(EvaluationContext evaluationContext, int paramCount) {
+    synchronized public Object call(EvaluationContext evaluationContext, int paramCount) {
         Object result = this;
         for (int i = 0; i < paramCount; i++) {
             result = ((Array) result).data.get(((Number) evaluationContext.getParameter(i)).intValue());
@@ -109,7 +124,7 @@ public class Array extends Instance implements Function {
         return result;
     }
 
-    public void setValueAt(Object value, int... indices) {
+    synchronized public void setValueAt(Object value, int... indices) {
         Array target = this;
         for (int i = 0; i < indices.length - 1; i++) {
             target = (Array) target.data.get(indices[i]);
@@ -118,7 +133,7 @@ public class Array extends Instance implements Function {
     }
 
     @Override
-    public String toString() {
+    synchronized public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         for (int i = 0; i < data.size(); i++) {
@@ -132,7 +147,7 @@ public class Array extends Instance implements Function {
     }
 
     @Override
-    public boolean equals(Object o) {
+    synchronized public boolean equals(Object o) {
         if (!(o instanceof Array)) {
             return false;
         }
@@ -141,7 +156,11 @@ public class Array extends Instance implements Function {
     }
 
 
-    public int length() {
+    public synchronized int length() {
         return data.size();
+    }
+
+    public synchronized boolean contains(Object object) {
+        return data.contains(object);
     }
 }
