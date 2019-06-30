@@ -59,17 +59,8 @@ public class SpriteAdapter extends Instance implements Animated {
   final ObjectProperty xAlign = new ObjectProperty(SpriteMetaProperty.xAlign);
   final ObjectProperty yAlign = new ObjectProperty(SpriteMetaProperty.yAlign);
 
-  final LazyProperty<Array> collisions = new LazyProperty<Array>() {
-        @Override
-        protected Array compute() {
-      Collection<Sprite> collisions = sprite.collisions();
-      Object[] adapters = new Object[collisions.size()];
-      int index = 0;
-      for (Sprite sprite : collisions) {
-        adapters[index++] = sprite.getTag();
-      }
-      return new Array(SpriteAdapter.TYPE, adapters); }
-  };
+  final ObjectProperty collisions = new ObjectProperty(SpriteMetaProperty.collisions);
+  Array collisionsArray = new Array(SpriteAdapter.TYPE, 0);
 
   public SpriteAdapter(final ScreenAdapter screen) {
     super(TYPE);
@@ -117,8 +108,25 @@ public class SpriteAdapter extends Instance implements Animated {
 
   @Override
   public void animate(float dt, boolean propertiesChanged) {
+    boolean collisonsChanged = false;
+    Collection newCollisions = sprite.collisions();
+    for (int i = collisionsArray.length() - 1; i >= 0; i--) {
+      if (!newCollisions.contains(((SpriteAdapter) collisionsArray.data.get(i)).sprite)) {
+        collisionsArray.data.remove(i);
+        collisonsChanged = true;
+      }
+    }
+    for (Sprite colliding : sprite.collisions()) {
+      if (!collisionsArray.data.contains(colliding.getTag())) {
+        collisionsArray.data.add(colliding.getTag());
+        collisonsChanged = true;
+      }
+    }
+    if (collisonsChanged) {
+      collisions.notifyChanged();
+      collisionsArray.length.notifyChanged();
+    }
 
-    collisions.invalidate();
     if (propertiesChanged) {
       x.invalidate();
       y.invalidate();
@@ -260,6 +268,8 @@ public class SpriteAdapter extends Instance implements Animated {
           return sprite.getXAlign();
         case yAlign:
           return sprite.getYAlign();
+        case collisions:
+          return collisionsArray;
       }
       throw new RuntimeException();
     }

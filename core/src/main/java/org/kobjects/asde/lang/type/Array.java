@@ -13,9 +13,9 @@ import java.util.Collections;
 
 public class Array extends Instance implements Function {
 
-    private final ArrayList<Object> data;
+    public final ArrayList<Object> data;
 
-    private Property<Double> length = new Property<Double>() {
+    public Property<Double> length = new Property<Double>() {
         @Override
         public boolean setImpl(Double aDouble) {
             throw new UnsupportedOperationException("length is read-only");
@@ -79,12 +79,14 @@ public class Array extends Instance implements Function {
                 @Override
                 public Object call(EvaluationContext evaluationContext, int paramCount) {
                     data.add(evaluationContext.getParameter(0));
+                    length.notifyChanged();
                     return null;
                 }};
             case remove:  return new Method((FunctionType) property.type()) {
                 @Override
                 public Object call(EvaluationContext evaluationContext, int paramCount) {
                     data.remove(evaluationContext.getParameter(0));
+                    length.notifyChanged();
                     return null;
                 }};
 
