@@ -118,12 +118,12 @@ public class GlobalSymbol implements ResolvedSymbol {
             programValidationContext.validated.add(this);
 
             FunctionImplementation function = (FunctionImplementation) value;
-            FunctionValidationContext context = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.STRICT, function);
+            FunctionValidationContext context = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.FUNCTION, function);
             function.validate(context);
             this.errors = context.errors;
             this.dependencies = context.dependencies;
         } else if (initializer != null) {
-            FunctionValidationContext context = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.SHELL, null);
+            FunctionValidationContext context = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.INTERACTIVE, null);
             initializer.resolve(context, 0, 0);
             this.errors = context.errors;
             if (initializer instanceof DimStatement) {

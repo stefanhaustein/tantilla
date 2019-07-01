@@ -353,7 +353,7 @@ public class Program {
             entry.getValue().validate(context);
         }
         FunctionValidationContext functionValidationContext = new FunctionValidationContext(context,
-                FunctionValidationContext.ResolutionMode.STRICT,
+                FunctionValidationContext.ResolutionMode.FUNCTION,
                 main);
         main.validate(functionValidationContext);
     }

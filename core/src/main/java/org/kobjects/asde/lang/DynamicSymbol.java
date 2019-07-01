@@ -19,7 +19,7 @@ public class DynamicSymbol implements ResolvedSymbol {
 
     @Override
     public void set(EvaluationContext evaluationContext, Object value) {
-        evaluationContext.control.program.setValue(mode == FunctionValidationContext.ResolutionMode.SHELL
+        evaluationContext.control.program.setValue(mode == FunctionValidationContext.ResolutionMode.INTERACTIVE
                 ? GlobalSymbol.Scope.PERSISTENT : GlobalSymbol.Scope.TRANSIENT, name, value);
     }
 

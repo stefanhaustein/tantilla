@@ -123,7 +123,7 @@ public class Parser {
         result.add(parseRem(tokenizer));
         return;
       case "RETURN":
-        if (parsingContext != null && parsingContext != program.main && parsingContext != null) {
+        if (parsingContext != null && parsingContext != program.main) {
           result.add(parseFunctionReturn(tokenizer));
           return;
         }

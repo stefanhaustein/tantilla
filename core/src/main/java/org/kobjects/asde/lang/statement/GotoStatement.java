@@ -19,7 +19,7 @@ public class GotoStatement extends Node {
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
-    if (resolutionContext.mode == FunctionValidationContext.ResolutionMode.LEGACY) {
+    if (resolutionContext.mode == FunctionValidationContext.ResolutionMode.BASIC) {
       resolvedTarget = -1;
       return;
     }

@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class FunctionValidationContext {
-    public enum ResolutionMode {STRICT, SHELL, LEGACY};
+    public enum ResolutionMode {FUNCTION, INTERACTIVE, BASIC};
     public enum BlockType {
         ROOT, FOR, IF
     }
@@ -51,7 +51,7 @@ public class FunctionValidationContext {
     }
 
     public ResolvedSymbol declare(String name, Type type, boolean constant) {
-        if (mode != ResolutionMode.STRICT) {
+        if (mode != ResolutionMode.FUNCTION) {
             return resolve(name, true);
         }
         if (currentBlock.localSymbols.containsKey(name)) {
@@ -73,7 +73,7 @@ public class FunctionValidationContext {
         }
         GlobalSymbol symbol = forDeclaration ? program.getSymbol(name) : programValidationContext.resolve(name);
         switch (mode) {
-            case LEGACY:
+            case BASIC:
                 if (symbol != null
                         && (symbol.scope == GlobalSymbol.Scope.PERSISTENT
                            || symbol.scope == GlobalSymbol.Scope.BUILTIN)) {
@@ -82,7 +82,7 @@ public class FunctionValidationContext {
                 }
                 return new DynamicSymbol(name, mode);
 
-            case SHELL:
+            case INTERACTIVE:
                 if (symbol != null && (symbol.scope != GlobalSymbol.Scope.TRANSIENT)) {
                     if (!forDeclaration) {
                         dependencies.add(symbol);

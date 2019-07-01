@@ -13,7 +13,6 @@ import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.RelationalOperator;
 import org.kobjects.asde.lang.FunctionValidationContext;
-import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
 
@@ -49,7 +48,7 @@ public class LegacyStatement extends Node {
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
-    if (resolutionContext.mode == FunctionValidationContext.ResolutionMode.STRICT) {
+    if (resolutionContext.mode == FunctionValidationContext.ResolutionMode.FUNCTION) {
       throw new RuntimeException("Legacy statement " + kind + " not permitted in functions and subroutines.");
     }
   }

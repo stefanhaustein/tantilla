@@ -1,11 +1,14 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.node.Identifier;
+import org.kobjects.asde.lang.statement.AssignStatement;
 import org.kobjects.asde.lang.statement.ElseStatement;
 import org.kobjects.asde.lang.statement.EndIfStatement;
 import org.kobjects.asde.lang.statement.EndStatement;
 import org.kobjects.asde.lang.statement.ForStatement;
 import org.kobjects.asde.lang.statement.IfStatement;
+import org.kobjects.asde.lang.statement.LetStatement;
 import org.kobjects.asde.lang.statement.NextStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.OnStatement;
@@ -44,6 +47,17 @@ public class FunctionImplementation implements Function {
             for (int i = 0; i < line.length(); i++) {
                 Node statement = line.get(i);
                 boolean isLast = i == line.length() - 1;
+
+                if (statement instanceof AssignStatement
+                        && functionValidationContext.mode == FunctionValidationContext.ResolutionMode.INTERACTIVE
+                        && statement.children[0] instanceof Identifier) {
+                    String varName = ((Identifier) statement.children[0]).getName();
+                    if (functionValidationContext.program.getSymbol(varName) == null) {
+                        statement = new LetStatement(varName, statement.children[1], false);
+                        line.set(i, statement);
+                    }
+                }
+
                 if (statement instanceof ElseStatement && ((ElseStatement) statement).multiline) {
                     addLater++;
                     indent--;

@@ -79,4 +79,8 @@ public class CodeLine implements Iterable<Node> {
     newStatements[statements.length] = node;
     statements = newStatements;
   }
+
+  public void set(int i, Node statement) {
+    statements[i] = statement;
+  }
 }
