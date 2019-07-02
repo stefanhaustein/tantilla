@@ -28,7 +28,7 @@ public class FunctionValidationContext {
     public FunctionValidationContext(ProgramValidationContext programValidationContext, ResolutionMode mode, FunctionImplementation functionImplementation) {
         this.programValidationContext = programValidationContext;
         this.program = programValidationContext.program;
-        this.mode = mode;
+        this.mode = (program.legacyMode && functionImplementation == program.main) ? ResolutionMode.BASIC : mode;
         this.functionImplementation = functionImplementation;
         startBlock(BlockType.ROOT);
         if (functionImplementation != null) {
@@ -83,15 +83,18 @@ public class FunctionValidationContext {
                 return new DynamicSymbol(name, mode);
 
             case INTERACTIVE:
-                if (symbol != null && (symbol.scope != GlobalSymbol.Scope.TRANSIENT)) {
+                if (symbol != null) {
                     if (!forDeclaration) {
                         dependencies.add(symbol);
                     }
                     return symbol;
                 }
-                return new DynamicSymbol(name, mode);
+                if (forDeclaration) {
+                    return new DynamicSymbol(name, mode);
+                }
+                throw new RuntimeException("Variable not found: \"" + name + "\"");
 
-            default:
+            case FUNCTION:
                 if (symbol == null || symbol.scope == GlobalSymbol.Scope.TRANSIENT) {
                     throw new RuntimeException("Variable not found: \"" + name + "\"");
                 }
@@ -99,6 +102,8 @@ public class FunctionValidationContext {
                     dependencies.add(symbol);
                 }
                 return symbol;
+            default:
+                throw new IllegalStateException("Unrecognized mode " + mode);
         }
     }
 

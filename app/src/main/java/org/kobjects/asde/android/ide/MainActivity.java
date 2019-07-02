@@ -131,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements Console {
           } else if (span.annotation instanceof Exception) {
               s.setSpan(new BackgroundColorSpan(colors.accentLight), span.start, span.end, 0);
               if (linked) {
+                ((Exception) span.annotation).printStackTrace();
                   s.setSpan(new ClickableSpan() {
                       @Override
                       public void onClick(View widget) {

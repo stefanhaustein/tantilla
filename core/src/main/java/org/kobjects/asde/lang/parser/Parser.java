@@ -361,10 +361,13 @@ public class Parser {
       String varName = ((Identifier) assignment.children[0]).getName();
       return new LetStatement(varName, assignment.children[1], constant);
     }
+    if (constant) {
+      throw tokenizer.exception("Left hand side of CONST assignment must be a variable.", null);
+    }
     try {
       return new AssignStatement(assignment.children[0], assignment.children[1]);
     } catch (Exception e) {
-      throw tokenizer.exception("Error parsing let", e);
+      throw tokenizer.exception("Error parsing " + (constant ? "CONST" : "LET"), e);
     }
   }
 
