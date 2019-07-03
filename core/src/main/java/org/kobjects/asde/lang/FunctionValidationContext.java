@@ -71,7 +71,9 @@ public class FunctionValidationContext {
         if (resolved != null) {
             return resolved;
         }
-        GlobalSymbol symbol = forDeclaration ? program.getSymbol(name) : programValidationContext.resolve(name);
+        GlobalSymbol symbol = forDeclaration
+            ? program.getSymbol(name)
+            : programValidationContext.resolve(name);  // Checks for cyclic dependencies.
         switch (mode) {
             case BASIC:
                 if (symbol != null

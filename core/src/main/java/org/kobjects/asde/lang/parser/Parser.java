@@ -18,7 +18,7 @@ import org.kobjects.asde.lang.statement.ForStatement;
 import org.kobjects.asde.lang.statement.GotoStatement;
 import org.kobjects.asde.lang.statement.IfStatement;
 import org.kobjects.asde.lang.statement.IoStatement;
-import org.kobjects.asde.lang.statement.LetStatement;
+import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.statement.NextStatement;
 import org.kobjects.asde.lang.node.Node;
@@ -76,7 +76,7 @@ public class Parser {
 
     switch (name.toUpperCase()) {
       case "CONST":
-        result.add(parseLet(tokenizer, true));
+        result.add(parseDeclaration(tokenizer, DeclarationStatement.Kind.CONST));
         return;
       case "DIM":
         parseDim(tokenizer, result);
@@ -108,7 +108,7 @@ public class Parser {
         result.add(parseIo(IoStatement.Kind.INPUT, tokenizer));
         return;
       case "LET":
-        result.add(parseLet(tokenizer, false));
+        result.add(parseDeclaration(tokenizer, DeclarationStatement.Kind.LET));
         return;
       case "NEXT":
         parseNext(tokenizer, result);
@@ -349,7 +349,7 @@ public class Parser {
     return new ForStatement(varName, assignment.children[1], end);
   }
 
-  private Node parseLet(ExpressionParser.Tokenizer tokenizer, boolean constant) {
+  private Node parseDeclaration(ExpressionParser.Tokenizer tokenizer, DeclarationStatement.Kind kind) {
     tokenizer.nextToken();
     Node assignment = expressionParser.parse(tokenizer);
     if (!(assignment instanceof RelationalOperator) || !(assignment.children[0] instanceof AssignableNode)
@@ -359,15 +359,15 @@ public class Parser {
     }
     if (assignment.children[0] instanceof Identifier) {
       String varName = ((Identifier) assignment.children[0]).getName();
-      return new LetStatement(varName, assignment.children[1], constant);
+      return new DeclarationStatement(kind, varName, assignment.children[1]);
     }
-    if (constant) {
+    if (kind == DeclarationStatement.Kind.CONST) {
       throw tokenizer.exception("Left hand side of CONST assignment must be a variable.", null);
     }
     try {
       return new AssignStatement(assignment.children[0], assignment.children[1]);
     } catch (Exception e) {
-      throw tokenizer.exception("Error parsing " + (constant ? "CONST" : "LET"), e);
+      throw tokenizer.exception("Error parsing " + kind, e);
     }
   }
 

@@ -26,7 +26,7 @@ public abstract class Node {
 
   protected abstract void onResolve(FunctionValidationContext resolutionContext, int line, int index);
 
-  public final void resolve(FunctionValidationContext resolutionContext, int line, int index) {
+  public void resolve(FunctionValidationContext resolutionContext, int line, int index) {
     for (Node child: children) {
       child.resolve(resolutionContext, line, index);
     }

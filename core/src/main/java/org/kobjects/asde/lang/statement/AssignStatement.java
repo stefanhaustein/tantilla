@@ -2,6 +2,8 @@ package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
+import org.kobjects.asde.lang.GlobalSymbol;
+import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.node.Node;
@@ -18,6 +20,18 @@ public class AssignStatement extends Statement {
     }
 
     @Override
+    public void resolve(FunctionValidationContext resolutionContext, int line, int index) {
+        if (children[0] instanceof Identifier && resolutionContext.mode != FunctionValidationContext.ResolutionMode.FUNCTION) {
+            String varName = ((Identifier) children[0]).getName();
+            if (resolutionContext.program.getSymbol(varName) == null) {
+                resolutionContext.program.setValue(GlobalSymbol.Scope.TRANSIENT, varName, null);
+            }
+        }
+        super.resolve(resolutionContext, line, index);
+    }
+
+
+        @Override
     protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
         if (resolutionContext.mode == FunctionValidationContext.ResolutionMode.BASIC) {
             return;
@@ -28,6 +42,7 @@ public class AssignStatement extends Statement {
         if (((AssignableNode) children[0]).isConstant()) {
             throw new RuntimeException("Cannot assign to a constant.");
         }
+
     }
 
     @Override

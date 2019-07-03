@@ -4,7 +4,7 @@ import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.DimStatement;
-import org.kobjects.asde.lang.statement.LetStatement;
+import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.typesystem.Type;
 
 import java.util.Collections;
@@ -132,7 +132,7 @@ public class GlobalSymbol implements ResolvedSymbol {
                 type = new ArrayType(elementType, dimStatement.children.length);
             } else if (errors.size() > 0) {
                 type = null;
-            } else if (initializer instanceof LetStatement) {
+            } else if (initializer instanceof DeclarationStatement) {
                 type = initializer.children[0].returnType();
             } else {
                 throw new RuntimeException("not an initializer statement: " + initializer);

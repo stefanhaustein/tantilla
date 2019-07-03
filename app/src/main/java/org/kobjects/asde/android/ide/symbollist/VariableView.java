@@ -12,7 +12,7 @@ import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.node.ArrayLiteral;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.statement.LetStatement;
+import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.GlobalSymbol;
 import org.kobjects.typesystem.Type;
 
@@ -89,7 +89,7 @@ public class VariableView extends SymbolView {
         StringBuilder sb = new StringBuilder(" ");
         if (symbol.getValue() != null) {
             sb.append(symbol.getValue());
-        } else if (symbol.getInitializer() instanceof LetStatement && symbol.getInitializer().children[0] instanceof Literal) {
+        } else if (symbol.getInitializer() instanceof DeclarationStatement && symbol.getInitializer().children[0] instanceof Literal) {
             sb.append(((Literal) symbol.getInitializer().children[0]).value);
         } else if (symbol.getType() != null) {
             sb.append('(').append(symbol.getType()).append(')');
@@ -108,7 +108,7 @@ public class VariableView extends SymbolView {
 
         codeView.removeAllViews();
         if (expanded) {
-            if (symbol.getInitializer() instanceof LetStatement && isMultiDim(symbol.getType())) {
+            if (symbol.getInitializer() instanceof DeclarationStatement && isMultiDim(symbol.getType())) {
                 addLine(codeView, 1, "LET " + symbol.getName() + " = {");
                 addChildList(codeView, 2, symbol.getInitializer().children[0]);
                 addLine(codeView, 1, "}");

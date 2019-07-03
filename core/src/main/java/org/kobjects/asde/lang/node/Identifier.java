@@ -30,7 +30,7 @@ public class Identifier extends AssignableNode {
 
   @Override
   public boolean isConstant() {
-    return resolved.isConstant();
+    return resolved == null ? false : resolved.isConstant();
   }
 
   @Override

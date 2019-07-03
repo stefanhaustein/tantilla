@@ -10,19 +10,28 @@ import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
-public class LetStatement extends Node {
+/**
+ * Assignments are handled here because they might implicitly declare a transient variable -- but resolve visits the
+ * children first, hitting "variable not found". An alternative might be to override resolve()
+ * (in addition to onResolve) in AssignStatement.
+ */
+public class DeclarationStatement extends Node {
+    public enum Kind {
+        LET, CONST
+    }
+
     public final String varName;
     ResolvedSymbol resolved;
-    boolean constant;
+    public final Kind kind;
 
-    public LetStatement(String varName, Node init, boolean constant) {
+    public DeclarationStatement(Kind kind, String varName, Node init) {
         super(init);
-        this.constant = constant;
+        this.kind = kind;
         this.varName = varName;
     }
 
     public void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
-        resolved = resolutionContext.declare(varName, children[0].returnType(), constant);
+        resolved = resolutionContext.declare(varName, children[0].returnType(), kind == Kind.CONST);
     }
 
     @Override
@@ -39,11 +48,7 @@ public class LetStatement extends Node {
 
     @Override
     public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
-        appendLinked(asb, (constant ? "CONST " : "LET ") + varName + " = ", errors);
+        appendLinked(asb, kind + " " + varName + " = ", errors);
         children[0].toString(asb, errors);
-    }
-
-    public boolean isConstant() {
-        return constant;
     }
 }

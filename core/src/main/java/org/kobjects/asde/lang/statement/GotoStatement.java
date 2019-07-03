@@ -43,7 +43,7 @@ public class GotoStatement extends Node {
             skippedVars = 0;
             depth = 0;
           }
-        } else if (node instanceof LetStatement) {
+        } else if (node instanceof DeclarationStatement) {
           if (depth == 0) {
             skippedVars++;
           }

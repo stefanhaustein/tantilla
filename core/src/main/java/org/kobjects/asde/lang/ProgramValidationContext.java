@@ -22,7 +22,7 @@ public class ProgramValidationContext {
         if (symbol == null) {
             return null;
         }
-        // We only check symbols with initializers for circles -- in constrast to constants, function dependencies
+        // We only check symbols with initializers for circles -- in contrast to constants, function dependencies
         // work without explicit initialization.
         if (dependencyChain.contains(name) && symbol.initializer != null) {
             throw new RuntimeException("Circular dependency: " + dependencyChain + " -> " + name);

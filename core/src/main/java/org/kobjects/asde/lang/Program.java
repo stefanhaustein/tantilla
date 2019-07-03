@@ -8,7 +8,7 @@ import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.node.Visitor;
 import org.kobjects.asde.lang.refactor.RenameGlobal;
 import org.kobjects.asde.lang.statement.DimStatement;
-import org.kobjects.asde.lang.statement.LetStatement;
+import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Builtin;
 import org.kobjects.asde.lang.type.CodeLine;
@@ -269,9 +269,9 @@ public class Program {
         wrapper.setLine(codeLine);
         for (int i = 0; i < codeLine.length(); i++) {
             Node node = codeLine.get(i);
-            if (node instanceof LetStatement) {
-                LetStatement let = (LetStatement) node;
-                setPersistentInitializer(let.varName, let);
+            if (node instanceof DeclarationStatement) {
+                DeclarationStatement declaration = (DeclarationStatement) node;
+                setPersistentInitializer(declaration.varName, declaration);
             } else if (node instanceof DimStatement) {
                 DimStatement dim = (DimStatement) node;
                 setPersistentInitializer(dim.varName, dim);
@@ -391,14 +391,14 @@ public class Program {
 
     public synchronized void setPersistentInitializer(String name, Node expr) {
       GlobalSymbol symbol = getSymbol(name);
-      if (symbol == null) {
+      if (symbol == null || symbol.scope == GlobalSymbol.Scope.TRANSIENT) {
           symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, null);
           symbolMap.put(name, symbol);
       } else if (symbol.getScope() == GlobalSymbol.Scope.BUILTIN) {
-          throw new RuntimeException("Can't overwriter builtin '" + name + "'");
+          throw new RuntimeException("Can't overwrite builtin '" + name + "'");
       }
       symbol.initializer = expr;
-      symbol.setConstant(expr instanceof LetStatement && ((LetStatement) expr).isConstant());
+      symbol.setConstant(expr instanceof DeclarationStatement && ((DeclarationStatement) expr).kind == DeclarationStatement.Kind.CONST);
       notifyProgramChanged();
     }
 
