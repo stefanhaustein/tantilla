@@ -90,12 +90,10 @@ public class Shell {
                 ProgramValidationContext programValidationContext = new ProgramValidationContext(program);
                 FunctionValidationContext functionValidationContext = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.INTERACTIVE, wrapper);
                 wrapper.validate(functionValidationContext);
-                if (functionValidationContext.errors.size() > 0) {
-                    for (Exception exception : functionValidationContext.errors.values()) {
-                        throw new RuntimeException(exception);
-                    }
-                }
 
+                if (functionValidationContext.errors.size() > 0) {
+                    throw new ValidationException(codeLine, functionValidationContext.errors);
+                }
                 AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
                 asb.append(codeLine.toString(), Annotations.ACCENT_COLOR);
                 asb.append("\n");

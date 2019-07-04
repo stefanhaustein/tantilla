@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.vanniktech.emoji.EmojiTextView;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.android.ide.AnnotatedStringConverter;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.node.Node;
@@ -52,7 +53,7 @@ public class CodeLineView extends LinearLayout {
     void setCodeLine(CodeLine codeLine, Map<Node, Exception> errors) {
         AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
         codeLine.toString(asb, errors);
-        statementView.setText(context.annotatedStringToSpanned(asb.build(), true));
+        statementView.setText(AnnotatedStringConverter.toSpanned(context, asb.build(), true));
         if (asb.spans().iterator().hasNext()) {
             statementView.setMovementMethod(LinkMovementMethod.getInstance());
         }

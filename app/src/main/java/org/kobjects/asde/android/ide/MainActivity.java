@@ -123,30 +123,6 @@ public class MainActivity extends AppCompatActivity implements Console {
   }
 
 
-  public Spanned annotatedStringToSpanned(AnnotatedString annotated, boolean linked) {
-      SpannableString s = new SpannableString(annotated.toString());
-      for (final Span span : annotated.spans()) {
-          if (span.annotation == Annotations.ACCENT_COLOR) {
-              s.setSpan(new ForegroundColorSpan(colors.accent), span.start, span.end, 0);
-          } else if (span.annotation instanceof Exception) {
-              s.setSpan(new BackgroundColorSpan(colors.accentLight), span.start, span.end, 0);
-              if (linked) {
-                ((Exception) span.annotation).printStackTrace();
-                  s.setSpan(new ClickableSpan() {
-                      @Override
-                      public void onClick(View widget) {
-                          android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
-                          builder.setTitle("Error");
-                          builder.setMessage(Format.exceptionToString((Exception) span.annotation));
-                          builder.show();
-                      }
-                  }, span.start, span.end, 0);
-              }
-          }
-      }
-      return s;
-  }
-
 
     @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -355,9 +331,9 @@ public class MainActivity extends AppCompatActivity implements Console {
             postScrollIfAtEnd();
         }
         if (cut == -1) {
-          pendingOutput.append(annotatedStringToSpanned(s, true));
+          pendingOutput.append(AnnotatedStringConverter.toSpanned(this, s, true));
         }  else {
-          pendingOutput.append(annotatedStringToSpanned(s.subSequence(0, cut), true));
+          pendingOutput.append(AnnotatedStringConverter.toSpanned(this, s.subSequence(0, cut), true));
           pendingOutput = null;
           if (cut < s.length() - 1) {
               print(s.subSequence(cut + 1, s.length()));
