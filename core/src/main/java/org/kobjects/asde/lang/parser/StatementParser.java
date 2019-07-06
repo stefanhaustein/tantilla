@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang.parser;
 
+import org.kobjects.asde.lang.Format;
 import org.kobjects.asde.lang.FunctionImplementation;
+import org.kobjects.asde.lang.GlobalSymbol;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Group;
@@ -35,41 +37,20 @@ import org.kobjects.typesystem.Type;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.regex.Pattern;
 
-public class Parser {
-  final ExpressionParser<Node> expressionParser;
+public class StatementParser {
+  final AsdeExpressionParser expressionParser;
   final Program program;
 
-  public Parser(Program program) {
+  public StatementParser(Program program) {
     this.program = program;
 
-    expressionParser = new ExpressionParser<>(new ExpressionBuilder(program));
-    expressionParser.addApplyBrackets(9,"(", ",", ")");
-    expressionParser.addApplyBrackets(9,"[", ",", "]");  // HP
-    expressionParser.addGroupBrackets("(", null, ")");
-    expressionParser.addGroupBrackets("{", ",", "}");
-    expressionParser.addOperators(ExpressionParser.OperatorType.INFIX, 10, ".");
-    expressionParser.addOperators(ExpressionParser.OperatorType.INFIX, 8, "^");
-    expressionParser.addOperators(ExpressionParser.OperatorType.PREFIX, 7, "-");
-    expressionParser.addOperators(ExpressionParser.OperatorType.INFIX, 6, "*", "/");
-    expressionParser.addOperators(ExpressionParser.OperatorType.INFIX, 5, "+", "-");
-    expressionParser.addOperators(ExpressionParser.OperatorType.INFIX, 4, ">=", "<=", "<>", ">", "<", "=");
-    expressionParser.addOperators(ExpressionParser.OperatorType.PREFIX, 3, "not", "NOT", "Not");
-    expressionParser.addOperators(ExpressionParser.OperatorType.INFIX, 2, "and", "AND", "And");
-    expressionParser.addOperators(ExpressionParser.OperatorType.INFIX, 1, "or", "OR", "Or");
+    expressionParser = new AsdeExpressionParser(program);
   }
-
 
   public ExpressionParser.Tokenizer createTokenizer(String line) {
-    ExpressionParser.Tokenizer tokenizer = new ExpressionParser.Tokenizer(new Scanner(line), expressionParser.getSymbols(), "->");
-    tokenizer.numberPattern = Pattern.compile(
-            "\\G\\s*((#[0-9a-fA-f]+)|(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?)");
-    tokenizer.lineCommentPattern = Pattern.compile("\\G\\h*'.*(\\v|\\Z)");
-    return tokenizer;
+    return expressionParser.createTokenizer(line);
   }
-
 
   void parseStatement(ExpressionParser.Tokenizer tokenizer, List<Node> result, FunctionImplementation parsingContext) {
     String name = tokenizer.currentValue;
@@ -262,16 +243,12 @@ public class Parser {
 
       Type elementType;
       if (tokenizer.tryConsume("as") || tokenizer.tryConsume("AS") || tokenizer.tryConsume("As")) {
-        elementType = program.parseType(tokenizer);
+        elementType = parseType(tokenizer);
       } else {
         elementType = varName.endsWith("$") ? Types.STRING : Types.NUMBER;
       }
       result.add(new DimStatement(elementType, varName, dimensions));
     } while (tokenizer.tryConsume(","));
-  }
-
-  private String parseType(ExpressionParser.Tokenizer tokenizer) {
-    return tokenizer.consumeIdentifier();
   }
 
   private void parseIf(ExpressionParser.Tokenizer tokenizer, List<Node> result) {
@@ -441,4 +418,21 @@ public class Parser {
   }
 
 
+  public Type parseType(ExpressionParser.Tokenizer tokenizer) {
+     String typeName = Format.toUpperCamel(tokenizer.consumeIdentifier());
+     if (typeName.equals("Number")) {
+         return Types.NUMBER;
+     }
+     if (typeName.equals("String")) {
+         return Types.STRING;
+     }
+     GlobalSymbol symbol = program.getSymbol(typeName);
+     if (symbol == null) {
+        throw new RuntimeException("Unrecognized type: " + typeName);
+     }
+     if (!(symbol.getValue() instanceof Type)) {
+         throw new RuntimeException("'" + typeName + "' is not a type!");
+     }
+     return  (Type) symbol.getValue();
+ }
 }

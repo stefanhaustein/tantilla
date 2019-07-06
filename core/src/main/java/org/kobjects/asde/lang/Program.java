@@ -6,6 +6,7 @@ import org.kobjects.asde.lang.event.ProgramChangeListener;
 import org.kobjects.asde.lang.event.ProgramRenameListener;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.node.Visitor;
+import org.kobjects.asde.lang.parser.ProgramParser;
 import org.kobjects.asde.lang.refactor.RenameGlobal;
 import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
@@ -14,7 +15,7 @@ import org.kobjects.asde.lang.type.Builtin;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.expressionparser.ExpressionParser;
-import org.kobjects.asde.lang.parser.Parser;
+import org.kobjects.asde.lang.parser.StatementParser;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
@@ -54,7 +55,7 @@ public class Program {
 
     public ProgramReference reference;
 
-    public final Parser parser = new Parser(this);
+    public final StatementParser parser = new StatementParser(this);
     public final FunctionImplementation main = new FunctionImplementation(this, new FunctionTypeImpl(Types.VOID));
     public final GlobalSymbol mainSymbol = new GlobalSymbol(this, "", GlobalSymbol.Scope.PERSISTENT, main);
     private final ArrayList<ProgramChangeListener> programChangeListeners = new ArrayList<>();
@@ -208,59 +209,7 @@ public class Program {
       writer.close();
    }
 
-    // move to parser
-    public Type parseType(ExpressionParser.Tokenizer tokenizer) {
-       String typeName = Format.toUpperCamel(tokenizer.consumeIdentifier());
-       if (typeName.equals("Number")) {
-           return Types.NUMBER;
-       }
-       if (typeName.equals("String")) {
-           return Types.STRING;
-       }
-       GlobalSymbol symbol = getSymbol(typeName);
-       if (symbol == null) {
-          throw new RuntimeException("Unrecognized type: " + typeName);
-       }
-       if (!(symbol.value instanceof Type)) {
-           throw new RuntimeException("'" + typeName + "' is not a type!");
-       }
-       return  (Type) symbol.value;
-   }
 
-   private Type[] parseParameterList(ExpressionParser.Tokenizer tokenizer, ArrayList<String> parameterNames) {
-       tokenizer.consume("(");
-       ArrayList<Type> parameterTypes = new ArrayList<>();
-       while (!tokenizer.tryConsume(")")) {
-           Type parameterType = parseType(tokenizer);
-           parameterTypes.add(parameterType);
-           String parameterName = tokenizer.consumeIdentifier();
-           parameterNames.add(parameterName);
-
-           if (!tokenizer.tryConsume(",")) {
-               if (tokenizer.tryConsume(")")) {
-                   break;
-               }
-               throw new RuntimeException("',' or ')' expected.");
-           }
-       }
-       return parameterTypes.toArray(Type.EMTPY_ARRAY);
-   }
-
-   // move to parser
-    private FunctionType parseFunctionSignature(ExpressionParser.Tokenizer tokenizer, ArrayList<String> parameterNames) {
-      Type[] parameterTypes = parseParameterList(tokenizer, parameterNames);
-
-      tokenizer.consume("->");
-      Type returnType = parseType(tokenizer);
-
-      return new FunctionTypeImpl(returnType, parameterTypes);
-    }
-
-    // move to parser
-    private FunctionType parseSubroutineSignature(ExpressionParser.Tokenizer tokenizer, ArrayList<String> parameterNames) {
-        Type[] parameterTypes = parseParameterList(tokenizer, parameterNames);
-        return new FunctionTypeImpl(Types.VOID, parameterTypes);
-    }
 
 
     // Can't include validate -- wouldn't work for loading.
@@ -293,48 +242,8 @@ public class Program {
           deleteAll();
           this.reference = fileReference;
           notifyProgramRenamed();
-          HashSet<FunctionImplementation> functionImplementations = new HashSet<>();
 
-          FunctionImplementation currentFunction = main;
-          functionImplementations.add(main);
-          while (true) {
-              String line = reader.readLine();
-              if (line == null) {
-                  break;
-              }
-              System.out.println("Parsing: '" + line + "'");
-
-              ExpressionParser.Tokenizer tokenizer = parser.createTokenizer(line);
-              tokenizer.nextToken();
-              if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.NUMBER) {
-                  int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
-                  tokenizer.nextToken();
-                  List<? extends Node> statements = parser.parseStatementList(tokenizer, currentFunction);
-                  currentFunction.setLine(new CodeLine(lineNumber, statements));
-              } else if (tokenizer.tryConsume("FUNCTION")) {
-                  String functionName = tokenizer.consumeIdentifier();
-                  console.updateProgress("Parsing function " + functionName);
-                  ArrayList<String> parameterNames = new ArrayList();
-                  FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames);
-                  currentFunction = new FunctionImplementation(this, functionType, parameterNames.toArray(new String[0]));
-                  functionImplementations.add(currentFunction);
-                  setPersistentFunction(functionName, currentFunction);
-              } else if (tokenizer.tryConsume("SUB")) {
-                  String functionName = tokenizer.consumeIdentifier();
-                  console.updateProgress("Parsing subroutine " + functionName);
-                  ArrayList<String> parameterNames = new ArrayList();
-                  FunctionType functionType = parseSubroutineSignature(tokenizer, parameterNames);
-                  currentFunction = new FunctionImplementation(this, functionType, parameterNames.toArray(new String[0]));
-                  functionImplementations.add(currentFunction);
-                  setPersistentFunction(functionName, currentFunction);
-              } else if (tokenizer.tryConsume("END")) {
-                  currentFunction = main;
-              } else if (!tokenizer.tryConsume("")) {
-                  List<? extends Node> statements = parser.parseStatementList(tokenizer, null);
-                  CodeLine codeLine = new CodeLine(-2, statements);
-                  processDeclarations(codeLine);
-              }
-          }
+          new ProgramParser(this).parseProgram(reader);
 
           validate();
 
