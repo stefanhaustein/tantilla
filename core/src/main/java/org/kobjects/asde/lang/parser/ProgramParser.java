@@ -50,7 +50,11 @@ public class ProgramParser {
         ArrayList<String> parameterNames = new ArrayList();
         FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames);
         currentFunction = new FunctionImplementation(program, functionType, parameterNames.toArray(new String[0]));
-        program.setPersistentFunction(functionName, currentFunction);
+        if (currentClass != null) {
+          currentClass.setMethod(functionName, currentFunction);
+        } else {
+          program.setPersistentFunction(functionName, currentFunction);
+        }
       } else if (tokenizer.tryConsume("END")) {
         if (currentFunction != program.main) {
           currentFunction = program.main;
@@ -65,7 +69,11 @@ public class ProgramParser {
       } else if (!tokenizer.tryConsume("")) {
         List<? extends Node> statements = statementParser.parseStatementList(tokenizer, null);
         CodeLine codeLine = new CodeLine(-2, statements);
-        program.processDeclarations(codeLine);
+        if (currentClass != null) {
+          currentClass.processDeclarations(codeLine);
+        } else {
+          program.processDeclarations(codeLine);
+        }
       }
     }
   }

@@ -5,7 +5,7 @@ import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.asde.lang.GlobalSymbol;
-import org.kobjects.typesystem.InstantiableType;
+import org.kobjects.asde.lang.type.InstantiableType;
 
 import java.util.Map;
 
@@ -33,7 +33,7 @@ public class New extends Node {
 
     @Override
     public Object eval(EvaluationContext evaluationContext) {
-        return instantiableType.createInstance();
+        return instantiableType.createInstance(evaluationContext);
     }
 
     @Override

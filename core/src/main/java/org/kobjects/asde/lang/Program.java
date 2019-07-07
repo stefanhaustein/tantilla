@@ -214,8 +214,6 @@ public class Program {
 
     // Can't include validate -- wouldn't work for loading.
     public void processDeclarations(CodeLine codeLine) {
-        FunctionImplementation wrapper = new FunctionImplementation(this, new FunctionTypeImpl(Types.VOID));
-        wrapper.setLine(codeLine);
         for (int i = 0; i < codeLine.length(); i++) {
             Node node = codeLine.get(i);
             if (node instanceof DeclarationStatement) {
