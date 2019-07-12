@@ -22,7 +22,7 @@ import java.util.TreeMap;
 /**
  * In the main package because of the direct interaction with programControl.
  */
-public class FunctionImplementation implements Function {
+public class FunctionImplementation implements Function, Declaration {
     public final Program program;
     FunctionType type;
     public String[] parameterNames;

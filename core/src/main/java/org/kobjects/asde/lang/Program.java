@@ -14,11 +14,8 @@ import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Builtin;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.asde.lang.parser.StatementParser;
-import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;
-import org.kobjects.typesystem.Type;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,7 +24,6 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -279,19 +275,19 @@ public class Program {
         }
     }
 
-    public synchronized void setPersistentFunction(String name, FunctionImplementation implementation) {
+    public synchronized void setDeclaration(String name, Declaration declaration) {
         GlobalSymbol symbol = getSymbol(name);
         if (symbol == null) {
-            symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, implementation);
+            symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, declaration);
             symbolMap.put(name, symbol);
         } else {
             if (symbol.getScope() == GlobalSymbol.Scope.BUILTIN) {
                 throw new RuntimeException("Can't overwriter builtin '" + name + "'");
             }
-            symbol.value = implementation;
+            symbol.value = declaration;
         }
         symbol.setConstant(true);
-        implementation.setDeclaringSymbol(symbol);
+        declaration.setDeclaringSymbol(symbol);
 
         notifySymbolChanged(symbol);
     }

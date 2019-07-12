@@ -352,7 +352,7 @@ public class FunctionSignatureFlow {
 
         functionImplementation.setLine(new CodeLine(10, remStatement));
 
-        mainActivity.program.setPersistentFunction(name, functionImplementation);
+        mainActivity.program.setDeclaration(name, functionImplementation);
     }
 
 }

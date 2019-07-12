@@ -16,15 +16,12 @@ import org.kobjects.typesystem.Type;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
-public class ClassImplementation implements InstanceType, InstantiableType {
+public class ClassImplementation implements InstanceType, InstantiableType, Declaration {
 
-  String name;
   final TreeMap<String, ClassPropertyDescriptor> propertyMap = new TreeMap<>();
   ArrayList<Node> resolvedInitializers = new ArrayList<>();
+  GlobalSymbol declaringSymbol;
 
-  public ClassImplementation(String name) {
-    this.name = name;
-  }
 
   @Override
   public PropertyDescriptor getPropertyDescriptor(String name) {
@@ -67,6 +64,11 @@ public class ClassImplementation implements InstanceType, InstantiableType {
       properties[i] = new PhysicalProperty(resolvedInitializers.get(i).eval(evaluationContext));
     }
     return new InstanceImpl(this, properties);
+  }
+
+  @Override
+  public void setDeclaringSymbol(GlobalSymbol declaringSymbol) {
+    this.declaringSymbol = declaringSymbol;
   }
 
   public class ClassPropertyDescriptor implements PropertyDescriptor {

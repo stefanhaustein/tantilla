@@ -15,7 +15,6 @@ import org.kobjects.typesystem.Type;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public class ProgramParser {
@@ -53,7 +52,7 @@ public class ProgramParser {
         if (currentClass != null) {
           currentClass.setMethod(functionName, currentFunction);
         } else {
-          program.setPersistentFunction(functionName, currentFunction);
+          program.setDeclaration(functionName, currentFunction);
         }
       } else if (tokenizer.tryConsume("END")) {
         if (currentFunction != program.main) {
@@ -63,9 +62,8 @@ public class ProgramParser {
         }
       } else if (tokenizer.tryConsume("CLASS")) {
         String className = tokenizer.consumeIdentifier();
-        currentClass = new ClassImplementation(className);
-        // TODO: add shared interface for setting functions and variables on program and class
-        // TODO: store clas in program
+        currentClass = new ClassImplementation();
+        program.setDeclaration(className, currentClass);
       } else if (!tokenizer.tryConsume("")) {
         List<? extends Node> statements = statementParser.parseStatementList(tokenizer, null);
         CodeLine codeLine = new CodeLine(-2, statements);
