@@ -10,6 +10,7 @@ public class EvaluationContext {
 
     private final DataStack dataStack;
     private final int stackBase;
+    final InstanceImpl self;
     private int stackTop;
 
     public Object returnValue;
@@ -32,6 +33,7 @@ public class EvaluationContext {
         stackBase = 0;
         stackTop = function.localVariableCount;
         dataStack = new DataStack(stackTop);
+        self = null;
     }
 
     /**
@@ -45,14 +47,16 @@ public class EvaluationContext {
         dataStack = new DataStack(stackTop);
         currentLine = parentContext.currentLine;
         currentIndex = parentContext.currentIndex;
+        self = parentContext.self;
         System.arraycopy(parentContext.dataStack.data, parentContext.stackBase, dataStack.data, stackBase, stackTop);
     }
 
     /**
      * Creates a new context for calling the given function.
      */
-    public EvaluationContext(EvaluationContext parentContext, FunctionImplementation functionImplementation) {
+    public EvaluationContext(EvaluationContext parentContext, FunctionImplementation functionImplementation, InstanceImpl self) {
         this.function = functionImplementation;
+        this.self = self;
         this.control = parentContext.control;
         this.dataStack = parentContext.dataStack;
         this.stackBase = parentContext.stackTop;

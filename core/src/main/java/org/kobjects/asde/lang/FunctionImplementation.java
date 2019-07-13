@@ -80,7 +80,7 @@ public class FunctionImplementation implements Function, Declaration {
      */
     @Override
     public Object call(EvaluationContext callerContext, int parameterCount) {
-        return callImpl(new EvaluationContext(callerContext, this));
+        return callImpl(new EvaluationContext(callerContext, this, null));
     }
 
     public int getLocalVariableCount() {

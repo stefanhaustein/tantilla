@@ -10,6 +10,11 @@ public abstract class Method extends Property implements Function {
         this.type = type;
     }
 
+    public Method(FunctionType type, int localVariableCount) {
+        this.type = type;
+    }
+
+
     @Override
     public FunctionType getType() {
         return type;
@@ -24,4 +29,5 @@ public abstract class Method extends Property implements Function {
     public Object get() {
         return this;
     }
+
 }

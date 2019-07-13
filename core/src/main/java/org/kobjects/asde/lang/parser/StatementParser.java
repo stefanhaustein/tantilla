@@ -126,7 +126,6 @@ public class StatementParser {
       name = "PRINT";
     }
 
-    // TODO(haustein): Condition on legacy mode
     if (name.equalsIgnoreCase("GOTO")) {
       tokenizer.nextToken();
       result.add(new GotoStatement(expressionParser.parse(tokenizer)));

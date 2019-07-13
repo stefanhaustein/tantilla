@@ -1,4 +1,10 @@
 CLASS Planet
 LET x = 0
 LET y = 0
+FUNCTION distance(Number x2, Number y2) -> Number
+10 LET dx = x2 - x
+20 LET dy = y2 - y
+30 LET d = sqr(dx*dx + dy*dy)
+40 RETURN d
+END FUNCTION
 END CLASS

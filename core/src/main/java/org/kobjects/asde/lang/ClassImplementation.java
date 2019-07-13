@@ -1,6 +1,5 @@
 package org.kobjects.asde.lang;
 
-import org.kobjects.asde.InstanceImpl;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.type.CodeLine;
@@ -24,7 +23,7 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
 
 
   @Override
-  public PropertyDescriptor getPropertyDescriptor(String name) {
+  public ClassPropertyDescriptor getPropertyDescriptor(String name) {
     return propertyMap.get(name);
   }
 
@@ -33,8 +32,8 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
     return new MetaType(this);
   }
 
-  public void setMethod(String functionName, FunctionImplementation currentFunction) {
-    System.err.println("NYI: setMethod");
+  public void setMethod(String functionName, FunctionImplementation methodImplementation) {
+    propertyMap.put(functionName, new ClassPropertyDescriptor(functionName, methodImplementation));
   }
 
   public void processDeclarations(CodeLine codeLine) {
@@ -51,8 +50,16 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
 
   public void validate(ClassValidationContext classValidationContext) {
     resolvedInitializers.clear();
+    // First properties then functions hack
     for (ClassPropertyDescriptor propertyDescriptor : propertyMap.values()) {
-      propertyDescriptor.validate(classValidationContext);
+      if (propertyDescriptor.initializer != null) {
+        propertyDescriptor.validate(classValidationContext);
+      }
+    }
+    for (ClassPropertyDescriptor propertyDescriptor : propertyMap.values()) {
+      if (propertyDescriptor.initializer == null) {
+        propertyDescriptor.validate(classValidationContext);
+      }
     }
   }
 
@@ -71,30 +78,44 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
     this.declaringSymbol = declaringSymbol;
   }
 
-  public class ClassPropertyDescriptor implements PropertyDescriptor {
+  public class ClassPropertyDescriptor implements PropertyDescriptor, ResolvedSymbol {
     String name;
     Node initializer;
-    Type type;
-    int index;
+    FunctionImplementation methodImplementation;
+    int index = -1;
 
     ClassPropertyDescriptor(String name, Node initializer) {
       this.name = name;
       this.initializer = initializer;
     }
 
+    ClassPropertyDescriptor(String name, FunctionImplementation methodImplementation) {
+      this.name = name;
+      this.methodImplementation = methodImplementation;
+    }
+
     void validate(ClassValidationContext classValidationContext) {
 
-      FunctionValidationContext context = new FunctionValidationContext(classValidationContext.programValidationContext, FunctionValidationContext.ResolutionMode.INTERACTIVE, null);
-      initializer.resolve(context, 0, 0);
-  //    this.errors = context.errors;
+      FunctionValidationContext context = new FunctionValidationContext(classValidationContext, methodImplementation);
 
-      type = initializer.returnType();
-      index = resolvedInitializers.size();
-      resolvedInitializers.add(initializer);
+      if (methodImplementation != null) {
+        methodImplementation.validate(context);
+
+      } else {
+        initializer.resolve(context, 0, 0);
+        //    this.errors = context.errors;
+
+        index = resolvedInitializers.size();
+        resolvedInitializers.add(initializer);
+      }
+
+      if (context.errors.size() > 0) {
+        System.err.println("Validation errors for property " + name + ": " + context.errors);
+      }
+
+      classValidationContext.errors.putAll(context.errors);
 
       //      this.dependencies = context.dependencies;
-
-
     }
 
 
@@ -105,11 +126,31 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
 
     @Override
     public Type type() {
-      return type;
+      return methodImplementation != null ? methodImplementation.type : initializer.returnType();
     }
 
     public int getIndex() {
       return index;
+    }
+
+    @Override
+    public Object get(EvaluationContext evaluationContext) {
+      return evaluationContext.self.getProperty(this).get();
+    }
+
+    @Override
+    public void set(EvaluationContext evaluationContext, Object value) {
+      evaluationContext.self.getProperty(this).set(value);
+    }
+
+    @Override
+    public Type getType() {
+      return type();
+    }
+
+    @Override
+    public boolean isConstant() {
+      return false;
     }
   }
 

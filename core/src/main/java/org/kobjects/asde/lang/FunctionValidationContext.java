@@ -2,6 +2,7 @@ package org.kobjects.asde.lang;
 
 
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
 
 import java.util.HashMap;
@@ -24,9 +25,11 @@ public class FunctionValidationContext {
     private Block currentBlock;
     public HashSet<GlobalSymbol> dependencies = new HashSet<>();
     private final ProgramValidationContext programValidationContext;
+    private final ClassValidationContext classValidationContext;
 
-    public FunctionValidationContext(ProgramValidationContext programValidationContext, ResolutionMode mode, FunctionImplementation functionImplementation) {
+    private FunctionValidationContext(ProgramValidationContext programValidationContext, ClassValidationContext classValidationContext, ResolutionMode mode, FunctionImplementation functionImplementation) {
         this.programValidationContext = programValidationContext;
+        this.classValidationContext = classValidationContext;
         this.program = programValidationContext.program;
         this.mode = (program.legacyMode && functionImplementation == program.main) ? ResolutionMode.BASIC : mode;
         this.functionImplementation = functionImplementation;
@@ -37,6 +40,15 @@ public class FunctionValidationContext {
             }
         }
     }
+
+    public FunctionValidationContext(ProgramValidationContext programValidationContext, ResolutionMode mode, FunctionImplementation functionImplementation) {
+        this (programValidationContext, null, mode, functionImplementation);
+    }
+
+    public FunctionValidationContext(ClassValidationContext classValidationContext, FunctionImplementation functionImplementation) {
+        this (classValidationContext.programValidationContext, classValidationContext, ResolutionMode.FUNCTION, functionImplementation);
+    }
+
 
     public void startBlock(BlockType type) {
         currentBlock = new Block(currentBlock, type);
@@ -70,6 +82,12 @@ public class FunctionValidationContext {
         ResolvedSymbol resolved = currentBlock.get(name);
         if (resolved != null) {
             return resolved;
+        }
+        if (classValidationContext != null) {
+            ClassImplementation.ClassPropertyDescriptor descriptor = classValidationContext.classImplementation.getPropertyDescriptor(name);
+            if (descriptor != null) {
+                return descriptor;
+            }
         }
         GlobalSymbol symbol = forDeclaration
             ? program.getSymbol(name)
