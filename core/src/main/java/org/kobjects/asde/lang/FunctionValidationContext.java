@@ -84,9 +84,9 @@ public class FunctionValidationContext {
             return resolved;
         }
         if (classValidationContext != null) {
-            ClassImplementation.ClassPropertyDescriptor descriptor = classValidationContext.classImplementation.getPropertyDescriptor(name);
-            if (descriptor != null) {
-                return descriptor;
+            resolved = classValidationContext.resolve(name);
+            if (resolved != null) {
+              return resolved;
             }
         }
         GlobalSymbol symbol = forDeclaration

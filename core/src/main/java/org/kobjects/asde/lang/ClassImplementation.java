@@ -50,16 +50,8 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
 
   public void validate(ClassValidationContext classValidationContext) {
     resolvedInitializers.clear();
-    // First properties then functions hack
     for (ClassPropertyDescriptor propertyDescriptor : propertyMap.values()) {
-      if (propertyDescriptor.initializer != null) {
-        propertyDescriptor.validate(classValidationContext);
-      }
-    }
-    for (ClassPropertyDescriptor propertyDescriptor : propertyMap.values()) {
-      if (propertyDescriptor.initializer == null) {
-        propertyDescriptor.validate(classValidationContext);
-      }
+      propertyDescriptor.validate(classValidationContext);
     }
   }
 
@@ -95,6 +87,9 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
     }
 
     void validate(ClassValidationContext classValidationContext) {
+      if (classValidationContext.validated.contains(this)) {
+        return;
+      }
 
       FunctionValidationContext context = new FunctionValidationContext(classValidationContext, methodImplementation);
 
@@ -115,7 +110,9 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
 
       classValidationContext.errors.putAll(context.errors);
 
-      //      this.dependencies = context.dependencies;
+      classValidationContext.validated.add(this);
+
+      // We don't need to track dependencies (as in GlobalSymbol.validate) as they are ordered in resolvedInitializers.
     }
 
 
