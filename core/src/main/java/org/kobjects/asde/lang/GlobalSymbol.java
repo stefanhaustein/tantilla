@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class GlobalSymbol implements ResolvedSymbol {
+public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
 
     public enum Scope {
         BUILTIN,
@@ -43,6 +43,7 @@ public class GlobalSymbol implements ResolvedSymbol {
         return value;
     }
 
+    @Override
     public Map<Node, Exception> getErrors() {
         return errors;
     }
@@ -103,7 +104,7 @@ public class GlobalSymbol implements ResolvedSymbol {
         return initializer.toString() + (showValue && value != null ? (" ' " + value) : "");
     }
 
-    void validate() {
+    public void validate() {
         ProgramValidationContext context = new ProgramValidationContext(program);
         context.startChain(name);
         validate(context);

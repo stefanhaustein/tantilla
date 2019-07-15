@@ -8,6 +8,7 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.editor.DeleteFlow;
 import org.kobjects.asde.android.ide.editor.RenameFlow;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
+import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.node.ArrayLiteral;
 import org.kobjects.asde.lang.node.Literal;
@@ -23,7 +24,7 @@ public class VariableView extends SymbolView {
     Object cache = this;
     MainActivity mainActivity;
 
-    public VariableView(MainActivity mainActivity, GlobalSymbol symbol) {
+    public VariableView(MainActivity mainActivity, StaticSymbol symbol) {
         super(mainActivity, symbol);
         this.mainActivity = mainActivity;
         this.symbol = symbol;

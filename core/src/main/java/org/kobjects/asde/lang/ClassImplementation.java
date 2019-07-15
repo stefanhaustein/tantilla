@@ -13,11 +13,13 @@ import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
 import java.util.TreeMap;
 
 public class ClassImplementation implements InstanceType, InstantiableType, Declaration {
 
-  final TreeMap<String, ClassPropertyDescriptor> propertyMap = new TreeMap<>();
+  public final TreeMap<String, ClassPropertyDescriptor> propertyMap = new TreeMap<>();
   ArrayList<Node> resolvedInitializers = new ArrayList<>();
   GlobalSymbol declaringSymbol;
 
@@ -70,7 +72,7 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
     this.declaringSymbol = declaringSymbol;
   }
 
-  public class ClassPropertyDescriptor implements PropertyDescriptor, ResolvedSymbol {
+  public class ClassPropertyDescriptor implements PropertyDescriptor, ResolvedSymbol, StaticSymbol {
     String name;
     Node initializer;
     FunctionImplementation methodImplementation;
@@ -141,13 +143,43 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
     }
 
     @Override
+    public Map<Node, Exception> getErrors() {
+      return Collections.emptyMap();
+    }
+
+    @Override
+    public Object getValue() {
+      return methodImplementation;
+    }
+
+    @Override
+    public String getName() {
+      return name;
+    }
+
+    @Override
     public Type getType() {
       return type();
     }
 
     @Override
+    public Node getInitializer() {
+      return initializer;
+    }
+
+    @Override
+    public void validate() {
+
+    }
+
+    @Override
+    public GlobalSymbol.Scope getScope() {
+      return GlobalSymbol.Scope.PERSISTENT;
+    }
+
+    @Override
     public boolean isConstant() {
-      return false;
+      return initializer == null;
     }
   }
 

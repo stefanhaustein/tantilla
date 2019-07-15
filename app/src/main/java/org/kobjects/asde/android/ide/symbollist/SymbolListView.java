@@ -1,0 +1,79 @@
+package org.kobjects.asde.android.ide.symbollist;
+
+import android.content.Context;
+import org.kobjects.asde.android.ide.MainActivity;
+import org.kobjects.asde.android.ide.widget.ExpandableList;
+import org.kobjects.asde.lang.ClassImplementation;
+import org.kobjects.asde.lang.FunctionImplementation;
+import org.kobjects.asde.lang.GlobalSymbol;
+import org.kobjects.asde.lang.StaticSymbol;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
+public class SymbolListView extends ExpandableList {
+  HashMap<String, SymbolView> symbolViewMap = new HashMap<>();
+  private final MainActivity mainActivity;
+
+  public SymbolListView(MainActivity mainActivity) {
+    super(mainActivity);
+    this.mainActivity = mainActivity;
+  }
+
+  public SymbolView synchronizeTo(Iterable<? extends StaticSymbol> symbolList, ExpandListener expandListener, StaticSymbol returnViewForSymbol) {
+
+    removeAllViews();
+    int varCount = 0;
+
+    SymbolView matchedView = null;
+
+    HashMap<String, SymbolView> newSymbolViewMap = new HashMap<>();
+    for (StaticSymbol symbol : symbolList) {
+      if (symbol == null || symbol.getScope() != GlobalSymbol.Scope.PERSISTENT) {
+        continue;
+      }
+      String name = symbol.getName();
+      String qualifiedName = name + " " + symbol.getType();
+      if (symbol.getValue() instanceof FunctionImplementation) {
+        qualifiedName += Arrays.toString(((FunctionImplementation) symbol.getValue()).parameterNames);
+      }
+      SymbolView symbolView = symbolViewMap.get(qualifiedName);
+
+      int index;
+      if (symbol.getValue() instanceof ClassImplementation) {
+        if (!(symbolView instanceof ClassView)) {
+          ClassView classView = new ClassView(mainActivity, symbol);
+          symbolView = classView;
+          classView.addExpandListener(expandListener);
+        }
+        index = getChildCount();
+      } else if (symbol.getValue() instanceof FunctionImplementation) {
+        if (!(symbolView instanceof FunctionView)) {
+          FunctionView functionView = new FunctionView(mainActivity, symbol);
+          symbolView = functionView;
+          functionView.addExpandListener(expandListener);
+        }
+        index = getChildCount();
+      } else {
+        if (symbolView instanceof VariableView) {
+          symbolView.syncContent();
+        } else {
+          VariableView variableView = new VariableView(mainActivity, symbol);
+          variableView.addExpandListener(expandListener);
+          symbolView = variableView;
+        }
+        index = varCount++;
+      }
+      addView(symbolView, index);
+      newSymbolViewMap.put(qualifiedName, symbolView);
+      if (symbol == returnViewForSymbol) {
+        matchedView = symbolView;
+      }
+    }
+    symbolViewMap = newSymbolViewMap;
+
+    return matchedView;
+  }
+
+}

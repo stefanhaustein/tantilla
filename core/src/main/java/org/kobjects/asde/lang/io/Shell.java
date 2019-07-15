@@ -4,10 +4,10 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.asde.lang.Consumer;
 import org.kobjects.asde.lang.FunctionValidationContext;
-import org.kobjects.asde.lang.GlobalSymbol;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.ProgramValidationContext;
+import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.event.StartStopListener;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionImplementation;
@@ -53,7 +53,7 @@ public class Shell {
     }
 
 
-    public void enter(String line, GlobalSymbol currentFunction, Consumer<Object> resultConsumer) {
+    public void enter(String line, StaticSymbol currentFunction, Consumer<Object> resultConsumer) {
         if (line.isEmpty()) {
             resultConsumer.accept("");
             return;

@@ -8,6 +8,7 @@ import org.kobjects.asde.android.ide.editor.FunctionSignatureFlow;
 import org.kobjects.asde.android.ide.editor.RenameFlow;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.lang.FunctionImplementation;
+import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.GlobalSymbol;
@@ -19,7 +20,7 @@ public class FunctionView extends SymbolView {
     public FunctionImplementation functionImplementation;
     OnLongClickListener lineClickListener;
 
-    public FunctionView(final MainActivity mainActivity, GlobalSymbol symbol) {
+    public FunctionView(final MainActivity mainActivity, StaticSymbol symbol) {
         super(mainActivity, symbol);
         this.functionImplementation = (FunctionImplementation) symbol.getValue();
 

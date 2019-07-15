@@ -6,6 +6,7 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.SymbolTitleView;
 import org.kobjects.asde.lang.GlobalSymbol;
+import org.kobjects.asde.lang.StaticSymbol;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +17,12 @@ public abstract class SymbolView extends LinearLayout {
     SymbolTitleView titleView;
     List<ExpandListener> expandListeners = new ArrayList<>();
     boolean expanded;
-    public GlobalSymbol symbol;
+    public StaticSymbol symbol;
 
-    private ExpandableList contentView;
+    ExpandableList contentView;
 
 
-    SymbolView(MainActivity mainActivity, GlobalSymbol symbol) {
+    SymbolView(MainActivity mainActivity, StaticSymbol symbol) {
         super(mainActivity);
         this.mainActivity = mainActivity;
         this.symbol = symbol;

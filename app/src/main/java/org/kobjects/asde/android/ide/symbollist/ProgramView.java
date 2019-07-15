@@ -4,32 +4,42 @@ import android.view.View;
 import android.view.ViewParent;
 import android.widget.LinearLayout;
 
+import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.event.ProgramChangeListener;
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.event.StartStopListener;
 import org.kobjects.asde.lang.GlobalSymbol;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 
-public class ProgramView extends LinearLayout implements ExpandListener {
+public class ProgramView extends LinearLayout {
 
     private boolean expanded;
-    private ExpandableList symbolList;
+    private SymbolListView symbolList;
     public final FunctionView mainFunctionView;
     private final Program program;
     private final MainActivity mainActivity;
     private CodeLineView highlightedLine;
     TitleView titleView;
-    private HashMap<String, SymbolView> symbolViewMap = new HashMap<>();
-    public FunctionView currentFunctionView;
+     public FunctionView currentFunctionView;
     public SymbolView currentSymbolView;
     int syncRequestCount;
-    GlobalSymbol expandOnSync;
+    StaticSymbol expandOnSync;
+    private final ExpandListener expandListener = new ExpandListener() {
+        @Override
+        public void notifyExpanding(SymbolView symbolView, boolean animated) {
+                if (symbolView != currentSymbolView) {
+                    if (currentSymbolView != null) {
+                        currentSymbolView.setExpanded(false, animated);
+                    }
+                    currentSymbolView = symbolView;
+                    currentFunctionView = symbolView instanceof FunctionView ? (FunctionView) symbolView : mainFunctionView;
+                }
+        }
+    };
 
     public ProgramView(MainActivity context, Program program) {
         super(context);
@@ -47,11 +57,11 @@ public class ProgramView extends LinearLayout implements ExpandListener {
             }
         });
 
-        symbolList = new ExpandableList(context);
+        symbolList = new SymbolListView(context);
         addView(symbolList);
 
         mainFunctionView = new FunctionView(context, program.mainSymbol);
-        mainFunctionView.addExpandListener(this);
+        mainFunctionView.addExpandListener(expandListener);
         mainFunctionView.setExpanded(true, false);
         currentFunctionView = mainFunctionView;
         currentSymbolView = mainFunctionView;
@@ -88,7 +98,7 @@ public class ProgramView extends LinearLayout implements ExpandListener {
             }
 
             @Override
-            public void symbolChangedByUser(Program program, GlobalSymbol symbol) {
+            public void symbolChangedByUser(Program program, StaticSymbol symbol) {
                 expandOnSync = symbol;
                 requestSynchronization();
             }
@@ -107,7 +117,7 @@ public class ProgramView extends LinearLayout implements ExpandListener {
     }
 
     public void refreshImpl() {
-        for (SymbolView symbolView : symbolViewMap.values()) {
+        for (SymbolView symbolView : symbolList.symbolViewMap.values()) {
             symbolView.refresh();
         }
     }
@@ -146,53 +156,14 @@ public class ProgramView extends LinearLayout implements ExpandListener {
         setVisibility(VISIBLE);
 
         titleView.setTitle(program.reference.name + (program.reference.urlWritable ? "" : "*"));
-        symbolList.removeAllViews();
+
         if (!expanded) {
-            symbolViewMap.clear();
+            symbolList.synchronizeTo(Collections.emptyList(), expandListener, null);
             return;
         }
-        int varCount = 0;
 
-        SymbolView expandView = null;
-
-        HashMap<String, SymbolView> newSymbolViewMap = new HashMap<>();
-        for (GlobalSymbol symbol : program.getSymbols()) {
-            if (symbol == null || symbol.getScope() != GlobalSymbol.Scope.PERSISTENT) {
-                continue;
-            }
-            String name = symbol.getName();
-            String qualifiedName = name + " " + symbol.getType();
-            if (symbol.getValue() instanceof FunctionImplementation) {
-                qualifiedName += Arrays.toString(((FunctionImplementation) symbol.getValue()).parameterNames);
-            }
-            SymbolView symbolView = symbolViewMap.get(qualifiedName);
-
-            int index;
-            if (symbol.getValue() instanceof FunctionImplementation) {
-                if (!(symbolView instanceof FunctionView)) {
-                    FunctionView functionView = new FunctionView(mainActivity, symbol);
-                    symbolView = functionView;
-                    functionView.addExpandListener(this);
-                }
-                index = symbolList.getChildCount();
-            } else {
-                if (symbolView instanceof VariableView) {
-                    symbolView.syncContent();
-                } else {
-                    VariableView variableView = new VariableView(mainActivity, symbol);
-                    variableView.addExpandListener(this);
-                    symbolView = variableView;
-                }
-                index = varCount++;
-            }
-            symbolList.addView(symbolView, index);
-            newSymbolViewMap.put(qualifiedName, symbolView);
-            if (symbol == expandOnSync) {
-                expandView = symbolView;
-            }
-        }
-        symbolViewMap = newSymbolViewMap;
-        symbolList.addView(mainFunctionView);
+        SymbolView expandView = symbolList.synchronizeTo(program.getSymbols(), expandListener, expandOnSync);
+                symbolList.addView(mainFunctionView);
 
         mainFunctionView.syncContent();
         if (expandOnSync == program.mainSymbol) {
@@ -207,16 +178,7 @@ public class ProgramView extends LinearLayout implements ExpandListener {
     }
 
 
-    @Override
-    public void notifyExpanding(SymbolView symbolView, boolean animated) {
-        if (symbolView != currentSymbolView) {
-            if (currentSymbolView != null) {
-                currentSymbolView.setExpanded(false, animated);
-            }
-            currentSymbolView = symbolView;
-            currentFunctionView = symbolView instanceof FunctionView ? (FunctionView) symbolView : mainFunctionView;
-        }
-    }
+
 
     public void highlight(FunctionImplementation function, int lineNumber) {
         unHighlight();

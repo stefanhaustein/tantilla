@@ -305,17 +305,17 @@ public class Program {
       notifyProgramChanged();
     }
 
-    public void setLine(GlobalSymbol symbol, CodeLine codeLine) {
-        if (symbol.value instanceof FunctionImplementation) {
-            FunctionImplementation functionImplementation = (FunctionImplementation) symbol.value;
+    public void setLine(StaticSymbol symbol, CodeLine codeLine) {
+        if (symbol.getValue() instanceof FunctionImplementation) {
+            FunctionImplementation functionImplementation = (FunctionImplementation) symbol.getValue();
             functionImplementation.setLine(codeLine);
             notifySymbolChanged(symbol);
         }
     }
 
-    public void deleteLine(GlobalSymbol symbol, int line) {
-        if (symbol.value instanceof FunctionImplementation) {
-            FunctionImplementation functionImplementation = (FunctionImplementation) symbol.value;
+    public void deleteLine(StaticSymbol symbol, int line) {
+        if (symbol.getValue() instanceof FunctionImplementation) {
+            FunctionImplementation functionImplementation = (FunctionImplementation) symbol.getValue();
             functionImplementation.deleteLine(line);
         }
     }
@@ -335,7 +335,7 @@ public class Program {
         }
     }
 
-    public void notifySymbolChanged(GlobalSymbol symbol) {
+    public void notifySymbolChanged(StaticSymbol symbol) {
         if (loading) {
             return;
         }
