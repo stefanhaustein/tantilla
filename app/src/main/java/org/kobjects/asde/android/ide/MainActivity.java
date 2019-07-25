@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   AsdePreferences preferences;
   boolean autoScroll = true;
   public boolean fullScreenMode;
-  ProgramView programView;
+  public ProgramView programView;
   public Shell shell = new Shell(program);
 
 

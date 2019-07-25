@@ -3,6 +3,7 @@ package org.kobjects.asde.android.ide.symbollist;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.lang.ClassImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
+import org.kobjects.asde.lang.type.Function;
 
 import java.util.Collections;
 
@@ -18,6 +19,9 @@ public class ClassView extends SymbolView {
           currentSymbolView.setExpanded(false, animated);
         }
         currentSymbolView = symbolView;
+        if (symbolView instanceof FunctionView) {
+          mainActivity.programView.currentFunctionView = (FunctionView) symbolView;
+        }
       }
     }
   };
