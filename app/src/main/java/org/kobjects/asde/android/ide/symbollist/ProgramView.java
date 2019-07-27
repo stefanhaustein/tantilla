@@ -171,11 +171,7 @@ public class ProgramView extends LinearLayout {
         }
 
         if (expandView != null) {
-            if (expandView.expanded) {
-                expandView.syncContent();
-            } else {
-                expandView.setExpanded(true, true);
-            }
+            expandView.setExpanded(true, true);
         }
         expandOnSync = null;
 

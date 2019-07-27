@@ -52,7 +52,7 @@ public class SymbolListView extends ExpandableList {
         qualifiedName += Arrays.toString(((FunctionImplementation) symbol.getValue()).parameterNames);
       }
       SymbolView symbolView = nameViewMap.get(qualifiedName);
-
+      SymbolView original = symbolView;
       int index;
       if (symbol.getValue() instanceof ClassImplementation) {
         ClassView classView;
@@ -75,9 +75,7 @@ public class SymbolListView extends ExpandableList {
         }
         index = getChildCount();
       } else {
-        if (symbolView instanceof VariableView) {
-          symbolView.syncContent();
-        } else {
+        if (!(symbolView instanceof VariableView)) {
           VariableView variableView = new VariableView(mainActivity, symbol);
           variableView.addExpandListener(expandListener);
           symbolView = variableView;
@@ -87,8 +85,8 @@ public class SymbolListView extends ExpandableList {
       addView(symbolView, index);
       newNameViewMap.put(qualifiedName, symbolView);
       newSymbolViewMap.put(symbol, symbolView);
-      if (symbol == returnViewForSymbol) {
-        matchedView = symbolView;
+      if (symbolView == original) {
+        symbolView.syncContent();
       }
     }
     nameViewMap = newNameViewMap;
