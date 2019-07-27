@@ -117,7 +117,7 @@ public class ProgramView extends LinearLayout {
     }
 
     public void refreshImpl() {
-        for (SymbolView symbolView : symbolList.symbolViewMap.values()) {
+        for (SymbolView symbolView : symbolList.nameViewMap.values()) {
             symbolView.refresh();
         }
     }
@@ -163,7 +163,7 @@ public class ProgramView extends LinearLayout {
         }
 
         SymbolView expandView = symbolList.synchronizeTo(program.getSymbols(), expandListener, expandOnSync);
-                symbolList.addView(mainFunctionView);
+        symbolList.addView(mainFunctionView);
 
         mainFunctionView.syncContent();
         if (expandOnSync == program.mainSymbol) {
@@ -171,7 +171,11 @@ public class ProgramView extends LinearLayout {
         }
 
         if (expandView != null) {
-            expandView.setExpanded(true, true);
+            if (expandView.expanded) {
+                expandView.syncContent();
+            } else {
+                expandView.setExpanded(true, true);
+            }
         }
         expandOnSync = null;
 

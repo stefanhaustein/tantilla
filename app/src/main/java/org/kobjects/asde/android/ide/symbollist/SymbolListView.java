@@ -1,6 +1,5 @@
 package org.kobjects.asde.android.ide.symbollist;
 
-import android.content.Context;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.lang.ClassImplementation;
@@ -10,10 +9,11 @@ import org.kobjects.asde.lang.StaticSymbol;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
+
 
 public class SymbolListView extends ExpandableList {
-  HashMap<String, SymbolView> symbolViewMap = new HashMap<>();
+  HashMap<String, SymbolView> nameViewMap = new HashMap<>();
+  HashMap<StaticSymbol, SymbolView> symbolViewMap = new HashMap<>();
   private final MainActivity mainActivity;
 
   public SymbolListView(MainActivity mainActivity) {
@@ -21,6 +21,17 @@ public class SymbolListView extends ExpandableList {
     this.mainActivity = mainActivity;
   }
 
+  public SymbolView findViewBySymbol(StaticSymbol symbol) {
+    return symbolViewMap.get(symbol);
+  }
+
+  /** 
+   *
+   * @param symbolList The new symbol list
+   * @param expandListener Listener to add to newly created views
+   * @param returnViewForSymbol Return the view for this symbol.
+   * @return
+   */
   public SymbolView synchronizeTo(Iterable<? extends StaticSymbol> symbolList, ExpandListener expandListener, StaticSymbol returnViewForSymbol) {
 
     removeAllViews();
@@ -28,7 +39,9 @@ public class SymbolListView extends ExpandableList {
 
     SymbolView matchedView = null;
 
-    HashMap<String, SymbolView> newSymbolViewMap = new HashMap<>();
+    HashMap<String, SymbolView> newNameViewMap = new HashMap<>();
+    HashMap<StaticSymbol, SymbolView> newSymbolViewMap = new HashMap<>();
+
     for (StaticSymbol symbol : symbolList) {
       if (symbol == null || symbol.getScope() != GlobalSymbol.Scope.PERSISTENT) {
         continue;
@@ -38,14 +51,20 @@ public class SymbolListView extends ExpandableList {
       if (symbol.getValue() instanceof FunctionImplementation) {
         qualifiedName += Arrays.toString(((FunctionImplementation) symbol.getValue()).parameterNames);
       }
-      SymbolView symbolView = symbolViewMap.get(qualifiedName);
+      SymbolView symbolView = nameViewMap.get(qualifiedName);
 
       int index;
       if (symbol.getValue() instanceof ClassImplementation) {
-        if (!(symbolView instanceof ClassView)) {
-          ClassView classView = new ClassView(mainActivity, symbol);
+        ClassView classView;
+        if (symbolView instanceof ClassView) {
+          classView = (ClassView) symbolView;
+        } else {
+          classView = new ClassView(mainActivity, symbol);
           symbolView = classView;
           classView.addExpandListener(expandListener);
+        }
+        if (matchedView == null && returnViewForSymbol != null) {
+          matchedView = classView.getContentView().findViewBySymbol(returnViewForSymbol);
         }
         index = getChildCount();
       } else if (symbol.getValue() instanceof FunctionImplementation) {
@@ -66,11 +85,13 @@ public class SymbolListView extends ExpandableList {
         index = varCount++;
       }
       addView(symbolView, index);
-      newSymbolViewMap.put(qualifiedName, symbolView);
+      newNameViewMap.put(qualifiedName, symbolView);
+      newSymbolViewMap.put(symbol, symbolView);
       if (symbol == returnViewForSymbol) {
         matchedView = symbolView;
       }
     }
+    nameViewMap = newNameViewMap;
     symbolViewMap = newSymbolViewMap;
 
     return matchedView;

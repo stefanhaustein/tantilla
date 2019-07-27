@@ -53,4 +53,5 @@ public class ClassView extends SymbolView {
     getContentView().synchronizeTo(((ClassImplementation) symbol.getValue()).propertyMap.values(), expandListener, null);
 
   }
+
 }
