@@ -62,7 +62,7 @@ public class ProgramParser {
         }
       } else if (tokenizer.tryConsume("CLASS")) {
         String className = tokenizer.consumeIdentifier();
-        currentClass = new ClassImplementation();
+        currentClass = new ClassImplementation(program);
         program.setDeclaration(className, currentClass);
       } else if (!tokenizer.tryConsume("")) {
         List<? extends Node> statements = statementParser.parseStatementList(tokenizer, null);

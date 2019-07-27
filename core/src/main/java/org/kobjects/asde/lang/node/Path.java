@@ -3,15 +3,16 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.FunctionValidationContext;
+import org.kobjects.asde.lang.ResolvedSymbol;
 import org.kobjects.typesystem.*;
 
 import java.util.Map;
 
 
 public class Path extends AssignableNode {
-    String pathName;
-    PropertyDescriptor resolvedPropertyDescriptor;
-    Object resolvedConstant;
+    private String pathName;
+    private PropertyDescriptor resolvedPropertyDescriptor;
+    private Object resolvedConstant;
 
     public Path(Node left, Node right) {
         super(left);
@@ -85,7 +86,15 @@ public class Path extends AssignableNode {
 
     @Override
     public boolean isConstant() {
-        // TODO
-        return false;
+        return resolvedConstant != null;
+    }
+
+
+    public PropertyDescriptor getResolvedPropertyDescriptor() {
+        return resolvedPropertyDescriptor;
+    }
+
+    public void setName(String name) {
+        this.pathName = name;
     }
 }

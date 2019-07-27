@@ -6,15 +6,16 @@ import android.support.design.widget.TextInputLayout;
 import android.widget.EditText;
 
 import org.kobjects.asde.android.ide.MainActivity;
+import org.kobjects.asde.lang.StaticSymbol;
 
 public class RenameFlow {
 
     private final MainActivity mainActivity;
-    private final String oldName;
+    private final StaticSymbol symbol;
 
-    public RenameFlow(MainActivity mainActivity, String oldName) {
+    public RenameFlow(MainActivity mainActivity, StaticSymbol symbol) {
         this.mainActivity = mainActivity;
-        this.oldName = oldName;
+        this.symbol = symbol;
     }
 
     public void start() {
@@ -23,14 +24,16 @@ public class RenameFlow {
         alertBuilder.setMessage("Name");
         TextInputLayout nameInput = new TextInputLayout(mainActivity);
         nameInput.addView(new EditText(mainActivity));
-        nameInput.getEditText().setText(oldName);
+        nameInput.getEditText().setText(symbol.getName());
         nameInput.setErrorEnabled(true);
         alertBuilder.setView(nameInput);
 
         alertBuilder.setNegativeButton("Cancel", null);
         alertBuilder.setPositiveButton("Rename", (a,b) -> {
-            mainActivity.program.renameGlobalSymbol(oldName, nameInput.getEditText().getText().toString());
-
+            String newName = nameInput.getEditText().getText().toString().trim();
+            if (newName != null && !newName.isEmpty() && !newName.equals(symbol.getName())) {
+                symbol.rename(newName);
+            }
         });
 
         AlertDialog alert = alertBuilder.show();

@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.refactor.RenameGlobal;
+import org.kobjects.asde.lang.refactor.RenameProperty;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.InstantiableType;
@@ -17,11 +19,16 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class ClassImplementation implements InstanceType, InstantiableType, Declaration {
+public class ClassImplementation implements InstanceType, InstantiableType, Declaration, SymbolOwner {
 
+  final Program program;
   public final TreeMap<String, ClassPropertyDescriptor> propertyMap = new TreeMap<>();
   ArrayList<Node> resolvedInitializers = new ArrayList<>();
   GlobalSymbol declaringSymbol;
+
+  public ClassImplementation(Program program) {
+    this.program = program;
+  }
 
 
   @Override
@@ -70,6 +77,16 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
   @Override
   public void setDeclaringSymbol(GlobalSymbol declaringSymbol) {
     this.declaringSymbol = declaringSymbol;
+  }
+
+  @Override
+  public StaticSymbol getSymbol(String name) {
+    return propertyMap.get(name);
+  }
+
+  @Override
+  public void removeSymbol(StaticSymbol symbol) {
+    propertyMap.remove(symbol.getName());
   }
 
   public class ClassPropertyDescriptor implements PropertyDescriptor, ResolvedSymbol, StaticSymbol {
@@ -143,6 +160,11 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
     }
 
     @Override
+    public SymbolOwner getOwner() {
+      return ClassImplementation.this;
+    }
+
+    @Override
     public Map<Node, Exception> getErrors() {
       return Collections.emptyMap();
     }
@@ -169,7 +191,7 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
 
     @Override
     public void validate() {
-
+      System.err.println("ClassImplementation.ClassPropertyDescriptor.validate() NYI");
     }
 
     @Override
@@ -180,6 +202,17 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
     @Override
     public boolean isConstant() {
       return initializer == null;
+    }
+
+    @Override
+    public void rename(String newName) {
+      String oldName = name;
+      propertyMap.remove(name);
+      name = newName;
+      propertyMap.put(newName, this);
+      program.accept(new RenameProperty(this));
+
+
     }
   }
 

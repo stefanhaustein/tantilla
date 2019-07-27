@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.asde.lang.ClassImplementation;
 import org.kobjects.asde.lang.FunctionImplementation;
+import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.GlobalSymbol;
@@ -33,9 +35,21 @@ public abstract class Visitor {
         }
     }
 
-    public void visitSymbol(GlobalSymbol symbol) {
+    public void visitClass(ClassImplementation classImplementation) {
+        for (ClassImplementation.ClassPropertyDescriptor symbol : classImplementation.propertyMap.values()) {
+            visitSymbol(symbol);
+        }
+    }
+
+    public void visitSymbol(StaticSymbol symbol) {
+        if (symbol.getValue() instanceof ClassImplementation) {
+            visitClass((ClassImplementation) symbol.getValue());
+        }
         if (symbol.getValue() instanceof FunctionImplementation) {
             visitCallableUnit((FunctionImplementation) symbol.getValue());
+        }
+        if (symbol.getInitializer() != null) {
+            visitNode(symbol.getInitializer());
         }
     }
 

@@ -34,63 +34,45 @@ import java.util.TreeMap;
  * <p>
  * Example for mixing the expresion parser with "outer" parsing.
  */
-public class Program {
+public class Program implements SymbolOwner {
 
-    public static final String INVISIBLE_STRING = new String();
+  public static final String INVISIBLE_STRING = new String();
 
-    public static String toString(double d) {
-        if (d == (int) d) {
-            return String.valueOf((int) d);
-        }
-        return String.valueOf(d);
+  public static String toString(double d) {
+    return d == (int) d ? String.valueOf((int) d) : String.valueOf(d);
+  }
+
+  public static String toString(Object o) {
+    return o instanceof Number ? toString(((Number) o).doubleValue()) : String.valueOf(o);
+  }
+
+  public ProgramReference reference;
+
+  public final StatementParser parser = new StatementParser(this);
+  public final FunctionImplementation main = new FunctionImplementation(this, new FunctionTypeImpl(Types.VOID));
+  public final GlobalSymbol mainSymbol = new GlobalSymbol(this, "", GlobalSymbol.Scope.PERSISTENT, main);
+  private final ArrayList<ProgramChangeListener> programChangeListeners = new ArrayList<>();
+  private final ArrayList<ProgramRenameListener> programRenameListeners = new ArrayList<>();
+
+  // Program state
+
+  private TreeMap<String, GlobalSymbol> symbolMap = new TreeMap<>();
+  public Exception lastException;
+  public int tabPos;
+  public final Console console;
+  public boolean legacyMode;
+  private boolean loading;
+
+  public Program(Console console) {
+    this.console = console;
+    main.setDeclaringSymbol(mainSymbol);
+    this.reference = new ProgramReference("Scratch", null, false);
+    for (Builtin builtin : Builtin.values()) {
+      setValue(GlobalSymbol.Scope.BUILTIN, builtin.name().toLowerCase(), builtin);
     }
+  }
 
-    public static String toString(Object o) {
-        return o instanceof Number ? toString(((Number) o).doubleValue()) : String.valueOf(o);
-    }
-
-    public ProgramReference reference;
-
-    public final StatementParser parser = new StatementParser(this);
-    public final FunctionImplementation main = new FunctionImplementation(this, new FunctionTypeImpl(Types.VOID));
-    public final GlobalSymbol mainSymbol = new GlobalSymbol(this, "", GlobalSymbol.Scope.PERSISTENT, main);
-    private final ArrayList<ProgramChangeListener> programChangeListeners = new ArrayList<>();
-    private final ArrayList<ProgramRenameListener> programRenameListeners = new ArrayList<>();
-
-    // Program state
-
-    private TreeMap<String, GlobalSymbol> symbolMap = new TreeMap<>();
-    public Exception lastException;
-    public int tabPos;
-    public final Console console;
-    public boolean legacyMode;
-    private boolean loading;
-
-    public Program(Console console) {
-      this.console = console;
-      main.setDeclaringSymbol(mainSymbol);
-      this.reference = new ProgramReference("Scratch", null, false);
-      for (Builtin builtin : Builtin.values()) {
-          setValue(GlobalSymbol.Scope.BUILTIN, builtin.name().toLowerCase(), builtin);
-      }
-    }
-
-    public synchronized void renameGlobalSymbol(String oldName, String newName) {
-        if (newName == null || newName.isEmpty() || newName.equals(oldName)) {
-            return;
-        }
-        GlobalSymbol symbol = symbolMap.get(oldName);
-        if (symbol == null) {
-            throw new RuntimeException("Symbol '" + oldName + "' does not exist.");
-        }
-        symbolMap.remove(oldName);
-        symbol.setName(newName);
-        symbolMap.put(newName, symbol);
-        accept(new RenameGlobal(oldName, newName));
-    }
-
-
-    public void accept(Visitor visitor) {
+  public void accept(Visitor visitor) {
         visitor.visitProgram(this);
     }
 
@@ -163,9 +145,18 @@ public class Program {
       return new ArrayList<>(symbolMap.values());
   }
 
+  @Override
   public synchronized GlobalSymbol getSymbol(String name) {
       return symbolMap.get(name);
   }
+
+  @Override
+  public synchronized void removeSymbol(StaticSymbol symbol) {
+    symbolMap.remove(symbol.getName());
+    notifyProgramChanged();
+  }
+
+
 
   public synchronized void toString(AnnotatedStringBuilder sb) {
       for (GlobalSymbol symbol : symbolMap.values()) {
@@ -208,8 +199,8 @@ public class Program {
 
 
 
-    // Can't include validate -- wouldn't work for loading.
-    public void processDeclarations(CodeLine codeLine) {
+  // Can't include validate -- wouldn't work for loading.
+  public void processDeclarations(CodeLine codeLine) {
         for (int i = 0; i < codeLine.length(); i++) {
             Node node = codeLine.get(i);
             if (node instanceof DeclarationStatement) {
@@ -220,10 +211,10 @@ public class Program {
                 setPersistentInitializer(dim.varName, dim);
             }
         }
-    }
+  }
 
 
-    public void load(ProgramReference fileReference) throws IOException {
+  public void load(ProgramReference fileReference) throws IOException {
 
       console.startProgress("Loading " + fileReference.name);
       console.updateProgress("Url: " + fileReference.url);
@@ -247,9 +238,9 @@ public class Program {
       }
 
       notifyProgramChanged();
-    }
+  }
 
-    public void validate() {
+  public void validate() {
         ProgramValidationContext context = new ProgramValidationContext(this);
         for (Map.Entry<String,GlobalSymbol> entry : symbolMap.entrySet()) {
             context.startChain(entry.getKey());
@@ -259,9 +250,9 @@ public class Program {
                 FunctionValidationContext.ResolutionMode.FUNCTION,
                 main);
         main.validate(functionValidationContext);
-    }
+  }
 
-    public synchronized void setValue(GlobalSymbol.Scope scope, String name, Object value) {
+  public synchronized void setValue(GlobalSymbol.Scope scope, String name, Object value) {
         GlobalSymbol symbol = getSymbol(name);
         if (symbol == null) {
             symbol = new GlobalSymbol(this, name, scope, value);
@@ -273,9 +264,9 @@ public class Program {
         if (scope == GlobalSymbol.Scope.PERSISTENT) {
             notifySymbolChanged(symbol);
         }
-    }
+  }
 
-    public synchronized void setDeclaration(String name, Declaration declaration) {
+  public synchronized void setDeclaration(String name, Declaration declaration) {
         GlobalSymbol symbol = getSymbol(name);
         if (symbol == null) {
             symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, declaration);
@@ -290,9 +281,9 @@ public class Program {
         declaration.setDeclaringSymbol(symbol);
 
         notifySymbolChanged(symbol);
-    }
+  }
 
-    public synchronized void setPersistentInitializer(String name, Node expr) {
+  public synchronized void setPersistentInitializer(String name, Node expr) {
       GlobalSymbol symbol = getSymbol(name);
       if (symbol == null || symbol.scope == GlobalSymbol.Scope.TRANSIENT) {
           symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, null);
@@ -303,61 +294,60 @@ public class Program {
       symbol.initializer = expr;
       symbol.setConstant(expr instanceof DeclarationStatement && ((DeclarationStatement) expr).kind == DeclarationStatement.Kind.CONST);
       notifyProgramChanged();
-    }
+  }
 
-    public void setLine(StaticSymbol symbol, CodeLine codeLine) {
+  public void setLine(StaticSymbol symbol, CodeLine codeLine) {
         if (symbol.getValue() instanceof FunctionImplementation) {
             FunctionImplementation functionImplementation = (FunctionImplementation) symbol.getValue();
             functionImplementation.setLine(codeLine);
             notifySymbolChanged(symbol);
         }
-    }
+  }
 
-    public void deleteLine(StaticSymbol symbol, int line) {
+  public void deleteLine(StaticSymbol symbol, int line) {
         if (symbol.getValue() instanceof FunctionImplementation) {
             FunctionImplementation functionImplementation = (FunctionImplementation) symbol.getValue();
             functionImplementation.deleteLine(line);
         }
+  }
+
+
+  public void addProgramRenameListener(ProgramRenameListener listener) {
+    programRenameListeners.add(listener);
+  }
+
+  public void addProgramChangeListener(ProgramChangeListener programChangeListener) {
+    programChangeListeners.add(programChangeListener);
+  }
+
+  public void notifyProgramRenamed() {
+    for (ProgramRenameListener renameListener : programRenameListeners) {
+      renameListener.programRenamed(this, reference);
     }
+  }
 
-
-    public void addProgramRenameListener(ProgramRenameListener listener) {
-        programRenameListeners.add(listener);
+  public void notifySymbolChanged(StaticSymbol symbol) {
+    if (loading) {
+      return;
     }
-
-    public void addProgramChangeListener(ProgramChangeListener programChangeListener) {
-        programChangeListeners.add(programChangeListener);
+    symbol.validate();
+    for (ProgramChangeListener changeListener : programChangeListeners) {
+      changeListener.symbolChangedByUser(this, symbol);
     }
+  }
 
-    public void notifyProgramRenamed() {
-        for (ProgramRenameListener renameListener : programRenameListeners) {
-            renameListener.programRenamed(this, reference);
-        }
+  public void notifyProgramChanged() {
+    if (loading) {
+      return;
     }
-
-    public void notifySymbolChanged(StaticSymbol symbol) {
-        if (loading) {
-            return;
-        }
-        symbol.validate();
-        for (ProgramChangeListener changeListener : programChangeListeners) {
-            changeListener.symbolChangedByUser(this, symbol);
-        }
+    validate();
+    for (ProgramChangeListener changeListener : programChangeListeners) {
+      changeListener.programChanged(this);
     }
+  }
 
-    public void notifyProgramChanged() {
-        if (loading) {
-            return;
-        }
-        validate();
-        for (ProgramChangeListener changeListener : programChangeListeners) {
-            changeListener.programChanged(this);
-        }
-    }
-
-    public void deleteSymbol(String name) {
-        symbolMap.remove(name);
-        notifyProgramChanged();
-    }
-
+  public void addSymbol(GlobalSymbol globalSymbol) {
+    symbolMap.put(globalSymbol.getName(), globalSymbol);
+    notifyProgramChanged();
+  }
 }

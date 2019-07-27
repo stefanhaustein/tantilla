@@ -34,7 +34,7 @@ public class FunctionView extends SymbolView {
         titleView.setMoreClickListener(clicked -> {
             PopupMenu popupMenu = new PopupMenu(mainActivity, clicked);
             popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {
-                new RenameFlow(mainActivity, symbol.getName()).start();
+                new RenameFlow(mainActivity, symbol).start();
                return true;
             });
             popupMenu.getMenu().add("Change Signature").setOnMenuItemClickListener(item -> {
@@ -42,7 +42,7 @@ public class FunctionView extends SymbolView {
                 return true;
             });
             popupMenu.getMenu().add("Delete").setOnMenuItemClickListener(item -> {
-                new DeleteFlow(mainActivity, symbol.getName()).start();
+                new DeleteFlow(mainActivity, symbol).start();
                 return true;
             });
             popupMenu.show();

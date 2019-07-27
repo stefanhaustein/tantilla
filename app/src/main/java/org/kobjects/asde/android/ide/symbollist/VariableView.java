@@ -36,11 +36,11 @@ public class VariableView extends SymbolView {
                 return true;
             });
             popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {
-                new RenameFlow(mainActivity, symbol.getName()).start();
+                new RenameFlow(mainActivity, symbol).start();
                 return true;
             });
             popupMenu.getMenu().add("Delete").setOnMenuItemClickListener(item -> {
-                new DeleteFlow(mainActivity, symbol.getName()).start();
+                new DeleteFlow(mainActivity, symbol).start();
                 return true;
             });
 

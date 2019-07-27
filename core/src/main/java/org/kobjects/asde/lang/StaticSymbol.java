@@ -6,6 +6,7 @@ import org.kobjects.typesystem.Type;
 import java.util.Map;
 
 public interface StaticSymbol {
+  SymbolOwner getOwner();
   Map<Node, Exception> getErrors();
   Object getValue();
   String getName();
@@ -16,4 +17,6 @@ public interface StaticSymbol {
   GlobalSymbol.Scope getScope();
 
   boolean isConstant();
+
+  void rename(String newName);
 }
