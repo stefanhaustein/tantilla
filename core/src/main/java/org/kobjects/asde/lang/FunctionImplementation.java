@@ -13,6 +13,7 @@ import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Function;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.typesystem.FunctionType;
+import org.kobjects.typesystem.PropertyDescriptor;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -28,7 +29,7 @@ public class FunctionImplementation implements Function, Declaration {
     public String[] parameterNames;
     private TreeMap<Integer, CodeLine> code = new TreeMap<>();
     int localVariableCount;
-    private GlobalSymbol declaringSymbol;
+    private StaticSymbol declaringSymbol;
 
     public FunctionImplementation(Program program, FunctionType type, String... parameterNames) {
         this.program = program;
@@ -218,8 +219,12 @@ public class FunctionImplementation implements Function, Declaration {
         return () -> new DescendingStatementIterator(fromLine, fromIndex, toLine, toIndex);
     }
 
-    public void setDeclaringSymbol(GlobalSymbol symbol) {
+    public void setDeclaringSymbol(StaticSymbol symbol) {
         this.declaringSymbol = symbol;
+    }
+
+    public boolean isMethod() {
+        return declaringSymbol instanceof PropertyDescriptor;
     }
 
     class StatementIterator implements Iterator<Node> {

@@ -27,7 +27,7 @@ public class Colors {
     public final int yellow;
     public final int orange;
 
-    // public static final int PRIMARY_LIGHT = 0xffeceff1;
+  // public static final int PRIMARY_LIGHT = 0xffeceff1;
     // static final int SECONDARY_LIGHT = 0xffff6659;
 
 

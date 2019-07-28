@@ -17,6 +17,7 @@ import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.GlobalSymbol;
+import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
 
 import java.util.Collections;
@@ -30,7 +31,7 @@ public class VariableView extends SymbolView {
         super(mainActivity, symbol);
         this.mainActivity = mainActivity;
         this.symbol = symbol;
-        titleView.setTypeIndicator(symbol.isConstant() ? 'C' : 'V', mainActivity.colors.yellow);
+        titleView.setTypeIndicator(symbol instanceof PropertyDescriptor ? 'p': symbol.isConstant() ? 'C' : 'V', mainActivity.colors.orange);
         titleView.setMoreClickListener(view -> {
             PopupMenu popupMenu = new PopupMenu(getContext(), view);
             popupMenu.getMenu().add("Edit").setOnMenuItemClickListener(item -> {

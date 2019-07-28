@@ -73,8 +73,8 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
   }
 
   @Override
-  public void setDeclaringSymbol(GlobalSymbol declaringSymbol) {
-    this.declaringSymbol = declaringSymbol;
+  public void setDeclaringSymbol(StaticSymbol declaringSymbol) {
+    this.declaringSymbol = (GlobalSymbol) declaringSymbol;
   }
 
   @Override
@@ -106,6 +106,7 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
     ClassPropertyDescriptor(String name, FunctionImplementation methodImplementation) {
       this.name = name;
       this.methodImplementation = methodImplementation;
+      methodImplementation.setDeclaringSymbol(this);
     }
 
     void validate(ClassValidationContext classValidationContext) {

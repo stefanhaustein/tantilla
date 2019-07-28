@@ -17,87 +17,90 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class FunctionView extends SymbolView {
-    public FunctionImplementation functionImplementation;
-    OnLongClickListener lineClickListener;
+  public FunctionImplementation functionImplementation;
+  OnLongClickListener lineClickListener;
 
-    public FunctionView(final MainActivity mainActivity, StaticSymbol symbol) {
-        super(mainActivity, symbol);
-        this.functionImplementation = (FunctionImplementation) symbol.getValue();
+  public FunctionView(final MainActivity mainActivity, StaticSymbol symbol) {
+    super(mainActivity, symbol);
+    this.functionImplementation = (FunctionImplementation) symbol.getValue();
 
-        boolean isMain = functionImplementation == functionImplementation.program.main;
-        boolean isVoid = functionImplementation.getType().getReturnType() == Types.VOID;
+    boolean isMain = functionImplementation == functionImplementation.program.main;
+    boolean isVoid = functionImplementation.getType().getReturnType() == Types.VOID;
+    boolean isMethod = functionImplementation.isMethod();
 
-        titleView.setTypeIndicator(
-                isMain ? 'M' : isVoid ? 'S' : 'F',
-                isMain ? mainActivity.colors.primary : isVoid ? mainActivity.colors.purple : mainActivity.colors.cyan);
+    titleView.setTypeIndicator(
+        isMain ? 'M' : isMethod ? 'm' : isVoid ? 'S' : 'F',
+        isMain ? mainActivity.colors.primary : mainActivity.colors.purple);
 
-        titleView.setMoreClickListener(clicked -> {
-            PopupMenu popupMenu = new PopupMenu(mainActivity, clicked);
-            popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {
-                new RenameFlow(mainActivity, symbol).start();
-               return true;
-            });
-            popupMenu.getMenu().add("Change Signature").setOnMenuItemClickListener(item -> {
-                FunctionSignatureFlow.changeSignature(mainActivity, symbol, functionImplementation);
-                return true;
-            });
-            popupMenu.getMenu().add("Delete").setOnMenuItemClickListener(item -> {
-                new DeleteFlow(mainActivity, symbol).start();
-                return true;
-            });
-            popupMenu.show();
+    if (!isMain) {
+      titleView.setMoreClickListener(clicked -> {
+        PopupMenu popupMenu = new PopupMenu(mainActivity, clicked);
+        popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {
+          new RenameFlow(mainActivity, symbol).start();
+          return true;
         });
-
-        ArrayList<String> subtitles = new ArrayList<>();
-        for (int i = 0; i < functionImplementation.getType().getParameterCount(); i++) {
-            subtitles.add(" " + functionImplementation.parameterNames[i] + ": " + functionImplementation.getType().getParameterType(i));
-        }
-        if (!isVoid) {
-            subtitles.add("-> " + functionImplementation.getType().getReturnType());
-        }
-
-        titleView.setSubtitles(subtitles);
+        popupMenu.getMenu().add("Change Signature").setOnMenuItemClickListener(item -> {
+          FunctionSignatureFlow.changeSignature(mainActivity, symbol, functionImplementation);
+          return true;
+        });
+        popupMenu.getMenu().add("Delete").setOnMenuItemClickListener(item -> {
+          new DeleteFlow(mainActivity, symbol).start();
+          return true;
+        });
+        popupMenu.show();
+      });
     }
 
-
-    public void syncContent() {
-        refresh();
-
-        ExpandableList codeView = getContentView();
-
-        if (!expanded) {
-            codeView.removeAllViews();
-            return;
-        }
-        int index = 0;
-        for (Map.Entry<Integer, CodeLine> entry : functionImplementation.entrySet()) {
-            CodeLineView codeLineView;
-            if (index < codeView.getChildCount()) {
-                codeLineView = (CodeLineView) codeView.getChildAt(index);
-            } else {
-                codeLineView = new CodeLineView(mainActivity, index % 2 == 1);
-                codeView.addView(codeLineView);
-            }
-            codeLineView.setLineNumber(entry.getKey());
-            codeLineView.setCodeLine(entry.getValue(), symbol.getErrors());
-            codeLineView.setOnLongClickListener(lineClickListener);
-            index++;
-        }
-        while (index < codeView.getChildCount()) {
-            codeView.removeViewAt(codeView.getChildCount() - 1);
-        }
+    ArrayList<String> subtitles = new ArrayList<>();
+    for (int i = 0; i < functionImplementation.getType().getParameterCount(); i++) {
+      subtitles.add(" " + functionImplementation.parameterNames[i] + ": " + functionImplementation.getType().getParameterType(i));
+    }
+    if (!isVoid) {
+      subtitles.add("-> " + functionImplementation.getType().getReturnType());
     }
 
+    titleView.setSubtitles(subtitles);
+  }
 
-    CodeLineView findLine(int lineNumber) {
-        ExpandableList codeView = getContentView();
-        for (int i = 0; i < codeView.getChildCount(); i++) {
-            CodeLineView codeLineView = (CodeLineView) codeView.getChildAt(i);
-            if (codeLineView.lineNumber == lineNumber) {
-                return codeLineView;
-            }
-        }
-        return null;
+
+  public void syncContent() {
+    refresh();
+
+    ExpandableList codeView = getContentView();
+
+    if (!expanded) {
+      codeView.removeAllViews();
+      return;
     }
+    int index = 0;
+    for (Map.Entry<Integer, CodeLine> entry : functionImplementation.entrySet()) {
+      CodeLineView codeLineView;
+      if (index < codeView.getChildCount()) {
+        codeLineView = (CodeLineView) codeView.getChildAt(index);
+      } else {
+        codeLineView = new CodeLineView(mainActivity, index % 2 == 1);
+        codeView.addView(codeLineView);
+      }
+      codeLineView.setLineNumber(entry.getKey());
+      codeLineView.setCodeLine(entry.getValue(), symbol.getErrors());
+      codeLineView.setOnLongClickListener(lineClickListener);
+      index++;
+    }
+    while (index < codeView.getChildCount()) {
+      codeView.removeViewAt(codeView.getChildCount() - 1);
+    }
+  }
+
+
+  CodeLineView findLine(int lineNumber) {
+    ExpandableList codeView = getContentView();
+    for (int i = 0; i < codeView.getChildCount(); i++) {
+      CodeLineView codeLineView = (CodeLineView) codeView.getChildAt(i);
+      if (codeLineView.lineNumber == lineNumber) {
+        return codeLineView;
+      }
+    }
+    return null;
+  }
 
 }
