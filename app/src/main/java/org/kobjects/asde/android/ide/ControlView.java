@@ -189,6 +189,19 @@ public class ControlView extends LinearLayout  {
       return true;
     });
 
+    Menu examplesMenu = mainMenu.addSubMenu("Examples");
+    try {
+      for (final String example : mainActivity.getAssets().list("examples")) {
+        examplesMenu.add(example).setOnMenuItemClickListener(item -> {
+              mainActivity.load(new ProgramReference(example, "file:///android_asset/examples/" + example, false), true, false);
+              return true;
+            }
+        );
+      }
+    }catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
     Menu addMenu = mainMenu.addSubMenu("Add");
     addMenu.add("Function").setOnMenuItemClickListener(item -> {
       FunctionSignatureFlow.createFunction(mainActivity);
@@ -237,18 +250,6 @@ public class ControlView extends LinearLayout  {
     });
 
 
-    Menu examplesMenu = loadMenu.addSubMenu("Examples");
-    try {
-      for (final String example : mainActivity.getAssets().list("examples")) {
-        examplesMenu.add(example).setOnMenuItemClickListener(item -> {
-              mainActivity.load(new ProgramReference(example, "file:///android_asset/examples/" + example, false), true, false);
-              return true;
-            }
-        );
-      }
-    }catch (IOException e) {
-      throw new RuntimeException(e);
-    }
 
     Menu saveMenu = mainMenu.addSubMenu("Save");
 

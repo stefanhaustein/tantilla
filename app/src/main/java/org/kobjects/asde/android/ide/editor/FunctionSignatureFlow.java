@@ -14,6 +14,7 @@ import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.TextValidator;
+import org.kobjects.asde.lang.ClassImplementation;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.type.CodeLine;
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 public class FunctionSignatureFlow {
 
   public enum Mode {
-    CREATE, CHANGE_SIGNATURE
+    CREATE_GLOBAL, CHANGE_SIGNATURE, CREATE_MEMBER
   }
 
   final MainActivity mainActivity;
@@ -41,6 +42,7 @@ public class FunctionSignatureFlow {
   ArrayList<Parameter> parameterList = new ArrayList<>();
   LinearLayout parameterListView;
   FunctionImplementation functionImplementation;
+  ClassImplementation classImplementation;
 
   public static void changeSignature(MainActivity mainActivity, StaticSymbol symbol, FunctionImplementation functionImplementation) {
     FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CHANGE_SIGNATURE, functionImplementation.getType().getReturnType());
@@ -58,15 +60,21 @@ public class FunctionSignatureFlow {
     flow.editFunctionParameters();
   }
 
+  public static void createMethod(MainActivity mainActivity, ClassImplementation classImplementation) {
+    FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CREATE_MEMBER, Types.NUMBER);
+    flow.classImplementation = classImplementation;
+    flow.createCallableUnit();
+  }
+
   public static void createFunction(MainActivity mainActivity) {
-    new FunctionSignatureFlow(mainActivity, Mode.CREATE, Types.NUMBER).createCallableUnit();
+    new FunctionSignatureFlow(mainActivity, Mode.CREATE_GLOBAL, Types.NUMBER).createCallableUnit();
   }
 
   public static void createSubroutine(MainActivity mainActivity) {
-    new FunctionSignatureFlow(mainActivity, Mode.CREATE, Types.VOID).createCallableUnit();
+    new FunctionSignatureFlow(mainActivity, Mode.CREATE_MEMBER, Types.VOID).createCallableUnit();
   }
 
-  public FunctionSignatureFlow(MainActivity mainActivity, Mode mode, Type returnType) {
+  private FunctionSignatureFlow(MainActivity mainActivity, Mode mode, Type returnType) {
     this.mainActivity = mainActivity;
     this.mode = mode;
     this.returnType = returnType;
@@ -214,10 +222,10 @@ public class FunctionSignatureFlow {
       if (typeInput != null) {
         returnType = typeInput.getSelectedType();
       }
-      if (mode == Mode.CREATE) {
-        commitNewFunction();
-      } else {
+      if (mode == Mode.CHANGE_SIGNATURE) {
         commitRefactor();
+      } else {
+        commitNewFunction();
       }
     });
 
@@ -357,7 +365,11 @@ public class FunctionSignatureFlow {
 
     functionImplementation.setLine(new CodeLine(10, remStatement));
 
-    mainActivity.program.setDeclaration(name, functionImplementation);
+    if (mode == Mode.CREATE_MEMBER) {
+      classImplementation.setMethod(name, functionImplementation);
+    } else {
+      mainActivity.program.setDeclaration(name, functionImplementation);
+    }
   }
 
 }
