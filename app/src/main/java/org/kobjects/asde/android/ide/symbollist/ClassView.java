@@ -1,9 +1,12 @@
 package org.kobjects.asde.android.ide.symbollist;
 
+import android.widget.PopupMenu;
+
 import org.kobjects.asde.android.ide.MainActivity;
+import org.kobjects.asde.android.ide.editor.DeleteFlow;
+import org.kobjects.asde.android.ide.editor.RenameFlow;
 import org.kobjects.asde.lang.ClassImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
-import org.kobjects.asde.lang.type.Function;
 
 import java.util.Collections;
 
@@ -31,6 +34,19 @@ public class ClassView extends SymbolView {
     super(mainActivity, symbol);
 
     titleView.setTypeIndicator('C', mainActivity.colors.cyan);
+
+    titleView.setMoreClickListener(clicked -> {
+      PopupMenu popupMenu = new PopupMenu(mainActivity, clicked);
+      popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {
+        new RenameFlow(mainActivity, symbol).start();
+        return true;
+      });
+      popupMenu.getMenu().add("Delete").setOnMenuItemClickListener(item -> {
+        new DeleteFlow(mainActivity, symbol).start();
+        return true;
+      });
+      popupMenu.show();
+    });
   }
 
   @Override
@@ -44,6 +60,7 @@ public class ClassView extends SymbolView {
 
   @Override
   public void syncContent() {
+    refresh();
 
     if (!expanded) {
       getContentView().synchronizeTo(Collections.emptyList(), expandListener, null);
