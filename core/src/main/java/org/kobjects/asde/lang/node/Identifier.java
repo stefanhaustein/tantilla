@@ -5,12 +5,13 @@ import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.asde.lang.ResolvedSymbol;
+import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
 // Not static for access to the variables.
-public class Identifier extends AssignableNode {
+public class Identifier extends SymbolNode {
   final Program program;
   String name;
   ResolvedSymbol resolved;
@@ -64,6 +65,12 @@ public class Identifier extends AssignableNode {
     return resolved;
   }
 
+  @Override
+  public boolean matches(StaticSymbol symbol, String oldName) {
+    return symbol instanceof StaticSymbol && name.equals(oldName);
+  }
+
+  @Override
   public void setName(String name) {
     this.name = name;
   }

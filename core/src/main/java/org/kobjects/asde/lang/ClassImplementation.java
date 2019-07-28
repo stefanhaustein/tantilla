@@ -1,8 +1,6 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.refactor.RenameGlobal;
-import org.kobjects.asde.lang.refactor.RenameProperty;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.InstantiableType;
@@ -87,6 +85,11 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
   @Override
   public void removeSymbol(StaticSymbol symbol) {
     propertyMap.remove(symbol.getName());
+  }
+
+  @Override
+  public void addSymbol(StaticSymbol symbol) {
+    propertyMap.put(symbol.getName(), (ClassPropertyDescriptor) symbol);
   }
 
   public class ClassPropertyDescriptor implements PropertyDescriptor, ResolvedSymbol, StaticSymbol {
@@ -205,14 +208,8 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
     }
 
     @Override
-    public void rename(String newName) {
-      String oldName = name;
-      propertyMap.remove(name);
+    public void setName(String newName) {
       name = newName;
-      propertyMap.put(newName, this);
-      program.accept(new RenameProperty(this));
-
-
     }
   }
 

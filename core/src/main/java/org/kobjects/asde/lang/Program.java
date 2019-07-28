@@ -7,7 +7,6 @@ import org.kobjects.asde.lang.event.ProgramRenameListener;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.node.Visitor;
 import org.kobjects.asde.lang.parser.ProgramParser;
-import org.kobjects.asde.lang.refactor.RenameGlobal;
 import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.node.Node;
@@ -346,8 +345,9 @@ public class Program implements SymbolOwner {
     }
   }
 
-  public void addSymbol(GlobalSymbol globalSymbol) {
-    symbolMap.put(globalSymbol.getName(), globalSymbol);
+  @Override
+  public void addSymbol(StaticSymbol symbol) {
+    symbolMap.put(symbol.getName(), (GlobalSymbol) symbol);
     notifyProgramChanged();
   }
 }

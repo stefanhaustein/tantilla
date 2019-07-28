@@ -191,11 +191,11 @@ public class ControlView extends LinearLayout  {
 
     Menu addMenu = mainMenu.addSubMenu("Add");
     addMenu.add("Function").setOnMenuItemClickListener(item -> {
-      new FunctionSignatureFlow(mainActivity).createFunction();
+      FunctionSignatureFlow.createFunction(mainActivity);
       return true;
     });
     addMenu.add("Subroutine").setOnMenuItemClickListener(item -> {
-      new FunctionSignatureFlow(mainActivity).createSubroutine();
+      FunctionSignatureFlow.createSubroutine(mainActivity);
       return true;
     });
 

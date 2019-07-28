@@ -1,17 +1,19 @@
 package org.kobjects.asde.lang.refactor;
 
 import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.node.SymbolNode;
 import org.kobjects.asde.lang.node.Visitor;
 
 public class ChangeSignature extends Visitor {
-    private final String name;
+    private final StaticSymbol symbol;
     private int[] newOrder;
 
-    public ChangeSignature(String name, int[] newOrder) {
-        this.name = name;
+    public ChangeSignature(StaticSymbol symbol, int[] newOrder) {
+        this.symbol = symbol;
         this.newOrder = newOrder;
     }
 
@@ -19,7 +21,7 @@ public class ChangeSignature extends Visitor {
     public void visitApply(Apply apply) {
         super.visitApply(apply);
         Node base = apply.children[0];
-        if (!(base instanceof Identifier) || !((Identifier) base).getName().equals(name)) {
+        if (!(base instanceof SymbolNode) || !((SymbolNode) base).matches(symbol, symbol.getName())) {
             return;
         }
         Node[] oldChildren = apply.children;

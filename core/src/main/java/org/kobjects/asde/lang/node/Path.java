@@ -3,13 +3,13 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.FunctionValidationContext;
-import org.kobjects.asde.lang.ResolvedSymbol;
+import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.typesystem.*;
 
 import java.util.Map;
 
 
-public class Path extends AssignableNode {
+public class Path extends SymbolNode {
     private String pathName;
     private PropertyDescriptor resolvedPropertyDescriptor;
     private Object resolvedConstant;
@@ -94,6 +94,12 @@ public class Path extends AssignableNode {
         return resolvedPropertyDescriptor;
     }
 
+    @Override
+    public boolean matches(StaticSymbol symbol, String oldName) {
+        return symbol == resolvedPropertyDescriptor;
+    }
+
+    @Override
     public void setName(String name) {
         this.pathName = name;
     }

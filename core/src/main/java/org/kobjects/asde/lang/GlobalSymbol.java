@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang;
 
-import org.kobjects.asde.lang.refactor.RenameGlobal;
+import org.kobjects.asde.lang.refactor.Rename;
 import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
@@ -99,7 +99,8 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
     this.constant = constant;
   }
 
-  void setName(String name) {
+  @Override
+  public void setName(String name) {
     this.name = name;
   }
 
@@ -157,13 +158,6 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
     programValidationContext.validated.add(this);
   }
 
-  public void rename(String newName) {
-    program.removeSymbol(this);
-    String oldName = getName();
-    name = newName;
-    program.addSymbol(this);
-    program.accept(new RenameGlobal(oldName, newName));
-  }
 
 
   public boolean isConstant() {

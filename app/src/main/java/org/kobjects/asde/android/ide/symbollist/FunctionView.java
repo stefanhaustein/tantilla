@@ -38,7 +38,7 @@ public class FunctionView extends SymbolView {
                return true;
             });
             popupMenu.getMenu().add("Change Signature").setOnMenuItemClickListener(item -> {
-                new FunctionSignatureFlow(mainActivity).changeSignature(symbol.getName(), functionImplementation);
+                FunctionSignatureFlow.changeSignature(mainActivity, symbol, functionImplementation);
                 return true;
             });
             popupMenu.getMenu().add("Delete").setOnMenuItemClickListener(item -> {

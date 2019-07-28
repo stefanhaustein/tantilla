@@ -18,5 +18,5 @@ public interface StaticSymbol {
 
   boolean isConstant();
 
-  void rename(String newName);
+  void setName(String newName);
 }
