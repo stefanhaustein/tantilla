@@ -6,8 +6,10 @@ import android.widget.TextView;
 
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.editor.DeleteFlow;
+import org.kobjects.asde.android.ide.editor.EditPropertyFlow;
 import org.kobjects.asde.android.ide.editor.RenameFlow;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
+import org.kobjects.asde.lang.ClassImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.node.ArrayLiteral;
@@ -32,7 +34,11 @@ public class VariableView extends SymbolView {
         titleView.setMoreClickListener(view -> {
             PopupMenu popupMenu = new PopupMenu(getContext(), view);
             popupMenu.getMenu().add("Edit").setOnMenuItemClickListener(item -> {
-                mainActivity.controlView.codeEditText.setText(String.valueOf(symbol.getInitializer()));
+                if (symbol instanceof ClassImplementation.ClassPropertyDescriptor) {
+                    new EditPropertyFlow(mainActivity, (ClassImplementation.ClassPropertyDescriptor) symbol).start();
+                } else {
+                    mainActivity.controlView.codeEditText.setText(String.valueOf(symbol.getInitializer()));
+                }
                 return true;
             });
             popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {

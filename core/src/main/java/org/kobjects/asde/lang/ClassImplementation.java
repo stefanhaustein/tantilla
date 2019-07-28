@@ -211,6 +211,10 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
     public void setName(String newName) {
       name = newName;
     }
+
+    public void setInitializer(Node initializer) {
+      this.initializer = initializer;
+    }
   }
 
 }

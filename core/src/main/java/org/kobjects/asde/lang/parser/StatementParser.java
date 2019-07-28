@@ -52,6 +52,12 @@ public class StatementParser {
     return expressionParser.createTokenizer(line);
   }
 
+  public Node parseExpression(String unparsed) {
+    ExpressionParser.Tokenizer tokenizer = expressionParser.createTokenizer(unparsed);
+    tokenizer.nextToken();
+    return expressionParser.parse(tokenizer);
+  }
+
   void parseStatement(ExpressionParser.Tokenizer tokenizer, List<Node> result, FunctionImplementation parsingContext) {
     String name = tokenizer.currentValue;
 
