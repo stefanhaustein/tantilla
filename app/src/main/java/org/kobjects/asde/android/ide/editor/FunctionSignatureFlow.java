@@ -61,17 +61,13 @@ public class FunctionSignatureFlow {
   }
 
   public static void createMethod(MainActivity mainActivity, ClassImplementation classImplementation) {
-    FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CREATE_MEMBER, Types.NUMBER);
+    FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CREATE_MEMBER, Types.VOID);
     flow.classImplementation = classImplementation;
     flow.createCallableUnit();
   }
 
   public static void createFunction(MainActivity mainActivity) {
-    new FunctionSignatureFlow(mainActivity, Mode.CREATE_GLOBAL, Types.NUMBER).createCallableUnit();
-  }
-
-  public static void createSubroutine(MainActivity mainActivity) {
-    new FunctionSignatureFlow(mainActivity, Mode.CREATE_MEMBER, Types.VOID).createCallableUnit();
+    new FunctionSignatureFlow(mainActivity, Mode.CREATE_GLOBAL, Types.VOID).createCallableUnit();
   }
 
   private FunctionSignatureFlow(MainActivity mainActivity, Mode mode, Type returnType) {
@@ -96,7 +92,7 @@ public class FunctionSignatureFlow {
 
     AlertDialog.Builder alertBuilder = new AlertDialog.Builder(mainActivity);
 
-    alertBuilder.setTitle(returnType == Types.VOID ? "New Subroutine" : "New Function");
+    alertBuilder.setTitle(mode == Mode.CREATE_MEMBER ? "New Method" : "New Function");
     alertBuilder.setView(mainView);
 
     alertBuilder.setNegativeButton("Cancel", null);
@@ -108,7 +104,9 @@ public class FunctionSignatureFlow {
     AlertDialog alert = alertBuilder.show();
 
 
-    nameInput.getEditText().addTextChangedListener(new SymbolNameValidator(mainActivity, nameInput) {
+    nameInput.getEditText().addTextChangedListener(
+        new SymbolNameValidator(
+            mode == Mode.CREATE_MEMBER ? classImplementation : mainActivity.program, nameInput) {
       @Override
       public String validate(String text) {
         String result = super.validate(text);
@@ -203,15 +201,12 @@ public class FunctionSignatureFlow {
     mainLayout.addView(parameterListView);
 
 
-
-    TypeSpinner typeInput = returnType == Types.VOID ? null : new TypeSpinner(mainActivity);
-    if (returnType != Types.VOID) {
-      TextView typeLabel = new TextView(mainActivity);
-      typeLabel.setText("Return Type");
-      typeInput.selectType(returnType);
-      mainLayout.addView(typeLabel);
-      mainLayout.addView(typeInput);
-    }
+    TypeSpinner typeInput = new TypeSpinner(mainActivity, "(none)");
+    TextView typeLabel = new TextView(mainActivity);
+    typeLabel.setText("Return Type");
+    typeInput.selectType(returnType);
+    mainLayout.addView(typeLabel);
+    mainLayout.addView(typeInput);
 
     ScrollView parameterScrollView = new ScrollView(mainActivity);
     parameterScrollView.addView(mainLayout);
@@ -219,9 +214,7 @@ public class FunctionSignatureFlow {
 
     alert.setNegativeButton("Cancel", null);
     alert.setPositiveButton("Ok", (a, b) -> {
-      if (typeInput != null) {
-        returnType = typeInput.getSelectedType();
-      }
+      returnType = typeInput.getSelectedType();
       if (mode == Mode.CHANGE_SIGNATURE) {
         commitRefactor();
       } else {
@@ -370,6 +363,7 @@ public class FunctionSignatureFlow {
     } else {
       mainActivity.program.setDeclaration(name, functionImplementation);
     }
+    mainActivity.program.notifyProgramChanged();
   }
 
 }

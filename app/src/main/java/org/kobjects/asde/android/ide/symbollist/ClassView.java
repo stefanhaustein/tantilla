@@ -5,6 +5,7 @@ import android.widget.PopupMenu;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.editor.DeleteFlow;
 import org.kobjects.asde.android.ide.editor.FunctionSignatureFlow;
+import org.kobjects.asde.android.ide.editor.PropertyFlow;
 import org.kobjects.asde.android.ide.editor.RenameFlow;
 import org.kobjects.asde.lang.ClassImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
@@ -38,16 +39,20 @@ public class ClassView extends SymbolView {
 
     titleView.setMoreClickListener(clicked -> {
       PopupMenu popupMenu = new PopupMenu(mainActivity, clicked);
+      popupMenu.getMenu().add("Add Property").setOnMenuItemClickListener(item -> {
+        PropertyFlow.createProperty(mainActivity, (ClassImplementation) symbol.getValue());
+        return true;
+      });
       popupMenu.getMenu().add("Add Method").setOnMenuItemClickListener(item -> {
         FunctionSignatureFlow.createMethod(mainActivity, (ClassImplementation) symbol.getValue());
         return true;
       });
       popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {
-        new RenameFlow(mainActivity, symbol).start();
+        RenameFlow.start(mainActivity, symbol);
         return true;
       });
       popupMenu.getMenu().add("Delete").setOnMenuItemClickListener(item -> {
-        new DeleteFlow(mainActivity, symbol).start();
+        DeleteFlow.start(mainActivity, symbol);
         return true;
       });
       popupMenu.show();

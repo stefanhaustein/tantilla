@@ -6,13 +6,14 @@ import android.widget.TextView;
 
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.TextValidator;
+import org.kobjects.asde.lang.SymbolOwner;
 
 class SymbolNameValidator extends TextValidator {
-    private MainActivity mainActivity;
+    private SymbolOwner symbolOwner;
 
-    public SymbolNameValidator(MainActivity mainActivity, TextInputLayout textInputLayout) {
+    public SymbolNameValidator(SymbolOwner symbolOwner, TextInputLayout textInputLayout) {
         super(textInputLayout);
-        this.mainActivity = mainActivity;
+        this.symbolOwner = symbolOwner;
 
     }
 
@@ -24,7 +25,7 @@ class SymbolNameValidator extends TextValidator {
         if (!Character.isJavaIdentifierStart(text.charAt(0))) {
             return "'" + text.charAt(0) + "' is not a valid name start character. Function names should start with a lowercase letter.";
         }
-        if (mainActivity.program.getSymbol(text) != null) {
+        if (symbolOwner.getSymbol(text) != null) {
             return "Name exists already.";
         }
 

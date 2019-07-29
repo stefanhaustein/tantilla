@@ -12,19 +12,35 @@ import java.util.ArrayList;
 public class TypeSpinner extends AppCompatSpinner {
 
     final ArrayList<Type> typeList = new ArrayList<>();
+    final ArrayList<String> labelList = new ArrayList<>();
+
+    void addType(Type type) {
+        typeList.add(type);
+        labelList.add(type.toString());
+    }
 
     public TypeSpinner(MainActivity mainActivity) {
+        this(mainActivity, null);
+    }
+
+    public TypeSpinner(MainActivity mainActivity, String voidLabel) {
         super(mainActivity);
 
-        typeList.add(Types.BOOLEAN);
-        typeList.add(Types.NUMBER);
-        typeList.add(Types.STRING);
+        if (voidLabel != null) {
+            typeList.add(Types.VOID);
+            labelList.add(voidLabel);
+        }
 
-        ArrayAdapter<Type> adapter = new ArrayAdapter<Type>(mainActivity, android.R.layout.simple_spinner_item, typeList);
+        addType(Types.BOOLEAN);
+        addType(Types.NUMBER);
+        addType(Types.STRING);
+
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(mainActivity, android.R.layout.simple_spinner_item, labelList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         setAdapter(adapter);
-        setSelection(1);
+        setSelection(0);
     }
 
     public void selectType(Type type) {
@@ -34,6 +50,6 @@ public class TypeSpinner extends AppCompatSpinner {
     }
 
     public Type getSelectedType() {
-        return (Type) getSelectedItem();
+        return typeList.get(getSelectedItemPosition());
     }
 }

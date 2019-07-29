@@ -6,7 +6,7 @@ import android.widget.TextView;
 
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.editor.DeleteFlow;
-import org.kobjects.asde.android.ide.editor.EditPropertyFlow;
+import org.kobjects.asde.android.ide.editor.PropertyFlow;
 import org.kobjects.asde.android.ide.editor.RenameFlow;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.lang.ClassImplementation;
@@ -16,7 +16,6 @@ import org.kobjects.asde.lang.node.ArrayLiteral;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
-import org.kobjects.asde.lang.GlobalSymbol;
 import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
 
@@ -36,18 +35,18 @@ public class VariableView extends SymbolView {
             PopupMenu popupMenu = new PopupMenu(getContext(), view);
             popupMenu.getMenu().add("Edit").setOnMenuItemClickListener(item -> {
                 if (symbol instanceof ClassImplementation.ClassPropertyDescriptor) {
-                    new EditPropertyFlow(mainActivity, (ClassImplementation.ClassPropertyDescriptor) symbol).start();
+                    PropertyFlow.editInitializer(mainActivity, (ClassImplementation.ClassPropertyDescriptor) symbol);
                 } else {
                     mainActivity.controlView.codeEditText.setText(String.valueOf(symbol.getInitializer()));
                 }
                 return true;
             });
             popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {
-                new RenameFlow(mainActivity, symbol).start();
+                RenameFlow.start(mainActivity, symbol);
                 return true;
             });
             popupMenu.getMenu().add("Delete").setOnMenuItemClickListener(item -> {
-                new DeleteFlow(mainActivity, symbol).start();
+                DeleteFlow.start(mainActivity, symbol);
                 return true;
             });
 

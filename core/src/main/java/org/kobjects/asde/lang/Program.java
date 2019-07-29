@@ -251,7 +251,7 @@ public class Program implements SymbolOwner {
         main.validate(functionValidationContext);
   }
 
-  public synchronized void setValue(GlobalSymbol.Scope scope, String name, Object value) {
+  public synchronized GlobalSymbol setValue(GlobalSymbol.Scope scope, String name, Object value) {
         GlobalSymbol symbol = getSymbol(name);
         if (symbol == null) {
             symbol = new GlobalSymbol(this, name, scope, value);
@@ -263,6 +263,7 @@ public class Program implements SymbolOwner {
         if (scope == GlobalSymbol.Scope.PERSISTENT) {
             notifySymbolChanged(symbol);
         }
+        return symbol;
   }
 
   public synchronized void setDeclaration(String name, Declaration declaration) {

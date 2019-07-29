@@ -17,8 +17,8 @@ public class ExpressionValidator extends TextValidator {
 
   @Override
   public String validate(String text) {
-    if (text.isEmpty()) {
-      return "Name must not be empty.";
+    if (text.trim().isEmpty()) {
+      return "Expression must not be empty.";
     }
     try {
       mainActivity.program.parser.parseExpression(text);

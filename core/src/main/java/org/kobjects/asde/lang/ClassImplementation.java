@@ -43,6 +43,10 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
     propertyMap.put(functionName, new ClassPropertyDescriptor(functionName, methodImplementation));
   }
 
+  public void setProperty(String propertyName, Node initializer) {
+    propertyMap.put(propertyName, new ClassPropertyDescriptor(propertyName, initializer));
+  }
+
   public void processDeclarations(CodeLine codeLine) {
     for (int i = 0; i < codeLine.length(); i++) {
       Node node = codeLine.get(i);
@@ -164,7 +168,7 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
     }
 
     @Override
-    public SymbolOwner getOwner() {
+    public ClassImplementation getOwner() {
       return ClassImplementation.this;
     }
 
