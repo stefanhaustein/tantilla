@@ -321,21 +321,15 @@ public class FunctionSignatureFlow {
 
     int count = parameterList.size();
     int[] oldIndices = new int[count];
-    boolean changed = count != originalParameterList.size();
+    boolean moved = count != originalParameterList.size();
 
     for (int i = 0; i < count; i++) {
       int oldIndex = originalParameterList.indexOf(parameterList.get(i));
       oldIndices[i] = oldIndex;
       if (oldIndex != i) {
-        changed = true;
+        moved = true;
       }
     }
-
-    if (!changed) {
-      return;
-    }
-
-    // Refactor
 
     Type[] types = new Type[count];
     functionImplementation.parameterNames = new String[parameterList.size()];
@@ -345,9 +339,13 @@ public class FunctionSignatureFlow {
       types[i] = parameter.type;
     }
 
-    functionImplementation.setType(new FunctionTypeImpl(functionImplementation.getType().getReturnType(), types));
+    functionImplementation.setType(new FunctionTypeImpl(returnType, types));
 
-    mainActivity.program.accept(new ChangeSignature(symbol, oldIndices));
+    if (moved) {
+      mainActivity.program.accept(new ChangeSignature(symbol, oldIndices));
+    }
+
+    mainActivity.program.notifyProgramChanged();
   }
 
   void commitNewFunction() {
