@@ -12,6 +12,7 @@ public class ClassValidationContext {
   final ProgramValidationContext programValidationContext;
   final ClassImplementation classImplementation;
   final LinkedHashSet<String> dependencyChain = new LinkedHashSet<>();
+  public HashSet<GlobalSymbol> dependencies = new HashSet<>();
   final HashSet<ClassImplementation.ClassPropertyDescriptor> validated = new HashSet<>();
 
   ClassValidationContext(ProgramValidationContext programValidationContext, ClassImplementation classImplementation) {

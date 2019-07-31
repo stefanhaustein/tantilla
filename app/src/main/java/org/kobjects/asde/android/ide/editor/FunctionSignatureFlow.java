@@ -317,7 +317,7 @@ public class FunctionSignatureFlow {
 
 
   void commitRefactor() {
-    // Figure out the paramter movements
+    // Figure out the parameter movements
 
     int count = parameterList.size();
     int[] oldIndices = new int[count];

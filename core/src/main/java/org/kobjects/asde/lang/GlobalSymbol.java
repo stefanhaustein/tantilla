@@ -137,7 +137,7 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
       ClassValidationContext classValidationContext = new ClassValidationContext(programValidationContext, classImplementation);
       classImplementation.validate(classValidationContext);
       this.errors = classValidationContext.errors;
-
+      this.dependencies = classValidationContext.dependencies;
     } else if (initializer != null) {
       FunctionValidationContext context = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.INTERACTIVE, null);
       initializer.resolve(context, 0, 0);

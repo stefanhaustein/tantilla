@@ -101,6 +101,7 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
     Node initializer;
     FunctionImplementation methodImplementation;
     int index = -1;
+    private Map<Node, Exception> errors = Collections.emptyMap();
 
     ClassPropertyDescriptor(String name, Node initializer) {
       this.name = name;
@@ -113,6 +114,7 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
       methodImplementation.setDeclaringSymbol(this);
     }
 
+    // May also be called from ClassValidationContext.
     void validate(ClassValidationContext classValidationContext) {
       if (classValidationContext.validated.contains(this)) {
         return;
@@ -131,15 +133,15 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
         resolvedInitializers.add(initializer);
       }
 
+
       if (context.errors.size() > 0) {
         System.err.println("Validation errors for property " + name + ": " + context.errors);
       }
 
+      errors = context.errors;
       classValidationContext.errors.putAll(context.errors);
-
+      classValidationContext.dependencies.addAll(context.dependencies);
       classValidationContext.validated.add(this);
-
-      // We don't need to track dependencies (as in GlobalSymbol.validate) as they are ordered in resolvedInitializers.
     }
 
 
@@ -174,7 +176,7 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
 
     @Override
     public Map<Node, Exception> getErrors() {
-      return Collections.emptyMap();
+      return errors;
     }
 
     @Override
