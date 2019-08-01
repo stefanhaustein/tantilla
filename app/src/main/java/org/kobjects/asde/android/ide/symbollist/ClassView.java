@@ -68,6 +68,7 @@ public class ClassView extends SymbolView {
     return (SymbolListView) contentView;
   }
 
+
   @Override
   public void syncContent() {
     refresh();

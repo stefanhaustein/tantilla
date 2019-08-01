@@ -33,6 +33,7 @@ public abstract class SymbolView extends LinearLayout {
         titleView.setOnClickListener(clicked -> {
             setExpanded(!expanded, true);
         });
+        refresh();
     }
 
     public void addExpandListener(ExpandListener expandListener) {

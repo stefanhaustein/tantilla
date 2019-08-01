@@ -46,48 +46,37 @@ public class SymbolListView extends ExpandableList {
       if (symbol == null || symbol.getScope() != GlobalSymbol.Scope.PERSISTENT) {
         continue;
       }
-      String name = symbol.getName();
-      String qualifiedName = name + " " + symbol.getType();
+      // Qualified needs to be sufficiently specific to disallow cross-type mismatches
+      String qualifiedName = symbol.getName() + " " + symbol.getType();
       if (symbol.getValue() instanceof FunctionImplementation) {
         qualifiedName += Arrays.toString(((FunctionImplementation) symbol.getValue()).parameterNames);
       }
       SymbolView symbolView = nameViewMap.get(qualifiedName);
-      SymbolView original = symbolView;
-      int index;
-      if (symbol.getValue() instanceof ClassImplementation) {
-        ClassView classView;
-        if (symbolView instanceof ClassView) {
-          classView = (ClassView) symbolView;
-        } else {
-          classView = new ClassView(mainActivity, symbol);
+      if (symbolView != null) {
+        symbolView.syncContent();
+      } else {
+        if (symbol.getValue() instanceof ClassImplementation) {
+          ClassView classView = new ClassView(mainActivity, symbol);
           symbolView = classView;
           classView.addExpandListener(expandListener);
-        }
-        if (matchedView == null && returnViewForSymbol != null) {
-          matchedView = classView.getContentView().findViewBySymbol(returnViewForSymbol);
-        }
-        index = getChildCount();
-      } else if (symbol.getValue() instanceof FunctionImplementation) {
-        if (!(symbolView instanceof FunctionView)) {
+          if (matchedView == null && returnViewForSymbol != null) {
+            matchedView = classView.getContentView().findViewBySymbol(returnViewForSymbol);
+          }
+        } else if (symbol.getValue() instanceof FunctionImplementation) {
           FunctionView functionView = new FunctionView(mainActivity, symbol);
           symbolView = functionView;
           functionView.addExpandListener(expandListener);
-        }
-        index = getChildCount();
-      } else {
-        if (!(symbolView instanceof VariableView)) {
+        } else {
           VariableView variableView = new VariableView(mainActivity, symbol);
           variableView.addExpandListener(expandListener);
           symbolView = variableView;
         }
-        index = varCount++;
       }
+      int index = (symbolView instanceof VariableView) ? varCount++ : getChildCount();
+
       addView(symbolView, index);
       newNameViewMap.put(qualifiedName, symbolView);
       newSymbolViewMap.put(symbol, symbolView);
-      if (symbolView == original) {
-        symbolView.syncContent();
-      }
     }
     nameViewMap = newNameViewMap;
     symbolViewMap = newSymbolViewMap;
