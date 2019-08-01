@@ -24,20 +24,20 @@ import java.util.TreeMap;
  * In the main package because of the direct interaction with programControl.
  */
 public class FunctionImplementation implements Function, Declaration {
-    public final Program program;
-    FunctionType type;
-    public String[] parameterNames;
-    private TreeMap<Integer, CodeLine> code = new TreeMap<>();
-    int localVariableCount;
-    private StaticSymbol declaringSymbol;
+  public final Program program;
+  FunctionType type;
+  public String[] parameterNames;
+  private TreeMap<Integer, CodeLine> code = new TreeMap<>();
+  int localVariableCount;
+  private StaticSymbol declaringSymbol;
 
-    public FunctionImplementation(Program program, FunctionType type, String... parameterNames) {
+  public FunctionImplementation(Program program, FunctionType type, String... parameterNames) {
         this.program = program;
         this.type = type;
         this.parameterNames = parameterNames;
-    }
+  }
 
-    public void validate(FunctionValidationContext functionValidationContext) {
+  public void validate(FunctionValidationContext functionValidationContext) {
         int indent = 0;
         for (Map.Entry<Integer,CodeLine> entry : code.entrySet()) {
             int addLater = 0;
@@ -68,27 +68,27 @@ public class FunctionImplementation implements Function, Declaration {
             indent += addLater;
         }
         localVariableCount = functionValidationContext.getLocalVariableCount();
-    }
+  }
 
-    @Override
-    public FunctionType getType() {
+  @Override
+  public FunctionType getType() {
         return type;
     }
 
 
-    /**
-     * Calls this method with a new evaluationContext.
-     */
-    @Override
-    public Object call(EvaluationContext callerContext, int parameterCount) {
-        return callImpl(new EvaluationContext(callerContext, this, null));
-    }
+  /**
+   * Calls this method with a new evaluationContext.
+   */
+  @Override
+  public Object call(EvaluationContext callerContext, int parameterCount) {
+    return callImpl(new EvaluationContext(callerContext, this, null));
+  }
 
-    public int getLocalVariableCount() {
+  public int getLocalVariableCount() {
         return localVariableCount;
     }
 
-    public Object callImpl(EvaluationContext newContext) {
+  public Object callImpl(EvaluationContext newContext) {
         try {
             ProgramControl control = newContext.control;
       //      if (newContext.currentLine > -1) {
@@ -123,11 +123,11 @@ public class FunctionImplementation implements Function, Declaration {
             throw new WrappedExecutionException(this, newContext.currentLine, e);
         }
 
-    }
+  }
 
 
 
-    public void toString(AnnotatedStringBuilder sb, String name, Map<Node, Exception> errors) {
+  public void toString(AnnotatedStringBuilder sb, String name, Map<Node, Exception> errors) {
         boolean sub = type.getReturnType() == Types.VOID;
         String kind = sub ? "SUB" : "FUNCTION";
         if (name != null) {
@@ -161,40 +161,39 @@ public class FunctionImplementation implements Function, Declaration {
         if (name != null) {
             sb.append("END ").append(kind).append("\n\n");
         }
+  }
 
-    }
-
-    public synchronized void deleteLine(int lineNumber) {
+  public synchronized void deleteLine(int lineNumber) {
         code.remove(lineNumber);
     }
 
-    public synchronized void setLine(CodeLine line) {
+  public synchronized void setLine(CodeLine line) {
         code.put(line.getNumber(), line);
     }
 
-    public Map.Entry<Integer,CodeLine> ceilingEntry(int i) {
+  public Map.Entry<Integer,CodeLine> ceilingEntry(int i) {
         return code.ceilingEntry(i);
     }
 
-    public CodeLine findNextLine(int i) {
-        Map.Entry<Integer,CodeLine> entry = code.ceilingEntry(i);
-        return entry == null ? null : entry.getValue();
-    }
+  public CodeLine findNextLine(int i) {
+      Map.Entry<Integer,CodeLine> entry = code.ceilingEntry(i);
+      return entry == null ? null : entry.getValue();
+  }
 
-    public synchronized Iterable<Map.Entry<Integer, CodeLine>> entrySet() {
-        return new LinkedHashSet<Map.Entry<Integer, CodeLine>>(code.entrySet());
-    }
+  public synchronized Iterable<Map.Entry<Integer, CodeLine>> entrySet() {
+      return new LinkedHashSet<Map.Entry<Integer, CodeLine>>(code.entrySet());
+  }
 
-    public void clear() {
+  public void clear() {
         code = new TreeMap<>();
     }
 
-    public int getLineCount() {
+  public int getLineCount() {
         return code.size();
     }
 
 
-    public Node find(StatementMatcher matcher, int... position) {
+  public Node find(StatementMatcher matcher, int... position) {
         StatementSearch search = new StatementSearch(this) {
             @Override
             public boolean statementMatches(CodeLine line, int index, Node statement) {
@@ -205,29 +204,33 @@ public class FunctionImplementation implements Function, Declaration {
         position[0] = search.lineNumber;
         position[1] = search.index;
         return result;
-    }
+  }
 
-    public void setType(FunctionType functionType) {
+  public void setType(FunctionType functionType) {
         this.type = functionType;
     }
 
-    public Iterable<Node> statements(int fromLine, int fromIndex, int toLine, int toIndex) {
-        return () -> new StatementIterator(fromLine, fromIndex, toLine, toIndex);
-    }
+  public Iterable<Node> statements(int fromLine, int fromIndex, int toLine, int toIndex) {
+    return () -> new StatementIterator(fromLine, fromIndex, toLine, toIndex);
+  }
 
-    public Iterable<Node> descendingStatements(int fromLine, int fromIndex, int toLine, int toIndex) {
-        return () -> new DescendingStatementIterator(fromLine, fromIndex, toLine, toIndex);
-    }
+  public Iterable<Node> descendingStatements(int fromLine, int fromIndex, int toLine, int toIndex) {
+    return () -> new DescendingStatementIterator(fromLine, fromIndex, toLine, toIndex);
+  }
 
-    public void setDeclaringSymbol(StaticSymbol symbol) {
+  public void setDeclaringSymbol(StaticSymbol symbol) {
         this.declaringSymbol = symbol;
     }
 
-    public boolean isMethod() {
+  public boolean isMethod() {
         return declaringSymbol instanceof PropertyDescriptor;
     }
 
-    class StatementIterator implements Iterator<Node> {
+  public StaticSymbol getDeclaringSymbol() {
+      return declaringSymbol;
+  }
+
+  class StatementIterator implements Iterator<Node> {
         final Iterator<Map.Entry<Integer, CodeLine>> lineIterator;
 
         private Node next;

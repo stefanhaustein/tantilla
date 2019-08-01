@@ -10,7 +10,7 @@ public class EvaluationContext {
 
     private final DataStack dataStack;
     private final int stackBase;
-    final InstanceImpl self;
+    public final InstanceImpl self;
     private int stackTop;
 
     public Object returnValue;

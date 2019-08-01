@@ -15,6 +15,7 @@ import org.kobjects.asde.lang.node.OrOperator;
 import org.kobjects.asde.lang.node.Path;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.RelationalOperator;
+import org.kobjects.asde.lang.node.Self;
 import org.kobjects.expressionparser.ExpressionParser;
 
 import java.util.List;
@@ -127,6 +128,8 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
         return new Literal(Boolean.TRUE);
       case "FALSE":
         return new Literal(Boolean.FALSE);
+      case "SELF":
+        return new Self();
     }
     return new Identifier(program, name);
   }
