@@ -4,6 +4,7 @@ import android.view.View;
 import android.view.ViewParent;
 import android.widget.LinearLayout;
 
+import org.kobjects.asde.lang.ClassImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.event.ProgramChangeListener;
 import org.kobjects.asde.android.ide.MainActivity;
@@ -193,6 +194,18 @@ public class ProgramView extends LinearLayout {
                         targetView = functionView;
                         break;
                     }
+                } else if (symbolList.getChildAt(i) instanceof ClassView) {
+                    ClassView classView = (ClassView) symbolList.getChildAt(i);
+                    ClassImplementation classImplementation = (ClassImplementation) classView.symbol.getValue();
+                    StaticSymbol symbolFound = null;
+                    for (ClassImplementation.ClassPropertyDescriptor descriptor : classImplementation.propertyMap.values()) {
+                        if (descriptor.getValue() == function) {
+                            symbolFound = descriptor;
+                            break;
+                        }
+                    }
+                    targetView = (FunctionView) classView.getContentView().synchronizeTo(classImplementation.propertyMap.values(), classView.expandListener, symbolFound);
+                    break;
                 }
             }
         }

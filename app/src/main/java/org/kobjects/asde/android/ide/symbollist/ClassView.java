@@ -16,7 +16,7 @@ public class ClassView extends SymbolView {
 
   SymbolView currentSymbolView;
 
-  private final ExpandListener expandListener = new ExpandListener() {
+  final ExpandListener expandListener = new ExpandListener() {
     @Override
     public void notifyExpanding(SymbolView symbolView, boolean animated) {
       if (symbolView != currentSymbolView) {

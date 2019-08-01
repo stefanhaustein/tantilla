@@ -12,6 +12,7 @@ import org.kobjects.asde.lang.node.RelationalOperator;
 import org.kobjects.asde.lang.statement.AssignStatement;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.statement.Command;
+import org.kobjects.asde.lang.statement.DebuggerStatement;
 import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.ElseStatement;
 import org.kobjects.asde.lang.statement.EndIfStatement;
@@ -67,6 +68,10 @@ public class StatementParser {
         return;
       case "DIM":
         parseDim(tokenizer, result);
+        return;
+      case "DEBUGGER":
+        tokenizer.consumeIdentifier();
+        result.add(new DebuggerStatement());
         return;
       case "ELSE":
         tokenizer.nextToken();

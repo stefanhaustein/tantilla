@@ -71,6 +71,9 @@ public class SymbolListView extends ExpandableList {
           variableView.addExpandListener(expandListener);
           symbolView = variableView;
         }
+        if (symbol == returnViewForSymbol) {
+          matchedView = symbolView;
+        }
       }
       int index = (symbolView instanceof VariableView) ? varCount++ : getChildCount();
 
