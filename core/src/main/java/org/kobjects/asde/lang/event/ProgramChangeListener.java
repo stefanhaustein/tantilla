@@ -6,5 +6,9 @@ import org.kobjects.asde.lang.StaticSymbol;
 
 public interface ProgramChangeListener {
     void programChanged(Program program);
+
+    /**
+     *
+     */
     void symbolChangedByUser(Program program, StaticSymbol symbol);
 }

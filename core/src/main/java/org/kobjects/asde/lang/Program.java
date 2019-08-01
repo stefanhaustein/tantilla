@@ -308,6 +308,7 @@ public class Program implements SymbolOwner {
         if (symbol.getValue() instanceof FunctionImplementation) {
             FunctionImplementation functionImplementation = (FunctionImplementation) symbol.getValue();
             functionImplementation.deleteLine(line);
+            notifySymbolChanged(symbol);
         }
   }
 

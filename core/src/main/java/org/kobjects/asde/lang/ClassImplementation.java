@@ -201,7 +201,9 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
 
     @Override
     public void validate() {
-      System.err.println("ClassImplementation.ClassPropertyDescriptor.validate() NYI");
+      if (ClassImplementation.this.declaringSymbol != null) {
+        ClassImplementation.this.declaringSymbol.validate();
+      }
     }
 
     @Override
