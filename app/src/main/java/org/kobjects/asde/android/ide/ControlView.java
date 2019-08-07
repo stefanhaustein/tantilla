@@ -305,12 +305,6 @@ public class ControlView extends LinearLayout  {
       return true;
     });
     displayMenu.setGroupCheckable(1, true, true);
-    displayMenu.add("Dark theme").setCheckable(true).setChecked(mainActivity.preferences.getTheme() == Colors.Theme.DARK).setOnMenuItemClickListener(item -> {
-      mainActivity.preferences.setTheme(mainActivity.preferences.getTheme() == Colors.Theme.DARK ? Colors.Theme.LIGHT : Colors.Theme.DARK);
-      mainActivity.restart();
-      return true;
-    });
-
     popupMenu.show();
 
   }
@@ -330,8 +324,10 @@ public class ControlView extends LinearLayout  {
     String line = codeEditText.getText().toString();
 
     if (line.equalsIgnoreCase("go 64") || line.equalsIgnoreCase("go 64!")) {
-      mainActivity.preferences.setTheme(Colors.Theme.C64);
-      mainActivity.restart();
+    //  mainActivity.preferences.setTheme(Colors.Theme.C64);
+     // mainActivity.restart();
+      mainActivity.program.legacyMode = true;
+      mainActivity.program.notifyProgramRenamed();
     }
     try {
       mainActivity.shell.enter(line, mainActivity.programView.currentFunctionView.symbol, result -> {

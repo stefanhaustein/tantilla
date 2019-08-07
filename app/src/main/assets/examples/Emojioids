@@ -1,3 +1,4 @@
+ASDE
 LET ship = screen.newSprite()
 LET gameOver = false
 LET score = 0

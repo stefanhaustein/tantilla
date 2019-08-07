@@ -2,6 +2,7 @@ package org.kobjects.asde.android.ide.symbollist;
 
 import android.widget.LinearLayout;
 
+import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.SymbolTitleView;
@@ -43,7 +44,7 @@ public abstract class SymbolView extends LinearLayout {
     public abstract void syncContent();
 
     public void refresh() {
-        titleView.setBackgroundColor(symbol.getErrors().size() > 0 ? mainActivity.colors.accentLight : expanded ? mainActivity.colors.primaryLight : 0);
+        titleView.setBackgroundColor(symbol.getErrors().size() > 0 ? Colors.RED : expanded ? Colors.PRIMARY_LIGHT_FILTER : 0);
     }
 
     public void setExpanded(final boolean expand, boolean animated) {

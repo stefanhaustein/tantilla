@@ -29,11 +29,12 @@ public class ProgramParser {
   public void parseProgram(BufferedReader reader) throws IOException {
     FunctionImplementation currentFunction = program.main;
     ClassImplementation currentClass = null;
-    while (true) {
-      String line = reader.readLine();
-      if (line == null) {
-        break;
-      }
+    String line = reader.readLine();
+    program.legacyMode = line != null && !(line + ' ').startsWith("ASDE ");
+    if (!program.legacyMode) {
+      line = reader.readLine();
+    }
+    while (line != null) {
       System.out.println("Parsing: '" + line + "'");
 
       ExpressionParser.Tokenizer tokenizer = statementParser.createTokenizer(line);
@@ -73,6 +74,7 @@ public class ProgramParser {
           program.processDeclarations(codeLine);
         }
       }
+      line = reader.readLine();
     }
   }
 

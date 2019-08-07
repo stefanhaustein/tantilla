@@ -12,6 +12,7 @@ import com.vanniktech.emoji.EmojiTextView;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.android.ide.AnnotatedStringConverter;
+import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.node.Node;
@@ -67,9 +68,9 @@ public class CodeLineView extends LinearLayout {
 
   void updateColor() {
     if (highlighted) {
-      setBackgroundColor(context.colors.accentLight);
+      setBackgroundColor(Colors.RED);
     } else if (odd) {
-      setBackgroundColor(context.colors.primaryLight);
+      setBackgroundColor(Colors.PRIMARY_LIGHT_FILTER);
     } else {
       setBackgroundColor(0);
     }

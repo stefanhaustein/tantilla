@@ -1,6 +1,5 @@
 package org.kobjects.asde.android.ide;
 
-import android.content.Context;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.BackgroundColorSpan;
@@ -20,9 +19,9 @@ public class AnnotatedStringConverter {
       SpannableString s = new SpannableString(annotated.toString());
       for (final Span span : annotated.spans()) {
         if (span.annotation == Annotations.ACCENT_COLOR) {
-          s.setSpan(new ForegroundColorSpan(mainActivity.colors.accent), span.start, span.end, 0);
+          s.setSpan(new ForegroundColorSpan(Colors.ACCENT), span.start, span.end, 0);
         } else if (span.annotation instanceof Exception) {
-          s.setSpan(new BackgroundColorSpan(mainActivity.colors.accentLight), span.start, span.end, 0);
+          s.setSpan(new BackgroundColorSpan(Colors.ORANGE), span.start, span.end, 0);
           if (linked) {
             ((Exception) span.annotation).printStackTrace();
             s.setSpan(new ClickableSpan() {

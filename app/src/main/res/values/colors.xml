@@ -1,18 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="lightPrimary">#cfd8dc</color>
-    <color name="lightPrimaryDark">#9ea7aa</color>
-    <color name="lightAccent">#d32f2f</color>
-    <color name="lightBackground">#fff</color>
 
-    <color name="darkPrimary">#424242</color>
-    <color name="darkPrimaryDark">#1b1b1b</color>
-    <color name="darkAccent">#e65100</color>
-    <color name="darkBackground">#000</color>
-
-    <color name="bluePrimary">#867ade</color> <!-- -->
-    <color name="bluePrimaryDark">#606060</color>
-    <color name="blueAccent">#c18178</color>
-    <color name="blueBackground">#483aaa</color> <!-- -->
+    <color name="primary">#777777</color>
+    <color name="primaryDark">#333333</color>
+    <color name="accent">#dd8855</color>
+    <color name="background">#000</color>
 
 </resources>

@@ -1,3 +1,4 @@
+ASDE
 10 LET bob = screen.newSprite()
 20 bob.size = 50
 30 LET dx = 0.5

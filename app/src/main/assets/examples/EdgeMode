@@ -1,3 +1,4 @@
+ASDE
 100 let ghost = screen.newSprite()
 110 ghost.face = "👻"
 115 ghost.size = 30

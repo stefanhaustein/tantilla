@@ -2,6 +2,7 @@ package org.kobjects.asde.android.ide.symbollist;
 
 import android.widget.PopupMenu;
 
+import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.editor.DeleteFlow;
 import org.kobjects.asde.android.ide.editor.FunctionSignatureFlow;
@@ -35,7 +36,7 @@ public class ClassView extends SymbolView {
   ClassView(MainActivity mainActivity, StaticSymbol symbol) {
     super(mainActivity, symbol);
 
-    titleView.setTypeIndicator('C', mainActivity.colors.cyan);
+    titleView.setTypeIndicator('C', Colors.CYAN);
 
     titleView.setMoreClickListener(clicked -> {
       PopupMenu popupMenu = new PopupMenu(mainActivity, clicked);

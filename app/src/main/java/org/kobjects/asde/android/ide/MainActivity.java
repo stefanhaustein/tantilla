@@ -14,11 +14,6 @@ import android.provider.OpenableColumns;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ClickableSpan;
-import android.text.style.ForegroundColorSpan;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -34,8 +29,6 @@ import com.vanniktech.emoji.EmojiTextView;
 import com.vanniktech.emoji.one.EmojiOneProvider;
 
 import org.kobjects.annotatedtext.AnnotatedString;
-import org.kobjects.annotatedtext.Annotations;
-import org.kobjects.annotatedtext.Span;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.symbollist.FunctionView;
 import org.kobjects.asde.android.ide.symbollist.ProgramView;
@@ -82,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements Console {
     }
   }
 
-  public Colors colors;
   LinearLayout scrollContentView;
   public View rootView;
   ScrollView mainScrollView;
@@ -126,27 +118,14 @@ public class MainActivity extends AppCompatActivity implements Console {
 
     @Override
   protected void onCreate(Bundle savedInstanceState) {
-      preferences = new AsdePreferences(this);
-   //   setTheme(preferences.getDarkMode() ? R.style.AppTheme_Dark : R.style.AppTheme_Light);
-
-      switch (preferences.getTheme()) {
-          case C64:
-              setTheme(R.style.AppTheme_Blue);
-              break;
-          case LIGHT:
-              setTheme(R.style.AppTheme_Light);
-              break;
-          default:
-              setTheme(R.style.AppTheme_Dark);
-      }
-
     super.onCreate(savedInstanceState);
-    colors = new Colors(this, preferences.getTheme());
+    preferences = new AsdePreferences(this);
+
     EmojiManager.install(new EmojiOneProvider());
 
     programView = new ProgramView(this, program);
 
-    outputTitleView = new TitleView(this, colors.primary);
+    outputTitleView = new TitleView(this, Colors.PRIMARY_FILTER);
     outputTitleView.setTitle("Output");
     outputView = new LinearLayout(this);
     outputView.setOrientation(LinearLayout.VERTICAL);
@@ -277,6 +256,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     program.addProgramRenameListener((program, newReference) -> {
             programView.requestSynchronization();
             preferences.setProgramReference(newReference);
+            runOnUiThread(() -> rootView.setBackgroundColor(program.legacyMode ? Colors.BLUE : Colors.BLACK));
         });
 
     load(programReference, false, runningFromShortcut);
@@ -478,7 +458,7 @@ public class MainActivity extends AppCompatActivity implements Console {
           outputTitleView.setVisibility(View.VISIBLE);
         LinearLayout rootLayout = new LinearLayout(this);
        // rootLayout.setDividerDrawable(systemListDivider);
-        rootLayout.setDividerDrawable(new ColorDrawable(colors.primary));
+        rootLayout.setDividerDrawable(new ColorDrawable(Colors.PRIMARY_FILTER));
         rootLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
         rootLayout.setOrientation(LinearLayout.VERTICAL);
 
@@ -501,7 +481,7 @@ public class MainActivity extends AppCompatActivity implements Console {
             scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
 
             LinearLayout contentView = new LinearLayout(this);
-            contentView.setDividerDrawable(new ColorDrawable(colors.primary));
+            contentView.setDividerDrawable(new ColorDrawable(Colors.PRIMARY_FILTER));
             contentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
             contentView.addView(leftScrollView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
             contentView.addView(mainScrollView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 2));
@@ -518,7 +498,7 @@ public class MainActivity extends AppCompatActivity implements Console {
               resizableFrameLayoutParmas.topMargin = Dimensions.dpToPx(this, 36);
 
               resizableFrameLayoutParmas.gravity = Gravity.TOP | Gravity.RIGHT;
-              screen.view.setBackgroundColor(colors.background);
+              screen.view.setBackgroundColor(Colors.getBackgroundColor(program));
 
               mainView.addView(resizableFrameLayout, resizableFrameLayoutParmas);
           } else {

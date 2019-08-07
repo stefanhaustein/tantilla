@@ -2,6 +2,7 @@ package org.kobjects.asde.android.ide.symbollist;
 
 import android.widget.PopupMenu;
 
+import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.editor.DeleteFlow;
 import org.kobjects.asde.android.ide.editor.FunctionSignatureFlow;
@@ -11,7 +12,6 @@ import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.asde.lang.GlobalSymbol;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -30,7 +30,7 @@ public class FunctionView extends SymbolView {
 
     titleView.setTypeIndicator(
         isMain ? 'M' : isMethod ? 'm' : isVoid ? 'S' : 'F',
-        isMain ? mainActivity.colors.primary : mainActivity.colors.purple);
+        isMain ? Colors.PRIMARY_FILTER : Colors.PURPLE);
 
     if (!isMain) {
       titleView.setMoreClickListener(clicked -> {

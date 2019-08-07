@@ -158,22 +158,25 @@ public class Program implements SymbolOwner {
 
 
   public synchronized void toString(AnnotatedStringBuilder sb) {
-      for (GlobalSymbol symbol : symbolMap.values()) {
-          if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
-              if (!(symbol.value instanceof FunctionImplementation)) {
-                sb.append(symbol.toString(false)).append('\n');
-              }
-          }
+    if (!legacyMode) {
+      sb.append("ASDE\n");
+    }
+    for (GlobalSymbol symbol : symbolMap.values()) {
+      if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
+        if (!(symbol.value instanceof FunctionImplementation)) {
+          sb.append(symbol.toString(false)).append('\n');
+        }
       }
+    }
 
-      for (GlobalSymbol symbol : symbolMap.values()) {
-          if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
-              if (symbol.value instanceof FunctionImplementation) {
-                  ((FunctionImplementation) symbol.value).toString(sb, symbol.getName(), symbol.getErrors());
-              }
-          }
+    for (GlobalSymbol symbol : symbolMap.values()) {
+      if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
+        if (symbol.value instanceof FunctionImplementation) {
+          ((FunctionImplementation) symbol.value).toString(sb, symbol.getName(), symbol.getErrors());
+        }
       }
-      main.toString(sb, null, mainSymbol.getErrors());
+    }
+    main.toString(sb, null, mainSymbol.getErrors());
   }
 
 
