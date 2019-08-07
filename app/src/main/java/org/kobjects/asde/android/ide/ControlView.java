@@ -190,19 +190,6 @@ public class ControlView extends LinearLayout  {
       return true;
     });
 
-    Menu examplesMenu = mainMenu.addSubMenu("Examples");
-    try {
-      for (final String example : mainActivity.getAssets().list("examples")) {
-        examplesMenu.add(example).setOnMenuItemClickListener(item -> {
-              mainActivity.load(new ProgramReference(example, "file:///android_asset/examples/" + example, false), true, false);
-              return true;
-            }
-        );
-      }
-    }catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-
     Menu addMenu = mainMenu.addSubMenu("Add");
     addMenu.add("Class").setOnMenuItemClickListener(item -> {
       CreateClassFlow.start(mainActivity);
@@ -214,6 +201,19 @@ public class ControlView extends LinearLayout  {
     });
 
     Menu loadMenu = mainMenu.addSubMenu("Load");
+
+    Menu examplesMenu = loadMenu.addSubMenu("Examples");
+    try {
+      for (final String example : mainActivity.getAssets().list("examples")) {
+        examplesMenu.add(example).setOnMenuItemClickListener(item -> {
+              mainActivity.load(new ProgramReference(example, "file:///android_asset/examples/" + example, false), true, false);
+              return true;
+            }
+        );
+      }
+    }catch (IOException e) {
+      throw new RuntimeException(e);
+    }
     loadMenu.add("Load local file").setOnMenuItemClickListener(item -> {
       DialogProperties properties = new DialogProperties();
       properties.root = mainActivity.getProgramStoragePath();
