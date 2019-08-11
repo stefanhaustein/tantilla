@@ -30,11 +30,14 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.android.support:recyclerview-v7:28.0.0'
+
+
+    api "com.github.stefanhaustein.emojisprites:core:master-SNAPSHOT"
+    api "com.github.stefanhaustein.abcmoji:core:master-SNAPSHOT"
+
     api 'com.github.angads25:filepicker:1.1.1'
     api project(':core')
     api project(':typesystem')
-    api project(':emojisprites')
-    api project(':sound')
     api 'com.vanniktech:emoji-one:0.6.0-SNAPSHOT'
 
 
