@@ -1,6 +1,6 @@
 package org.kobjects.asde.android.ide.editor;
 
-import android.support.design.widget.TextInputLayout;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.TextValidator;

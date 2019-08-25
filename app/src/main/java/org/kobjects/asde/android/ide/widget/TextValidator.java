@@ -1,6 +1,6 @@
 package org.kobjects.asde.android.ide.widget;
 
-import android.support.design.widget.TextInputLayout;
+import com.google.android.material.textfield.TextInputLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.TextView;

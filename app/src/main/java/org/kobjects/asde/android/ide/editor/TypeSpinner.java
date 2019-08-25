@@ -1,6 +1,6 @@
 package org.kobjects.asde.android.ide.editor;
 
-import android.support.v7.widget.AppCompatSpinner;
+import androidx.appcompat.widget.AppCompatSpinner;
 import android.widget.ArrayAdapter;
 
 import org.kobjects.asde.android.ide.MainActivity;

@@ -1,7 +1,7 @@
 package org.kobjects.asde.android.ide.symbollist;
 
 import android.graphics.Typeface;
-import android.support.v7.widget.AppCompatTextView;
+import androidx.appcompat.widget.AppCompatTextView;
 import android.text.method.LinkMovementMethod;
 import android.view.Gravity;
 import android.view.ViewGroup;
