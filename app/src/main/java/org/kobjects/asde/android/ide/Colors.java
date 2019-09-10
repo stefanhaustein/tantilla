@@ -1,10 +1,6 @@
 package org.kobjects.asde.android.ide;
 
-import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.support.v4.content.ContextCompat;
-import android.util.TypedValue;
+import androidx.core.content.ContextCompat;
 
 import org.kobjects.asde.lang.Program;
 

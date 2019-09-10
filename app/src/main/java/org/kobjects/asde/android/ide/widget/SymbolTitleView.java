@@ -5,7 +5,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
-import android.support.v7.widget.AppCompatTextView;
+import androidx.appcompat.widget.AppCompatTextView;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;

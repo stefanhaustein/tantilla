@@ -1,14 +1,15 @@
 package org.kobjects.asde.android.ide.editor;
 
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.design.widget.TextInputLayout;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.MainActivity;

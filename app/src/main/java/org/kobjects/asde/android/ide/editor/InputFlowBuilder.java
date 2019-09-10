@@ -2,7 +2,7 @@ package org.kobjects.asde.android.ide.editor;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.support.design.widget.TextInputLayout;
+import com.google.android.material.textfield.TextInputLayout;
 import android.widget.EditText;
 
 import org.kobjects.asde.android.ide.MainActivity;
