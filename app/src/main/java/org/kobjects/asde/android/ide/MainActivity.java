@@ -28,6 +28,7 @@ import com.vanniktech.emoji.EmojiManager;
 import com.vanniktech.emoji.EmojiTextView;
 import com.vanniktech.emoji.one.EmojiOneProvider;
 
+import org.kobjects.abcnotation.AbcScore;
 import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.symbollist.FunctionView;
@@ -49,8 +50,8 @@ import org.kobjects.asde.library.ui.SpriteAdapter;
 import org.kobjects.asde.library.ui.TextBoxAdapter;
 import org.kobjects.graphics.Screen;
 import org.kobjects.asde.lang.io.Console;
-import org.kobjects.sound.SampleManager;
-import org.kobjects.sound.Sound;
+import org.kobjects.abcnotation.SampleManager;
+import org.kobjects.abcnotation.AbcScore;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;
 
@@ -220,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
       @Override
       public Object call(EvaluationContext evaluationContext, int paramCount) {
-        new Sound(sampleManager, String.valueOf(evaluationContext.getParameter(0))).play();
+        new AbcScore(sampleManager, String.valueOf(evaluationContext.getParameter(0))).play();
         return null;
       }
     });
