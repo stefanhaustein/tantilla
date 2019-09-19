@@ -5,11 +5,8 @@ sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     api "com.github.stefanhaustein.expressionparser:core:v2.3.0"
     api project(':typesystem')
-
 }
 
 

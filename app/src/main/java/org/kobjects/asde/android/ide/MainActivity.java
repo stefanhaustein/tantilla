@@ -51,7 +51,6 @@ import org.kobjects.asde.library.ui.TextBoxAdapter;
 import org.kobjects.graphics.Screen;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.abcnotation.SampleManager;
-import org.kobjects.abcnotation.AbcScore;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;
 
