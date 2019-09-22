@@ -7,6 +7,7 @@ import android.text.InputType;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
@@ -175,6 +176,21 @@ public class ControlView extends LinearLayout  {
   }
 
 
+  private void addExamples(Menu menu, String basePath) throws IOException {
+    for (final String fileName : mainActivity.getAssets().list(basePath)) {
+      String filePath = basePath + "/" + fileName;
+      if (mainActivity.getAssets().list(filePath).length > 0) {
+        addExamples(menu.addSubMenu(fileName), filePath);
+      } else{
+        menu.add(fileName).setOnMenuItemClickListener(item -> {
+              mainActivity.load(new ProgramReference(fileName, "file:///android_asset/" + filePath, false), true, false);
+              return true;
+            }
+        );
+      }
+    }
+  }
+
   public void showMenu() {
     PopupMenu popupMenu = new PopupMenu(mainActivity, menuButton);
     Menu mainMenu = popupMenu.getMenu();
@@ -204,13 +220,7 @@ public class ControlView extends LinearLayout  {
 
     Menu examplesMenu = loadMenu.addSubMenu("Examples");
     try {
-      for (final String example : mainActivity.getAssets().list("examples")) {
-        examplesMenu.add(example).setOnMenuItemClickListener(item -> {
-              mainActivity.load(new ProgramReference(example, "file:///android_asset/examples/" + example, false), true, false);
-              return true;
-            }
-        );
-      }
+      addExamples(examplesMenu, "examples");
     }catch (IOException e) {
       throw new RuntimeException(e);
     }
