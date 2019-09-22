@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class DimStatement extends Node {
     public final String varName;
-    private Type elementType;
+    public Type elementType;
 
     public DimStatement(Type elementType, String varName, Node... children) {
         super(children);
@@ -52,6 +52,7 @@ public class DimStatement extends Node {
                 children[i].toString(asb, errors);
             }
         }
-        asb.append(')');
+        asb.append(") AS ");
+        asb.append(elementType.toString());
     }
 }

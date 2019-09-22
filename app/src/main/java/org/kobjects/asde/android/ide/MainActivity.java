@@ -26,7 +26,7 @@ import android.widget.TextView;
 
 import com.vanniktech.emoji.EmojiManager;
 import com.vanniktech.emoji.EmojiTextView;
-import com.vanniktech.emoji.one.EmojiOneProvider;
+import com.vanniktech.emoji.twitter.TwitterEmojiProvider;
 
 import org.kobjects.abcnotation.AbcScore;
 import org.kobjects.annotatedtext.AnnotatedString;
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     super.onCreate(savedInstanceState);
     preferences = new AsdePreferences(this);
 
-    EmojiManager.install(new EmojiOneProvider());
+    EmojiManager.install(new TwitterEmojiProvider());
 
     programView = new ProgramView(this, program);
 
@@ -355,7 +355,6 @@ public class MainActivity extends AppCompatActivity implements Console {
   @Override
   public void onActivityResult(int requestCode, int resultCode,
                                Intent resultData) {
-
       if (resultCode == RESULT_OK && resultData != null) {
           if (requestCode == PICK_SHORTCUT_ICON_REQUEST_CODE) {
             try {
@@ -413,6 +412,8 @@ public class MainActivity extends AppCompatActivity implements Console {
                   }
                   break;
           }
+      } else {
+        super.onActivityResult(requestCode, resultCode, resultData);
       }
   }
 

@@ -144,7 +144,7 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
       this.errors = context.errors;
       if (initializer instanceof DimStatement) {
         DimStatement dimStatement = (DimStatement) initializer;
-        Type elementType = dimStatement.varName.endsWith("$") ? Types.STRING : Types.NUMBER;
+        Type elementType = dimStatement.elementType;
         type = new ArrayType(elementType, dimStatement.children.length);
       } else if (errors.size() > 0) {
         type = null;
