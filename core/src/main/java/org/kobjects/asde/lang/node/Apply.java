@@ -100,6 +100,7 @@ public class Apply extends AssignableNode {
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+     int start = asb.length();
      children[0].toString(asb, errors);
      asb.append(parentesis ? '(' : ' ');
      for (int i = 1; i < children.length; i++) {
@@ -111,5 +112,6 @@ public class Apply extends AssignableNode {
       if (parentesis) {
           asb.append(')');
       }
+      asb.annotate(start, asb.length(), errors.get(this));
   }
 }

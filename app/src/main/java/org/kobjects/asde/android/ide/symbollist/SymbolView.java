@@ -45,6 +45,9 @@ public abstract class SymbolView extends LinearLayout {
 
     public void refresh() {
         titleView.setBackgroundColor(symbol.getErrors().size() > 0 ? Colors.RED : expanded ? Colors.PRIMARY_LIGHT_FILTER : 0);
+        if (symbol.getErrors().size() > 0) {
+            System.out.println(symbol.getErrors());
+        }
     }
 
     public void setExpanded(final boolean expand, boolean animated) {

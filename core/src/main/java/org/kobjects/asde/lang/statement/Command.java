@@ -115,9 +115,10 @@ public class Command extends Statement {
 
     @Override
     public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
-        appendLinked(asb, kind.name(), errors);
-        if (children.length > 0) {
-            appendLinked(asb, " ", errors);
+        if (children.length == 0) {
+            appendLinked(asb, kind.name(), errors);
+        } else {
+            appendLinked(asb, kind.name() + " ", errors);
             children[0].toString(asb, errors);
             for (int i = 1; i < children.length; i++) {
                 asb.append(", ");

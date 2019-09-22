@@ -33,6 +33,6 @@ public class Self extends Node {
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
-    asb.append("self");
+    appendLinked(asb, "self", errors);
   }
 }

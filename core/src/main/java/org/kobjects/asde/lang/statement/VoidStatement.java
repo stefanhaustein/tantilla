@@ -37,6 +37,8 @@ public class VoidStatement extends Node {
 
     @Override
     public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+        int start = 0;
         children[0].toString(asb, errors);
+        asb.annotate(start, asb.length(), errors.get(this));
     }
 }

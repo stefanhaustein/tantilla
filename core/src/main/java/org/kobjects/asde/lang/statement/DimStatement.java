@@ -44,8 +44,7 @@ public class DimStatement extends Node {
 
     @Override
     public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
-        appendLinked(asb, "DIM " + varName, errors);
-        asb.append('(');
+        appendLinked(asb, "DIM " + varName + "(", errors);
         if (children.length > 0) {
             children[0].toString(asb, errors);
             for (int i = 1; i < children.length; i++) {

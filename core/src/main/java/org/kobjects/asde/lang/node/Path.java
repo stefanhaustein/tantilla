@@ -75,8 +75,7 @@ public class Path extends SymbolNode {
     @Override
     public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
         children[0].toString(asb, errors);
-        asb.append(".");
-        appendLinked(asb, pathName, errors);
+        appendLinked(asb, "." + pathName, errors);
     }
 
     @Override

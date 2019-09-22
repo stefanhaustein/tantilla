@@ -23,12 +23,17 @@ public class AnnotatedStringBuilder implements Appendable {
         return this;
     }
 
-    // This drops annotations "below". Should they be merged instead?
+    public AnnotatedStringBuilder annotate(int start, int end, Object annotation) {
+        spans.add(new Span(start, end, annotation));
+        return this;
+    }
+
     public AnnotatedStringBuilder append(CharSequence charSequence, Object annotation) {
+        int start = sb.length();
+        append(charSequence);
         if (annotation != null) {
-            spans.add(new Span(sb.length(), sb.length() + charSequence.length(), annotation));
+            annotate(start, sb.length(), annotation);
         }
-        sb.append(charSequence);
         return this;
     }
 
@@ -57,6 +62,10 @@ public class AnnotatedStringBuilder implements Appendable {
     @Override
     public String toString() {
         return sb.toString();
+    }
+
+    public int length() {
+        return sb.length();
     }
 
     public AnnotatedString build() {

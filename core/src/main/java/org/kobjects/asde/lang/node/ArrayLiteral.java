@@ -48,13 +48,13 @@ public class ArrayLiteral extends Node {
 
     @Override
     public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
-        asb.append('{');
+        appendLinked(asb, "{", errors);
         for (int i = 0; i < children.length; i++) {
             if (i > 0) {
                 asb.append(", ");
             }
             children[i].toString(asb, errors);
         }
-        asb.append('}');
+        appendLinked(asb, "}", errors);
     }
 }

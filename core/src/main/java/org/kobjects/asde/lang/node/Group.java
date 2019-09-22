@@ -29,9 +29,9 @@ public class Group extends Node {
 
     @Override
     public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
-        asb.append('(');
+        appendLinked(asb, "(", errors);
 
         children[0].toString(asb, errors);
-        asb.append(')');
+        appendLinked(asb, ")", errors);
     }
 }
