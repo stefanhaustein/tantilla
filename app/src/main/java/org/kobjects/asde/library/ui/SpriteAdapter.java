@@ -111,16 +111,18 @@ public class SpriteAdapter extends Instance implements Animated {
     Collection<Sprite> newCollisions = sprite.collisions();
     synchronized (collisionsArray) {
       for (int i = collisionsArray.length() - 1; i >= 0; i--) {
-        if (!newCollisions.contains(((SpriteAdapter) collisionsArray.get(i)).sprite)) {
+        SpriteAdapter oldAdapter = (SpriteAdapter) collisionsArray.get(i);
+        if (!newCollisions.contains(oldAdapter.sprite)) {
           synchronized (this) {
             collisionsArray.remove(i);
           }
         }
       }
       for (Sprite colliding : newCollisions) {
-        if (!collisionsArray.contains(colliding.getTag())) {
+        Object newAdapter = colliding.getTag();
+        if (newAdapter instanceof SpriteAdapter && !collisionsArray.contains(newAdapter)) {
           synchronized (this) {
-            collisionsArray.append(colliding.getTag());
+            collisionsArray.append(newAdapter);
           }
         }
       }
