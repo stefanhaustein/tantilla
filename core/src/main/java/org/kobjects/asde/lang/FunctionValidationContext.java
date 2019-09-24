@@ -63,22 +63,14 @@ public class FunctionValidationContext {
     }
 
     public ResolvedSymbol declare(String name, Type type, boolean constant) {
-        if (mode != ResolutionMode.FUNCTION) {
-            return resolve(name, true);
+        if (mode == ResolutionMode.FUNCTION) {
+            if (currentBlock.localSymbols.containsKey(name)) {
+                throw new RuntimeException("Local variable named '" + name + "' already exists");
+            }
+            LocalSymbol result = new LocalSymbol(localSymbolCount++, type, constant);
+            currentBlock.localSymbols.put(name, result);
+            return result;
         }
-        if (currentBlock.localSymbols.containsKey(name)) {
-            throw new RuntimeException("Local variable named '" + name + "' already exists");
-        }
-        LocalSymbol result = new LocalSymbol(localSymbolCount++, type, constant);
-        currentBlock.localSymbols.put(name, result);
-        return result;
-    }
-
-    public ResolvedSymbol resolve(String name) {
-        return resolve(name, false);
-    }
-
-    public ResolvedSymbol resolve(String name, boolean forDeclaration) {
         ResolvedSymbol resolved = currentBlock.get(name);
         if (resolved != null) {
             return resolved;
@@ -86,17 +78,15 @@ public class FunctionValidationContext {
         if (classValidationContext != null) {
             resolved = classValidationContext.resolve(name);
             if (resolved != null) {
-              return resolved;
+                return resolved;
             }
         }
-        GlobalSymbol symbol = forDeclaration
-            ? program.getSymbol(name)
-            : programValidationContext.resolve(name);  // Checks for cyclic dependencies.
+        GlobalSymbol symbol = program.getSymbol(name);
         switch (mode) {
             case BASIC:
                 if (symbol != null
-                        && (symbol.scope == GlobalSymbol.Scope.PERSISTENT
-                           || symbol.scope == GlobalSymbol.Scope.BUILTIN)) {
+                    && (symbol.scope == GlobalSymbol.Scope.PERSISTENT
+                    || symbol.scope == GlobalSymbol.Scope.BUILTIN)) {
                     dependencies.add(symbol);
                     return symbol;
                 }
@@ -104,13 +94,50 @@ public class FunctionValidationContext {
 
             case INTERACTIVE:
                 if (symbol != null) {
-                    if (!forDeclaration) {
-                        dependencies.add(symbol);
-                    }
                     return symbol;
                 }
-                if (forDeclaration) {
-                    return new DynamicSymbol(name, mode);
+                return new DynamicSymbol(name, mode);
+
+            default:
+                throw new IllegalStateException("Unrecognized mode " + mode);
+        }
+    }
+
+    public ResolvedSymbol resolve(String name) {
+
+        // Block level
+
+        ResolvedSymbol resolved = currentBlock.get(name);
+        if (resolved != null) {
+            return resolved;
+        }
+
+        // Members
+
+        if (classValidationContext != null) {
+            resolved = classValidationContext.resolve(name);
+            if (resolved != null) {
+                return resolved;
+            }
+        }
+
+        // Globals
+
+        GlobalSymbol symbol = programValidationContext.resolve(name);  // Checks for cyclic dependencies.
+        switch (mode) {
+            case BASIC:
+                if (symbol != null
+                    && (symbol.scope == GlobalSymbol.Scope.PERSISTENT
+                    || symbol.scope == GlobalSymbol.Scope.BUILTIN)) {
+                    dependencies.add(symbol);
+                    return symbol;
+                }
+                return new DynamicSymbol(name, mode);
+
+            case INTERACTIVE:
+                if (symbol != null) {
+                    dependencies.add(symbol);
+                    return symbol;
                 }
                 throw new RuntimeException("Variable not found: \"" + name + "\"");
 
