@@ -90,13 +90,13 @@ public class FunctionValidationContext {
                     dependencies.add(symbol);
                     return symbol;
                 }
-                return new DynamicSymbol(name, mode);
+                throw new RuntimeException("TODO: Transient symbol support.");
 
             case INTERACTIVE:
-                if (symbol != null) {
-                    return symbol;
+                if (symbol == null) {
+                    throw new IllegalStateException("Declaration excepted in parsing already.");
                 }
-                return new DynamicSymbol(name, mode);
+                return symbol;
 
             default:
                 throw new IllegalStateException("Unrecognized mode " + mode);
@@ -132,7 +132,7 @@ public class FunctionValidationContext {
                     dependencies.add(symbol);
                     return symbol;
                 }
-                return new DynamicSymbol(name, mode);
+                throw new RuntimeException("TODO: Transient symbol support");
 
             case INTERACTIVE:
                 if (symbol != null) {

@@ -199,20 +199,22 @@ public class Program implements SymbolOwner {
    }
 
 
-
-
-  // Can't include validate -- wouldn't work for loading.
-  public void processDeclarations(CodeLine codeLine) {
-        for (int i = 0; i < codeLine.length(); i++) {
-            Node node = codeLine.get(i);
-            if (node instanceof DeclarationStatement) {
-                DeclarationStatement declaration = (DeclarationStatement) node;
-                setPersistentInitializer(declaration.varName, declaration);
-            } else if (node instanceof DimStatement) {
-                DimStatement dim = (DimStatement) node;
-                setPersistentInitializer(dim.varName, dim);
-            }
-        }
+  /**
+   * Generates persistent symbols for "standalone" declarations, i.e. declarations not
+   * inside a function. Called from the interactive shell and from program loading to process declarations.
+   * Because it's called from loading, it can't include validation.
+   */
+  public void processStandaloneDeclarations(CodeLine codeLine) {
+    for (int i = 0; i < codeLine.length(); i++) {
+      Node node = codeLine.get(i);
+      if (node instanceof DeclarationStatement) {
+        DeclarationStatement declaration = (DeclarationStatement) node;
+        setPersistentInitializer(declaration.varName, declaration);
+      } else if (node instanceof DimStatement) {
+        DimStatement dim = (DimStatement) node;
+        setPersistentInitializer(dim.varName, dim);
+      }
+    }
   }
 
 

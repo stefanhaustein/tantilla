@@ -71,7 +71,7 @@ public class ProgramParser {
         if (currentClass != null) {
           currentClass.processDeclarations(codeLine);
         } else {
-          program.processDeclarations(codeLine);
+          program.processStandaloneDeclarations(codeLine);
         }
       }
       line = reader.readLine();

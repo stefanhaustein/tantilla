@@ -83,7 +83,7 @@ public class Shell {
                 List<? extends Node> statements = program.parser.parseStatementList(tokenizer, null);
 
                 CodeLine codeLine = new CodeLine(-2, statements);
-                program.processDeclarations(codeLine);
+                program.processStandaloneDeclarations(codeLine);
 
                 FunctionImplementation wrapper = new FunctionImplementation(program, new FunctionTypeImpl(Types.VOID));
                 wrapper.setLine(codeLine);
