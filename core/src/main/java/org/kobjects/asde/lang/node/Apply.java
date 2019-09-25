@@ -27,6 +27,14 @@ public class Apply extends AssignableNode {
     }
 
 
+    @Override
+    public void resolveForAssignment(FunctionValidationContext resolutionContext, Type type, int line, int index) {
+        resolve(resolutionContext, line, index);
+
+        // TODO: Check that assignment is supported....
+    }
+
+
     public void set(EvaluationContext evaluationContext, Object value) {
         Object base = children[0].evalRaw(evaluationContext);
         if (!(base instanceof Array)) {

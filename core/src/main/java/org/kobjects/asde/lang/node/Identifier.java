@@ -22,7 +22,16 @@ public class Identifier extends SymbolNode {
   }
 
   public void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
-      resolved = resolutionContext.resolve(name);
+      resolved = resolutionContext.resolveVariableAccess(name);
+  }
+
+  @Override
+  public void resolveForAssignment(FunctionValidationContext resolutionContext, Type type, int line, int index) {
+    try {
+      resolved = resolutionContext.resolveVariableAssignment(name, type);
+   } catch (Exception e) {
+     resolutionContext.addError(this, e);
+    }
   }
 
   public void set(EvaluationContext evaluationContext, Object value) {

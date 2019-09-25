@@ -16,39 +16,39 @@ import java.util.Map;
  * (in addition to onResolve) in AssignStatement.
  */
 public class DeclarationStatement extends Node {
-    public enum Kind {
-        LET, CONST
-    }
+  public enum Kind {
+    LET, CONST
+  }
 
-    public final String varName;
-    ResolvedSymbol resolved;
-    public final Kind kind;
+  public final String varName;
+  ResolvedSymbol resolved;
+  public final Kind kind;
 
-    public DeclarationStatement(Kind kind, String varName, Node init) {
-        super(init);
-        this.kind = kind;
-        this.varName = varName;
-    }
+  public DeclarationStatement(Kind kind, String varName, Node init) {
+    super(init);
+    this.kind = kind;
+    this.varName = varName;
+  }
 
-    public void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
-        resolved = resolutionContext.declare(varName, children[0].returnType(), kind == Kind.CONST);
-    }
+  public void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+    resolved = resolutionContext.resolveVariableDeclaration(varName, children[0].returnType(), kind == Kind.CONST);
+  }
 
-    @Override
-    public Object eval(EvaluationContext evaluationContext) {
-        Object value = children[0].eval(evaluationContext);
-        resolved.set(evaluationContext, value);
-        return null;
-    }
+  @Override
+  public Object eval(EvaluationContext evaluationContext) {
+    Object value = children[0].eval(evaluationContext);
+    resolved.set(evaluationContext, value);
+    return null;
+  }
 
-    @Override
-    public Type returnType() {
-        return Types.VOID;
-    }
+  @Override
+  public Type returnType() {
+    return Types.VOID;
+  }
 
-    @Override
-    public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
-        appendLinked(asb, kind + " " + varName + " = ", errors);
-        children[0].toString(asb, errors);
-    }
+  @Override
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+    appendLinked(asb, kind + " " + varName + " = ", errors);
+    children[0].toString(asb, errors);
+  }
 }

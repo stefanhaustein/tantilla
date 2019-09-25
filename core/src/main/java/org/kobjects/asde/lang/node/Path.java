@@ -79,6 +79,13 @@ public class Path extends SymbolNode {
     }
 
     @Override
+    public void resolveForAssignment(FunctionValidationContext resolutionContext, Type type, int line, int index) {
+        resolve(resolutionContext, line, index);
+
+        // TODO: Check support...
+    }
+
+    @Override
     public void set(EvaluationContext evaluationContext, Object value) {
         evalProperty(evaluationContext).set(value);
     }

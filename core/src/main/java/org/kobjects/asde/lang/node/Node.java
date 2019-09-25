@@ -35,7 +35,6 @@ public abstract class Node {
     } catch (Exception e) {
       resolutionContext.addError(this, e);
     }
-
   }
 
   public abstract Object eval(EvaluationContext evaluationContext);

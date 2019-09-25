@@ -23,7 +23,7 @@ public class ForStatement extends Node {
   public void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
     resolutionContext.startBlock(FunctionValidationContext.BlockType.FOR);
     // TODO: Check types?
-    resolvedVariable = resolutionContext.declare(variableName, Types.NUMBER, false);
+    resolvedVariable = resolutionContext.resolveVariableDeclaration(variableName, Types.NUMBER, false);
 
     NextSearch search = new NextSearch(resolutionContext.functionImplementation);
     NextStatement nextStatement = (NextStatement) search.find(line, index);
