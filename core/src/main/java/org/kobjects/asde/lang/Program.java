@@ -7,6 +7,7 @@ import org.kobjects.asde.lang.event.ProgramRenameListener;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.node.Visitor;
 import org.kobjects.asde.lang.parser.ProgramParser;
+import org.kobjects.asde.lang.statement.DefStatement;
 import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.node.Node;
@@ -67,7 +68,7 @@ public class Program implements SymbolOwner {
     main.setDeclaringSymbol(mainSymbol);
     this.reference = new ProgramReference("Scratch", null, false);
     for (Builtin builtin : Builtin.values()) {
-      setValue(GlobalSymbol.Scope.BUILTIN, builtin.name().toLowerCase(), builtin);
+      addBuiltin(builtin.name().toLowerCase(), builtin);
     }
   }
 
@@ -149,6 +150,10 @@ public class Program implements SymbolOwner {
       return symbolMap.get(name);
   }
 
+  /**
+   * Used for deletion and in refactoring to remove a symbol temporarily for renaming.
+   * In the latter case, the symbol will be re-added via addSymbol() under a different name.
+   */
   @Override
   public synchronized void removeSymbol(StaticSymbol symbol) {
     symbolMap.remove(symbol.getName());
@@ -213,6 +218,9 @@ public class Program implements SymbolOwner {
       } else if (node instanceof DimStatement) {
         DimStatement dim = (DimStatement) node;
         setPersistentInitializer(dim.varName, dim);
+      } else if (node instanceof DefStatement) {
+        DefStatement def = (DefStatement) node;
+        setDeclaration(def.name, def.implementation);
       }
     }
   }
@@ -256,19 +264,10 @@ public class Program implements SymbolOwner {
         main.validate(functionValidationContext);
   }
 
-  public synchronized GlobalSymbol setValue(GlobalSymbol.Scope scope, String name, Object value) {
-        GlobalSymbol symbol = getSymbol(name);
-        if (symbol == null) {
-            symbol = new GlobalSymbol(this, name, scope, value);
-            symbolMap.put(name, symbol);
-        } else {
-            // TODO: check scope!
-            symbol.value = value;
-        }
-        if (scope == GlobalSymbol.Scope.PERSISTENT) {
-            notifySymbolChanged(symbol);
-        }
-        return symbol;
+  public synchronized GlobalSymbol addBuiltin(String name, Object value) {
+    GlobalSymbol symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.BUILTIN, value);
+    symbolMap.put(name, symbol);
+    return symbol;
   }
 
   public synchronized void setDeclaration(String name, Declaration declaration) {
@@ -352,6 +351,9 @@ public class Program implements SymbolOwner {
     }
   }
 
+  /**
+   * Used in refactoring to re-add a symbol that was removed for renaming
+   */
   @Override
   public void addSymbol(StaticSymbol symbol) {
     symbolMap.put(symbol.getName(), (GlobalSymbol) symbol);

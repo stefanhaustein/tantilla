@@ -11,47 +11,47 @@ import java.util.Map;
 
 public class FunctionReturnStatement extends Node {
 
-    public FunctionReturnStatement(Node... children) {
-        super(children);
-    }
+  public FunctionReturnStatement(Node... children) {
+    super(children);
+  }
 
-    @Override
-    protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
-        if (resolutionContext.functionImplementation.getType().getReturnType() == Types.VOID) {
-            if (children.length != 0) {
-                throw new RuntimeException("Unexpected return value for subroutine.");
-            }
-        } else {
-            if (children.length != 1) {
-                throw new RuntimeException("Return value expected for function.");
-            }
-            if (!children[0].returnType().equals(resolutionContext.functionImplementation.getType().getReturnType())) {
-                throw new RuntimeException("Expected return type: " + resolutionContext.functionImplementation.getType().getReturnType() + "; actual: " + children[0].returnType());
-            }
-        }
+  @Override
+  protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+    if (resolutionContext.functionImplementation.getType().getReturnType() == Types.VOID) {
+      if (children.length != 0) {
+        throw new RuntimeException("Unexpected return value for subroutine.");
+      }
+    } else {
+      if (children.length != 1) {
+        throw new RuntimeException("Return value expected for function.");
+      }
+      if (!children[0].returnType().equals(resolutionContext.functionImplementation.getType().getReturnType())) {
+        throw new RuntimeException("Expected return type: " + resolutionContext.functionImplementation.getType().getReturnType() + "; actual: " + children[0].returnType());
+      }
     }
+  }
 
-    @Override
-    public Object eval(EvaluationContext evaluationContext) {
-        if (children.length > 0) {
-            evaluationContext.returnValue = children[0].eval(evaluationContext);
-        }
-        evaluationContext.currentLine = Integer.MAX_VALUE;
-        evaluationContext.currentIndex = 0;
-        return null;
+  @Override
+  public Object eval(EvaluationContext evaluationContext) {
+    if (children.length > 0) {
+      evaluationContext.returnValue = children[0].eval(evaluationContext);
     }
+    evaluationContext.currentLine = Integer.MAX_VALUE;
+    evaluationContext.currentIndex = 0;
+    return null;
+  }
 
-    @Override
-    public Type returnType() {
-        return Types.VOID;
-    }
+  @Override
+  public Type returnType() {
+    return Types.VOID;
+  }
 
-    @Override
-    public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
-        appendLinked(asb, "RETURN", errors);
-        if (children.length > 0) {
-            asb.append(' ');
-            children[0].toString(asb, errors);
-        }
+  @Override
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+    appendLinked(asb, "RETURN", errors);
+    if (children.length > 0) {
+      asb.append(' ');
+      children[0].toString(asb, errors);
     }
+  }
 }

@@ -11,30 +11,30 @@ import java.util.Map;
 
 public class RemStatement extends Node {
 
-    private final String comment;
+  private final String comment;
 
-    public RemStatement(String comment) {
-        this.comment = comment;
-    }
+  public RemStatement(String comment) {
+    this.comment = comment;
+  }
 
-    @Override
-    protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
-        // Nothing to do here.
-    }
+  @Override
+  protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+    // Nothing to do here.
+  }
 
-    @Override
-    public Object eval(EvaluationContext evaluationContext) {
-        return null;
-    }
+  @Override
+  public Object eval(EvaluationContext evaluationContext) {
+    return null;
+  }
 
-    @Override
-    public Type returnType() {
-        return Types.VOID;
-    }
+  @Override
+  public Type returnType() {
+    return Types.VOID;
+  }
 
-    @Override
-    public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
-        appendLinked(asb, "REM ", errors);
-        asb.append(comment);
-    }
+  @Override
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+    appendLinked(asb, "REM ", errors);
+    asb.append(comment);
+  }
 }

@@ -178,14 +178,14 @@ public class MainActivity extends AppCompatActivity implements Console {
 
     screenAdapter = new ScreenAdapter(screen);
 
-    program.setValue(GlobalSymbol.Scope.BUILTIN,"screen", screenAdapter);
-    program.setValue(GlobalSymbol.Scope.BUILTIN, "EdgeMode", SpriteAdapter.EDGE_MODE);
-    program.setValue(GlobalSymbol.Scope.BUILTIN, "XAlign", ScreenAdapter.X_ALIGN);
-    program.setValue(GlobalSymbol.Scope.BUILTIN, "YAlign", ScreenAdapter.Y_ALIGN);
-    program.setValue(GlobalSymbol.Scope.BUILTIN,"Sprite", SpriteAdapter.TYPE);
-    program.setValue(GlobalSymbol.Scope.BUILTIN, "TextBox", TextBoxAdapter.TYPE);
-    program.setValue(GlobalSymbol.Scope.BUILTIN, "dpad", new DpadAdapter(screen.dpad));
-    program.setValue(GlobalSymbol.Scope.BUILTIN, "cls", new Function() {
+    program.addBuiltin("screen", screenAdapter);
+    program.addBuiltin( "EdgeMode", SpriteAdapter.EDGE_MODE);
+    program.addBuiltin( "XAlign", ScreenAdapter.X_ALIGN);
+    program.addBuiltin( "YAlign", ScreenAdapter.Y_ALIGN);
+    program.addBuiltin("Sprite", SpriteAdapter.TYPE);
+    program.addBuiltin( "TextBox", TextBoxAdapter.TYPE);
+    program.addBuiltin("dpad", new DpadAdapter(screen.dpad));
+    program.addBuiltin("cls", new Function() {
         @Override
         public FunctionType getType() {
             return FUNCTION_VOID_0;
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements Console {
             return null;
         }
     });
-    program.setValue(GlobalSymbol.Scope.BUILTIN, "sleep", new Function() {
+    program.addBuiltin("sleep", new Function() {
         @Override
         public FunctionType getType() {
             return new FunctionTypeImpl(Types.VOID, Types.NUMBER);
@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements Console {
             return null;
         }
     });
-    program.setValue(GlobalSymbol.Scope.BUILTIN, "play", new Function() {
+    program.addBuiltin("play", new Function() {
       @Override
       public FunctionType getType() {
         return new FunctionTypeImpl(Types.VOID, Types.STRING);

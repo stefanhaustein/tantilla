@@ -24,7 +24,7 @@ import java.util.Map;
 public class LegacyStatement extends Node {
 
   public enum Kind {
-    DATA, DEF, DUMP,
+    DATA, DUMP,
     GOSUB,
     ON,
     READ, RESTORE, RETURN,
@@ -59,30 +59,6 @@ public class LegacyStatement extends Node {
     }
     Program program = evaluationContext.control.program;
     switch (kind) {
-      case DEF: {
-        Node assignment = children[0];
-        if (!(assignment instanceof RelationalOperator)
-                || !((RelationalOperator) assignment).getName().equals("=")
-                || !(assignment.children[0] instanceof Apply)
-                || !(((Apply) assignment.children[0]).children[0] instanceof Identifier)) {
-          throw new RuntimeException("Assignment to function declaration expected.");
-        }
-        Apply target = (Apply) assignment.children[0];
-        String name = ((Identifier) target.children[0]).getName();
-        Type[] parameterTypes = new Type[target.children.length - 1];
-        String[] parameterNames = new String[parameterTypes.length];
-        for (int i = 0; i < parameterTypes.length; i++) {
-          Identifier parameterNode = (Identifier) target.children[i + 1];
-          parameterNames[i] = parameterNode.getName();
-          parameterTypes[i] = parameterNode.getName().endsWith("$") ? Types.STRING : Types.NUMBER;
-        }
-        FunctionImplementation fn = new FunctionImplementation(program, new FunctionTypeImpl(name.endsWith("$") ? Types.STRING : Types.NUMBER, parameterTypes), parameterNames);
-        fn.setLine(new CodeLine(10, new FunctionReturnStatement(assignment.children[1])));
-        program.setValue(evaluationContext.getSymbolScope(), name, fn);
-        fn.setDeclaringSymbol(program.getSymbol(name));
-        break;
-      }
-
       case DATA:
         break;
 

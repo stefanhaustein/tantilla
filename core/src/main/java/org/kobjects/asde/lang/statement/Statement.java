@@ -7,12 +7,12 @@ import org.kobjects.typesystem.Type;
 
 public abstract class Statement extends Node {
 
-    Statement(Node... children) {
-        super(children);
-    }
+  Statement(Node... children) {
+    super(children);
+  }
 
-    @Override
-    public Type returnType() {
-        return Types.VOID;
-    }
+  @Override
+  public Type returnType() {
+    return Types.VOID;
+  }
 }

@@ -10,23 +10,23 @@ import java.util.Map;
 
 public class EndIfStatement extends Node {
 
-    @Override
-    protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
-        resolutionContext.endBlock(FunctionValidationContext.BlockType.IF);
-    }
+  @Override
+  protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+    resolutionContext.endBlock(FunctionValidationContext.BlockType.IF);
+  }
 
-    @Override
-    public Object eval(EvaluationContext evaluationContext) {
-        return null;
-    }
+  @Override
+  public Object eval(EvaluationContext evaluationContext) {
+    return null;
+  }
 
-    @Override
-    public Type returnType() {
-        return null;
-    }
+  @Override
+  public Type returnType() {
+    return null;
+  }
 
-    @Override
-    public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
-        appendLinked(asb, "ENDIF", errors);
-    }
+  @Override
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+    appendLinked(asb, "ENDIF", errors);
+  }
 }

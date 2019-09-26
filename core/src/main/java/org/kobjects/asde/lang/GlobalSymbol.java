@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.asde.lang.refactor.Rename;
+import org.kobjects.asde.lang.statement.DefStatement;
 import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
@@ -150,6 +151,8 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
         type = null;
       } else if (initializer instanceof DeclarationStatement) {
         type = initializer.children[0].returnType();
+      } else if (initializer instanceof DefStatement) {
+        type = ((DefStatement) initializer).implementation.getType();
       } else {
         throw new RuntimeException("not an initializer statement: " + initializer);
       }
