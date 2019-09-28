@@ -31,6 +31,7 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
   private boolean constant;
   private Map<Node, Exception> errors = Collections.emptyMap();
   Set<GlobalSymbol> dependencies = Collections.emptySet();
+  int stamp;
 
   GlobalSymbol(Program program, String name, Scope scope, Object value) {
     this.program = program;
@@ -38,6 +39,7 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
     this.scope = scope;
     this.value = value;
     this.type = value == null ? null : Types.of(value);
+    this.stamp = program.currentStamp;
   }
 
   @Override

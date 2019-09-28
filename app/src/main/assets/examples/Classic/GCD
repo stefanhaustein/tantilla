@@ -1,0 +1,11 @@
+10 PRINT "Finding the greatest common divisor"
+20 INPUT "Enter A: "; A
+25 INPUT "Enter B: "; B
+30 IF A<=0 OR B<=0 OR INT(A)<>A OR INT(B)<>B THEN GOTO 20
+35 IF A < B THEN C = A : A=B : B=C
+40 PRINT A,B
+50 LET C = A - INT(A/B)*B
+60 LET A = B : B = C
+70 IF B > 0 GOTO 40
+80 PRINT "GCG is "; A
+90 END

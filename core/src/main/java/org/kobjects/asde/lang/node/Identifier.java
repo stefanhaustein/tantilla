@@ -27,11 +27,7 @@ public class Identifier extends SymbolNode {
 
   @Override
   public void resolveForAssignment(FunctionValidationContext resolutionContext, Type type, int line, int index) {
-    try {
-      resolved = resolutionContext.resolveVariableAssignment(name, type);
-   } catch (Exception e) {
-     resolutionContext.addError(this, e);
-    }
+    resolved = resolutionContext.resolveVariableAssignment(name, type);
   }
 
   public void set(EvaluationContext evaluationContext, Object value) {
@@ -40,7 +36,7 @@ public class Identifier extends SymbolNode {
 
   @Override
   public boolean isConstant() {
-    return resolved == null ? false : resolved.isConstant();
+    return resolved.isConstant();
   }
 
   @Override
@@ -55,7 +51,7 @@ public class Identifier extends SymbolNode {
   }
 
   public Type returnType() {
-    return resolved == null ? null : resolved.getType();
+    return  resolved.getType();
   }
 
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {

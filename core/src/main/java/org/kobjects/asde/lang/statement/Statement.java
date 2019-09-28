@@ -12,7 +12,7 @@ public abstract class Statement extends Node {
   }
 
   @Override
-  public Type returnType() {
+  public final Type returnType() {
     return Types.VOID;
   }
 }

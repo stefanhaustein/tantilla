@@ -77,7 +77,7 @@ public class Apply extends AssignableNode {
     public Object eval(EvaluationContext evaluationContext) {
         Object base = children[0].evalRaw(evaluationContext);
         if (!(base instanceof Function)) {
-            throw new EvaluationException(this, "Can't apply parameters to " + base);
+            throw new EvaluationException(this, "Can't apply parameters to " + base + " / " + children[0]);
         }
         Function function = (Function) base;
         evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());

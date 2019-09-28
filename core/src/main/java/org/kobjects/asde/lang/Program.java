@@ -5,6 +5,7 @@ import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.event.ProgramChangeListener;
 import org.kobjects.asde.lang.event.ProgramRenameListener;
 import org.kobjects.asde.lang.io.ProgramReference;
+import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Visitor;
 import org.kobjects.asde.lang.parser.ProgramParser;
 import org.kobjects.asde.lang.statement.DefStatement;
@@ -16,6 +17,7 @@ import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.parser.StatementParser;
 import org.kobjects.typesystem.FunctionTypeImpl;
+import org.kobjects.typesystem.Type;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -62,6 +64,7 @@ public class Program implements SymbolOwner {
   public final Console console;
   public boolean legacyMode;
   private boolean loading;
+  int currentStamp;
 
   public Program(Console console) {
     this.console = console;
@@ -242,13 +245,13 @@ public class Program implements SymbolOwner {
 
           new ProgramParser(this).parseProgram(reader);
 
-          validate();
 
       } finally {
           console.endProgress();
           loading = false;
       }
 
+      // change notification triggers validation
       notifyProgramChanged();
   }
 
@@ -258,10 +261,7 @@ public class Program implements SymbolOwner {
             context.startChain(entry.getKey());
             entry.getValue().validate(context);
         }
-        FunctionValidationContext functionValidationContext = new FunctionValidationContext(context,
-                FunctionValidationContext.ResolutionMode.FUNCTION,
-                main);
-        main.validate(functionValidationContext);
+        mainSymbol.validate(context);
   }
 
   public synchronized GlobalSymbol addBuiltin(String name, Object value) {
@@ -270,6 +270,31 @@ public class Program implements SymbolOwner {
     return symbol;
   }
 
+  public synchronized GlobalSymbol addTransientSymbol(String name, Type knownType) {
+    // assert !symbolMap.containsKey(name);
+    GlobalSymbol symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.TRANSIENT, null);
+    symbolMap.put(name, symbol);
+
+    // Can't use value because it wont be constant!
+    Object initialValue;
+    if (knownType == null) {
+      initialValue = name.endsWith("$") ? "" : 0.0;
+    } else  if (knownType == Types.NUMBER) {
+      initialValue = new Literal(0.0);
+    } else if (knownType == Types.STRING) {
+      initialValue = new Literal("");
+    } else if (knownType == Types.BOOLEAN) {
+      initialValue = new Literal(Boolean.FALSE);
+    } else {
+      throw new RuntimeException("Unsupported type for legacy code: " + knownType);
+    }
+
+    symbol.initializer = new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(initialValue));
+
+    return symbol;
+  }
+
+
   public synchronized void setDeclaration(String name, Declaration declaration) {
         GlobalSymbol symbol = getSymbol(name);
         if (symbol == null) {
@@ -277,7 +302,7 @@ public class Program implements SymbolOwner {
             symbolMap.put(name, symbol);
         } else {
             if (symbol.getScope() == GlobalSymbol.Scope.BUILTIN) {
-                throw new RuntimeException("Can't overwriter builtin '" + name + "'");
+                throw new RuntimeException("Can't overwrite builtin '" + name + "'");
             }
             symbol.value = declaration;
         }
@@ -359,4 +384,5 @@ public class Program implements SymbolOwner {
     symbolMap.put(symbol.getName(), (GlobalSymbol) symbol);
     notifyProgramChanged();
   }
+
 }

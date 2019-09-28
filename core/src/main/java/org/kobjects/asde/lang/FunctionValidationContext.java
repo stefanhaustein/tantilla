@@ -82,21 +82,26 @@ public class FunctionValidationContext {
   }
 
   private ResolvedSymbol resolveVariableAssignment(String name, Type type, boolean addDependency) {
-    ResolvedSymbol resolved = resolveVariableAccess(name, type, addDependency);
-    if (!Types.match(type, resolved.getType())) {
-      throw new RuntimeException("Cannot assign " + resolved.getType() + " to " + type);
-    }
+    ResolvedSymbol resolved = resolveVariableAccess(name, type, addDependency, true);
     // Doesn't check for assigning to constants here because this is also called from
     // resolveVariableDeclaration handling the initial assignment, so that part is checked in
     // AssignStatement.
+    if (!Types.match(type, resolved.getType())) {
+      throw new RuntimeException("Cannot assign value of type " + type + " to " + name + " of type " + resolved.getType());
+    }
+
     return resolved;
   }
 
   public ResolvedSymbol resolveVariableAccess(String name) {
-    return resolveVariableAccess(name, null, true);
+    return resolveVariableAccess(name, null, true, false);
   }
 
-  private ResolvedSymbol resolveVariableAccess(String name, Type knownType, boolean addDependency) {
+  private ResolvedSymbol resolveVariableAccess(String name, Type knownType, boolean addDependency, boolean forAssignment) {
+
+    if (name.equalsIgnoreCase("int")) {
+      System.out.println("WTF?");
+    }
 
     // Block level
 
@@ -120,38 +125,22 @@ public class FunctionValidationContext {
         ? programValidationContext.resolve(name)  // Checks for cyclic dependencies.
         : program.getSymbol(name);
 
-    switch (mode) {
-      case BASIC:
-        if (symbol != null
-            && (symbol.scope == GlobalSymbol.Scope.PERSISTENT
-            || symbol.scope == GlobalSymbol.Scope.BUILTIN)) {
-          if (addDependency) {
-            dependencies.add(symbol);
-          }
-          return symbol;
-        }
-        throw new RuntimeException("TODO: Transient symbol support");
-
-      case INTERACTIVE:
-        if (symbol != null) {
-          if (addDependency) {
-            dependencies.add(symbol);
-          }
-          return symbol;
-        }
+    if (symbol == null) {
+      if (mode != ResolutionMode.FUNCTION && (forAssignment || mode == ResolutionMode.BASIC)) {
+        symbol = program.addTransientSymbol(name, knownType);
+      } else {
         throw new RuntimeException("Variable not found: \"" + name + "\"");
-
-      case FUNCTION:
-        if (symbol == null || symbol.scope == GlobalSymbol.Scope.TRANSIENT) {
-          throw new RuntimeException("Variable not found: \"" + name + "\"");
-        }
-        if (symbol.initializer != null && addDependency) {
-          dependencies.add(symbol);
-        }
-        return symbol;
-      default:
-        throw new IllegalStateException("Unrecognized mode " + mode);
+      }
+    } else {
+      if (forAssignment && symbol.scope == GlobalSymbol.Scope.BUILTIN) {
+        throw new RuntimeException("Can't overwrite builtin " + name);
+      }
     }
+
+    if (addDependency && symbol.initializer != null) {
+      dependencies.add(symbol);
+    }
+    return symbol;
   }
 
   public void addError(Node node, Exception e) {

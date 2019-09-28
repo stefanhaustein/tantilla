@@ -22,13 +22,14 @@ public class AssignStatement extends Statement {
   @Override
   public void resolve(FunctionValidationContext resolutionContext, int line, int index) {
     children[1].resolve(resolutionContext, line, index);
-    ((AssignableNode) children[0]).resolveForAssignment(resolutionContext, children[1].returnType(), line, index);
     try {
+      // May fail if resolve above has failed.
+      ((AssignableNode) children[0]).resolveForAssignment(resolutionContext, children[1].returnType(), line, index);
       onResolve(resolutionContext, line, index);
     } catch (Exception e) {
-      resolutionContext.addError(this, e);
+
     }
- }
+   }
 
 
   @Override

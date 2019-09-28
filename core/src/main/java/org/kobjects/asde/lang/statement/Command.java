@@ -109,11 +109,6 @@ public class Command extends Statement {
   }
 
   @Override
-  public Type returnType() {
-    return Types.VOID;
-  }
-
-  @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
     if (children.length == 0) {
       appendLinked(asb, kind.name(), errors);
