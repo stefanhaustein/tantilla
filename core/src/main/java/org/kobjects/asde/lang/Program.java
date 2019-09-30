@@ -273,26 +273,21 @@ public class Program implements SymbolOwner {
 
 
 
-  public synchronized GlobalSymbol addTransientSymbol(String name, Type knownType) {
+  public synchronized GlobalSymbol addTransientSymbol(String name, Type type) {
     // assert !symbolMap.containsKey(name);
     GlobalSymbol symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.TRANSIENT, null);
     symbolMap.put(name.toLowerCase(), symbol);
 
-    // Can't use value because it wont be constant!
-    if (knownType == null) {
-      knownType = name.endsWith("$") ? Types.STRING : Types.NUMBER;
-    }
-
-    if (knownType == Types.NUMBER) {
+    if (type == Types.NUMBER) {
       symbol.initializer = new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(0.0));
-    } else if (knownType == Types.STRING) {
+    } else if (type == Types.STRING) {
       symbol.initializer = new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(""));
-    } else if (knownType == Types.BOOLEAN) {
+    } else if (type == Types.BOOLEAN) {
       symbol.initializer = new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(Boolean.FALSE));
-    } else if (knownType instanceof ArrayType) {
-      symbol.initializer = new DimStatement(((ArrayType) knownType).getReturnType(), name, new Literal(11.0));
+    } else if (type instanceof ArrayType) {
+      symbol.initializer = new DimStatement(((ArrayType) type).getReturnType(), name, new Literal(11.0));
     } else {
-      throw new RuntimeException("Unsupported type for transient symbol: " + knownType);
+      throw new RuntimeException("Unsupported type for transient symbol: " + type);
     }
 
     return symbol;
