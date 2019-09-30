@@ -24,14 +24,14 @@ public abstract class Node {
     visitor.visitNode(this);
   }
 
-  protected abstract void onResolve(FunctionValidationContext resolutionContext, int line, int index);
+  protected abstract void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index);
 
-  public void resolve(FunctionValidationContext resolutionContext, int line, int index) {
+  public void resolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     for (Node child: children) {
-      child.resolve(resolutionContext, line, index);
+      child.resolve(resolutionContext, this, line, index);
     }
     try {
-      onResolve(resolutionContext, line, index);
+      onResolve(resolutionContext, parent, line, index);
     } catch (Exception e) {
       resolutionContext.addError(this, e);
     }

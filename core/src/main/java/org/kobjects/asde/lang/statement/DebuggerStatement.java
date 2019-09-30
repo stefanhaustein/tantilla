@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class DebuggerStatement extends Statement {
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     // nothing to do here...
   }
 

@@ -126,7 +126,7 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
         methodImplementation.validate(context);
 
       } else {
-        initializer.resolve(context, 0, 0);
+        initializer.resolve(context, null, 0, 0);
         //    this.errors = context.errors;
 
         index = resolvedInitializers.size();

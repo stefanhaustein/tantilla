@@ -20,7 +20,7 @@ public class DefStatement extends Node {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     FunctionValidationContext innerContext = new FunctionValidationContext(resolutionContext.programValidationContext, resolutionContext.mode, implementation);
     implementation.validate(innerContext);
     resolved = resolutionContext.resolveVariableDeclaration(name, implementation.getType(), true);

@@ -32,7 +32,7 @@ public class RelationalOperator extends Node {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     if (!Types.match(children[0].returnType(), children[1].returnType())) {
       throw new RuntimeException("Argument types must match for relational expressions; got "
               + children[0].returnType() + " and " + children[1].returnType());

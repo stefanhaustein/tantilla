@@ -78,7 +78,7 @@ public enum Builtin implements Function {
         return s.substring(Math.min(s.length(), s.length() - asInt(evaluationContext.getParameter(1))));
       }
       case RND: return Math.random();
-      case TAB: return evaluationContext.control.program.tab(asInt(evaluationContext.getParameter(1)));
+      case TAB: return evaluationContext.control.program.tab(asInt(evaluationContext.getParameter(0)));
       case TAN: return Math.tan((Double) evaluationContext.getParameter(0));
       case VAL: return Double.parseDouble((String) evaluationContext.getParameter(0));
       default:

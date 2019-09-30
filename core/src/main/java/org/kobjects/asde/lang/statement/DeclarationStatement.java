@@ -30,7 +30,7 @@ public class DeclarationStatement extends Node {
     this.varName = varName;
   }
 
-  public void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+  public void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     resolved = resolutionContext.resolveVariableDeclaration(varName, children[0].returnType(), kind == Kind.CONST);
   }
 

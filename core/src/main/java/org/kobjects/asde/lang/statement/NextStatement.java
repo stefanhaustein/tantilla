@@ -2,13 +2,11 @@ package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.JumpStackEntry;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 public class NextStatement extends Node {
@@ -40,7 +38,7 @@ public class NextStatement extends Node {
         return Types.VOID;
     }
 
-    public void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+    public void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
         if (resolvedForStatement == null) {
           throw new RuntimeException("NEXT without FOR");
         }

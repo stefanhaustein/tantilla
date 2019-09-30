@@ -39,7 +39,7 @@ public class MathOperator extends Node {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     boolean bothNumber = Types.match(children[0].returnType(), Types.NUMBER)
             && Types.match(children[1].returnType(), Types.NUMBER);
     if (kind == Kind.ADD) {

@@ -8,7 +8,6 @@ import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
-import org.kobjects.typesystem.MetaType;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -25,7 +24,7 @@ public class DimStatement extends Node {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     for (Node node : children) {
       if (node.returnType() != Types.NUMBER) {
         resolutionContext.addError(node, new RuntimeException("Numerical type required for DIM"));
@@ -39,7 +38,7 @@ public class DimStatement extends Node {
     int[] dims = new int[children.length];
     for (int i = 0; i < children.length; i++) {
       // TODO: evalChildToInt
-      dims[i] = evalChildToInt(evaluationContext, i);
+      dims[i] = evalChildToInt(evaluationContext, i) + (evaluationContext.control.program.legacyMode ? 1 : 0);
     }
     resolved.set(evaluationContext, new Array(elementType, dims));
     return null;

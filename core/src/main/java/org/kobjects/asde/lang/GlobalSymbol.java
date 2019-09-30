@@ -1,6 +1,5 @@
 package org.kobjects.asde.lang;
 
-import org.kobjects.asde.lang.refactor.Rename;
 import org.kobjects.asde.lang.statement.DefStatement;
 import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.type.Types;
@@ -143,7 +142,7 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
       this.dependencies = classValidationContext.dependencies;
     } else if (initializer != null) {
       FunctionValidationContext context = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.INTERACTIVE, null);
-      initializer.resolve(context, 0, 0);
+      initializer.resolve(context, null, 0, 0);
       this.errors = context.errors;
       if (initializer instanceof DimStatement) {
         DimStatement dimStatement = (DimStatement) initializer;

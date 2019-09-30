@@ -93,11 +93,11 @@ public class FunctionValidationContext {
     return resolved;
   }
 
-  public ResolvedSymbol resolveVariableAccess(String name) {
-    return resolveVariableAccess(name, null, true, false);
+  public ResolvedSymbol resolveVariableAccess(String name, Type impliedType) {
+    return resolveVariableAccess(name, impliedType, true, false);
   }
 
-  private ResolvedSymbol resolveVariableAccess(String name, Type knownType, boolean addDependency, boolean forAssignment) {
+  private ResolvedSymbol resolveVariableAccess(String name, Type impliedType, boolean addDependency, boolean forAssignment) {
 
     if (name.equalsIgnoreCase("int")) {
       System.out.println("WTF?");
@@ -127,7 +127,7 @@ public class FunctionValidationContext {
 
     if (symbol == null) {
       if (mode != ResolutionMode.FUNCTION && (forAssignment || mode == ResolutionMode.BASIC)) {
-        symbol = program.addTransientSymbol(name, knownType);
+        symbol = program.addTransientSymbol(name, impliedType);
       } else {
         throw new RuntimeException("Variable not found: \"" + name + "\"");
       }

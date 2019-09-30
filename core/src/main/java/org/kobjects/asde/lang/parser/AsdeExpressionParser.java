@@ -28,7 +28,7 @@ public class AsdeExpressionParser extends ExpressionParser<Node> {
 
 
   public ExpressionParser.Tokenizer createTokenizer(String line) {
-    ExpressionParser.Tokenizer tokenizer = new ExpressionParser.Tokenizer(new Scanner(line), getSymbols(), "->");
+    ExpressionParser.Tokenizer tokenizer = new ExpressionParser.Tokenizer(new Scanner(line), getSymbols(), "->", ";", ":");
     tokenizer.numberPattern = Pattern.compile(
         "\\G\\s*((#[0-9a-fA-f]+)|(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?)");
     tokenizer.lineCommentPattern = Pattern.compile("\\G\\h*'.*(\\v|\\Z)");

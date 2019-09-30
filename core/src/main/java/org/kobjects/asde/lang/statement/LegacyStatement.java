@@ -2,18 +2,12 @@ package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.FunctionImplementation;
-import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.JumpStackEntry;
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.AssignableNode;
-import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.node.RelationalOperator;
 import org.kobjects.asde.lang.FunctionValidationContext;
-import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
 
 import java.util.ArrayList;
@@ -47,7 +41,7 @@ public class LegacyStatement extends Node {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     if (resolutionContext.mode == FunctionValidationContext.ResolutionMode.FUNCTION) {
       throw new RuntimeException("Legacy statement " + kind + " not permitted in functions and subroutines.");
     }

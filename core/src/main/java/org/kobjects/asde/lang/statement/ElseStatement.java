@@ -22,7 +22,7 @@ public class ElseStatement extends Node {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     resolutionContext.endBlock(FunctionValidationContext.BlockType.IF);
     resolutionContext.startBlock(FunctionValidationContext.BlockType.IF);
     if (multiline) {

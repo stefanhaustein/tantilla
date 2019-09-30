@@ -20,7 +20,7 @@ public class ForStatement extends Node {
     this.variableName = varName;
   }
 
-  public void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+  public void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     resolutionContext.startBlock(FunctionValidationContext.BlockType.FOR);
     // TODO: Check types?
     resolvedVariable = resolutionContext.resolveVariableDeclaration(variableName, Types.NUMBER, false);

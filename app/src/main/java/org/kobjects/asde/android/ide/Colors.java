@@ -26,10 +26,6 @@ public class Colors {
   public static final int ACCENT = ORANGE;
 
 
-  public static final int getBackgroundColor(Program program) {
-    return program.legacyMode ? BLUE : BLACK;
-  }
-
 
 
 

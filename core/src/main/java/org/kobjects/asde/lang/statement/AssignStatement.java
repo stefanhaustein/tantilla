@@ -2,9 +2,6 @@ package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.GlobalSymbol;
-import org.kobjects.asde.lang.node.Identifier;
-import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
@@ -20,12 +17,12 @@ public class AssignStatement extends Statement {
   }
 
   @Override
-  public void resolve(FunctionValidationContext resolutionContext, int line, int index) {
-    children[1].resolve(resolutionContext, line, index);
+  public void resolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+    children[1].resolve(resolutionContext, this, line, index);
     try {
       // May fail if resolve above has failed.
-      ((AssignableNode) children[0]).resolveForAssignment(resolutionContext, children[1].returnType(), line, index);
-      onResolve(resolutionContext, line, index);
+      ((AssignableNode) children[0]).resolveForAssignment(resolutionContext, this, children[1].returnType(), line, index);
+      onResolve(resolutionContext, parent, line, index);
     } catch (Exception e) {
 
     }
@@ -33,7 +30,7 @@ public class AssignStatement extends Statement {
 
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     if (((AssignableNode) children[0]).isConstant()) {
       throw new RuntimeException("Cannot assign to a constant.");
     }

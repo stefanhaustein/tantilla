@@ -5,7 +5,6 @@ import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.StatementMatcher;
-import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.Path;
 import org.kobjects.asde.lang.node.Visitor;
@@ -24,7 +23,7 @@ public class OnStatement extends Statement  {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     CodeLine codeLine = resolutionContext.functionImplementation.ceilingEntry(line).getValue();
     if (codeLine.length() > index + 1) {
       lineBeyondEnd = line + 1;

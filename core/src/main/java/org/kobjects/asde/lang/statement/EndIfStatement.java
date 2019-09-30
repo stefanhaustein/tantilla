@@ -11,7 +11,7 @@ import java.util.Map;
 public class EndIfStatement extends Node {
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     resolutionContext.endBlock(FunctionValidationContext.BlockType.IF);
   }
 

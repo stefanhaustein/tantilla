@@ -62,7 +62,7 @@ public class FunctionImplementation implements Function, Declaration {
                         indent--;
                     }
                 }
-                statement.resolve(functionValidationContext, entry.getKey(), i);
+                statement.resolve(functionValidationContext, null, entry.getKey(), i);
             }
             line.setIndent(indent);
             indent += addLater;

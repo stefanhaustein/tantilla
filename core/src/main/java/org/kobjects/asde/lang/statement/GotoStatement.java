@@ -18,7 +18,7 @@ public class GotoStatement extends Node {
     }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     if (resolutionContext.mode == FunctionValidationContext.ResolutionMode.BASIC) {
       resolvedTarget = -1;
       return;

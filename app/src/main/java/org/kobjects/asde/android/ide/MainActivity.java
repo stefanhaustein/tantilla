@@ -58,6 +58,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.SynchronousQueue;
 
@@ -256,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     program.addProgramRenameListener((program, newReference) -> {
             programView.requestSynchronization();
             preferences.setProgramReference(newReference);
-            runOnUiThread(() -> rootView.setBackgroundColor(program.legacyMode ? Colors.BLUE : Colors.BLACK));
+            runOnUiThread(() -> rootView.setBackgroundColor(getBackgroundColor()));
         });
 
     load(programReference, false, runningFromShortcut);
@@ -417,6 +419,9 @@ public class MainActivity extends AppCompatActivity implements Console {
       }
   }
 
+  int getBackgroundColor() {
+      return program.legacyMode ? Colors.BLUE : Colors.BLACK;
+  }
 
   void arrangeUi() {
       runOnUiThread(() -> arrangeUiImpl());
@@ -424,6 +429,10 @@ public class MainActivity extends AppCompatActivity implements Console {
 
   private void arrangeUiImpl() {
       controlView.dismissEmojiPopup();
+
+      if (rootView != null) {
+        rootView.setBackgroundColor(0);
+      }
 
       removeFromParent(leftScrollView);
       removeFromParent(mainScrollView);
@@ -499,7 +508,7 @@ public class MainActivity extends AppCompatActivity implements Console {
               resizableFrameLayoutParmas.topMargin = Dimensions.dpToPx(this, 36);
 
               resizableFrameLayoutParmas.gravity = Gravity.TOP | Gravity.RIGHT;
-              screen.view.setBackgroundColor(Colors.getBackgroundColor(program));
+              screen.view.setBackgroundColor(getBackgroundColor());
 
               mainView.addView(resizableFrameLayout, resizableFrameLayoutParmas);
           } else {
@@ -520,6 +529,7 @@ public class MainActivity extends AppCompatActivity implements Console {
         } */
         rootView = rootLayout;
      }
+      rootView.setBackgroundColor(getBackgroundColor());
       setContentView(rootView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
   }
 
@@ -680,6 +690,9 @@ public class MainActivity extends AppCompatActivity implements Console {
       try {
           if (url.startsWith("file:///android_asset/")) {
               return getAssets().open(url.substring(22));
+          }
+          if (url.startsWith("http://vintage-basic.net/")) {
+              return new URL(url).openConnection().getInputStream();
           }
           Uri uri = Uri.parse(url);
           return getContentResolver().openInputStream(uri);

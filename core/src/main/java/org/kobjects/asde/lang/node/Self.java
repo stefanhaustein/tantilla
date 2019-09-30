@@ -13,7 +13,7 @@ public class Self extends Node {
   ClassImplementation resolvedType;
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     if (!resolutionContext.functionImplementation.isMethod()) {
       throw new RuntimeException("'self' is only valid inside methods.");
     }

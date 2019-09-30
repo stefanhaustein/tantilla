@@ -2,6 +2,7 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.type.Array;
+import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.type.Function;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
@@ -14,11 +15,11 @@ import java.util.Map;
 // Not static for access to the variables.
 public class Apply extends AssignableNode {
 
-    private final boolean parentesis;
+    private final boolean parenthesis;
 
-    public Apply(boolean parentesis, Node... children) {
+    public Apply(boolean parenthesis, Node... children) {
         super(children);
-        this.parentesis = parentesis;
+        this.parenthesis = parenthesis;
     }
 
 
@@ -28,18 +29,21 @@ public class Apply extends AssignableNode {
 
 
     @Override
-    public void resolveForAssignment(FunctionValidationContext resolutionContext, Type type, int line, int index) {
-        resolve(resolutionContext, line, index);
+    public void resolveForAssignment(FunctionValidationContext resolutionContext, Node parent, Type type, int line, int index) {
+        resolve(resolutionContext, parent, line, index);
 
-        // TODO: Check that assignment is supported....
+        if (!(children[0].returnType() instanceof ArrayType)) {
+            throw new RuntimeException("Array expected");
+        }
+
+        if (!Types.match(returnType(), type)) {
+            throw new RuntimeException("Expected type for assignment: " + type + " actual type: " + returnType());
+        }
     }
 
 
     public void set(EvaluationContext evaluationContext, Object value) {
         Object base = children[0].evalRaw(evaluationContext);
-        if (!(base instanceof Array)) {
-            throw new EvaluationException(this, "Can't set indexed value to non-array: " + value);
-        }
         Array array = (Array) base;
         int[] indices = new int[children.length - 1];
         for (int i = 1; i < children.length; i++) {
@@ -54,7 +58,7 @@ public class Apply extends AssignableNode {
     }
 
     @Override
-    protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+    protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
         if (children[0].returnType() instanceof FunctionType) {
             FunctionType resolved = (FunctionType) children[0].returnType();
             // TODO: b/c optional params, add minParameterCount
@@ -110,14 +114,14 @@ public class Apply extends AssignableNode {
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
      int start = asb.length();
      children[0].toString(asb, errors);
-     asb.append(parentesis ? '(' : ' ');
+     asb.append(parenthesis ? '(' : ' ');
      for (int i = 1; i < children.length; i++) {
           if (i > 1) {
               asb.append(", ");
           }
           children[i].toString(asb, errors);
       }
-      if (parentesis) {
+      if (parenthesis) {
           asb.append(')');
       }
       asb.annotate(start, asb.length(), errors.get(this));

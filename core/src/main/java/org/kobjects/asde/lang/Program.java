@@ -12,6 +12,7 @@ import org.kobjects.asde.lang.statement.DefStatement;
 import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.type.Builtin;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
@@ -150,7 +151,7 @@ public class Program implements SymbolOwner {
 
   @Override
   public synchronized GlobalSymbol getSymbol(String name) {
-      return symbolMap.get(name);
+      return symbolMap.get(name.toLowerCase());
   }
 
   /**
@@ -159,7 +160,7 @@ public class Program implements SymbolOwner {
    */
   @Override
   public synchronized void removeSymbol(StaticSymbol symbol) {
-    symbolMap.remove(symbol.getName());
+    symbolMap.remove(symbol.getName().toLowerCase());
     notifyProgramChanged();
   }
 
@@ -266,30 +267,33 @@ public class Program implements SymbolOwner {
 
   public synchronized GlobalSymbol addBuiltin(String name, Object value) {
     GlobalSymbol symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.BUILTIN, value);
-    symbolMap.put(name, symbol);
+    symbolMap.put(name.toLowerCase(), symbol);
     return symbol;
   }
+
+
 
   public synchronized GlobalSymbol addTransientSymbol(String name, Type knownType) {
     // assert !symbolMap.containsKey(name);
     GlobalSymbol symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.TRANSIENT, null);
-    symbolMap.put(name, symbol);
+    symbolMap.put(name.toLowerCase(), symbol);
 
     // Can't use value because it wont be constant!
-    Object initialValue;
     if (knownType == null) {
-      initialValue = name.endsWith("$") ? "" : 0.0;
-    } else  if (knownType == Types.NUMBER) {
-      initialValue = new Literal(0.0);
-    } else if (knownType == Types.STRING) {
-      initialValue = new Literal("");
-    } else if (knownType == Types.BOOLEAN) {
-      initialValue = new Literal(Boolean.FALSE);
-    } else {
-      throw new RuntimeException("Unsupported type for legacy code: " + knownType);
+      knownType = name.endsWith("$") ? Types.STRING : Types.NUMBER;
     }
 
-    symbol.initializer = new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(initialValue));
+    if (knownType == Types.NUMBER) {
+      symbol.initializer = new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(0.0));
+    } else if (knownType == Types.STRING) {
+      symbol.initializer = new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(""));
+    } else if (knownType == Types.BOOLEAN) {
+      symbol.initializer = new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(Boolean.FALSE));
+    } else if (knownType instanceof ArrayType) {
+      symbol.initializer = new DimStatement(((ArrayType) knownType).getReturnType(), name, new Literal(11.0));
+    } else {
+      throw new RuntimeException("Unsupported type for transient symbol: " + knownType);
+    }
 
     return symbol;
   }
@@ -299,7 +303,7 @@ public class Program implements SymbolOwner {
         GlobalSymbol symbol = getSymbol(name);
         if (symbol == null) {
             symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, declaration);
-            symbolMap.put(name, symbol);
+            symbolMap.put(name.toLowerCase(), symbol);
         } else {
             if (symbol.getScope() == GlobalSymbol.Scope.BUILTIN) {
                 throw new RuntimeException("Can't overwrite builtin '" + name + "'");
@@ -316,7 +320,7 @@ public class Program implements SymbolOwner {
       GlobalSymbol symbol = getSymbol(name);
       if (symbol == null || symbol.scope == GlobalSymbol.Scope.TRANSIENT) {
           symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, null);
-          symbolMap.put(name, symbol);
+          symbolMap.put(name.toLowerCase(), symbol);
       } else if (symbol.getScope() == GlobalSymbol.Scope.BUILTIN) {
           throw new RuntimeException("Can't overwrite builtin '" + name + "'");
       }
@@ -381,7 +385,7 @@ public class Program implements SymbolOwner {
    */
   @Override
   public void addSymbol(StaticSymbol symbol) {
-    symbolMap.put(symbol.getName(), (GlobalSymbol) symbol);
+    symbolMap.put(symbol.getName().toLowerCase(), (GlobalSymbol) symbol);
     notifyProgramChanged();
   }
 

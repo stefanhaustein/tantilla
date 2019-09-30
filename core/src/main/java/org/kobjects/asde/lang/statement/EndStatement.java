@@ -21,7 +21,7 @@ public class EndStatement extends Statement {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     if (!invisible) {
       CodeLine codeLine = resolutionContext.functionImplementation.ceilingEntry(line).getValue();
       if (codeLine.length() > 1) {
