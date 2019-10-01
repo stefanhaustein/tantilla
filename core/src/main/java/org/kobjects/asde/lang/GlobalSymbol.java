@@ -168,4 +168,8 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
     return constant;
   }
 
+  @Override
+  public String toString() {
+    return name + " = " + value;
+  }
 }

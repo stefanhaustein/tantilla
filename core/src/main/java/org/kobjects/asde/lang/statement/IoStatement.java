@@ -3,6 +3,7 @@ package org.kobjects.asde.lang.statement;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
@@ -28,7 +29,16 @@ public class IoStatement extends Node {
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
-    // TODO: Implement
+    if (kind == Kind.INPUT) {
+      for (Node child : children) {
+        if (child instanceof AssignableNode) {
+          AssignableNode assignable = (AssignableNode) child;
+          if (assignable.isAssignable()) {
+            assignable.resolveForAssignment(resolutionContext, parent, child.returnType(), line, index);
+          }
+        }
+      }
+    }
   }
 
   @Override
@@ -53,15 +63,14 @@ public class IoStatement extends Node {
     Program program = evaluationContext.control.program;
     for (int i = 0; i < children.length; i++) {
       Node child = children[i];
-      if (child instanceof Identifier) {
+      if (child instanceof AssignableNode && ((AssignableNode) child).isAssignable()) {
         if (i <= 0 || i > delimiter.length || !delimiter[i-1].equals(", ")) {
           program.print("? ");
         }
-        Identifier variable = (Identifier) child;
         Object value;
         while(true) {
           value = program.console.input();
-          if (variable.getName().endsWith("$")) {
+          if (child.returnType() == Types.STRING) {
             break;
           }
           try {
@@ -71,7 +80,7 @@ public class IoStatement extends Node {
             program.print("Not a number. Please enter a number: ");
           }
         }
-        variable.set(evaluationContext, value);
+        ((AssignableNode) child).set(evaluationContext, value);
       } else {
         program.print(Program.toString(child.eval(evaluationContext)));
       }

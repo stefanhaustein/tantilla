@@ -58,6 +58,11 @@ public class Apply extends AssignableNode {
     }
 
     @Override
+    public boolean isAssignable() {
+        return children[0].returnType() instanceof ArrayType;
+    }
+
+    @Override
     protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
         if (children[0].returnType() instanceof FunctionType) {
             FunctionType resolved = (FunctionType) children[0].returnType();

@@ -21,7 +21,7 @@ public class LegacyStatement extends Node {
     DATA, DUMP,
     GOSUB,
     ON,
-    READ, RESTORE, RETURN,
+    RESTORE, RETURN,
     STOP,
   }
 
@@ -51,7 +51,6 @@ public class LegacyStatement extends Node {
     if (kind == null) {
       return null;
     }
-    Program program = evaluationContext.control.program;
     switch (kind) {
       case DATA:
         break;
@@ -80,23 +79,6 @@ public class LegacyStatement extends Node {
         }
         break;
       }
-      case READ:
-        for (int i = 0; i < children.length; i++) {
-          int[] dataPosition = evaluationContext.getDataPosition();
-          while (evaluationContext.dataStatement == null
-              || dataPosition[2] >= evaluationContext.dataStatement.children.length) {
-            dataPosition[2] = 0;
-            if (evaluationContext.dataStatement != null) {
-              dataPosition[1]++;
-            }
-            evaluationContext.dataStatement = (LegacyStatement) program.main.find((line, index, statement)->(statement instanceof LegacyStatement && ((LegacyStatement) statement).kind == Kind.DATA), dataPosition);
-            if (evaluationContext.dataStatement == null) {
-              throw new RuntimeException("Out of data.");
-            }
-          }
-          ((AssignableNode) children[i]).set(evaluationContext, evaluationContext.dataStatement.children[dataPosition[2]++].eval(evaluationContext));
-        }
-        break;
 
       case RESTORE:
         evaluationContext.dataStatement = null;

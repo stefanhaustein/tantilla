@@ -46,6 +46,11 @@ public class Identifier extends SymbolNode {
   }
 
   @Override
+  public boolean isAssignable() {
+    return !isConstant();
+  }
+
+  @Override
   public Object eval(EvaluationContext evaluationContext) {
     Object result = evalRaw(evaluationContext);
     return result == null ? name.endsWith("$") ? "" : 0.0 : result;

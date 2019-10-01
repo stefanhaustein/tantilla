@@ -28,6 +28,7 @@ import org.kobjects.asde.lang.statement.NextStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.MathOperator;
 import org.kobjects.asde.lang.statement.OnStatement;
+import org.kobjects.asde.lang.statement.ReadStatement;
 import org.kobjects.asde.lang.statement.RemStatement;
 import org.kobjects.asde.lang.statement.FunctionReturnStatement;
 import org.kobjects.asde.lang.statement.LegacyStatement;
@@ -120,6 +121,15 @@ public class StatementParser {
       case "REM":
         result.add(parseRem(tokenizer));
         return;
+      case "READ":
+        tokenizer.consumeIdentifier();
+        ArrayList<Node> expressions = new ArrayList<>();
+        do {
+          expressions.add(expressionParser.parse(tokenizer));
+        } while (tokenizer.tryConsume(","));
+        result.add(new ReadStatement(expressions.toArray(Node.EMPTY_ARRAY)));
+        return;
+
       case "RETURN":
         if (parsingContext != null && parsingContext != program.main) {
           result.add(parseFunctionReturn(tokenizer));
@@ -205,8 +215,7 @@ public class StatementParser {
         return new LegacyStatement(kind, expressionParser.parse(tokenizer));
 
 
-      case DATA:  // One or more params
-      case READ: {
+      case DATA: { // One or more params
         ArrayList<Node> expressions = new ArrayList<>();
         do {
           expressions.add(expressionParser.parse(tokenizer));
