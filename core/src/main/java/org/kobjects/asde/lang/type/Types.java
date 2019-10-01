@@ -10,10 +10,10 @@ import java.util.HashMap;
 public class Types {
   private static HashMap<Object, Type> typeMap = new HashMap<>();
 
-  public static final Type BOOLEAN = new TypeImpl("Boolean");
-  public static final Type NUMBER = new TypeImpl("Number");
-  public static final Type STRING = new TypeImpl("String");
-  public static final Type VOID = new TypeImpl("Void");
+  public static final Type BOOLEAN = new TypeImpl("Boolean", Boolean.FALSE);
+  public static final Type NUMBER = new TypeImpl("Number", 0.0);
+  public static final Type STRING = new TypeImpl("String", "");
+  public static final Type VOID = new TypeImpl("Void", null);
 
   public static Type of(Object o) {
     if (o == null) {

@@ -7,7 +7,7 @@ public class InstanceTypeImpl extends TypeImpl implements InstanceType {
   private final TreeMap<String, PropertyDescriptor> propertyDescriptors = new TreeMap<>();
 
   public InstanceTypeImpl(String name, PropertyDescriptor... properties) {
-    super(name);
+    super(name, null);
     for (PropertyDescriptor property : properties) {
         this.propertyDescriptors.put(property.name(), property);
     }

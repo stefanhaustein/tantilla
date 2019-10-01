@@ -3,6 +3,7 @@ package org.kobjects.asde.lang;
 
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
@@ -120,6 +121,13 @@ public class FunctionValidationContext {
     }
 
     // Globals
+
+    if (mode == ResolutionMode.BASIC
+        && impliedType instanceof ArrayType
+        && (program.getSymbol(name) == null
+          || program.getSymbol(name).scope == GlobalSymbol.Scope.TRANSIENT)) {
+      name += "[" + ((ArrayType) impliedType).getParameterCount() + "]";
+    }
 
     GlobalSymbol symbol = addDependency
         ? programValidationContext.resolve(name)  // Checks for cyclic dependencies.

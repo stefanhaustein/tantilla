@@ -275,21 +275,15 @@ public class Program implements SymbolOwner {
 
   public synchronized GlobalSymbol addTransientSymbol(String name, Type type) {
     // assert !symbolMap.containsKey(name);
-    GlobalSymbol symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.TRANSIENT, null);
-    symbolMap.put(name.toLowerCase(), symbol);
 
-    if (type == Types.NUMBER) {
-      symbol.initializer = new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(0.0));
-    } else if (type == Types.STRING) {
-      symbol.initializer = new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(""));
-    } else if (type == Types.BOOLEAN) {
-      symbol.initializer = new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(Boolean.FALSE));
-    } else if (type instanceof ArrayType) {
+    GlobalSymbol symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.TRANSIENT, null);
+
+    if (type instanceof ArrayType) {
       symbol.initializer = new DimStatement(((ArrayType) type).getReturnType(), name, new Literal(11.0));
     } else {
-      throw new RuntimeException("Unsupported type for transient symbol: " + type);
+      symbol.initializer = new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(type.getDefaultValue()));
     }
-
+    symbolMap.put(name.toLowerCase(), symbol);
     return symbol;
   }
 

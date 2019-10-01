@@ -96,6 +96,16 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
     propertyMap.put(symbol.getName(), (ClassPropertyDescriptor) symbol);
   }
 
+  @Override
+  public boolean hasDefaultValue() {
+    return false;
+  }
+
+  @Override
+  public Object getDefaultValue() {
+    throw new UnsupportedOperationException();
+  }
+
   public class ClassPropertyDescriptor implements PropertyDescriptor, ResolvedSymbol, StaticSymbol {
     String name;
     Node initializer;

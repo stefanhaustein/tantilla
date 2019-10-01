@@ -95,7 +95,7 @@ public class ProgramParser {
         throw new RuntimeException("',' or ')' expected.");
       }
     }
-    return parameterTypes.toArray(Type.EMTPY_ARRAY);
+    return parameterTypes.toArray(Type.EMPTY_ARRAY);
   }
 
   private FunctionType parseFunctionSignature(ExpressionParser.Tokenizer tokenizer, ArrayList<String> parameterNames) {

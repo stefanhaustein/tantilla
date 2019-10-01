@@ -82,6 +82,16 @@ public class ArrayType implements FunctionType, InstanceType {
     }
   }
 
+  @Override
+  public boolean hasDefaultValue() {
+    return false;
+  }
+
+  @Override
+  public Object getDefaultValue() {
+    throw new UnsupportedOperationException();
+  }
+
   class ArrayPropertyDescriptor implements PropertyDescriptor {
     final ArrayPropertyEnum propertyEnum;
     private final Type type;

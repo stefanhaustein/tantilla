@@ -22,4 +22,14 @@ public class EnumType implements Type, Typed {
     }
     throw new RuntimeException("Enum literal named '" + name + "' not found. Valid literals are: " + Arrays.toString(literals));
   }
+
+  @Override
+  public boolean hasDefaultValue() {
+    return false;
+  }
+
+  @Override
+  public Object getDefaultValue() {
+    throw new UnsupportedOperationException();
+  }
 }

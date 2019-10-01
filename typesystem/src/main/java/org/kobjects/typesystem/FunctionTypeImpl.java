@@ -51,4 +51,14 @@ public class FunctionTypeImpl implements FunctionType {
   public Type getType() {
     return new MetaType(this);
   }
+
+  @Override
+  public boolean hasDefaultValue() {
+    return false;
+  }
+
+  @Override
+  public Object getDefaultValue() {
+    throw new UnsupportedOperationException();
+  }
 }
