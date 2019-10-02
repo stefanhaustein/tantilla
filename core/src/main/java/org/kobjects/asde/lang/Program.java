@@ -101,7 +101,7 @@ public class Program implements SymbolOwner {
       TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
       for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
           GlobalSymbol symbol = entry.getValue();
-          if (symbol != null && symbol.scope != GlobalSymbol.Scope.TRANSIENT) {
+          if (symbol != null /* && symbol.scope != GlobalSymbol.Scope.TRANSIENT */) {
               cleared.put(entry.getKey(), symbol);
           }
       }
@@ -163,8 +163,6 @@ public class Program implements SymbolOwner {
     symbolMap.remove(symbol.getName().toLowerCase());
     notifyProgramChanged();
   }
-
-
 
   public synchronized void toString(AnnotatedStringBuilder sb) {
     if (!legacyMode) {
@@ -273,7 +271,7 @@ public class Program implements SymbolOwner {
 
 
 
-  public synchronized GlobalSymbol addTransientSymbol(String name, Type type) {
+  public synchronized GlobalSymbol addTransientSymbol(String name, Type type, ProgramValidationContext programValidationContext) {
     // assert !symbolMap.containsKey(name);
 
     GlobalSymbol symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.TRANSIENT, null);
@@ -284,6 +282,10 @@ public class Program implements SymbolOwner {
       symbol.initializer = new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(type.getDefaultValue()));
     }
     symbolMap.put(name.toLowerCase(), symbol);
+
+    // Required as these are added during validation...
+    symbol.validate(programValidationContext);
+
     return symbol;
   }
 

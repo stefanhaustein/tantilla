@@ -135,7 +135,7 @@ public class FunctionValidationContext {
 
     if (symbol == null) {
       if (mode != ResolutionMode.FUNCTION && (forAssignment || mode == ResolutionMode.BASIC)) {
-        symbol = program.addTransientSymbol(name, impliedType);
+        symbol = program.addTransientSymbol(name, impliedType, programValidationContext);
       } else {
         throw new RuntimeException("Variable not found: \"" + name + "\"");
       }

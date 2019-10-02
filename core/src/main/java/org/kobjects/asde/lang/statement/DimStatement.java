@@ -2,6 +2,7 @@ package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.ResolvedSymbol;
+import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.type.Array;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.ArrayType;
@@ -31,13 +32,18 @@ public class DimStatement extends Node {
       }
     }
     resolved = resolutionContext.resolveVariableDeclaration(varName, new ArrayType(elementType, children.length), false);
+    if (!elementType.hasDefaultValue()) {
+      Node lastChild = children[children.length -1];
+      if (!(lastChild instanceof Literal) || !((Literal) lastChild).value.equals(0.0)) {
+        throw new RuntimeException("The last dimension must be 0 for element types without a default values such as " + elementType);
+      }
+    }
   }
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
     int[] dims = new int[children.length];
     for (int i = 0; i < children.length; i++) {
-      // TODO: evalChildToInt
       dims[i] = evalChildToInt(evaluationContext, i) + (evaluationContext.control.program.legacyMode ? 1 : 0);
     }
     resolved.set(evaluationContext, new Array(elementType, dims));
@@ -59,7 +65,10 @@ public class DimStatement extends Node {
         children[i].toString(asb, errors);
       }
     }
-    asb.append(") AS ");
-    asb.append(elementType.toString());
+    asb.append(')');
+    if (elementType != (varName.endsWith("$") ? Types.STRING : Types.STRING)) {
+      asb.append(" AS ");
+      asb.append(elementType.toString());
+    }
   }
 }

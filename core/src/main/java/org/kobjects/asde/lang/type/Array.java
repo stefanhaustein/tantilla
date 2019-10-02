@@ -40,16 +40,11 @@ public class Array extends Instance implements Function {
         data = new ArrayList<>(sizes[0]);
         if (sizes.length == 1) {
             if (sizes[0] > 0) {
-                Object fillElement;
-                if (elementType == Types.NUMBER) {
-                    fillElement = 0.0;
-                } else if (elementType == Types.STRING) {
-                    fillElement = "";
-                } else {
-                    throw new RuntimeException("Can't create a static array of " + elementType);
+                if (!elementType.hasDefaultValue()) {
+                    throw new RuntimeException("Can't create a array of " + elementType + ": type has no default value.");
                 }
                 for (int i = 0; i < sizes[0]; i++) {
-                    data.add(fillElement);
+                    data.add(elementType.getDefaultValue());
                 }
             }
         } else {

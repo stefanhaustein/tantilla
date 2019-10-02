@@ -5,6 +5,7 @@ import org.kobjects.asde.lang.ClassImplementation;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.statement.UnparseableStatement;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.expressionparser.ExpressionParser;
@@ -15,6 +16,7 @@ import org.kobjects.typesystem.Type;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ProgramParser {
@@ -40,39 +42,44 @@ public class ProgramParser {
       ExpressionParser.Tokenizer tokenizer = statementParser.createTokenizer(line);
       tokenizer.nextToken();
       if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.NUMBER) {
-        int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
-        tokenizer.nextToken();
-        List<? extends Node> statements = statementParser.parseStatementList(tokenizer, currentFunction);
-        currentFunction.setLine(new CodeLine(lineNumber, statements));
+          int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
+          tokenizer.nextToken();
+          int pos = tokenizer.currentPosition;
+          try {
+            List<? extends Node> statements = statementParser.parseStatementList(tokenizer, currentFunction);
+            currentFunction.setLine(new CodeLine(lineNumber, statements));
+          } catch (Exception e) {
+            currentFunction.setLine(new CodeLine(lineNumber, Collections.singletonList(new UnparseableStatement(line.substring(pos), e))));
+          }
       } else if (tokenizer.tryConsume("FUNCTION") || tokenizer.tryConsume("SUB")) {
-        String functionName = tokenizer.consumeIdentifier();
-        program.console.updateProgress("Parsing function " + functionName);
-        ArrayList<String> parameterNames = new ArrayList();
-        FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames);
-        currentFunction = new FunctionImplementation(program, functionType, parameterNames.toArray(new String[0]));
-        if (currentClass != null) {
-          currentClass.setMethod(functionName, currentFunction);
-        } else {
-          program.setDeclaration(functionName, currentFunction);
-        }
+          String functionName = tokenizer.consumeIdentifier();
+          program.console.updateProgress("Parsing function " + functionName);
+          ArrayList<String> parameterNames = new ArrayList();
+          FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames);
+          currentFunction = new FunctionImplementation(program, functionType, parameterNames.toArray(new String[0]));
+          if (currentClass != null) {
+            currentClass.setMethod(functionName, currentFunction);
+          } else {
+            program.setDeclaration(functionName, currentFunction);
+          }
       } else if (tokenizer.tryConsume("END")) {
-        if (currentFunction != program.main) {
-          currentFunction = program.main;
-        } else if (currentClass != null) {
-          currentClass = null;
-        }
+          if (currentFunction != program.main) {
+            currentFunction = program.main;
+          } else if (currentClass != null) {
+            currentClass = null;
+          }
       } else if (tokenizer.tryConsume("CLASS")) {
-        String className = tokenizer.consumeIdentifier();
-        currentClass = new ClassImplementation(program);
-        program.setDeclaration(className, currentClass);
+          String className = tokenizer.consumeIdentifier();
+          currentClass = new ClassImplementation(program);
+          program.setDeclaration(className, currentClass);
       } else if (!tokenizer.tryConsume("")) {
-        List<? extends Node> statements = statementParser.parseStatementList(tokenizer, null);
-        CodeLine codeLine = new CodeLine(-2, statements);
-        if (currentClass != null) {
-          currentClass.processDeclarations(codeLine);
-        } else {
-          program.processStandaloneDeclarations(codeLine);
-        }
+          List<? extends Node> statements = statementParser.parseStatementList(tokenizer, null);
+          CodeLine codeLine = new CodeLine(-2, statements);
+          if (currentClass != null) {
+            currentClass.processDeclarations(codeLine);
+          } else {
+            program.processStandaloneDeclarations(codeLine);
+          }
       }
       line = reader.readLine();
     }
