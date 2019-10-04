@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class DimStatement extends Node {
   public final String varName;
-  public Type elementType;
+  public final Type elementType;
   private ResolvedSymbol resolved;
 
   public DimStatement(Type elementType, String varName, Node... children) {
@@ -66,7 +66,7 @@ public class DimStatement extends Node {
       }
     }
     asb.append(')');
-    if (elementType != (varName.endsWith("$") ? Types.STRING : Types.STRING)) {
+    if (elementType != (varName.endsWith("$") ? Types.STRING : Types.NUMBER)) {
       asb.append(" AS ");
       asb.append(elementType.toString());
     }

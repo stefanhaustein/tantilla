@@ -75,7 +75,7 @@ public class Apply extends AssignableNode {
             for (int i = 0; i < children.length - 1; i++) {
                 if (!Types.match(resolved.getParameterType(i), children[i+1].returnType())) {
                     throw new RuntimeException("Type mismatch for parameter " + i + ": expected: "
-                            + resolved.getParameterType(i) + " actual: " + children[i+1].returnType());
+                            + resolved.getParameterType(i) + " actual: " + children[i+1].returnType() + " base type: " + resolved);
                 }
             }
         } else if (children[0].returnType() != null) {

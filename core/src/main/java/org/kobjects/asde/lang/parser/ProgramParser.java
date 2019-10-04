@@ -36,12 +36,13 @@ public class ProgramParser {
     if (!program.legacyMode) {
       line = reader.readLine();
     }
+    ArrayList<Exception> exceptions = new ArrayList<>();
     while (line != null) {
       System.out.println("Parsing: '" + line + "'");
-
-      ExpressionParser.Tokenizer tokenizer = statementParser.createTokenizer(line);
-      tokenizer.nextToken();
-      if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.NUMBER) {
+      try {
+        ExpressionParser.Tokenizer tokenizer = statementParser.createTokenizer(line);
+        tokenizer.nextToken();
+        if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.NUMBER) {
           int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
           tokenizer.nextToken();
           int pos = tokenizer.currentPosition;
@@ -51,7 +52,7 @@ public class ProgramParser {
           } catch (Exception e) {
             currentFunction.setLine(new CodeLine(lineNumber, Collections.singletonList(new UnparseableStatement(line.substring(pos), e))));
           }
-      } else if (tokenizer.tryConsume("FUNCTION") || tokenizer.tryConsume("SUB")) {
+        } else if (tokenizer.tryConsume("FUNCTION") || tokenizer.tryConsume("SUB")) {
           String functionName = tokenizer.consumeIdentifier();
           program.console.updateProgress("Parsing function " + functionName);
           ArrayList<String> parameterNames = new ArrayList();
@@ -62,17 +63,17 @@ public class ProgramParser {
           } else {
             program.setDeclaration(functionName, currentFunction);
           }
-      } else if (tokenizer.tryConsume("END")) {
+        } else if (tokenizer.tryConsume("END")) {
           if (currentFunction != program.main) {
             currentFunction = program.main;
           } else if (currentClass != null) {
             currentClass = null;
           }
-      } else if (tokenizer.tryConsume("CLASS")) {
+        } else if (tokenizer.tryConsume("CLASS")) {
           String className = tokenizer.consumeIdentifier();
           currentClass = new ClassImplementation(program);
           program.setDeclaration(className, currentClass);
-      } else if (!tokenizer.tryConsume("")) {
+        } else if (!tokenizer.tryConsume("")) {
           List<? extends Node> statements = statementParser.parseStatementList(tokenizer, null);
           CodeLine codeLine = new CodeLine(-2, statements);
           if (currentClass != null) {
@@ -80,9 +81,17 @@ public class ProgramParser {
           } else {
             program.processStandaloneDeclarations(codeLine);
           }
+        }
+      } catch (Exception e) {
+        throw new RuntimeException("Error while parsing lime: " + line, e);
       }
       line = reader.readLine();
     }
+
+    if (exceptions.size() > 0) {
+      throw new RuntimeException("Loading errors (see console): " + exceptions);
+    }
+
   }
 
 

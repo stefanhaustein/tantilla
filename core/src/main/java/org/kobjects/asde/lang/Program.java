@@ -81,38 +81,39 @@ public class Program implements SymbolOwner {
     }
 
   public synchronized void deleteAll() {
-      main.clear();
-      TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
-      for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
-          GlobalSymbol symbol = entry.getValue();
-          if (symbol != null && symbol.scope == GlobalSymbol.Scope.BUILTIN) {
-               cleared.put(entry.getKey(), symbol);
-          }
+    main.clear();
+    TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
+    for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
+      GlobalSymbol symbol = entry.getValue();
+      if (symbol != null && symbol.scope == GlobalSymbol.Scope.BUILTIN) {
+        cleared.put(entry.getKey(), symbol);
       }
-      symbolMap = cleared;
-      notifyProgramChanged();
-      reference = console.nameToReference("Unnamed");
-      notifyProgramRenamed();
+    }
+    symbolMap = cleared;
+    notifyProgramChanged();
+    reference = console.nameToReference("Unnamed");
+    notifyProgramRenamed();
   }
 
 
   public synchronized void clear(EvaluationContext evaluationContext) {
-      console.clearScreen(Console.ClearScreenType.CLEAR_STATEMENT);
-      TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
-      for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
-          GlobalSymbol symbol = entry.getValue();
-          if (symbol != null /* && symbol.scope != GlobalSymbol.Scope.TRANSIENT */) {
-              cleared.put(entry.getKey(), symbol);
-          }
+    console.clearScreen(Console.ClearScreenType.CLEAR_STATEMENT);
+    TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
+    for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
+      GlobalSymbol symbol = entry.getValue();
+      if (symbol != null
+          && (symbol.scope != GlobalSymbol.Scope.TRANSIENT || symbol.stamp == currentStamp)) {
+        cleared.put(entry.getKey(), symbol);
       }
-      symbolMap = cleared;
+    }
+    symbolMap = cleared;
 
-      HashSet<GlobalSymbol> initialized = new HashSet<>();
+    HashSet<GlobalSymbol> initialized = new HashSet<>();
 
-      for (GlobalSymbol symbol : symbolMap.values()) {
-          symbol.init(evaluationContext, initialized);
-      }
-      Arrays.fill(evaluationContext.getDataPosition(), 0);
+    for (GlobalSymbol symbol : symbolMap.values()) {
+      symbol.init(evaluationContext, initialized);
+    }
+    Arrays.fill(evaluationContext.getDataPosition(), 0);
   }
 
 
@@ -230,28 +231,28 @@ public class Program implements SymbolOwner {
 
   public void load(ProgramReference fileReference) throws IOException {
 
-      console.startProgress("Loading " + fileReference.name);
-      console.updateProgress("Url: " + fileReference.url);
+    console.startProgress("Loading " + fileReference.name);
+    console.updateProgress("Url: " + fileReference.url);
 
-      loading = true;
+    loading = true;
 
-      try {
-          BufferedReader reader = new BufferedReader(new InputStreamReader(console.openInputStream(fileReference.url), "utf-8"));
+    try {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(console.openInputStream(fileReference.url), "utf-8"));
 
-          deleteAll();
-          this.reference = fileReference;
-          notifyProgramRenamed();
+      deleteAll();
+      this.reference = fileReference;
+      notifyProgramRenamed();
 
-          new ProgramParser(this).parseProgram(reader);
+      new ProgramParser(this).parseProgram(reader);
 
 
-      } finally {
-          console.endProgress();
-          loading = false;
-      }
+    } finally {
+       console.endProgress();
+       loading = false;
 
       // change notification triggers validation
       notifyProgramChanged();
+    }
   }
 
   public void validate() {
@@ -276,8 +277,15 @@ public class Program implements SymbolOwner {
 
     GlobalSymbol symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.TRANSIENT, null);
 
+    symbol.stamp = currentStamp;
     if (type instanceof ArrayType) {
-      symbol.initializer = new DimStatement(((ArrayType) type).getReturnType(), name, new Literal(11.0));
+      ArrayType arrayType = (ArrayType) type;
+      int dimension = arrayType.getParameterCount();
+      Node[] args = new Node[dimension];
+      for (int i = 0; i < dimension; i++) {
+        args[i] = new Literal(11.0);
+      }
+      symbol.initializer = new DimStatement(arrayType.getReturnType(dimension), name, args);
     } else {
       symbol.initializer = new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(type.getDefaultValue()));
     }

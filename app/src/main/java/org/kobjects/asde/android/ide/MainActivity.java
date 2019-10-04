@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -37,8 +38,12 @@ import org.kobjects.asde.android.ide.widget.Dimensions;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
-import org.kobjects.asde.android.ide.widget.TitleView;
-import org.kobjects.asde.lang.*;
+import org.kobjects.asde.lang.EvaluationContext;
+import org.kobjects.asde.lang.Format;
+import org.kobjects.asde.lang.FunctionImplementation;
+import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.ProgramControl;
+import org.kobjects.asde.lang.WrappedExecutionException;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Function;
 import org.kobjects.asde.lang.io.ProgramReference;
@@ -58,7 +63,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.SynchronousQueue;
@@ -83,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   ScrollView leftScrollView;
   public ControlView controlView;
   public Program program = new Program(this);
-  LinearLayout outputView;
+  OutputView outputView;
   public String readLine;
   ResizableFrameLayout resizableFrameLayout;
   ScreenAdapter screenAdapter;
@@ -100,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements Console {
   public ExpandableList codeView;
 
   RunControlView runControlView;
-  private TitleView outputTitleView;
   private Screen screen;
   private TextView pendingOutput;
   boolean windowMode;
@@ -127,11 +130,8 @@ public class MainActivity extends AppCompatActivity implements Console {
 
     programView = new ProgramView(this, program);
 
-    outputTitleView = new TitleView(this, Colors.PRIMARY_FILTER);
-    outputTitleView.setTitle("Output");
-    outputView = new LinearLayout(this);
-    outputView.setOrientation(LinearLayout.VERTICAL);
-    outputView.addView(outputTitleView);
+    outputView = new OutputView(this);
+
     SampleManager sampleManager = new SampleManager(this);
 
     resizableFrameLayout = new ResizableFrameLayout(this);
@@ -309,7 +309,9 @@ public class MainActivity extends AppCompatActivity implements Console {
     runOnUiThread(() -> {
         if (pendingOutput == null) {
             pendingOutput = new EmojiTextView(this);
-            outputView.addView(pendingOutput);
+            pendingOutput.setTypeface(Typeface.MONOSPACE);
+
+          outputView.addView(pendingOutput);
             postScrollIfAtEnd();
         }
         if (cut == -1) {
@@ -428,8 +430,6 @@ public class MainActivity extends AppCompatActivity implements Console {
   }
 
   private void arrangeUiImpl() {
-      controlView.dismissEmojiPopup();
-
       if (rootView != null) {
         rootView.setBackgroundColor(0);
       }
@@ -455,7 +455,7 @@ public class MainActivity extends AppCompatActivity implements Console {
           FrameLayout mainView = new FrameLayout(this);
           mainView.addView(mainScrollView);
           mainView.addView(screen.view);
-          outputTitleView.setVisibility(View.GONE);
+          outputView.titleView.setVisibility(View.GONE);
 
 //         setContentView(viewport, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
   //       rootView = null;
@@ -465,7 +465,7 @@ public class MainActivity extends AppCompatActivity implements Console {
           screen.view.setBackgroundColor(0);
           rootView = mainView;
       } else {
-          outputTitleView.setVisibility(View.VISIBLE);
+          outputView.titleView.setVisibility(View.VISIBLE);
         LinearLayout rootLayout = new LinearLayout(this);
        // rootLayout.setDividerDrawable(systemListDivider);
         rootLayout.setDividerDrawable(new ColorDrawable(Colors.PRIMARY_FILTER));
@@ -552,6 +552,7 @@ public class MainActivity extends AppCompatActivity implements Console {
         IconButton inputButton = new IconButton(this, R.drawable.baseline_keyboard_return_24);
         inputView.addView(inputButton);
         outputView.addView(inputView);
+        inputView.requestFocus();
         inputButton.setOnClickListener(item-> {
             outputView.removeView(inputView);
             inputQueue.add(inputEditText.getText().toString());

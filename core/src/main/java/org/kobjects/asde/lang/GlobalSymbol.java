@@ -128,6 +128,11 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
       programValidationContext.validated.add(this);
 
       FunctionImplementation function = (FunctionImplementation) value;
+
+      if (this == program.mainSymbol) {
+        program.currentStamp++;
+      }
+
       FunctionValidationContext context = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.FUNCTION, function);
       function.validate(context);
       this.errors = context.errors;

@@ -7,6 +7,7 @@ import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
+import org.omg.CORBA.TRANSIENT;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -132,6 +133,15 @@ public class FunctionValidationContext {
     GlobalSymbol symbol = addDependency
         ? programValidationContext.resolve(name)  // Checks for cyclic dependencies.
         : program.getSymbol(name);
+
+    // Refresh or invalidate transient symbols from previous runs.
+    if (symbol != null && mode == ResolutionMode.BASIC && symbol.scope == GlobalSymbol.Scope.TRANSIENT && symbol.stamp < program.currentStamp) {
+      if (symbol.type == impliedType) {
+        symbol.stamp = program.currentStamp;
+      } else {
+        symbol = null;
+      }
+    }
 
     if (symbol == null) {
       if (mode != ResolutionMode.FUNCTION && (forAssignment || mode == ResolutionMode.BASIC)) {

@@ -9,6 +9,13 @@ import java.util.regex.Pattern;
 
 public class AsdeExpressionParser extends ExpressionParser<Node> {
 
+  static final Pattern NUMBER_PATTERN = Pattern.compile(
+      "\\G\\s*((#[0-9a-fA-f]+)|(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?)");
+  static final Pattern LINE_COMMENT_PATTERN = Pattern.compile("\\G\\h*'.*(\\v|\\Z)");
+
+  static final Pattern STRING_PATTERN = Pattern.compile(
+      "\\G\\s*(\"[^\"]*\")+");
+
   public AsdeExpressionParser(Program program) {
     super(new ExpressionBuilder(program));
     addApplyBrackets(9,"(", ",", ")");
@@ -29,9 +36,9 @@ public class AsdeExpressionParser extends ExpressionParser<Node> {
 
   public ExpressionParser.Tokenizer createTokenizer(String line) {
     ExpressionParser.Tokenizer tokenizer = new ExpressionParser.Tokenizer(new Scanner(line), getSymbols(), "->", ";", ":");
-    tokenizer.numberPattern = Pattern.compile(
-        "\\G\\s*((#[0-9a-fA-f]+)|(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?)");
-    tokenizer.lineCommentPattern = Pattern.compile("\\G\\h*'.*(\\v|\\Z)");
+    tokenizer.numberPattern = NUMBER_PATTERN;
+    tokenizer.lineCommentPattern = LINE_COMMENT_PATTERN;
+    tokenizer.stringPattern = STRING_PATTERN;
     return tokenizer;
   }
 

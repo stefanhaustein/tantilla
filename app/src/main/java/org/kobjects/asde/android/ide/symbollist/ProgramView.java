@@ -5,6 +5,7 @@ import android.view.ViewParent;
 import android.widget.LinearLayout;
 
 import org.kobjects.asde.android.ide.Colors;
+import org.kobjects.asde.android.ide.MainMenu;
 import org.kobjects.asde.lang.ClassImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.event.ProgramChangeListener;
@@ -49,7 +50,9 @@ public class ProgramView extends LinearLayout {
     this.mainActivity = context;
     this.program = program;
 
-    titleView = new TitleView(context, Colors.PRIMARY_FILTER);
+    titleView = new TitleView(context, Colors.PRIMARY_FILTER, view -> {
+      MainMenu.show(mainActivity, view);
+    });
     addView(titleView);
     titleView.setOnClickListener(new OnClickListener() {
       @Override
@@ -140,22 +143,6 @@ public class ProgramView extends LinearLayout {
   }
 
   void synchronize() {
-    if (program.main.getLineCount() == 0 && (program.reference == null || "Unnamed".equals(program.reference.name))) {
-      boolean empty = true;
-      for (GlobalSymbol symbol : program.getSymbols()) {
-        if (symbol.getScope() == GlobalSymbol.Scope.PERSISTENT) {
-          empty = false;
-          break;
-        }
-      }
-      if (empty) {
-        setVisibility(GONE);
-        expanded = true;
-        return;
-      }
-    }
-    setVisibility(VISIBLE);
-
     titleView.setTitle(program.reference.name + (program.reference.urlWritable ? "" : "*"));
 
     if (!expanded) {

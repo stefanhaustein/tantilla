@@ -24,9 +24,14 @@ public class Identifier extends SymbolNode {
   }
 
   public void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
-    Type impliedType = name.endsWith("$") ? Types.STRING : Types.NUMBER;
-    if (parent instanceof Apply && parent.children[0] == this) {
-      impliedType = new ArrayType(impliedType, parent.children.length - 1);
+    Type impliedType;
+    if (resolutionContext.mode != FunctionValidationContext.ResolutionMode.BASIC) {
+      impliedType = null;
+    } else {
+      impliedType = name.endsWith("$") ? Types.STRING : Types.NUMBER;
+      if (parent instanceof Apply && parent.children[0] == this && parent.children.length > 1) {
+        impliedType = new ArrayType(impliedType, parent.children.length - 1);
+      }
     }
     resolved = resolutionContext.resolveVariableAccess(name, impliedType);
   }

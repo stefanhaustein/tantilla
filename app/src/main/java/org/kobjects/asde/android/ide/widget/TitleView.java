@@ -6,11 +6,13 @@ import androidx.appcompat.widget.AppCompatTextView;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 
+import org.kobjects.asde.R;
+
 public class TitleView extends LinearLayout {
 
     AppCompatTextView textView;
 
-    public TitleView(Context context, int backgroundColor) {
+    public TitleView(Context context, int backgroundColor, OnClickListener contextMenuClickListener) {
         super(context);
         setBackgroundColor(backgroundColor);
 
@@ -27,6 +29,12 @@ public class TitleView extends LinearLayout {
                 LinearLayout.LayoutParams.WRAP_CONTENT, Dimensions.dpToPx(context, 48), 1);
         layoutParams.gravity = Gravity.CENTER_VERTICAL | Gravity.LEFT;
         addView(textView, layoutParams);
+
+        if (contextMenuClickListener != null) {
+            IconButton moreButton = new IconButton(getContext(), R.drawable.baseline_more_vert_24);
+            addView(moreButton);
+            moreButton.setOnClickListener(contextMenuClickListener);
+        }
     }
 
     public void setTitle(String title) {
