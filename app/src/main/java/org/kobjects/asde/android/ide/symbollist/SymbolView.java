@@ -33,6 +33,11 @@ public abstract class SymbolView extends LinearLayout {
         addView(titleView);
         titleView.setOnClickListener(clicked -> {
             setExpanded(!expanded, true);
+
+            if (!expanded && getContentView() == mainActivity.codeView) {
+                mainActivity.outputView.syncContent();
+            }
+
         });
         refresh();
     }

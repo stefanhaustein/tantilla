@@ -1,6 +1,7 @@
 package org.kobjects.asde.android.ide;
 
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -124,9 +125,8 @@ public class ControlView extends LinearLayout  {
     String line = codeEditText.getText().toString();
 
     if (line.equalsIgnoreCase("go 64") || line.equalsIgnoreCase("go 64!")) {
-    //  mainActivity.preferences.setTheme(Colors.Theme.C64);
-     // mainActivity.restart();
       mainActivity.program.legacyMode = true;
+      mainActivity.program.c64Mode = true;
       mainActivity.program.notifyProgramRenamed();
     }
     try {

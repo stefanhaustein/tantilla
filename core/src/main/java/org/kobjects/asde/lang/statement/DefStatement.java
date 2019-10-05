@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.statement;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.FunctionValidationContext;
@@ -7,6 +8,8 @@ import org.kobjects.asde.lang.ResolvedSymbol;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.typesystem.Type;
+
+import java.util.Map;
 
 public class DefStatement extends Node {
 
@@ -35,5 +38,21 @@ public class DefStatement extends Node {
   @Override
   public Type returnType() {
     return Types.VOID;
+  }
+
+
+
+  @Override
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+    appendLinked(asb, "DEF " + name + "(", errors);
+    if (implementation.parameterNames.length > 0) {
+      asb.append(implementation.parameterNames[0]);
+      for (int i = 1; i < implementation.parameterNames.length; i++) {
+        asb.append(", ");
+        asb.append(implementation.parameterNames[i]);
+      }
+    }
+    asb.append(") = ");
+    ((FunctionReturnStatement) implementation.ceilingEntry(10).getValue().get(0)).children[0].toString(asb, errors);
   }
 }

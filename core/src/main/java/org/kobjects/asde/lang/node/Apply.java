@@ -28,6 +28,20 @@ public class Apply extends AssignableNode {
     }
 
 
+    // Resolves "base" node last, which allows identifiers to access paramter types
+    public void resolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+        for (int i = 1; i < children.length; i++) {
+            children[i].resolve(resolutionContext, this, line, index);
+        }
+        children[0].resolve(resolutionContext, this, line, index);
+        try {
+            onResolve(resolutionContext, parent, line, index);
+        } catch (Exception e) {
+            resolutionContext.addError(this, e);
+        }
+    }
+
+
     @Override
     public void resolveForAssignment(FunctionValidationContext resolutionContext, Node parent, Type type, int line, int index) {
         resolve(resolutionContext, parent, line, index);

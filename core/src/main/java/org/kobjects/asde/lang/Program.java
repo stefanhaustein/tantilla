@@ -17,6 +17,7 @@ import org.kobjects.asde.lang.type.Builtin;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.parser.StatementParser;
+import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
 
@@ -64,6 +65,7 @@ public class Program implements SymbolOwner {
   public int tabPos;
   public final Console console;
   public boolean legacyMode;
+  public boolean c64Mode;
   private boolean loading;
   int currentStamp;
 
@@ -277,6 +279,7 @@ public class Program implements SymbolOwner {
 
     GlobalSymbol symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.TRANSIENT, null);
 
+    symbol.type = type;
     symbol.stamp = currentStamp;
     if (type instanceof ArrayType) {
       ArrayType arrayType = (ArrayType) type;
@@ -286,6 +289,8 @@ public class Program implements SymbolOwner {
         args[i] = new Literal(11.0);
       }
       symbol.initializer = new DimStatement(arrayType.getReturnType(dimension), name, args);
+    } else if (type instanceof FunctionType) {
+      // no init available, should error on access...
     } else {
       symbol.initializer = new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(type.getDefaultValue()));
     }

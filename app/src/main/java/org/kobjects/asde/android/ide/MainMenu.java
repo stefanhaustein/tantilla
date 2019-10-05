@@ -21,112 +21,118 @@ import java.io.IOException;
 
 public class MainMenu {
 
+  private static String[][] CLASSICS = {
+      {"Classics"}, {
+        "aceyducey.bas", "AceyDucey (Card Game)",
+        "blackjack.bas",	"Blackjack (Las Vegas Rules)",
+        "hangman.bas",	"Hangman word guessing game",
+        "checkers.bas", "Game of checkers",
+      "poker.bas", "Poker game",
+      "superstartrek.bas", "Super Star Trek Game",
+      "superstartrekins.bas", "Super Star Trek Instructions",
+      },
+      {"Sport Games"}, {
+        "basketball.bas", "Basketball Strategy",
+        "bowling.bas", "Bowling",
+        "boxing.bas",	"3-round boxing match",
+        "bullfight.bas",	"Bullfight: You're the matador in a championship bullfight",
+        "bullseye.bas", "Bullseye: Throw darts",
+        "ftball.bas",	"American football—you vs. the computer",
+        "football.bas",	"American football for two players",
+        "golf.bas",	"Golf game—choose your clubs and swing",
+      },
+      {"War Games"}, {
+        "battle.bas",	"Battle (Ship Location Game)",
+        "bombardment.bas", "Bombardment",
+        "bombsaway.bas", "Bombs Away (WWII Bombing Sim)",
+        "civilwar.bas",	"Civil War",
+        "combat.bas",	"Combat: small war with the computer",
+      "depthcharge.bas",	"Depth Charge: destroy a submarine",
+      "gunner.bas",	"Fire a cannon at a stationary target",
+        "orbit.bas", "Orbit: Destroy an orbiting germ-laden enemy spaceship",
+      "war.bas", "Card game of war",
+      },
+      {"Misc"}, {
+        "amazing.bas",	"A Maze Generator",
+        "animal.bas",	"Animal Guessing",
+        "awari.bas", "Awari Game",
+        "bagels.bas",	"Bagles (Number Guessing)",
+        "banner.bas",	"Banner Printer",
+        "batnum.bas", "Battle of Numbers",
+        "bounce.bas", "Bouncing ball plot",
+        "bug.bas", "Roll dice vs. the computer to draw a bug",
+        "bunny.bas", "Bunny: Computer drawing of the Playboy bunny",
+        "buzzword.bas", "Buzzword: Compose your speeches with the latest buzzwords",
+        "calendar.bas", "Calendar for any year",
+        "change.bas", "Change: Computer imitates a cashier",
+        "chemist.bas",	"Chemist: Dilute kryptocyanic acid",
+        "chief.bas",	"Chief: Silly arithmetic drill",
+        "hello.bas",	"Computer becomes your friendly psychiatrist",
+        "chomp.bas", "Chomp: Avoid poison (multiplayer)",
+        "craps.bas", "Craps (dice), Las Vegas style",
+  "cube.bas",	"Cube: Negotiate a 3-D cube avoiding hidden landmines",
+  "diamond.bas",	"Diamond: Prints diamond patterns",
+  "dice.bas",	"Dice: Summarizes dice rolls",
+  "digits.bas",	"Digits: Computer guesses digits",
+  "evenwins.bas", "Even Wins Game",
+  "gameofevenwins.bas", "Even Wins; computer improves",
+  "flipflop.bas",	"Solitaire logic game",
+  "furtrader.bas",	"Trade furs with the white man",
+  "gomoko.bas",	"Gomoko: Ancient strategy board game",
+  "guess.bas",	"Guess a mystery number—computer gives you clues",
+  "hammurabi.bas",	"Hammurabi: Govern an ancient city-state",
+  "hexapawn.bas", "Hexapawn game",
+  "hi-lo.bas",	"Hi-Lo: Hit the mystery jackpot",
+  "highiq.bas", "High IQ: Remove all the pegs",
+  "hockey.bas", "Hockey: Two player Ice hockey",
+  "horserace.bas", "Horserace: Off-track betting",
+  "hurkle.bas", "Hurkle Find the Hurkle hiding on a 10x10 grid",
+  "kinema.bas", "Kinema: Drill in simple kinematics",
+  "king.bas", "King: Govern a modern island kingdom wisely",
 
-  private static String[] CLASSICS = {
-      "aceyducey.bas", 	"AceyDucey (Card Game)",
-      "amazing.bas",	"A Maze Generator",
-      "animal.bas",	"Animal Guessing",
-      "awari.bas", "Awari Game",
-      "bagels.bas",	"Bagles (Number Guessing)",
-      "banner.bas",	"Banner Printer",
-      "basketball.bas",	"Basketball Strategy Game",
-      "batnum.bas", "Battle of Numbers",
-      "battle.bas",	"Battle (Ship Location Game)",
-      "blackjack.bas",	"Blackjack (Las Vegas Rules)",
-      "bombardment.bas", "Bombardment",
-      "bombsaway.bas", "Bombs Away (WWII Bombing Sim)",
-      "bounce.bas", "Bouncing ball plot",
-      "bowling.bas", "Bowling game",
-      "boxing.bas",	"3-round boxing match",
-      "bug.bas", "Roll dice vs. the computer to draw a bug",
-      "bullfight.bas",	"Bullfight: You're the matador in a championship bullfight",
-      "bullseye.bas", "Bullseye: Throw darts",
-      "bunny.bas", "Bunny: Computer drawing of the Playboy bunny",
-      "buzzword.bas", "Buzzword: Compose your speeches with the latest buzzwords",
-      "calendar.bas", "Calendar for any year",
-      "change.bas", "Change: Computer imitates a cashier",
-      "checkers.bas", "Game of checkers",
-      /*
-  Chemist	chemist.bas	Dilute kryptocyanic acid to make it harmless
-  Chief	chief.bas	Silly arithmetic drill
-  Chomp	chomp.bas	Eat a cookie avoiding the poison piece (2 or more players)
-  Civil War	civilwar.bas	Fight the Civil War
-  Combat	combat.bas	Fight a small-scale war with the computer
-  Craps	craps.bas	Play craps (dice), Las Vegas style
-  Cube	cube.bas	Negotiate a 3-D cube avoiding hidden landmines
-  Depth Charge	depthcharge.bas	Launch depth charges to destroy a submarine
-  Diamond	diamond.bas	Prints 1-page diamond patterns
-  Dice	dice.bas	Summarizes dice rolls
-  Digits	digits.bas	Computer tries to guess digits you select at random
-  Even Wins	evenwins.bas	Take objects from a pile—try to end with an even number
-  Game of Even Wins	gameofevenwins.bas	Same as Even Wins—computer improves its play
-  Flip Flop	flipflop.bas	Solitaire logic game—change a row of Xs to Os
-  Ftball	ftball.bas	American football—you vs. the computer
-  Football	football.bas	American football for two players
-  Fur Trader	furtrader.bas	Trade furs with the white man
-  Golf	golf.bas	Golf game—choose your clubs and swing
-  Gomoko	gomoko.bas	Ancient board game of logic and strategy
-  Guess	guess.bas	Guess a mystery number—computer gives you clues
-  Gunner	gunner.bas	Fire a cannon at a stationary target
-  Hammurabi	hammurabi.bas	Govern the ancient city-state of Sumeria
-  Hangman	hangman.bas	Hangman word guessing game
-  Hello	hello.bas	Computer becomes your friendly psychiatrist
-  Hexapawn	hexapawn.bas	Hexapawn game
-  Hi-Lo	hi-lo.bas	Try to hit the mystery jackpot
-  High I-Q	highiq.bas	Try to remove all the pegs from a board
-  Hockey	hockey.bas	Ice hockey, two players
-  Horserace	horserace.bas	Off-track betting on a horse race
-  Hurkle	hurkle.bas	Find the Hurkle hiding on a 10x10 grid
-  Kinema	kinema.bas	Drill in simple kinematics
-  King	king.bas	Govern a modern island kingdom wisely
-  Letter	letter.bas	Guess a mystery letter—computer gives you clues
-  Life	life.bas	John Conway's Game of Life
-  Life For Two	lifefortwo.bas	Competitive game of Life (two or more players)
-  Literature Quiz	litquiz.bas	Children's literature quiz
-  Love	love.bas	Robert Indiana's artwork, your message
-  Lunar	lunar.bas	Land an Apollo capsule on the moon
-  LEM	lem.bas	Very comprehensive lunar landing
-  Rocket	rocket.bas	Lunar landing from 500 feet (with plot)
-  Master Mind	mastermind.bas	Guess the colors of pegs—then the computer guesses yours
-  Math Dice	mathdice.bas	Children's arithmetic drill using pictures of dice
-  Mugwump	mugwump.bas	Locate 4 mugwumps hiding on a 10x10 grid
-  Name	name.bas	An ice-breaker with the computer
-  Nicomachus	nicomachus.bas	Computer guesses number you think of
-  Nim	nim.bas	Chinese game of Nim
-  Number	number.bas	Silly number matching game
-  One Check	onecheck.bas	Challenging game to remove checkers from a board
-  Orbit	orbit.bas	Destroy an orbiting germ-laden enemy spaceship
-  Pizza	pizza.bas	Deliver pizzas successfully
-  Poetry	poetry.bas	Computer composes random poetry
-  Poker	poker.bas	Poker game
-  Queen	queen.bas	Move a single chess queen vs. the computer
-  Reverse	reverse.bas	Order a series of numbers by reversing
-  Rock, Scissors, Paper	rockscissors.bas	Game of rock, scissors, paper
-  Roulette	roulette.bas	European roulette table
-  Russian Roulette	russianroulette.bas	Russian roulette
-  Salvo	salvo.bas	Destroy an enemy fleet of ships
-  Sine Wave	sinewave.bas	Draw a sine wave on screen
-  Slalom	slalom.bas	Simulates a slalom run
-  Slots	slots.bas	Slot machine (one-armed bandit)
-  Splat	splat.bas	Open a parachute at the last possible moment
-  Stars	stars.bas	Guess a mystery number—stars give you clues
-  Stock Market	stockmarket.bas	Stock market simulation
-  Super Star Trek	superstartrek.bas	Comprehensive game of Star Trek
-  Super Star Trek: Instructions	superstartrekins.bas	Instructions for Super Star Trek
-  Synonym	synonym.bas	Word synonym drill
-  Target	target.bas	Destroy a target in 3-D space—very tricky
-3-D Plot	3dplot.bas	Plot families of curves—looks 3-dimensional
-3-D Tic-Tac-Toe	qubit.bas	Game of tic-tac-toe in a 4x4x4 cube
-  Tic-Tac-Toe 1	tictactoe1.bas	Simple version
-  Tic-Tac-Toe 2	tictactoe2.bas	This version prints out the board
-  Tower	tower.bas	Towers of Hanoi puzzle
-  Train	train.bas	Time-speed-distance quiz
-  Trap	trap.bas	Trap a mystery number—computer gives you clues
-23 Matches	23matches.bas	Game of 23 matches—try not to take the last one
-  War	war.bas	Card game of war
-  Weekday	weekday.bas	Facts about your birthday
-  Word	word.bas	Word guessing game*/
-  };
+  "letter.bas", "Letter: Guess a letter with clues",
+  "life.bas",	"Life: John Conway's Game of Life",
+  "lifefortwo.bas", "LifeFor2: 2+ players",
+  	"litquiz.bas", "LitQuiz: Children's literature quiz",
+  "love.bas", "Love: Robert Indiana's artwork, your message",
+  "lunar.bas", "Lunar: Land an Apollo capsule on the moon",
+  "lem.bas", "LEM: Very comprehensive lunar landing",
+  "rocket.bas", "Rocket: Lunar landing from 500 feet (with plot)",
+  "mastermind.bas", "Master Mind: Guess the colors of pegs—then the computer guesses yours",
+  "mathdice.bas", "Math Dice: Children's arithmetic drill using pictures of dice",
+  "mugwump.bas", "Mugwump Locate 4 mugwumps hiding on a 10x10 grid",
+  "name.bas", "Name: An ice-breaker with the computer",
+  "nicomachus.bas", "Nicomachus: Computer guesses number you think of",
+  "nim.bas", "NIM: Chinese game of Nim",
+  "number.bas",	"Number: Silly number matching game",
+  "onecheck.bas", "One Check: Challenging game to remove checkers from a board",
+  "pizza.bas", "Pizza: Deliver pizzas successfully",
+  "poetry.bas", "Poetry: Computer composes random poetry",
+  "queen.bas", "Queen: Move a single chess queen vs. the computer",
+  "reverse.bas", "Order a series of numbers by reversing",
+  "rockscissors.bas", "Rock, Scissors, Paper",
+  "roulette.bas", "Roulette (European)",
+  "russianroulette.bas", "Russian Roulette",
+  "salvo.bas", "Salvo: Destroy an enemy fleet of ships",
+  "sinewave.bas", "Sine Wave Drawing",
+  "slalom.bas", "Slalom Simulation",
+  "slots.bas", "Slot machine (one-armed bandit)",
+  "splat.bas", "Splat: Open a parachute at the last possible moment",
+  "stars.bas", "Stars: Guess a mystery number—stars give you clues",
+  "stockmarket.bas", "Stock market simulation",
+  "synonym.bas", "Word synonym drill",
+  "target.bas",	"Destroy a target in 3-D space—very tricky",
+  "3dplot.bas", "Plot families of curves—looks 3-dimensional",
+  "qubit.bas", "Quobit: TicTacToe in 3D",
+  "tictactoe1.bas",	"TicTacToe (Simple version)",
+  "tictactoe2.bas",	"TicTacToe (With board)",
+  "tower.bas", "Towers of Hanoi puzzle",
+  "train.bas", "Time-speed-distance quiz",
+  "trap.bas", "Trap a mystery number—computer gives you clues",
+  "23matches.bas", "23 Matches: don't take the last one",
+  "weekday.bas", "Facts about your birthday",
+  "word.bas", "Word guessing game"
+  }};
 
 
 
@@ -181,13 +187,18 @@ public class MainMenu {
       throw new RuntimeException(e);
     }
 
-    Menu classicsMenu = loadMenu.addSubMenu("vintage-basic.net");
+    Menu classicsMenu = examplesMenu.addSubMenu("vintage-basic.net");
     for (int i = 0; i < CLASSICS.length; i+=2) {
-      final String fileName = CLASSICS[i];
-      classicsMenu.add(CLASSICS[i+1]).setOnMenuItemClickListener(item -> {
-        mainActivity.load(new ProgramReference(fileName, "http://vintage-basic.net/bcg/" + fileName, false), true, false);
-        return true;
-      });
+      final String categoryName = CLASSICS[i][0];
+      Menu categoryMenu = classicsMenu.addSubMenu(CLASSICS[i][0]);
+      String[] array = CLASSICS[i + 1];
+      for (int j = 0; j < array.length; j += 2) {
+        String fileName = array[j];
+        categoryMenu.add(array[j + 1]).setOnMenuItemClickListener(item -> {
+          mainActivity.load(new ProgramReference(fileName, "http://vintage-basic.net/bcg/" + fileName, false), true, false);
+          return true;
+        });
+      }
     }
 
     loadMenu.add("Load local file").setOnMenuItemClickListener(item -> {

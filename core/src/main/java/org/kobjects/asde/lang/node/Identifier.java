@@ -8,6 +8,8 @@ import org.kobjects.asde.lang.ResolvedSymbol;
 import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.type.Types;
+import org.kobjects.typesystem.FunctionType;
+import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -29,8 +31,16 @@ public class Identifier extends SymbolNode {
       impliedType = null;
     } else {
       impliedType = name.endsWith("$") ? Types.STRING : Types.NUMBER;
-      if (parent instanceof Apply && parent.children[0] == this && parent.children.length > 1) {
-        impliedType = new ArrayType(impliedType, parent.children.length - 1);
+      if (parent instanceof Apply && parent.children[0] == this) {
+        if (name.toLowerCase().startsWith("fn")) {
+          Type[] parameterTypes = new Type[parent.children.length - 1];
+          for (int i = 0; i < parameterTypes.length; i++) {
+            parameterTypes[i] = parent.children[i + 1].returnType();
+          }
+          impliedType = new FunctionTypeImpl(impliedType, parameterTypes);
+        } else if (parent.children.length > 1) {
+          impliedType = new ArrayType(impliedType, parent.children.length - 1);
+        }
       }
     }
     resolved = resolutionContext.resolveVariableAccess(name, impliedType);
@@ -58,7 +68,10 @@ public class Identifier extends SymbolNode {
   @Override
   public Object eval(EvaluationContext evaluationContext) {
     Object result = evalRaw(evaluationContext);
-    return result == null ? name.endsWith("$") ? "" : 0.0 : result;
+    if (result == null) {
+      throw new IllegalStateException("Undefined variable '" + name + "'");
+    }
+    return result;
   }
 
   @Override

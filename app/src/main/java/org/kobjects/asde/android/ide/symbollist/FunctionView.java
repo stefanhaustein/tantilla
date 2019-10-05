@@ -69,10 +69,18 @@ public class FunctionView extends SymbolView {
     ExpandableList codeView = getContentView();
 
     if (!expanded) {
-      codeView.removeAllViews();
+      // Only remove if we own the view.
+      if (codeView == contentView){
+        codeView.removeAllViews();
+      }
       return;
     }
     int index = 0;
+
+    if (codeView.getChildCount() > 0 && !(codeView.getChildAt(0) instanceof CodeLineView)) {
+      codeView.removeAllViews();
+    }
+
     for (Map.Entry<Integer, CodeLine> entry : functionImplementation.entrySet()) {
       CodeLineView codeLineView;
       if (index < codeView.getChildCount()) {

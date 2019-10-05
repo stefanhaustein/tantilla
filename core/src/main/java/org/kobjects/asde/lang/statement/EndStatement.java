@@ -14,7 +14,7 @@ public class EndStatement extends Statement {
    * An invisible END is inserted for single-line on statements at the end of the line. An alternative might be
    * some form of special single-line mode.
    */
-  private final boolean invisible;
+  public final boolean invisible;
 
   public EndStatement(boolean invisible) {
     this.invisible = invisible;
@@ -22,7 +22,7 @@ public class EndStatement extends Statement {
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
-    if (!invisible) {
+    if (!invisible && !resolutionContext.program.legacyMode) {
       CodeLine codeLine = resolutionContext.functionImplementation.ceilingEntry(line).getValue();
       if (codeLine.length() > 1) {
         throw new RuntimeException("END must be on a separate line.");

@@ -44,6 +44,7 @@ import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.WrappedExecutionException;
+import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Function;
 import org.kobjects.asde.lang.io.ProgramReference;
@@ -87,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   ScrollView leftScrollView;
   public ControlView controlView;
   public Program program = new Program(this);
-  OutputView outputView;
+  public OutputView outputView;
   public String readLine;
   ResizableFrameLayout resizableFrameLayout;
   ScreenAdapter screenAdapter;
@@ -152,7 +153,6 @@ public class MainActivity extends AppCompatActivity implements Console {
     scrollContentView.setDividerDrawable(divider);
 
     scrollContentView.addView(programView);
-    scrollContentView.addView(outputView);
 
     mainScrollView = new ScrollView(this);
     mainScrollView.addView(scrollContentView);
@@ -311,7 +311,7 @@ public class MainActivity extends AppCompatActivity implements Console {
             pendingOutput = new EmojiTextView(this);
             pendingOutput.setTypeface(Typeface.MONOSPACE);
 
-          outputView.addView(pendingOutput);
+          outputView.addContent(pendingOutput);
             postScrollIfAtEnd();
         }
         if (cut == -1) {
@@ -422,7 +422,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   }
 
   int getBackgroundColor() {
-      return program.legacyMode ? Colors.BLUE : Colors.BLACK;
+      return program.c64Mode ? Colors.BLUE : Colors.BLACK;
   }
 
   void arrangeUi() {
@@ -442,6 +442,12 @@ public class MainActivity extends AppCompatActivity implements Console {
       removeFromParent(codeView);
       removeFromParent(runControlView);
       removeFromParent(resizableFrameLayout);
+      removeFromParent(outputView);
+
+      if (leftScrollView != null) {
+        leftScrollView.removeAllViews();
+      }
+
 
       Display display = getWindowManager().getDefaultDisplay();
       int displayWidth = display.getWidth();
@@ -464,38 +470,72 @@ public class MainActivity extends AppCompatActivity implements Console {
           mainView.addView(runControlView, layoutParams);
           screen.view.setBackgroundColor(0);
           rootView = mainView;
+
+        scrollContentView.addView(outputView);
+
       } else {
           outputView.titleView.setVisibility(View.VISIBLE);
         LinearLayout rootLayout = new LinearLayout(this);
        // rootLayout.setDividerDrawable(systemListDivider);
         rootLayout.setDividerDrawable(new ColorDrawable(Colors.PRIMARY_FILTER));
         rootLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
-        rootLayout.setOrientation(LinearLayout.VERTICAL);
 
         FrameLayout mainView = new FrameLayout(this);
-        rootLayout.addView(mainView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
-        rootLayout.addView(controlView,  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         if (displayHeight >= displayWidth) {
+          rootLayout.setOrientation(LinearLayout.VERTICAL);
+          rootLayout.addView(mainView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
+          rootLayout.addView(controlView,  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
             controlView.arrangeButtons(false);
             mainView.addView(mainScrollView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             scrollContentView.addView(programView, 0);
             scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
             codeView = null;
-        } else {
-            controlView.arrangeButtons(true);
-            leftScrollView.addView(programView);
 
-            codeView = new ExpandableList(this);
+          scrollContentView.addView(outputView);
+
+        } else {
+          rootLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+            LinearLayout leftContentView = new LinearLayout(this);
+            leftContentView.setOrientation(LinearLayout.VERTICAL);
+
+            leftScrollView.addView(leftContentView);
+          ColorDrawable divider = new ColorDrawable(0x0) {
+            @Override
+            public int getIntrinsicHeight() {
+              return Dimensions.dpToPx(MainActivity.this, 6);
+            }
+          };
+
+          leftContentView.setDividerDrawable(divider);
+            leftContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+            leftContentView.addView(programView);
+            leftContentView.addView(outputView);
+
+
+          controlView.arrangeButtons(true);
+
+          codeView = new ExpandableList(this);
             scrollContentView.addView(codeView, 0);
             scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
 
-            LinearLayout contentView = new LinearLayout(this);
-            contentView.setDividerDrawable(new ColorDrawable(Colors.PRIMARY_FILTER));
-            contentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
-            contentView.addView(leftScrollView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
-            contentView.addView(mainScrollView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 2));
-            mainView.addView(contentView);
+            LinearLayout rightView = new LinearLayout(this);
+            rightView.setOrientation(LinearLayout.VERTICAL);
+            rightView.setDividerDrawable(new ColorDrawable(Colors.PRIMARY_FILTER));
+            rightView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+            rightView.addView(mainView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
+            rightView.addView(controlView,  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            mainView.addView(mainScrollView);
+
+
+            rootLayout.addView(leftScrollView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
+            rootLayout.addView(rightView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 2));
+
+
+
         }
 
           if (windowMode) {
@@ -527,6 +567,7 @@ public class MainActivity extends AppCompatActivity implements Console {
             rootLayout.addView(codingLayout, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
             rootLayout.addView(viewport, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
         } */
+        outputView.syncContent();
         rootView = rootLayout;
      }
       rootView.setBackgroundColor(getBackgroundColor());
@@ -551,10 +592,10 @@ public class MainActivity extends AppCompatActivity implements Console {
         inputView.addView(inputEditText, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
         IconButton inputButton = new IconButton(this, R.drawable.baseline_keyboard_return_24);
         inputView.addView(inputButton);
-        outputView.addView(inputView);
+        outputView.addContent(inputView);
         inputView.requestFocus();
         inputButton.setOnClickListener(item-> {
-            outputView.removeView(inputView);
+            outputView.removeContent(inputView);
             inputQueue.add(inputEditText.getText().toString());
         });
     });
@@ -670,9 +711,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     void clearOutput() {
         runOnUiThread(new Runnable() {
             public void run() {
-                for (int i = outputView.getChildCount() - 1; i > 0; i--) {
-                    outputView.removeViewAt(i);
-                }
+                outputView.clear();
                 controlView.resultView.setText("");
                 pendingOutput = null;
             }

@@ -58,6 +58,9 @@ public class ProgramView extends LinearLayout {
       @Override
       public void onClick(View v) {
         expand(!expanded);
+        if (mainActivity.codeView != null) {
+          mainActivity.outputView.syncContent();
+        }
       }
     });
 

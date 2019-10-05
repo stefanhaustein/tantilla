@@ -34,8 +34,10 @@ public class CodeLine implements Iterable<Node> {
     }
     for (int i = 0; i < statements.length; i++) {
       if (i > 0) {
-        sb.append(statements[i - 1] instanceof IfStatement
-            || statements[i - 1] instanceof ElseStatement || statements[i] instanceof EndStatement ? " " : " : ");
+        sb.append((statements[i - 1] instanceof IfStatement
+            || statements[i - 1] instanceof ElseStatement
+            || (statements[i] instanceof EndStatement && ((EndStatement) statements[i]).invisible))
+            ? " " : " : ");
       }
       statements[i].toString(sb, errors);
     }

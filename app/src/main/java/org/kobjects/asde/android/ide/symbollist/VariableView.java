@@ -114,16 +114,20 @@ public class VariableView extends SymbolView {
 
         ExpandableList codeView = getContentView();
 
+        if (!expanded) {
+            if (codeView == contentView) {
+                codeView.removeAllViews();
+            }
+            return;
+        }
+
         codeView.removeAllViews();
-        if (expanded) {
-            if (symbol.getInitializer() instanceof DeclarationStatement && isMultiDim(symbol.getType())) {
+        if (symbol.getInitializer() instanceof DeclarationStatement && isMultiDim(symbol.getType())) {
                 addLine(codeView, 1, "LET " + symbol.getName() + " = {");
                 addChildList(codeView, 2, symbol.getInitializer().children[0]);
                 addLine(codeView, 1, "}");
-            } else {
+        } else {
                 addLine(codeView, 1, symbol.getInitializer());
-            }
-
         }
     }
 }
