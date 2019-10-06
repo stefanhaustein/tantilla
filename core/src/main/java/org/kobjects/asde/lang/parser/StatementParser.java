@@ -405,8 +405,10 @@ public class StatementParser {
       do {
         result.add(new NextStatement(tokenizer.consumeIdentifier()));
       } while (tokenizer.tryConsume(","));
+    } else if (program.legacyMode){
+      result.add(new NextStatement(null));
     } else {
-      throw tokenizer.exception("Variable name expected after NEXT.", null);
+      tokenizer.exception("Variable name expected after NEXT.", null);
     }
   }
 

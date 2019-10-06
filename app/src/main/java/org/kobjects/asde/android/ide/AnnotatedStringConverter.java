@@ -14,7 +14,7 @@ import org.kobjects.asde.lang.Format;
 public class AnnotatedStringConverter {
 
 
-  public static Spanned toSpanned(MainActivity mainActivity, AnnotatedString annotated, boolean linked) {
+  public static SpannableString toSpanned(MainActivity mainActivity, AnnotatedString annotated, boolean linked) {
 
       SpannableString s = new SpannableString(annotated.toString());
       for (final Span span : annotated.spans()) {

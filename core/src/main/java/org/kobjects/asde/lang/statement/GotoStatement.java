@@ -49,13 +49,14 @@ public class GotoStatement extends Node {
           }
         } else if (node instanceof ForStatement
             || node instanceof IfStatement && ((IfStatement) node).multiline) {
+          depth++;
         }
       }
       if (skippedVars > 0) {
         throw new RuntimeException("Can't skip variable declarations.");
       }
     } else {
-      for (Node node : resolutionContext.functionImplementation.descendingStatements(line, index, resolvedTarget, 0)) {
+      for (Node node : resolutionContext.functionImplementation.descendingStatements(line, index, resolvedTarget, -1)) {
         if (node instanceof EndIfStatement || node instanceof NextStatement) {
           depth = depth + 1;
         } else if (node instanceof ForStatement || node instanceof IfStatement && ((IfStatement) node).multiline) {
@@ -67,7 +68,7 @@ public class GotoStatement extends Node {
       }
     }
     if (depth > 0) {
-       throw new RuntimeException("Can't jump into a block.");
+      throw new RuntimeException("Can't jump into a block.");
     }
   }
 

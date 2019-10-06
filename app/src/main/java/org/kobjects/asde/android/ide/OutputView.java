@@ -8,6 +8,7 @@ import android.widget.PopupMenu;
 
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.TitleView;
+import org.kobjects.asde.lang.io.Console;
 
 import java.util.ArrayList;
 
@@ -18,7 +19,29 @@ public class OutputView extends LinearLayout {
   private final ArrayList<View> viewList = new ArrayList<>();
 
   private ExpandableList contentView;
-  private ExpandableList lastContentView;
+
+
+   static void populateMenu(MainActivity mainActivity, Menu menu) {
+
+     menu.add("Clear").setOnMenuItemClickListener(menuItem -> {
+       mainActivity.clearScreen(Console.ClearScreenType.CLS_STATEMENT);
+       return true;
+     });
+
+
+     menu.add(1, 0, 0, "Overlay Graphics").setChecked(!mainActivity.windowMode).setOnMenuItemClickListener(item -> {
+      mainActivity.windowMode = false;
+      mainActivity.arrangeUi();
+      return true;
+    });
+    menu.add(1, 0, 0, "Graphics Window").setChecked(mainActivity.windowMode).setOnMenuItemClickListener(item -> {
+      mainActivity.windowMode = true;
+      mainActivity.arrangeUi();
+      return true;
+    });
+    menu.setGroupCheckable(1, true, true);
+
+  }
 
   OutputView(MainActivity mainActivity) {
     super(mainActivity);
@@ -27,11 +50,7 @@ public class OutputView extends LinearLayout {
 
     titleView = new TitleView(mainActivity, Colors.PRIMARY_FILTER, view -> {
       PopupMenu popupMenu = new PopupMenu(mainActivity, view);
-      Menu menu = popupMenu.getMenu();
-      menu.add("Clear").setOnMenuItemClickListener(menuItem -> {
-        mainActivity.clearOutput();
-        return true;
-      });
+      populateMenu(mainActivity, popupMenu.getMenu());
       popupMenu.show();
     });
     titleView.setTitle("Output");
@@ -51,12 +70,11 @@ public class OutputView extends LinearLayout {
           getContentView().addView(view);
         }
       }
-      lastContentView = getContentView();
   }
 
-  private ExpandableList getContentView() {
-    if (mainActivity.codeView != null) {
-      return mainActivity.codeView;
+  private LinearLayout getContentView() {
+    if (mainActivity.sharedCodeViewAvailable()) {
+      return mainActivity.obtainSharedCodeView(this);
     }
 
     if (contentView == null) {

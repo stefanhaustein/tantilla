@@ -2,7 +2,11 @@ package org.kobjects.asde.android.ide.symbollist;
 
 import android.graphics.Typeface;
 import androidx.appcompat.widget.AppCompatTextView;
+
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
+import android.text.style.LeadingMarginSpan;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -10,6 +14,7 @@ import android.widget.TextView;
 
 import com.vanniktech.emoji.EmojiTextView;
 
+import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.android.ide.AnnotatedStringConverter;
 import org.kobjects.asde.android.ide.Colors;
@@ -18,6 +23,9 @@ import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.node.Node;
 
 import java.util.Map;
+
+import static android.util.TypedValue.COMPLEX_UNIT_PX;
+import static androidx.annotation.Dimension.PX;
 
 public class CodeLineView extends LinearLayout {
   TextView lineNumberView;
@@ -52,8 +60,14 @@ public class CodeLineView extends LinearLayout {
 
   void setCodeLine(CodeLine codeLine, Map<Node, Exception> errors) {
     AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-    codeLine.toString(asb, errors);
-    statementView.setText(AnnotatedStringConverter.toSpanned(context, asb.build(), true));
+    codeLine.toString(asb, errors, false);
+    SpannableString spannable = AnnotatedStringConverter.toSpanned(context, asb.build(), true);
+
+    int factor = Math.round(statementView.getTextSize() / 2);
+
+    spannable.setSpan(new LeadingMarginSpan.Standard(codeLine.indent * factor, (codeLine.indent + 2) * factor),0,spannable.length(),0);
+
+    statementView.setText(spannable);
     if (asb.spans().iterator().hasNext()) {
       statementView.setMovementMethod(LinkMovementMethod.getInstance());
     }

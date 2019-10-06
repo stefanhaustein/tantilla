@@ -37,6 +37,9 @@ public class ForStatement extends Node {
     nextStatement.resolvedForStatement = this;
     nextStatement.resolvedForLine = line;
     nextStatement.resolvedForIndex = index;
+    if (nextStatement.varName == null) {
+      nextStatement.varName = variableName;
+    }
   }
 
   @Override
@@ -81,7 +84,8 @@ public class ForStatement extends Node {
 
     @Override
     public boolean statementMatches(CodeLine line, int index, Node statement) {
-      return statement instanceof NextStatement && variableName.equals(((NextStatement) statement).varName);
+      return statement instanceof NextStatement
+          && (variableName.equals(((NextStatement) statement).varName) || ((NextStatement) statement).varName == null);
     }
   }
 }

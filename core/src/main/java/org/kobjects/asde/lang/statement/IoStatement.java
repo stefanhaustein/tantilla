@@ -102,8 +102,8 @@ public class IoStatement extends Node {
             "                    ".substring(0, 14 - (program.tabPos % 14)));
       }
     }
-    if (delimiter.length < children.length &&
-        (children.length == 0 || !children[children.length - 1].toString().startsWith("TAB"))) {
+    if (children.length == 0 && delimiter.length == 0 ||
+        delimiter.length < children.length && !children[children.length - 1].toString().startsWith("TAB")) {
       program.print("\n");
     }
   }

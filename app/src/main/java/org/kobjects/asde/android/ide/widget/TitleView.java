@@ -11,6 +11,7 @@ import org.kobjects.asde.R;
 public class TitleView extends LinearLayout {
 
     AppCompatTextView textView;
+    public IconButton moreButton;
 
     public TitleView(Context context, int backgroundColor, OnClickListener contextMenuClickListener) {
         super(context);
@@ -31,7 +32,7 @@ public class TitleView extends LinearLayout {
         addView(textView, layoutParams);
 
         if (contextMenuClickListener != null) {
-            IconButton moreButton = new IconButton(getContext(), R.drawable.baseline_more_vert_24);
+            moreButton = new IconButton(getContext(), R.drawable.baseline_more_vert_24);
             addView(moreButton);
             moreButton.setOnClickListener(contextMenuClickListener);
         }

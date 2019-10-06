@@ -2,7 +2,12 @@ package org.kobjects.asde.android.ide;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.EditText;
@@ -14,7 +19,6 @@ import com.github.angads25.filepicker.view.FilePickerDialog;
 
 import org.kobjects.asde.android.ide.editor.CreateClassFlow;
 import org.kobjects.asde.android.ide.editor.FunctionSignatureFlow;
-import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
 
 import java.io.IOException;
@@ -23,6 +27,7 @@ public class MainMenu {
 
   private static String[][] CLASSICS = {
       {"Classics"}, {
+        "aceyducey.bas", "AceyDucey (Card Game)",
         "aceyducey.bas", "AceyDucey (Card Game)",
         "blackjack.bas",	"Blackjack (Las Vegas Rules)",
         "hangman.bas",	"Hangman word guessing game",
@@ -239,7 +244,6 @@ public class MainMenu {
     });
 
 
-
     Menu saveMenu = mainMenu.addSubMenu("Save");
 
     saveMenu.add("Save locally as...").setOnMenuItemClickListener(item -> {
@@ -276,23 +280,9 @@ public class MainMenu {
       return true;
     });
 
-
-    SubMenu displayMenu = mainMenu.addSubMenu("Display");
-    displayMenu.add("Clear").setOnMenuItemClickListener(item -> {
-      mainActivity.clearScreen(Console.ClearScreenType.CLS_STATEMENT);
-      return true;
-    });
-    displayMenu.add(1, 0, 0, "Overlay mode").setChecked(!mainActivity.windowMode).setOnMenuItemClickListener(item -> {
-      mainActivity.windowMode = false;
-      mainActivity.arrangeUi();
-      return true;
-    });
-    displayMenu.add(1, 0, 0, "Window mode").setChecked(mainActivity.windowMode).setOnMenuItemClickListener(item -> {
-      mainActivity.windowMode = true;
-      mainActivity.arrangeUi();
-      return true;
-    });
-    displayMenu.setGroupCheckable(1, true, true);
+    if (mainActivity.sharedCodeViewAvailable()) {
+      OutputView.populateMenu(mainActivity, mainMenu.addSubMenu("Output"));
+    }
     popupMenu.show();
 
   }

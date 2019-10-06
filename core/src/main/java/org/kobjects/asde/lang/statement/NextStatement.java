@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class NextStatement extends Node {
 
-  final String varName;
+  String varName;
 
   public ForStatement resolvedForStatement;
   public int resolvedForLine;

@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vanniktech.emoji.EmojiManager;
 import com.vanniktech.emoji.EmojiTextView;
 import com.vanniktech.emoji.twitter.TwitterEmojiProvider;
@@ -34,8 +35,8 @@ import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.symbollist.FunctionView;
 import org.kobjects.asde.android.ide.symbollist.ProgramView;
+import org.kobjects.asde.android.ide.symbollist.SymbolView;
 import org.kobjects.asde.android.ide.widget.Dimensions;
-import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.lang.EvaluationContext;
@@ -44,7 +45,6 @@ import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.WrappedExecutionException;
-import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Function;
 import org.kobjects.asde.lang.io.ProgramReference;
@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   public View rootView;
   ScrollView mainScrollView;
   ScrollView leftScrollView;
+  FloatingActionButton runButton;
   public ControlView controlView;
   public Program program = new Program(this);
   public OutputView outputView;
@@ -102,7 +103,9 @@ public class MainActivity extends AppCompatActivity implements Console {
 
 
   /** The view that displays the code in landscape mode */
-  public ExpandableList codeView;
+  private LinearLayout codeView;
+  private View currentCodeViewOwner;
+
 
   RunControlView runControlView;
   private Screen screen;
@@ -140,6 +143,9 @@ public class MainActivity extends AppCompatActivity implements Console {
     scrollContentView = new LinearLayout(this);
     scrollContentView.setOrientation(LinearLayout.VERTICAL);
 
+    runButton = new FloatingActionButton(this);
+    runButton.setImageResource(R.drawable.baseline_play_arrow_24);
+    runButton.setSize(FloatingActionButton.SIZE_MINI);
 
     ColorDrawable divider = new ColorDrawable(0x0) {
       @Override
@@ -158,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     mainScrollView.addView(scrollContentView);
 
     leftScrollView = new ScrollView(this);
-    runControlView = new RunControlView(this);
+    runControlView = new RunControlView(this, runButton);
     controlView = new ControlView(this);
     screen = new Screen(this);
 
@@ -443,6 +449,7 @@ public class MainActivity extends AppCompatActivity implements Console {
       removeFromParent(runControlView);
       removeFromParent(resizableFrameLayout);
       removeFromParent(outputView);
+      removeFromParent(runButton);
 
       if (leftScrollView != null) {
         leftScrollView.removeAllViews();
@@ -474,7 +481,6 @@ public class MainActivity extends AppCompatActivity implements Console {
         scrollContentView.addView(outputView);
 
       } else {
-          outputView.titleView.setVisibility(View.VISIBLE);
         LinearLayout rootLayout = new LinearLayout(this);
        // rootLayout.setDividerDrawable(systemListDivider);
         rootLayout.setDividerDrawable(new ColorDrawable(Colors.PRIMARY_FILTER));
@@ -483,6 +489,8 @@ public class MainActivity extends AppCompatActivity implements Console {
         FrameLayout mainView = new FrameLayout(this);
 
         if (displayHeight >= displayWidth) {
+          outputView.titleView.setVisibility(View.VISIBLE);
+
           rootLayout.setOrientation(LinearLayout.VERTICAL);
           rootLayout.addView(mainView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
           rootLayout.addView(controlView,  new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -495,29 +503,18 @@ public class MainActivity extends AppCompatActivity implements Console {
 
           scrollContentView.addView(outputView);
 
+          rootLayout.setClipChildren(false);
+
         } else {
           rootLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-            LinearLayout leftContentView = new LinearLayout(this);
-            leftContentView.setOrientation(LinearLayout.VERTICAL);
 
-            leftScrollView.addView(leftContentView);
-          ColorDrawable divider = new ColorDrawable(0x0) {
-            @Override
-            public int getIntrinsicHeight() {
-              return Dimensions.dpToPx(MainActivity.this, 6);
-            }
-          };
-
-          leftContentView.setDividerDrawable(divider);
-            leftContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
-            leftContentView.addView(programView);
-            leftContentView.addView(outputView);
-
+            leftScrollView.addView(programView);
 
           controlView.arrangeButtons(true);
 
-          codeView = new ExpandableList(this);
+          codeView = new LinearLayout(this);
+          codeView.setOrientation(LinearLayout.VERTICAL);
             scrollContentView.addView(codeView, 0);
             scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
 
@@ -534,9 +531,16 @@ public class MainActivity extends AppCompatActivity implements Console {
             rootLayout.addView(leftScrollView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
             rootLayout.addView(rightView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 2));
 
-
+            rightView.setClipChildren(false);
 
         }
+
+        FrameLayout.LayoutParams runButtonParams = new FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.RIGHT | Gravity.BOTTOM);
+        runButtonParams.bottomMargin = -24;
+        runButtonParams.rightMargin = 3*24;
+        mainView.addView(runButton, runButtonParams);
+
 
           if (windowMode) {
               resizableFrameLayout.addView(screen.view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -697,13 +701,15 @@ public class MainActivity extends AppCompatActivity implements Console {
     @Override
     public void clearScreen(ClearScreenType clearScreenType) {
       switch (clearScreenType) {
+        case PROGRAM_CLOSED:
+          screen.clearAll();  // sprites
+          break;
+        case CLEAR_STATEMENT:
+          screen.clearAll();
+          // Fall_through intended;
         case CLS_STATEMENT:
           clearOutput();
           screen.cls();
-          break;
-        case PROGRAM_CLOSED:
-        case CLEAR_STATEMENT:
-          screen.clearAll();
           break;
       }
     }
@@ -793,4 +799,20 @@ public class MainActivity extends AppCompatActivity implements Console {
             alertBuilder.show();
         });
     }
+
+  public boolean sharedCodeViewAvailable() {
+      return codeView != null;
+  }
+
+
+  public LinearLayout obtainSharedCodeView(View owner) {
+      if (owner != currentCodeViewOwner) {
+        codeView.removeAllViews();
+        if (currentCodeViewOwner instanceof SymbolView) {
+          ((SymbolView) currentCodeViewOwner).setExpanded(false, false);
+        }
+      }
+      currentCodeViewOwner = owner;
+      return codeView;
+  }
 }

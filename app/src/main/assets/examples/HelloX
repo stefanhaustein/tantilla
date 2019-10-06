@@ -1,4 +1,0 @@
-ASDE
-10 LET a$ = "";
-10 INPUT "What is your name"; a$
-20 PRINT "Hello "; a$; "!"

@@ -95,7 +95,11 @@ public class MathOperator extends Node {
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
       children[0].toString(asb, errors);
-      appendLinked(asb, ' ' + getName() + ' ', errors);
+      if (kind == Kind.ADD || kind == Kind.SUB) {
+        appendLinked(asb, ' ' + getName() + ' ', errors);
+      } else {
+        appendLinked(asb, getName(), errors);
+      }
       children[1].toString(asb, errors);
 
   }

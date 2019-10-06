@@ -1,5 +1,6 @@
 package org.kobjects.asde.android.ide.symbollist;
 
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
 import org.kobjects.asde.android.ide.Colors;
@@ -66,7 +67,7 @@ public class FunctionView extends SymbolView {
   public void syncContent() {
     refresh();
 
-    ExpandableList codeView = getContentView();
+    LinearLayout codeView = getContentView();
 
     if (!expanded) {
       // Only remove if we own the view.
@@ -101,7 +102,7 @@ public class FunctionView extends SymbolView {
 
 
   CodeLineView findLine(int lineNumber) {
-    ExpandableList codeView = getContentView();
+    LinearLayout codeView = getContentView();
     for (int i = 0; i < codeView.getChildCount(); i++) {
       CodeLineView codeLineView = (CodeLineView) codeView.getChildAt(i);
       if (codeLineView.lineNumber == lineNumber) {

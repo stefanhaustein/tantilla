@@ -1,6 +1,8 @@
 package org.kobjects.asde.android.ide.symbollist;
 
 import android.graphics.Typeface;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -56,7 +58,7 @@ public class VariableView extends SymbolView {
         syncContent();
     }
 
-    void addLine(ExpandableList target, int indent, Object value) {
+    void addLine(ViewGroup target, int indent, Object value) {
         TextView initializerView = new TextView(mainActivity);
         initializerView.setTypeface(Typeface.MONOSPACE);
         StringBuilder sb = new StringBuilder();
@@ -68,7 +70,7 @@ public class VariableView extends SymbolView {
         target.addView(initializerView);
     }
 
-    void addChildList(ExpandableList target, int indent, Node node) {
+    void addChildList(ViewGroup target, int indent, Node node) {
         for (int i = 0; i < node.children.length; i++) {
             Node child = node.children[i];
             boolean last = i == node.children.length - 1;
@@ -112,7 +114,7 @@ public class VariableView extends SymbolView {
     public void syncContent() {
         refresh();
 
-        ExpandableList codeView = getContentView();
+        LinearLayout codeView = getContentView();
 
         if (!expanded) {
             if (codeView == contentView) {

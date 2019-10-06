@@ -34,7 +34,7 @@ public abstract class SymbolView extends LinearLayout {
         titleView.setOnClickListener(clicked -> {
             setExpanded(!expanded, true);
 
-            if (!expanded && getContentView() == mainActivity.codeView) {
+            if (!expanded && mainActivity.sharedCodeViewAvailable()) {
                 mainActivity.outputView.syncContent();
             }
 
@@ -59,8 +59,8 @@ public abstract class SymbolView extends LinearLayout {
         if (expanded == expand) {
             return;
         }
-        if (animated) {
-            getContentView().animateNextChanges();
+        if (animated && contentView == getContentView()) {
+            contentView.animateNextChanges();
         }
         expanded = expand;
         for (ExpandListener expandListener : expandListeners) {
@@ -69,9 +69,9 @@ public abstract class SymbolView extends LinearLayout {
         syncContent();
     }
 
-    public ExpandableList getContentView() {
-        if (mainActivity.codeView != null) {
-            return mainActivity.codeView;
+    public LinearLayout getContentView() {
+        if (mainActivity.sharedCodeViewAvailable()) {
+            return mainActivity.obtainSharedCodeView(this);
         }
 
         if (contentView == null) {

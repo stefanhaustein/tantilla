@@ -1,0 +1,5 @@
+ASDE
+10 LET a = "" : REM Declare "a" as String
+20 INPUT "What is your name"; a
+30 PRINT
+40 PRINT "Hello "; a; "!"

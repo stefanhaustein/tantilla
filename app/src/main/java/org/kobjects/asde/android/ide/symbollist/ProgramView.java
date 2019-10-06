@@ -14,7 +14,6 @@ import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.event.StartStopListener;
-import org.kobjects.asde.lang.GlobalSymbol;
 
 import java.util.Collections;
 
@@ -54,13 +53,11 @@ public class ProgramView extends LinearLayout {
       MainMenu.show(mainActivity, view);
     });
     addView(titleView);
-    titleView.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        expand(!expanded);
-        if (mainActivity.codeView != null) {
+    titleView.setOnClickListener(view -> {
+        if (mainActivity.sharedCodeViewAvailable()) {
           mainActivity.outputView.syncContent();
-        }
+        } else {
+          expand(!expanded);
       }
     });
 
@@ -146,7 +143,9 @@ public class ProgramView extends LinearLayout {
   }
 
   void synchronize() {
-    titleView.setTitle(program.reference.name + (program.reference.urlWritable ? "" : "*"));
+    titleView.setTitle(
+        (program.reference.name.equals("Unnamed") ? "ASDE" : program.reference.name)
+        + (program.reference.urlWritable ? "" : " ⌘"));
 
     if (!expanded) {
       symbolList.synchronizeTo(Collections.emptyList(), expandListener, null);

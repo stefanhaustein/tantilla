@@ -17,7 +17,7 @@ import java.util.Map;
 public class CodeLine implements Iterable<Node> {
   private final int lineNumber;
   private Node[] statements;
-  private int indent;
+  public int indent;
 
   public CodeLine(int lineNumber, Node... statements) {
     this.lineNumber = lineNumber;
@@ -28,9 +28,11 @@ public class CodeLine implements Iterable<Node> {
     this(lineNumber, statements.toArray(new Node[0]));
   }
 
-  public void toString(AnnotatedStringBuilder sb, Map<Node, Exception> errors) {
-    for (int i = 0; i < indent; i++) {
-      sb.append(' ');
+  public void toString(AnnotatedStringBuilder sb, Map<Node, Exception> errors, boolean indent) {
+    if (indent) {
+      for (int i = 0; i < this.indent; i++) {
+        sb.append(' ');
+      }
     }
     for (int i = 0; i < statements.length; i++) {
       if (i > 0) {
@@ -49,7 +51,7 @@ public class CodeLine implements Iterable<Node> {
   @Override
   public String toString() {
     AnnotatedStringBuilder sb = new AnnotatedStringBuilder();
-    toString(sb, Collections.<Node, Exception>emptyMap());
+    toString(sb, Collections.<Node, Exception>emptyMap(), true);
     return sb.toString();
   }
 
