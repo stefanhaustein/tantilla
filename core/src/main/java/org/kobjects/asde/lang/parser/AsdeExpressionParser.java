@@ -35,7 +35,7 @@ public class AsdeExpressionParser extends ExpressionParser<Node> {
 
 
   public ExpressionParser.Tokenizer createTokenizer(String line) {
-    ExpressionParser.Tokenizer tokenizer = new ExpressionParser.Tokenizer(new Scanner(line), getSymbols(), "->", ";", ":");
+    ExpressionParser.Tokenizer tokenizer = new ExpressionParser.Tokenizer(new Scanner(line), getSymbols(), "->", ";", ":", "AND", "FOR", "IF", "NEXT", "OR", "THEN" );
     tokenizer.numberPattern = NUMBER_PATTERN;
     tokenizer.lineCommentPattern = LINE_COMMENT_PATTERN;
     tokenizer.stringPattern = STRING_PATTERN;

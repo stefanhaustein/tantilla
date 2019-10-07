@@ -46,7 +46,7 @@ public class FunctionImplementation implements Function, Declaration {
                 Node statement = line.get(i);
                 boolean isLast = i == line.length() - 1;
 
-                if (statement instanceof ElseStatement && ((ElseStatement) statement).multiline) {
+                if (statement instanceof ElseStatement && ((ElseStatement) statement).multiline && indent > 0) {
                     addLater++;
                     indent--;
                 } else if (statement instanceof ForStatement
@@ -58,7 +58,7 @@ public class FunctionImplementation implements Function, Declaration {
                 } else if (statement instanceof NextStatement || statement instanceof EndIfStatement || statement instanceof EndStatement) {
                     if (addLater > 0) {
                         addLater--;
-                    } else {
+                    } else if (indent > 0) {
                         indent--;
                     }
                 }

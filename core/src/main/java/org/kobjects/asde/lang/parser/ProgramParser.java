@@ -20,6 +20,54 @@ import java.util.Collections;
 import java.util.List;
 
 public class ProgramParser {
+
+  private static final String[] KEYWORDS = {
+    "AND", "ELSE", "FOR", "GOTO", "GOSUB", "IF", "LET", "NEXT", "ON", "OR", "PRINT", "REM", "STEP", "STOP", "THEN", "TO",
+  };
+
+
+  private static String preprocessLegacyIdentifiers(String line) {
+    StringBuilder sb = new StringBuilder();
+    boolean inQuote = false;
+    int len = line.length();
+    for (int i = 0; i < len; i++) {
+      char c = line.charAt(i);
+      if (c == '"' || inQuote) {
+        inQuote = c == '"' ? !inQuote : true;
+        sb.append(c);
+      } else if (c == '\'') {
+        sb.append(line.substring(i));
+        break;
+      } else if (c >= 'A' && c <= 'T') {
+        int originalI = i;
+        for (String keyword: KEYWORDS) {
+          if (line.startsWith(keyword, i)) {
+            if (i > 0 && line.charAt(i - 1) != ' ') {
+              sb.append(' ');
+            }
+            sb.append(keyword);
+            if (i + keyword.length() < len && line.charAt(i + keyword.length()) != ' ') {
+              sb.append(' ');
+            }
+            i += keyword.length() - 1;
+            if (keyword.equals("REM")) {
+              sb.append(line.substring(i + 1));
+              return sb.toString();
+            }
+            break;
+          }
+        }
+        if (i == originalI) {
+          sb.append(c);
+        }
+      } else {
+        sb.append(c);
+      }
+    }
+    return sb.toString();
+  }
+
+
   final StatementParser statementParser;
   final Program program;
 
@@ -39,6 +87,10 @@ public class ProgramParser {
     ArrayList<Exception> exceptions = new ArrayList<>();
     while (line != null) {
       System.out.println("Parsing: '" + line + "'");
+      if (program.legacyMode) {
+          line = preprocessLegacyIdentifiers(line);
+          System.out.println("Preprocessed: '" + line + "'");
+      }
       try {
         ExpressionParser.Tokenizer tokenizer = statementParser.createTokenizer(line);
         tokenizer.nextToken();
