@@ -68,6 +68,7 @@ public class Program implements SymbolOwner {
   public boolean c64Mode;
   private boolean loading;
   int currentStamp;
+  public boolean hasUnsavedChanges;
 
   public Program(Console console) {
     this.console = console;
@@ -206,6 +207,7 @@ public class Program implements SymbolOwner {
       OutputStreamWriter writer = new OutputStreamWriter(console.openOutputStream(programReference.url), "utf8");
       writer.write(toString());
       writer.close();
+      hasUnsavedChanges = false;
    }
 
 
@@ -237,6 +239,7 @@ public class Program implements SymbolOwner {
     console.updateProgress("Url: " + fileReference.url);
 
     loading = true;
+    hasUnsavedChanges = false;
 
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(console.openInputStream(fileReference.url), "utf-8"));
@@ -254,6 +257,7 @@ public class Program implements SymbolOwner {
 
       // change notification triggers validation
       notifyProgramChanged();
+      hasUnsavedChanges = false;
     }
   }
 
@@ -378,6 +382,7 @@ public class Program implements SymbolOwner {
     if (loading) {
       return;
     }
+    hasUnsavedChanges = true;
     validate();
     for (ProgramChangeListener changeListener : programChangeListeners) {
       changeListener.programChanged(this);

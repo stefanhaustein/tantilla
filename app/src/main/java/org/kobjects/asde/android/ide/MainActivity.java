@@ -44,7 +44,9 @@ import org.kobjects.asde.lang.Format;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.ProgramControl;
+import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.WrappedExecutionException;
+import org.kobjects.asde.lang.event.ProgramChangeListener;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Function;
 import org.kobjects.asde.lang.io.ProgramReference;
@@ -267,7 +269,37 @@ public class MainActivity extends AppCompatActivity implements Console {
             runOnUiThread(() -> rootView.setBackgroundColor(getBackgroundColor()));
         });
 
+
+    program.addProgramChangeListener(new ProgramChangeListener() {
+      @Override
+      public void programChanged(Program program) {
+        triggerAutosave();
+      }
+
+      @Override
+      public void symbolChangedByUser(Program program, StaticSymbol symbol) {
+        triggerAutosave();
+      }
+    });
+
     load(programReference, false, runningFromShortcut);
+  }
+
+
+  boolean autosaveTriggered;
+  void triggerAutosave() {
+    if (program.reference.urlWritable && !autosaveTriggered) {
+      new Thread(() -> {
+        try {
+          Thread.sleep(100);
+          autosaveTriggered = false;
+          program.save(program.reference);
+          programView.refresh();
+        } catch (Exception e) {
+          autosaveTriggered = false;
+        }
+      }).start();
+    }
   }
 
   public void addShortcut() {
