@@ -6,6 +6,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.widget.IconButton;
+import org.kobjects.asde.lang.ForcedStopException;
 import org.kobjects.asde.lang.event.StartStopListener;
 import org.kobjects.asde.lang.io.Console;
 
@@ -91,7 +92,7 @@ public class RunControlView extends LinearLayout {
                     mainActivity.fullScreenMode = false;
                     mainActivity.arrangeUi();
 
-                    if (cause != null) {
+                    if (cause != null && !(cause instanceof ForcedStopException)) {
                         mainActivity.showError(null, cause);
                     }
 

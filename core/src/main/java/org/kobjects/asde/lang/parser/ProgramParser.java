@@ -22,7 +22,7 @@ import java.util.List;
 public class ProgramParser {
 
   private static final String[] KEYWORDS = {
-    "AND", "ELSE", "FOR", "GOTO", "GOSUB", "IF", "LET", "NEXT", "ON", "OR", "PRINT", "REM", "STEP", "STOP", "THEN", "TO",
+    "AND", "DATA", "DIM", "ELSE", "FOR", "GOTO", "GOSUB", "IF", "LET", "NEXT", "ON", "OR", "PRINT", "REM", "RESTORE", "STEP", "STOP", "THEN", "TO"
   };
 
 

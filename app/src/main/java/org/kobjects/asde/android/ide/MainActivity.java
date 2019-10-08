@@ -40,6 +40,7 @@ import org.kobjects.asde.android.ide.widget.Dimensions;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.lang.EvaluationContext;
+import org.kobjects.asde.lang.ForcedStopException;
 import org.kobjects.asde.lang.Format;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.Program;
@@ -621,18 +622,18 @@ public class MainActivity extends AppCompatActivity implements Console {
   @Override
   public String input() {
       SynchronousQueue<String> inputQueue = new SynchronousQueue<>();
-
+      final EditText[] inputEditText = new EditText[1];
     runOnUiThread(() -> {
         final LinearLayout inputView = new LinearLayout(this);
-        final EditText inputEditText = new EditText(this);
-        inputView.addView(inputEditText, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+        inputEditText[0] = new EditText(this);
+        inputView.addView(inputEditText[0], new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
         IconButton inputButton = new IconButton(this, R.drawable.baseline_keyboard_return_24);
         inputView.addView(inputButton);
         outputView.addContent(inputView);
         inputView.requestFocus();
         inputButton.setOnClickListener(item-> {
             outputView.removeContent(inputView);
-            inputQueue.add(inputEditText.getText().toString());
+            inputQueue.add(inputEditText[0].getText().toString());
         });
     });
 
@@ -642,7 +643,10 @@ public class MainActivity extends AppCompatActivity implements Console {
         readLine = null;
         return result;
     } catch (InterruptedException e) {
-        throw new RuntimeException("interrupted");
+      if (inputEditText[0] != null) {
+        runOnUiThread(() -> inputEditText[0].setEnabled(false));
+      }
+        throw new ForcedStopException(e);
     }
   }
 

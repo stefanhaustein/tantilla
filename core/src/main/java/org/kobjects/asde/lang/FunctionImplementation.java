@@ -89,40 +89,41 @@ public class FunctionImplementation implements Function, Declaration {
     }
 
   public Object callImpl(EvaluationContext newContext) {
-        try {
-            ProgramControl control = newContext.control;
+    try {
+      ProgramControl control = newContext.control;
       //      if (newContext.currentLine > -1) {
-                Map.Entry<Integer, CodeLine> entry;
-                while (null != (entry = ceilingEntry(newContext.currentLine)) && !Thread.currentThread().isInterrupted()) {
-                    newContext.currentLine = entry.getKey();
-                    if (control.getState() != ProgramControl.State.PAUSED) {
-                        ProgramControl.runCodeLineImpl(entry.getValue(), newContext);
-                    } else {
-                        control.program.console.highlight(this, newContext.currentLine);
+      Map.Entry<Integer, CodeLine> entry;
+      while (null != (entry = ceilingEntry(newContext.currentLine)) && !Thread.currentThread().isInterrupted()) {
+        newContext.currentLine = entry.getKey();
+        if (control.getState() != ProgramControl.State.PAUSED) {
+          ProgramControl.runCodeLineImpl(entry.getValue(), newContext);
+        } else {
+          control.program.console.highlight(this, newContext.currentLine);
 
-                        while (control.state == ProgramControl.State.PAUSED) {
-                            try {
-                                Thread.sleep(100);
-                            } catch (InterruptedException e) {
-                                break;
-                            }
-                        }
+          while (control.state == ProgramControl.State.PAUSED) {
+            try {
+              Thread.sleep(100);
+            } catch (InterruptedException e) {
+              break;
+            }
+          }
 
-                        if (control.state == ProgramControl.State.STEP) {
-                            control.state = ProgramControl.State.PAUSED;
-                        }
+          if (control.state == ProgramControl.State.STEP) {
+            control.state = ProgramControl.State.PAUSED;
+          }
 
-                        if (control.state != ProgramControl.State.ABORTING && control.state != ProgramControl.State.ENDED) {
-                            ProgramControl.runCodeLineImpl(entry.getValue(), newContext);
-                        }
-                    }
-                }
-        //    }
-            return newContext.returnValue;
-        } catch (Exception e) {
-            throw new WrappedExecutionException(this, newContext.currentLine, e);
+          if (control.state != ProgramControl.State.ABORTING && control.state != ProgramControl.State.ENDED) {
+            ProgramControl.runCodeLineImpl(entry.getValue(), newContext);
+          }
         }
-
+      }
+      //    }
+      return newContext.returnValue;
+    } catch (ForcedStopException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new WrappedExecutionException(this, newContext.currentLine, e);
+    }
   }
 
 
