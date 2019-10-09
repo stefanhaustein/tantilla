@@ -1,14 +1,21 @@
 package org.kobjects.asde.android.ide.symbollist;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import androidx.appcompat.widget.AppCompatTextView;
 
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.text.style.LeadingMarginSpan;
+import android.view.DragEvent;
+import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.textclassifier.TextLinks;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,6 +23,7 @@ import com.vanniktech.emoji.EmojiTextView;
 
 import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.annotatedtext.Span;
 import org.kobjects.asde.android.ide.AnnotatedStringConverter;
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
@@ -51,6 +59,19 @@ public class CodeLineView extends LinearLayout {
     addView(statementView, new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT, 1));
 
     updateColor();
+
+    /*
+    setOnDragListener(new OnDragListener() {
+      @Override
+      public boolean onDrag(View view, DragEvent dragEvent) {
+        setBackgroundColor(0xff000000 | (int) (Math.random() * 0xffffff));
+        return true;
+      }
+    });
+*/
+
+
+
   }
 
   void setLineNumber(int lineNumber) {
@@ -68,8 +89,10 @@ public class CodeLineView extends LinearLayout {
     spannable.setSpan(new LeadingMarginSpan.Standard(codeLine.indent * factor, (codeLine.indent + 2) * factor),0,spannable.length(),0);
 
     statementView.setText(spannable);
-    if (asb.spans().iterator().hasNext()) {
+    if (spannable.getSpans(0, spannable.length(), ClickableSpan.class).length > 0) {
       statementView.setMovementMethod(LinkMovementMethod.getInstance());
+    } else {
+      statementView.setMovementMethod(null);
     }
   }
 

@@ -70,6 +70,8 @@ public class ProgramView extends LinearLayout {
     currentFunctionView = mainFunctionView;
     currentSymbolView = mainFunctionView;
 
+    // Makes sense to handle this here because of shellControl -- just for mainControl
+    // it would be easier to let RunControlView handle this.
     StartStopListener startStopRefresher = new StartStopListener() {
       @Override
       public void programStarted() {
@@ -91,7 +93,6 @@ public class ProgramView extends LinearLayout {
         refresh();
       }
     };
-
     context.shell.mainControl.addStartStopListener(startStopRefresher);
     context.shell.shellControl.addStartStopListener(startStopRefresher);
 

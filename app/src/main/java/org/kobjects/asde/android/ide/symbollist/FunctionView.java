@@ -1,5 +1,9 @@
 package org.kobjects.asde.android.ide.symbollist;
 
+import android.graphics.Color;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
@@ -19,7 +23,6 @@ import java.util.Map;
 
 public class FunctionView extends SymbolView {
   public FunctionImplementation functionImplementation;
-  OnLongClickListener lineClickListener;
 
   public FunctionView(final MainActivity mainActivity, StaticSymbol symbol) {
     super(mainActivity, symbol);
@@ -61,6 +64,7 @@ public class FunctionView extends SymbolView {
     }
 
     titleView.setSubtitles(subtitles);
+
   }
 
 
@@ -92,12 +96,17 @@ public class FunctionView extends SymbolView {
       }
       codeLineView.setLineNumber(entry.getKey());
       codeLineView.setCodeLine(entry.getValue(), symbol.getErrors());
-      codeLineView.setOnLongClickListener(lineClickListener);
+      codeLineView.setClickable(true);  // needed for long press to work :(
+      //codeLineView.setFocusable(true);
+      codeLineView.setOnTouchListener(new ChildTouchListener());
+
+//       codeLineView.setOnLongClickListener(lineClickListener);
       index++;
     }
     while (index < codeView.getChildCount()) {
       codeView.removeViewAt(codeView.getChildCount() - 1);
     }
+
   }
 
 
@@ -110,6 +119,50 @@ public class FunctionView extends SymbolView {
       }
     }
     return null;
+  }
+
+
+  private void startSelection(MotionEvent e) {
+    getContentView().setBackgroundColor(Color.GREEN);
+  }
+
+  private void moveSelection(MotionEvent e) {
+    getContentView().setBackgroundColor(0xff000000 | (int) (Math.random() * 0xffffff));
+  }
+
+
+  class ChildTouchListener implements OnTouchListener {
+    boolean dragMode = false;
+    View view;
+
+    GestureDetector gestureDetector = new GestureDetector(mainActivity, new GestureDetector.SimpleOnGestureListener() {
+      @Override
+      public void onLongPress(MotionEvent e) {
+        dragMode = true;
+        view.getParent().requestDisallowInterceptTouchEvent(true);
+        startSelection(e);
+      }
+    });
+
+    @Override
+    public boolean onTouch(View view, MotionEvent event) {
+      this.view = view;
+      gestureDetector.setIsLongpressEnabled(true);
+      boolean result = gestureDetector.onTouchEvent(event);
+
+      if (!dragMode) {
+        return result;
+      }
+
+      if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
+        dragMode = false;
+        getContentView().setBackgroundColor(0);
+      } else {
+        moveSelection(event);
+      }
+
+      return true;
+    }
   }
 
 }

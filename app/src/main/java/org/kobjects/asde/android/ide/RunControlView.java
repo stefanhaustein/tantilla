@@ -30,26 +30,35 @@ public class RunControlView extends LinearLayout {
             mainActivity.shell.mainControl.start();
         });
 
-        /*
-        startButton = new IconButton(mainActivity, R.drawable.baseline_play_arrow_24, item -> {
-           hideControlButtons();
-           mainActivity.shell.mainControl.start();
-        });
-         */
         stopButton = new IconButton(mainActivity, R.drawable.baseline_stop_24, item -> {
            hideControlButtons();
            mainActivity.shell.mainControl.abort();
         });
-        pauseButton = new IconButton(mainActivity, R.drawable.baseline_pause_24, item -> {
-           hideControlButtons();
-           mainActivity.shell.mainControl.pause();
-        });
         resumeButton = new IconButton(mainActivity, R.drawable.baseline_play_arrow_24, item -> {
-           hideControlButtons();
-           mainActivity.shell.mainControl.resume();
+            hideControlButtons();
+            mainActivity.shell.mainControl.resume();
         });
         stepButton = new IconButton(mainActivity, R.drawable.baseline_skip_next_24, item -> {
+            item.setEnabled(false);
             mainActivity.shell.mainControl.step();
+        });
+        pauseButton = new IconButton(mainActivity, R.drawable.baseline_pause_24, item -> {
+           hideControlButtons();
+
+           resumeButton.setVisibility(VISIBLE);
+           stepButton.setVisibility(VISIBLE);
+           stepButton.setEnabled(false);
+           stopButton.setVisibility(VISIBLE);
+
+           mainActivity.fullScreenMode = false;
+           mainActivity.arrangeUi();
+           mainActivity.programView.refresh();
+
+           mainActivity.programView.highlight(
+               mainActivity.shell.mainControl.lastCreatedContext.function,
+               mainActivity.shell.mainControl.lastCreatedContext.currentLine);
+
+           mainActivity.shell.mainControl.pause();
         });
         closeButton = new IconButton(mainActivity, R.drawable.baseline_clear_24, item -> {
             hideControlButtons();
@@ -112,8 +121,7 @@ public class RunControlView extends LinearLayout {
                     resumeButton.setVisibility(VISIBLE);
                     stopButton.setVisibility(VISIBLE);
                     stepButton.setVisibility(VISIBLE);
-                    mainActivity.fullScreenMode = false;
-                    mainActivity.arrangeUi();
+                    stepButton.setEnabled(true);
                 });
             }
         });
