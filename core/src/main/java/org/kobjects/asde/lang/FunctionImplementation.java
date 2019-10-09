@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.event.StartStopListener;
 import org.kobjects.asde.lang.statement.ElseStatement;
 import org.kobjects.asde.lang.statement.EndIfStatement;
 import org.kobjects.asde.lang.statement.EndStatement;
@@ -95,11 +96,14 @@ public class FunctionImplementation implements Function, Declaration {
       Map.Entry<Integer, CodeLine> entry;
       while (null != (entry = ceilingEntry(newContext.currentLine)) && !Thread.currentThread().isInterrupted()) {
         newContext.currentLine = entry.getKey();
-        if (control.getState() != ProgramControl.State.PAUSED) {
-          ProgramControl.runCodeLineImpl(entry.getValue(), newContext);
-        } else {
+        if (control.getState() != ProgramControl.State.RUNNING) {
+          if (control.state == ProgramControl.State.STEP) {
+            control.state = ProgramControl.State.PAUSED;
+            for (StartStopListener startStopListener : control.startStopListeners) {
+              startStopListener.programPaused();
+            }
+          }
           control.program.console.highlight(this, newContext.currentLine);
-
           while (control.state == ProgramControl.State.PAUSED) {
             try {
               Thread.sleep(100);
@@ -107,15 +111,11 @@ public class FunctionImplementation implements Function, Declaration {
               break;
             }
           }
-
-          if (control.state == ProgramControl.State.STEP) {
-            control.state = ProgramControl.State.PAUSED;
-          }
-
-          if (control.state != ProgramControl.State.ABORTING && control.state != ProgramControl.State.ENDED) {
-            ProgramControl.runCodeLineImpl(entry.getValue(), newContext);
+          if (control.state == ProgramControl.State.ABORTING) {
+            throw new ForcedStopException(null);
           }
         }
+        ProgramControl.runCodeLineImpl(entry.getValue(), newContext);
       }
       //    }
       return newContext.returnValue;

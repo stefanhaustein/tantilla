@@ -34,6 +34,8 @@ public class EvaluationContext {
         stackTop = function.localVariableCount;
         dataStack = new DataStack(stackTop);
         self = null;
+
+        control.lastCreatedContext = this;
     }
 
     /**
@@ -49,6 +51,8 @@ public class EvaluationContext {
         currentIndex = parentContext.currentIndex;
         self = parentContext.self;
         System.arraycopy(parentContext.dataStack.data, parentContext.stackBase, dataStack.data, stackBase, stackTop);
+
+        control.lastCreatedContext = this;
     }
 
     /**
@@ -61,6 +65,8 @@ public class EvaluationContext {
         this.dataStack = parentContext.dataStack;
         this.stackBase = parentContext.stackTop;
         this.stackTop = stackBase + functionImplementation.localVariableCount;
+
+        control.lastCreatedContext = this;
     }
 
     public int[] getDataPosition() {

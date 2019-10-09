@@ -8,8 +8,12 @@ import java.util.List;
 
 public class ProgramControl {
     Thread interpreterThread;
-    private final List<StartStopListener> startStopListeners = new ArrayList<>();
+    final List<StartStopListener> startStopListeners = new ArrayList<>();
     public Program program;
+
+    // For debugger until we have something per thread.
+    public EvaluationContext lastCreatedContext;
+
 
     public enum State {
         PAUSED, ABORTING, ABORTED, ENDED, RUNNING, STEP
@@ -125,10 +129,7 @@ public class ProgramControl {
         if (state != State.RUNNING) {
            throw new IllegalStateException("Can't pause in state " + state);
         }
-        this.state = State.PAUSED;
-        for (StartStopListener startStopListener : startStopListeners) {
-           startStopListener.programPaused();
-        }
+        this.state = State.STEP;
     }
 
     public synchronized void step() {
@@ -139,7 +140,7 @@ public class ProgramControl {
     }
 
     public synchronized void resume() {
-        if (state != State.PAUSED) {
+        if (state != State.PAUSED && state != State.STEP) {
             throw new IllegalStateException("Can't resume in state " + state);
         }
         this.state = State.RUNNING;
