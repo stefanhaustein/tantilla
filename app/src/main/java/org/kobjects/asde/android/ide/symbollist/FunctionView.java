@@ -1,6 +1,7 @@
 package org.kobjects.asde.android.ide.symbollist;
 
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,6 +24,9 @@ import java.util.Map;
 
 public class FunctionView extends SymbolView {
   public FunctionImplementation functionImplementation;
+
+  int selectionStartIndex;
+  int selectionEndIndex;
 
   public FunctionView(final MainActivity mainActivity, StaticSymbol symbol) {
     super(mainActivity, symbol);
@@ -121,13 +125,48 @@ public class FunctionView extends SymbolView {
     return null;
   }
 
+  private int findLine(MotionEvent event) {
+    LinearLayout codeView = getContentView();
+    int rawX = (int) event.getRawX();
+    int rawY = (int) event.getRawY();
+    System.out.println("ev: " + event + " rx: " + rawX + " ry: " + rawY);
+    int[] location = new int[2];
+    for (int i = 0; i < codeView.getChildCount(); i++) {
+      CodeLineView view = (CodeLineView) codeView.getChildAt(i);
+      view.getLocationOnScreen(location);
+
+      if (rawX > location[0] && rawX < location[0] + view.getWidth()
+              && rawY > location[1]  && rawY < location[1] + view.getHeight()) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
 
   private void startSelection(MotionEvent e) {
-    getContentView().setBackgroundColor(Color.GREEN);
+    int i = findLine(e);
+    if (i != -1) {
+      selectionStartIndex = i;
+      selectionEndIndex = i;
+      moveSelection(e);
+    }
   }
 
   private void moveSelection(MotionEvent e) {
-    getContentView().setBackgroundColor(0xff000000 | (int) (Math.random() * 0xffffff));
+    int index = findLine(e);
+    if (index != -1) {
+      LinearLayout contentView = getContentView();
+        for (int i = Math.min(selectionStartIndex, selectionEndIndex); i <= Math.max(selectionStartIndex, selectionEndIndex); i++) {
+          contentView.getChildAt(i).setBackgroundColor(0);
+        }
+        selectionEndIndex = index;
+      for (int i = Math.min(selectionStartIndex, selectionEndIndex); i <= Math.max(selectionStartIndex, selectionEndIndex); i++) {
+        contentView.getChildAt(i).setBackgroundColor(Colors.ORANGE);
+      }
+      
+
+    }
   }
 
 
