@@ -1,8 +1,9 @@
 package org.kobjects.asde.android.ide.symbollist;
 
-import android.graphics.Color;
-import android.graphics.Rect;
+import android.app.AlertDialog;
 import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -13,7 +14,6 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.editor.DeleteFlow;
 import org.kobjects.asde.android.ide.editor.FunctionSignatureFlow;
 import org.kobjects.asde.android.ide.editor.RenameFlow;
-import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.type.CodeLine;
@@ -25,8 +25,7 @@ import java.util.Map;
 public class FunctionView extends SymbolView {
   public FunctionImplementation functionImplementation;
 
-  int selectionStartIndex;
-  int selectionEndIndex;
+  private Selection selection;
 
   public FunctionView(final MainActivity mainActivity, StaticSymbol symbol) {
     super(mainActivity, symbol);
@@ -114,7 +113,7 @@ public class FunctionView extends SymbolView {
   }
 
 
-  CodeLineView findLine(int lineNumber) {
+  CodeLineView findLineIndex(int lineNumber) {
     LinearLayout codeView = getContentView();
     for (int i = 0; i < codeView.getChildCount(); i++) {
       CodeLineView codeLineView = (CodeLineView) codeView.getChildAt(i);
@@ -125,14 +124,18 @@ public class FunctionView extends SymbolView {
     return null;
   }
 
-  private int findLine(MotionEvent event) {
+  CodeLineView getCodeLineView(int index) {
+    return (CodeLineView) getContentView().getChildAt(index);
+  }
+
+  private int findLineIndex(MotionEvent event) {
     LinearLayout codeView = getContentView();
     int rawX = (int) event.getRawX();
     int rawY = (int) event.getRawY();
     System.out.println("ev: " + event + " rx: " + rawX + " ry: " + rawY);
     int[] location = new int[2];
     for (int i = 0; i < codeView.getChildCount(); i++) {
-      CodeLineView view = (CodeLineView) codeView.getChildAt(i);
+      CodeLineView view = getCodeLineView(i);
       view.getLocationOnScreen(location);
 
       if (rawX > location[0] && rawX < location[0] + view.getWidth()
@@ -145,27 +148,97 @@ public class FunctionView extends SymbolView {
 
 
   private void startSelection(MotionEvent e) {
-    int i = findLine(e);
+    int i = findLineIndex(e);
     if (i != -1) {
-      selectionStartIndex = i;
-      selectionEndIndex = i;
+      selection = new Selection(i);
       moveSelection(e);
     }
   }
 
   private void moveSelection(MotionEvent e) {
-    int index = findLine(e);
+    int index = findLineIndex(e);
     if (index != -1) {
       LinearLayout contentView = getContentView();
-        for (int i = Math.min(selectionStartIndex, selectionEndIndex); i <= Math.max(selectionStartIndex, selectionEndIndex); i++) {
-          contentView.getChildAt(i).setBackgroundColor(0);
+        for (int i = selection.getStartIndex(); i < selection.getEndIndex(); i++) {
+          contentView.getChildAt(i).setSelected(false);
         }
-        selectionEndIndex = index;
-      for (int i = Math.min(selectionStartIndex, selectionEndIndex); i <= Math.max(selectionStartIndex, selectionEndIndex); i++) {
-        contentView.getChildAt(i).setBackgroundColor(Colors.ORANGE);
+        selection.setLastSelectedIndex(index);
+      for (int i = selection.getStartIndex(); i < selection.getEndIndex(); i++) {
+        contentView.getChildAt(i).setSelected(true);
       }
-      
+    }
+  }
 
+  private void endSelection() {
+    CodeLineView lastSelected = (CodeLineView) contentView.getChildAt(selection.lastSelectedIndex);
+    PopupMenu popup = new PopupMenu(mainActivity, lastSelected);
+
+    popup.setOnDismissListener((a) -> {
+      for (int i = selection.getStartIndex(); i <= selection.getEndIndex(); i++) {
+        contentView.getChildAt(i).setSelected(false);
+      }
+    });
+    Menu menu = popup.getMenu();
+
+    MenuItem editItem = menu.add("Edit");
+    if (selection.firstSelectedIndex == selection.lastSelectedIndex) {
+      editItem.setOnMenuItemClickListener(item -> {
+        mainActivity.controlView.codeEditText.setText(lastSelected.toString());
+        return true;
+      });
+    } else {
+      editItem.setEnabled(false);
+    }
+
+    menu.add("Copy");
+    menu.add("Renumber");
+    menu.add("Delete").setOnMenuItemClickListener(item -> {
+      selection.startDeleteFlow();
+      return true;
+    });
+
+    popup.show();
+  }
+
+
+  class Selection {
+    final int firstSelectedIndex;
+    int lastSelectedIndex;
+
+    Selection(int firstSelectedIndex) {
+      this.firstSelectedIndex = lastSelectedIndex = firstSelectedIndex;
+    }
+
+    void setLastSelectedIndex(int lastSelectedIndex) {
+      this.lastSelectedIndex = lastSelectedIndex;
+    }
+
+    public int getStartIndex() {
+      return Math.min(firstSelectedIndex, lastSelectedIndex);
+    }
+
+    public int getEndIndex() {
+      return Math.max(firstSelectedIndex, lastSelectedIndex) + 1;
+    }
+
+
+    void startDeleteFlow() {
+      AlertDialog.Builder alertBuilder = new AlertDialog.Builder(mainActivity);
+      alertBuilder.setTitle("Confirm Delete");
+      if (firstSelectedIndex == lastSelectedIndex) {
+        alertBuilder.setMessage("Delete line " + getCodeLineView(firstSelectedIndex).lineNumber  + "'?");
+      } else {
+        alertBuilder.setMessage("Delete lines " + getCodeLineView(getStartIndex()).lineNumber + " - " +
+            getCodeLineView(getEndIndex() - 1).lineNumber + "?");
+      }
+      alertBuilder.setNegativeButton("Cancel", null);
+      alertBuilder.setPositiveButton("Delete", (a,b) -> {
+        for (int i = getEndIndex() - 1; i >= getStartIndex(); i--) {
+          functionImplementation.deleteLine(getCodeLineView(i).lineNumber);
+          getContentView().removeViewAt(i);
+        }
+      });
+      alertBuilder.show();
     }
   }
 
@@ -195,7 +268,7 @@ public class FunctionView extends SymbolView {
 
       if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
         dragMode = false;
-        getContentView().setBackgroundColor(0);
+        endSelection();
       } else {
         moveSelection(event);
       }

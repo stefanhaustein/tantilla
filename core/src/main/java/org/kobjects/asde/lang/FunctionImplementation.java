@@ -166,6 +166,9 @@ public class FunctionImplementation implements Function, Declaration {
 
   public synchronized void deleteLine(int lineNumber) {
         code.remove(lineNumber);
+        if (declaringSymbol != null) {
+          program.notifySymbolChanged(declaringSymbol);
+        }
     }
 
   public synchronized void setLine(CodeLine line) {

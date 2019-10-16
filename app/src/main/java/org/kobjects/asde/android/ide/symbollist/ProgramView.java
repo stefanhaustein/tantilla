@@ -202,7 +202,7 @@ public class ProgramView extends LinearLayout {
         targetView.setExpanded(true, true);
         targetView.requestChildFocus(targetView.titleView, targetView.titleView);
       }
-      highlightedLine = targetView.findLine(lineNumber);
+      highlightedLine = targetView.findLineIndex(lineNumber);
       if (highlightedLine != null) {
         highlightedLine.setHighlighted(true);
         if (!exapnded) {

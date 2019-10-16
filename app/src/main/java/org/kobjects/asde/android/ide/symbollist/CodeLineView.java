@@ -74,6 +74,11 @@ public class CodeLineView extends LinearLayout {
 
   }
 
+  public void setSelected(boolean selected) {
+    super.setSelected(selected);
+    updateColor();
+  }
+
   void setLineNumber(int lineNumber) {
     this.lineNumber = lineNumber;
     lineNumberView.setText(lineNumber + " ");
@@ -106,6 +111,8 @@ public class CodeLineView extends LinearLayout {
   void updateColor() {
     if (highlighted) {
       setBackgroundColor(Colors.RED);
+    } else if (isSelected()) {
+      setBackgroundColor(Colors.ORANGE);
     } else if (odd) {
       setBackgroundColor(Colors.PRIMARY_LIGHT_FILTER);
     } else {

@@ -349,7 +349,6 @@ public class Program implements SymbolOwner {
         if (symbol.getValue() instanceof FunctionImplementation) {
             FunctionImplementation functionImplementation = (FunctionImplementation) symbol.getValue();
             functionImplementation.deleteLine(line);
-            notifySymbolChanged(symbol);
         }
   }
 
@@ -372,6 +371,7 @@ public class Program implements SymbolOwner {
     if (loading) {
       return;
     }
+    hasUnsavedChanges = true;
     symbol.validate();
     for (ProgramChangeListener changeListener : programChangeListeners) {
       changeListener.symbolChangedByUser(this, symbol);
