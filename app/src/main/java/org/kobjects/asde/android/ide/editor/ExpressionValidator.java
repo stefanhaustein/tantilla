@@ -9,8 +9,7 @@ import org.kobjects.asde.lang.Format;
 public class ExpressionValidator extends TextValidator {
   private MainActivity mainActivity;
 
-  ExpressionValidator(MainActivity mainActivity, TextInputLayout textInputLayout) {
-    super(textInputLayout);
+  ExpressionValidator(MainActivity mainActivity) {
     this.mainActivity = mainActivity;
 
   }

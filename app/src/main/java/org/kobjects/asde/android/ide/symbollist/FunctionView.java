@@ -14,6 +14,7 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.editor.DeleteFlow;
 import org.kobjects.asde.android.ide.editor.FunctionSignatureFlow;
 import org.kobjects.asde.android.ide.editor.RenameFlow;
+import org.kobjects.asde.android.ide.editor.RenumberFlow;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.type.CodeLine;
@@ -191,7 +192,10 @@ public class FunctionView extends SymbolView {
     }
 
     menu.add("Copy");
-    menu.add("Renumber");
+    menu.add("Renumber").setOnMenuItemClickListener(item -> {
+      RenumberFlow.start(mainActivity, symbol, getCodeLineView(selection.getStartIndex()).lineNumber, getCodeLineView(selection.getEndIndex() - 1).lineNumber);
+      return true;
+    });
     menu.add("Delete").setOnMenuItemClickListener(item -> {
       selection.startDeleteFlow();
       return true;

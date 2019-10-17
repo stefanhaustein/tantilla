@@ -3,43 +3,44 @@ package org.kobjects.asde.android.ide.editor;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import com.google.android.material.textfield.TextInputLayout;
+
+import android.text.InputType;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.TextValidator;
 
+import java.util.ArrayList;
+
 public class InputFlowBuilder {
   private final MainActivity mainActivity;
   private final String title;
-  private final ResultHandler resultHandler;
 
-  private String value;
-  private ValidatorFactory validatorFactory;
-  private String label;
+  private String message;
   private String positiveLabel = "Ok";
   private String negativeLabel = "Cancel";
+  private ArrayList<Input> inputList = new ArrayList<>();
 
 
-  public InputFlowBuilder(MainActivity mainActivity, String title, ResultHandler resultHandler) {
+  public InputFlowBuilder(MainActivity mainActivity, String title) {
     this.mainActivity = mainActivity;
     this.title = title;
-    this.resultHandler = resultHandler;
   }
 
-  public InputFlowBuilder setValidatorFactory(ValidatorFactory validatorFactory) {
-    this.validatorFactory = validatorFactory;
+  public InputFlowBuilder setMessage(String message) {
+    this.message = message;
     return this;
   }
 
-  public InputFlowBuilder setLabel(String label) {
-    this.label = label;
+  public InputFlowBuilder addInput(String label, Object initialValue, TextValidator validator) {
+    inputList.add(new Input(label, initialValue, validator));
     return this;
   }
 
-  public InputFlowBuilder setValue(String value) {
-    this.value = value;
-    return this;
-  }
 
   public InputFlowBuilder setPositiveLabel(String label) {
     this.positiveLabel = label;
@@ -47,45 +48,90 @@ public class InputFlowBuilder {
   }
 
 
-  public void start() {
+  public void start(ResultHandler resultHandler) {
     AlertDialog.Builder alertBuilder = new AlertDialog.Builder(mainActivity);
     alertBuilder.setTitle(title);
-    if (label != null) {
-      alertBuilder.setMessage(label);
+    if (message != null) {
+      alertBuilder.setMessage(message);
     }
-    TextInputLayout inputLayout = new TextInputLayout(mainActivity);
-    inputLayout.addView(new EditText(mainActivity));
-    if (value != null) {
-      inputLayout.getEditText().setText(value);
+
+    ArrayList<TextInputLayout> inputLayoutList = new ArrayList<>();
+
+    if (!inputList.isEmpty()) {
+      LinearLayout mainLayout = new LinearLayout(alertBuilder.getContext());
+
+      mainLayout.setOrientation(LinearLayout.VERTICAL);
+
+      if (message == null) {
+        mainLayout.addView(new TextView(mainActivity));
+      }
+
+      for (Input input : inputList) {
+        TextInputLayout inputLayout = new TextInputLayout(mainActivity);
+        if (input.label != null) {
+          inputLayout.setHint(input.label);
+          inputLayout.setHintEnabled(true);
+        }
+        inputLayoutList.add(inputLayout);
+        inputLayout.addView(new EditText(mainActivity));
+        if (input.initialValue != null) {
+          inputLayout.getEditText().setText(String.valueOf(input.initialValue));
+          if (input.initialValue instanceof Integer) {
+            inputLayout.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER);
+          }
+        }
+        inputLayout.setErrorEnabled(true);
+
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.leftMargin = 56;
+        layoutParams.rightMargin = 56;
+        mainLayout.addView(inputLayout, layoutParams);
+      }
+      alertBuilder.setView(mainLayout);
     }
-    inputLayout.setErrorEnabled(true);
-    alertBuilder.setView(inputLayout);
 
     alertBuilder.setNegativeButton(negativeLabel, null);
     alertBuilder.setPositiveButton(positiveLabel, (a, b) -> {
-      resultHandler.handleResult(inputLayout.getEditText().getText().toString());
+      String[] result = new String[inputLayoutList.size()];
+      for (int i = 0; i < inputLayoutList.size(); i++) {
+        result[i] = inputLayoutList.get(i).getEditText().getText().toString();
+      }
+      resultHandler.handleResult(result);
     });
 
     AlertDialog alert = alertBuilder.show();
 
-    if (validatorFactory != null) {
-      TextValidator validator = validatorFactory.createValidator(inputLayout);
-      inputLayout.getEditText().addTextChangedListener(new TextValidator(inputLayout) {
-        @Override
-        public String validate(String text) {
-          String error = validator.validate(text);
-          alert.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(error == null);
-          return error;
-        }
-      });
+    for (int i = 0; i < inputLayoutList.size(); i++) {
+      Input input = inputList.get(i);
+      if (input.validator != null) {
+        TextInputLayout inputLayout = inputLayoutList.get(i);
+        new TextValidator() {
+          @Override
+          public String validate(String text) {
+            String error = input.validator.validate(text);
+            alert.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(error == null);
+            return error;
+          }
+        }.attach(inputLayout);
+      }
     }
-
   }
+
+  static class Input {
+    final String label;
+    final Object initialValue;
+    final TextValidator validator;
+
+    Input(String label, Object initialValue, TextValidator validator) {
+      this.label = label;
+      this.initialValue = initialValue;
+      this.validator = validator;
+    }
+  }
+
+
   public interface ResultHandler {
-    void handleResult(String result);
+    void handleResult(String... result);
   }
 
-  public interface ValidatorFactory {
-    TextValidator createValidator(TextInputLayout inputLayout);
-  }
 }

@@ -105,16 +105,16 @@ public class FunctionSignatureFlow {
     AlertDialog alert = alertBuilder.show();
 
 
-    nameInput.getEditText().addTextChangedListener(
-        new SymbolNameValidator(
-            mode == Mode.CREATE_MEMBER ? classImplementation : mainActivity.program, nameInput) {
+
+    new SymbolNameValidator(
+            mode == Mode.CREATE_MEMBER ? classImplementation : mainActivity.program) {
       @Override
       public String validate(String text) {
         String result = super.validate(text);
         alert.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(result == null);
         return result;
       }
-    });
+    }.attach(nameInput);
   }
 
   private void updateParameterList() {
@@ -266,7 +266,7 @@ public class FunctionSignatureFlow {
     AlertDialog alert = alertBuilder.show();
 
 
-    nameInput.getEditText().addTextChangedListener(new TextValidator(nameInput) {
+    new TextValidator() {
       @Override
       public String validate(String text) {
         String result = validateImpl(text);
@@ -296,7 +296,7 @@ public class FunctionSignatureFlow {
 
         return null;
       }
-    });
+    }.attach(nameInput);
 
   }
 

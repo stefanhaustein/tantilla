@@ -34,20 +34,21 @@ public class PropertyFlow {
   }
 
   private void showNameDialog() {
-    new InputFlowBuilder(mainActivity, "Add Property", name -> {
-      this.name = name;
-      showInitializerDialog();
-    }).setLabel("Name")
-        .setValue(name)
-        .setValidatorFactory(input -> new SymbolNameValidator(owner, input))
+    new InputFlowBuilder(mainActivity, "Add Property")
+        .addInput("Name", name, new SymbolNameValidator(owner))
         .setPositiveLabel("Next")
-        .start();
+        .start( result -> {
+          this.name = result[0];
+          showInitializerDialog();
+        });
   }
 
 
   private void showInitializerDialog() {
-    InputFlowBuilder builder = new InputFlowBuilder(mainActivity, "Property " + name, unparsed -> {
-      Node parsed = mainActivity.program.parser.parseExpression(unparsed);
+    InputFlowBuilder builder = new InputFlowBuilder(mainActivity, "Property " + name);
+    builder.addInput("Initial value", mode == Mode.EDIT_INITIALIZER ? symbol.getInitializer().toString() : null, new ExpressionValidator(mainActivity));
+    builder.start(result -> {
+      Node parsed = mainActivity.program.parser.parseExpression(result[0]);
       switch (mode) {
         case CREATE_PROPERTY:
           owner.setProperty(name, parsed);
@@ -59,12 +60,6 @@ public class PropertyFlow {
           break;
       }
     });
-    builder.setLabel("Initial value");
-    if (mode == Mode.EDIT_INITIALIZER) {
-      builder.setValue(symbol.getInitializer().toString());
-    }
-    builder.setValidatorFactory(input -> new ExpressionValidator(mainActivity, input));
-    builder.start();
   }
 
 

@@ -11,8 +11,7 @@ import org.kobjects.asde.lang.SymbolOwner;
 class SymbolNameValidator extends TextValidator {
     private SymbolOwner symbolOwner;
 
-    public SymbolNameValidator(SymbolOwner symbolOwner, TextInputLayout textInputLayout) {
-        super(textInputLayout);
+    public SymbolNameValidator(SymbolOwner symbolOwner) {
         this.symbolOwner = symbolOwner;
 
     }
