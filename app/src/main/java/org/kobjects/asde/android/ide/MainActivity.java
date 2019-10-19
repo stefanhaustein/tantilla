@@ -68,7 +68,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.SynchronousQueue;
 
 public class MainActivity extends AppCompatActivity implements Console {
@@ -118,7 +119,9 @@ public class MainActivity extends AppCompatActivity implements Console {
 
   ShortcutHandler shortcutHandler;
 
-    @Override
+  public List<CodeLine> copyBuffer = new ArrayList<>();
+
+  @Override
   public boolean dispatchKeyEvent(android.view.KeyEvent keyEvent) {
     if (!screen.dispatchKeyEvent(keyEvent)) {
       return super.dispatchKeyEvent(keyEvent);
@@ -126,9 +129,7 @@ public class MainActivity extends AppCompatActivity implements Console {
     return true;
   }
 
-
-
-    @Override
+  @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     preferences = new AsdePreferences(this);
@@ -488,6 +489,7 @@ public class MainActivity extends AppCompatActivity implements Console {
         leftScrollView.removeAllViews();
       }
 
+      codeView = null;
 
       Display display = getWindowManager().getDefaultDisplay();
       int displayWidth = display.getWidth();
@@ -532,8 +534,7 @@ public class MainActivity extends AppCompatActivity implements Console {
             mainView.addView(mainScrollView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             scrollContentView.addView(programView, 0);
             scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
-            codeView = null;
-
+            
           scrollContentView.addView(outputView);
 
           rootLayout.setClipChildren(false);
@@ -724,9 +725,9 @@ public class MainActivity extends AppCompatActivity implements Console {
             controlView.codeEditText.setText("");
             if (functionView != null) {
                 FunctionImplementation functionImplementation = functionView.functionImplementation;
-                Map.Entry<Integer, CodeLine> entry = functionImplementation.ceilingEntry(line);
-                if (entry != null && entry.getKey() == line) {
-                    controlView.codeEditText.append(entry.getKey() + " " + entry.getValue());
+                CodeLine codeLine = functionImplementation.findNextLine(line);
+                if (codeLine != null && codeLine.getNumber() == line) {
+                    controlView.codeEditText.append(line + " " + codeLine);
                     return;
                 }
             }
@@ -844,6 +845,7 @@ public class MainActivity extends AppCompatActivity implements Console {
   public LinearLayout obtainSharedCodeView(View owner) {
       if (owner != currentCodeViewOwner) {
         codeView.removeAllViews();
+        codeView.setOnTouchListener(null);
         if (currentCodeViewOwner instanceof SymbolView) {
           ((SymbolView) currentCodeViewOwner).setExpanded(false, false);
         }

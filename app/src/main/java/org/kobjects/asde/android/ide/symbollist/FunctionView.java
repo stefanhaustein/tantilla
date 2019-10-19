@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
@@ -40,24 +41,38 @@ public class FunctionView extends SymbolView {
         isMain ? 'M' : isMethod ? 'm' : isVoid ? 'S' : 'F',
         isMain ? Colors.PRIMARY_FILTER : Colors.PURPLE);
 
-    if (!isMain) {
-      titleView.setMoreClickListener(clicked -> {
-        PopupMenu popupMenu = new PopupMenu(mainActivity, clicked);
-        popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {
+    titleView.setMoreClickListener(clicked -> {
+      PopupMenu popup = new PopupMenu(mainActivity, clicked);
+      Menu menu = popup.getMenu();
+      if (!isMain) {
+        menu.add("Rename").setOnMenuItemClickListener(item -> {
           RenameFlow.start(mainActivity, symbol);
           return true;
         });
-        popupMenu.getMenu().add("Change Signature").setOnMenuItemClickListener(item -> {
+        menu.add("Change Signature").setOnMenuItemClickListener(item -> {
           FunctionSignatureFlow.changeSignature(mainActivity, symbol, functionImplementation);
           return true;
         });
-        popupMenu.getMenu().add("Delete").setOnMenuItemClickListener(item -> {
+      }
+      MenuItem renumberMenuItem = menu.add("Renumber");
+      int[] lineNumberRange = functionImplementation.getLineNumberRange();
+      if (functionImplementation.getLineNumberRange() == null) {
+        renumberMenuItem.setEnabled(false);
+      } else {
+        renumberMenuItem.setOnMenuItemClickListener(item -> {
+          RenumberFlow.start(mainActivity, symbol, lineNumberRange[0], lineNumberRange[1]);
+          return true;
+        });
+      }
+      if (!isMain) {
+        menu.add("Delete").setOnMenuItemClickListener(item -> {
           DeleteFlow.start(mainActivity, symbol);
           return true;
         });
-        popupMenu.show();
-      });
-    }
+      }
+      popup.show();
+    });
+
 
     ArrayList<String> subtitles = new ArrayList<>();
     for (int i = 0; i < functionImplementation.getType().getParameterCount(); i++) {
@@ -66,9 +81,7 @@ public class FunctionView extends SymbolView {
     if (!isVoid) {
       subtitles.add("-> " + functionImplementation.getType().getReturnType());
     }
-
     titleView.setSubtitles(subtitles);
-
   }
 
 
@@ -79,7 +92,7 @@ public class FunctionView extends SymbolView {
 
     if (!expanded) {
       // Only remove if we own the view.
-      if (codeView == contentView){
+      if (codeView == contentView) {
         codeView.removeAllViews();
       }
       return;
@@ -90,7 +103,7 @@ public class FunctionView extends SymbolView {
       codeView.removeAllViews();
     }
 
-    for (Map.Entry<Integer, CodeLine> entry : functionImplementation.entrySet()) {
+    for (CodeLine codeLine : functionImplementation.allLines()) {
       CodeLineView codeLineView;
       if (index < codeView.getChildCount()) {
         codeLineView = (CodeLineView) codeView.getChildAt(index);
@@ -98,19 +111,15 @@ public class FunctionView extends SymbolView {
         codeLineView = new CodeLineView(mainActivity, index % 2 == 1);
         codeView.addView(codeLineView);
       }
-      codeLineView.setLineNumber(entry.getKey());
-      codeLineView.setCodeLine(entry.getValue(), symbol.getErrors());
-      codeLineView.setClickable(true);  // needed for long press to work :(
-      //codeLineView.setFocusable(true);
-      codeLineView.setOnTouchListener(new ChildTouchListener());
-
-//       codeLineView.setOnLongClickListener(lineClickListener);
+      codeLineView.setCodeLine(codeLine, symbol.getErrors());
       index++;
     }
     while (index < codeView.getChildCount()) {
       codeView.removeViewAt(codeView.getChildCount() - 1);
     }
 
+    codeView.setClickable(true);
+    codeView.setOnTouchListener(new TouchListener());
   }
 
 
@@ -140,7 +149,7 @@ public class FunctionView extends SymbolView {
       view.getLocationOnScreen(location);
 
       if (rawX > location[0] && rawX < location[0] + view.getWidth()
-              && rawY > location[1]  && rawY < location[1] + view.getHeight()) {
+          && rawY > location[1] && rawY < location[1] + view.getHeight()) {
         return i;
       }
     }
@@ -160,10 +169,10 @@ public class FunctionView extends SymbolView {
     int index = findLineIndex(e);
     if (index != -1) {
       LinearLayout contentView = getContentView();
-        for (int i = selection.getStartIndex(); i < selection.getEndIndex(); i++) {
-          contentView.getChildAt(i).setSelected(false);
-        }
-        selection.setLastSelectedIndex(index);
+      for (int i = selection.getStartIndex(); i < selection.getEndIndex(); i++) {
+        contentView.getChildAt(i).setSelected(false);
+      }
+      selection.setLastSelectedIndex(index);
       for (int i = selection.getStartIndex(); i < selection.getEndIndex(); i++) {
         contentView.getChildAt(i).setSelected(true);
       }
@@ -171,11 +180,15 @@ public class FunctionView extends SymbolView {
   }
 
   private void endSelection() {
+    if (selection == null) {
+      return;
+    }
+    ViewGroup contentView = getContentView();
     CodeLineView lastSelected = (CodeLineView) contentView.getChildAt(selection.lastSelectedIndex);
     PopupMenu popup = new PopupMenu(mainActivity, lastSelected);
 
     popup.setOnDismissListener((a) -> {
-      for (int i = selection.getStartIndex(); i <= selection.getEndIndex(); i++) {
+      for (int i = selection.getStartIndex(); i < selection.getEndIndex(); i++) {
         contentView.getChildAt(i).setSelected(false);
       }
     });
@@ -191,7 +204,13 @@ public class FunctionView extends SymbolView {
       editItem.setEnabled(false);
     }
 
-    menu.add("Copy");
+    menu.add("Copy").setOnMenuItemClickListener(item -> {
+      mainActivity.copyBuffer.clear();
+      for (int i = selection.getStartIndex(); i < selection.getEndIndex(); i++) {
+        mainActivity.copyBuffer.add(functionImplementation.findNextLine(getCodeLineView(i).lineNumber));
+      }
+      return true;
+    });
     menu.add("Renumber").setOnMenuItemClickListener(item -> {
       RenumberFlow.start(mainActivity, symbol, getCodeLineView(selection.getStartIndex()).lineNumber, getCodeLineView(selection.getEndIndex() - 1).lineNumber);
       return true;
@@ -221,6 +240,9 @@ public class FunctionView extends SymbolView {
       return Math.min(firstSelectedIndex, lastSelectedIndex);
     }
 
+    /**
+     * Exclusive. Note that line number ranges are inclusive.
+     */
     public int getEndIndex() {
       return Math.max(firstSelectedIndex, lastSelectedIndex) + 1;
     }
@@ -230,13 +252,13 @@ public class FunctionView extends SymbolView {
       AlertDialog.Builder alertBuilder = new AlertDialog.Builder(mainActivity);
       alertBuilder.setTitle("Confirm Delete");
       if (firstSelectedIndex == lastSelectedIndex) {
-        alertBuilder.setMessage("Delete line " + getCodeLineView(firstSelectedIndex).lineNumber  + "'?");
+        alertBuilder.setMessage("Delete line " + getCodeLineView(firstSelectedIndex).lineNumber + "'?");
       } else {
         alertBuilder.setMessage("Delete lines " + getCodeLineView(getStartIndex()).lineNumber + " - " +
             getCodeLineView(getEndIndex() - 1).lineNumber + "?");
       }
       alertBuilder.setNegativeButton("Cancel", null);
-      alertBuilder.setPositiveButton("Delete", (a,b) -> {
+      alertBuilder.setPositiveButton("Delete", (a, b) -> {
         for (int i = getEndIndex() - 1; i >= getStartIndex(); i--) {
           functionImplementation.deleteLine(getCodeLineView(i).lineNumber);
           getContentView().removeViewAt(i);
@@ -247,22 +269,20 @@ public class FunctionView extends SymbolView {
   }
 
 
-  class ChildTouchListener implements OnTouchListener {
+  class TouchListener implements OnTouchListener {
     boolean dragMode = false;
-    View view;
 
     GestureDetector gestureDetector = new GestureDetector(mainActivity, new GestureDetector.SimpleOnGestureListener() {
       @Override
       public void onLongPress(MotionEvent e) {
         dragMode = true;
-        view.getParent().requestDisallowInterceptTouchEvent(true);
+        getContentView().requestDisallowInterceptTouchEvent(true);
         startSelection(e);
       }
     });
 
     @Override
     public boolean onTouch(View view, MotionEvent event) {
-      this.view = view;
       gestureDetector.setIsLongpressEnabled(true);
       boolean result = gestureDetector.onTouchEvent(event);
 

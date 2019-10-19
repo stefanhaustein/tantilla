@@ -79,12 +79,10 @@ public class CodeLineView extends LinearLayout {
     updateColor();
   }
 
-  void setLineNumber(int lineNumber) {
-    this.lineNumber = lineNumber;
-    lineNumberView.setText(lineNumber + " ");
-  }
-
   void setCodeLine(CodeLine codeLine, Map<Node, Exception> errors) {
+    this.lineNumber = codeLine.getNumber();
+    lineNumberView.setText(lineNumber + " ");
+
     AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
     codeLine.toString(asb, errors, false);
     SpannableString spannable = AnnotatedStringConverter.toSpanned(context, asb.build(), true);

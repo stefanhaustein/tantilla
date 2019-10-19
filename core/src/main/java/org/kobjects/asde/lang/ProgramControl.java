@@ -105,7 +105,7 @@ public class ProgramControl {
         runAsync(() -> {
             EvaluationContext wrapperContext = new EvaluationContext(ProgramControl.this, wrapper);
             wrapperContext.currentLine = -2;
-                Object result = runCodeLineImpl(wrapper.entrySet().iterator().next().getValue(), wrapperContext);
+                Object result = runCodeLineImpl(wrapper.allLines().iterator().next(), wrapperContext);
                 if (wrapperContext.currentLine >= 0) {
                     programInterpreterControl.runAsync(wrapperContext.currentLine);
                 } else {

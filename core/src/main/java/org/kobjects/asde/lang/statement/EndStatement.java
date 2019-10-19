@@ -23,7 +23,7 @@ public class EndStatement extends Statement {
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     if (!invisible && !resolutionContext.program.legacyMode) {
-      CodeLine codeLine = resolutionContext.functionImplementation.ceilingEntry(line).getValue();
+      CodeLine codeLine = resolutionContext.functionImplementation.findNextLine(line);
       if (codeLine.length() > 1) {
         throw new RuntimeException("END must be on a separate line.");
       }

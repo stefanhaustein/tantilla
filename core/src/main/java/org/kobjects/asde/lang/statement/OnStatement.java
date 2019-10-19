@@ -24,7 +24,7 @@ public class OnStatement extends Statement  {
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
-    CodeLine codeLine = resolutionContext.functionImplementation.ceilingEntry(line).getValue();
+    CodeLine codeLine = resolutionContext.functionImplementation.findNextLine(line);
     if (codeLine.length() > index + 1) {
       lineBeyondEnd = line + 1;
       if (!(codeLine.get(codeLine.length() - 1) instanceof EndStatement)) {

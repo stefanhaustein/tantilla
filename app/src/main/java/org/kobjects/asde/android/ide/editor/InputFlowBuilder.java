@@ -4,7 +4,9 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import com.google.android.material.textfield.TextInputLayout;
 
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -101,18 +103,35 @@ public class InputFlowBuilder {
 
     AlertDialog alert = alertBuilder.show();
 
-    for (int i = 0; i < inputLayoutList.size(); i++) {
-      Input input = inputList.get(i);
-      if (input.validator != null) {
-        TextInputLayout inputLayout = inputLayoutList.get(i);
-        new TextValidator() {
-          @Override
-          public String validate(String text) {
-            String error = input.validator.validate(text);
-            alert.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(error == null);
-            return error;
+    TextWatcher overWatch = new TextWatcher() {
+      @Override
+      public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+      }
+
+      @Override
+      public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+      }
+
+      @Override
+      public void afterTextChanged(Editable editable) {
+        boolean anyError = false;
+        for (int i = 0; i < inputList.size(); i++) {
+          if (inputList.get(i).validator != null) {
+            TextInputLayout inputLayout = inputLayoutList.get(i);
+            String error = inputList.get(i).validator.validate(inputLayout.getEditText().getText().toString());
+            inputLayout.setError(error);
+            anyError |= error != null;
           }
-        }.attach(inputLayout);
+        }
+        alert.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(!anyError);
+      }
+    };
+
+    overWatch.afterTextChanged(null);
+
+    for (int i = 0; i < inputList.size(); i++) {
+      if (inputList.get(i).validator != null) {
+        inputLayoutList.get(i).getEditText().addTextChangedListener(overWatch);
       }
     }
   }

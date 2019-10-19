@@ -23,8 +23,8 @@ public abstract class Visitor {
     }
 
     public void visitCallableUnit(FunctionImplementation functionImplementation) {
-        for (Map.Entry<Integer,CodeLine> entry : functionImplementation.entrySet()) {
-            visitCodeLine(entry.getValue());
+        for (CodeLine codeLine : functionImplementation.allLines()) {
+            visitCodeLine(codeLine);
         }
 
     }

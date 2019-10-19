@@ -41,7 +41,7 @@ public class IfStatement extends Node {
             resolvedLine = pos[0];
             resolvedIndex = pos[1] + 1;
         } else {
-            CodeLine codeLine = resolutionContext.functionImplementation.ceilingEntry(line).getValue();
+            CodeLine codeLine = resolutionContext.functionImplementation.findNextLine(line);
             while (++index < codeLine.length()) {
                 if (codeLine.get(index) instanceof ElseStatement) {
                     break;

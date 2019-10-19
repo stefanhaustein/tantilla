@@ -53,6 +53,6 @@ public class DefStatement extends Node {
       }
     }
     asb.append(") = ");
-    ((FunctionReturnStatement) implementation.ceilingEntry(10).getValue().get(0)).children[0].toString(asb, errors);
+    ((FunctionReturnStatement) implementation.findNextLine(10).get(0)).children[0].toString(asb, errors);
   }
 }

@@ -16,8 +16,8 @@ import org.kobjects.asde.lang.type.Types;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.PropertyDescriptor;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -25,6 +25,9 @@ import java.util.TreeMap;
  * In the main package because of the direct interaction with programControl.
  */
 public class FunctionImplementation implements Function, Declaration {
+
+  public static final int MAX_LINE_NUMBER = 99999;
+
   public final Program program;
   FunctionType type;
   public String[] parameterNames;
@@ -39,42 +42,42 @@ public class FunctionImplementation implements Function, Declaration {
   }
 
   public void validate(FunctionValidationContext functionValidationContext) {
-        int indent = 0;
-        for (Map.Entry<Integer,CodeLine> entry : code.entrySet()) {
-            int addLater = 0;
-            CodeLine line = entry.getValue();
-            for (int i = 0; i < line.length(); i++) {
-                Node statement = line.get(i);
-                boolean isLast = i == line.length() - 1;
+    int indent = 0;
+    for (Map.Entry<Integer, CodeLine> entry : code.entrySet()) {
+      int addLater = 0;
+      CodeLine line = entry.getValue();
+      for (int i = 0; i < line.length(); i++) {
+        Node statement = line.get(i);
+        boolean isLast = i == line.length() - 1;
 
-                if (statement instanceof ElseStatement && ((ElseStatement) statement).multiline && indent > 0) {
-                    addLater++;
-                    indent--;
-                } else if (statement instanceof ForStatement
-                        || (statement instanceof OnStatement && isLast)
-                        || (statement instanceof IfStatement
-                            && ((IfStatement) statement).multiline
-                            && !((IfStatement) statement).elseIf)) {
-                    addLater++;
-                } else if (statement instanceof NextStatement || statement instanceof EndIfStatement || statement instanceof EndStatement) {
-                    if (addLater > 0) {
-                        addLater--;
-                    } else if (indent > 0) {
-                        indent--;
-                    }
-                }
-                statement.resolve(functionValidationContext, null, entry.getKey(), i);
-            }
-            line.setIndent(indent);
-            indent += addLater;
+        if (statement instanceof ElseStatement && ((ElseStatement) statement).multiline && indent > 0) {
+          addLater++;
+          indent--;
+        } else if (statement instanceof ForStatement
+            || (statement instanceof OnStatement && isLast)
+            || (statement instanceof IfStatement
+            && ((IfStatement) statement).multiline
+            && !((IfStatement) statement).elseIf)) {
+          addLater++;
+        } else if (statement instanceof NextStatement || statement instanceof EndIfStatement || statement instanceof EndStatement) {
+          if (addLater > 0) {
+            addLater--;
+          } else if (indent > 0) {
+            indent--;
+          }
         }
-        localVariableCount = functionValidationContext.getLocalVariableCount();
+        statement.resolve(functionValidationContext, null, entry.getKey(), i);
+      }
+      line.setIndent(indent);
+      indent += addLater;
+    }
+    localVariableCount = functionValidationContext.getLocalVariableCount();
   }
 
   @Override
   public FunctionType getType() {
-        return type;
-    }
+    return type;
+  }
 
 
   /**
@@ -86,16 +89,16 @@ public class FunctionImplementation implements Function, Declaration {
   }
 
   public int getLocalVariableCount() {
-        return localVariableCount;
-    }
+    return localVariableCount;
+  }
 
   public Object callImpl(EvaluationContext newContext) {
     try {
       ProgramControl control = newContext.control;
       //      if (newContext.currentLine > -1) {
-      Map.Entry<Integer, CodeLine> entry;
-      while (null != (entry = ceilingEntry(newContext.currentLine)) && !Thread.currentThread().isInterrupted()) {
-        newContext.currentLine = entry.getKey();
+      CodeLine codeLine;
+      while (null != (codeLine = findNextLine(newContext.currentLine)) && !Thread.currentThread().isInterrupted()) {
+        newContext.currentLine = codeLine.getNumber();
         if (control.getState() != ProgramControl.State.RUNNING) {
           if (control.state == ProgramControl.State.STEP) {
             control.state = ProgramControl.State.PAUSED;
@@ -115,7 +118,7 @@ public class FunctionImplementation implements Function, Declaration {
             throw new ForcedStopException(null);
           }
         }
-        ProgramControl.runCodeLineImpl(entry.getValue(), newContext);
+        ProgramControl.runCodeLineImpl(codeLine, newContext);
       }
       //    }
       return newContext.returnValue;
@@ -127,74 +130,69 @@ public class FunctionImplementation implements Function, Declaration {
   }
 
 
-
   public void toString(AnnotatedStringBuilder sb, String name, Map<Node, Exception> errors) {
-        boolean sub = type.getReturnType() == Types.VOID;
-        String kind = sub ? "SUB" : "FUNCTION";
-        if (name != null) {
-            sb.append(kind);
-            sb.append(' ');
-            sb.append(name);
-            sb.append("(");
-            for (int i = 0; i < parameterNames.length; i++) {
-                if (i != 0) {
-                    sb.append(", ");
-                }
-                sb.append(type.getParameterType(i).toString());
-                sb.append(' ');
-                sb.append(parameterNames[i]);
-            }
-            sb.append(")");
-            if (!sub) {
-                sb.append(" -> ");
-                sb.append(type.getReturnType().toString());
-            }
-            sb.append('\n');
+    boolean sub = type.getReturnType() == Types.VOID;
+    String kind = sub ? "SUB" : "FUNCTION";
+    if (name != null) {
+      sb.append(kind);
+      sb.append(' ');
+      sb.append(name);
+      sb.append("(");
+      for (int i = 0; i < parameterNames.length; i++) {
+        if (i != 0) {
+          sb.append(", ");
         }
+        sb.append(type.getParameterType(i).toString());
+        sb.append(' ');
+        sb.append(parameterNames[i]);
+      }
+      sb.append(")");
+      if (!sub) {
+        sb.append(" -> ");
+        sb.append(type.getReturnType().toString());
+      }
+      sb.append('\n');
+    }
 
-        for (Map.Entry<Integer, CodeLine> entry : code.entrySet()) {
-            sb.append(String.valueOf(entry.getKey()));
-            sb.append(' ');
-            entry.getValue().toString(sb, errors, true);
-            sb.append('\n');
-        }
+    for (Map.Entry<Integer, CodeLine> entry : code.entrySet()) {
+      sb.append(String.valueOf(entry.getKey()));
+      sb.append(' ');
+      entry.getValue().toString(sb, errors, true);
+      sb.append('\n');
+    }
 
-        if (name != null) {
-            sb.append("END ").append(kind).append("\n\n");
-        }
+    if (name != null) {
+      sb.append("END ").append(kind).append("\n\n");
+    }
   }
 
   public synchronized void deleteLine(int lineNumber) {
-        code.remove(lineNumber);
-        if (declaringSymbol != null) {
-          program.notifySymbolChanged(declaringSymbol);
-        }
+    code.remove(lineNumber);
+    if (declaringSymbol != null) {
+      program.notifySymbolChanged(declaringSymbol);
     }
-
-  public synchronized void setLine(CodeLine line) {
-        code.put(line.getNumber(), line);
-    }
-
-  public Map.Entry<Integer,CodeLine> ceilingEntry(int i) {
-        return code.ceilingEntry(i);
-    }
-
-  public CodeLine findNextLine(int i) {
-      Map.Entry<Integer,CodeLine> entry = code.ceilingEntry(i);
-      return entry == null ? null : entry.getValue();
   }
 
-  public synchronized Iterable<Map.Entry<Integer, CodeLine>> entrySet() {
-      return new LinkedHashSet<Map.Entry<Integer, CodeLine>>(code.entrySet());
+  public synchronized void setLine(CodeLine line) {
+    code.put(line.getNumber(), line);
+  }
+
+  public Map.Entry<Integer, CodeLine> ceilingEntry(int i) {
+    return code.ceilingEntry(i);
+  }
+
+  public synchronized CodeLine findNextLine(int i) {
+    Map.Entry<Integer, CodeLine> entry = code.ceilingEntry(i);
+    return entry == null ? null : entry.getValue();
   }
 
   public void clear() {
-        code = new TreeMap<>();
-    }
+    code = new TreeMap<>();
+  }
 
   public int getLineCount() {
-        return code.size();
-    }
+    return code.size();
+  }
 
 
   public void renumber(int first, int last, int newStart, int step) {
@@ -222,18 +220,17 @@ public class FunctionImplementation implements Function, Declaration {
   }
 
 
-
   public Node find(StatementMatcher matcher, int... position) {
-        StatementSearch search = new StatementSearch(this) {
-            @Override
-            public boolean statementMatches(CodeLine line, int index, Node statement) {
-                return matcher.statementMatches(line, index, statement);
-            }
-        };
-        Node result = search.find(position[0], position[1]);
-        position[0] = search.lineNumber;
-        position[1] = search.index;
-        return result;
+    StatementSearch search = new StatementSearch(this) {
+      @Override
+      public boolean statementMatches(CodeLine line, int index, Node statement) {
+        return matcher.statementMatches(line, index, statement);
+      }
+    };
+    Node result = search.find(position[0], position[1]);
+    position[0] = search.lineNumber;
+    position[1] = search.index;
+    return result;
   }
 
   public void setType(FunctionType functionType) {
@@ -254,111 +251,142 @@ public class FunctionImplementation implements Function, Declaration {
   }
 
   public void setDeclaringSymbol(StaticSymbol symbol) {
-        this.declaringSymbol = symbol;
-    }
+    this.declaringSymbol = symbol;
+  }
 
   public boolean isMethod() {
-        return declaringSymbol instanceof PropertyDescriptor;
-    }
+    return declaringSymbol instanceof PropertyDescriptor;
+  }
 
   public StaticSymbol getDeclaringSymbol() {
-      return declaringSymbol;
+    return declaringSymbol;
+  }
+
+  public int countLines(int firstLine, int lastLine) {
+    return code.subMap(firstLine, lastLine).size() + 1;
+  }
+
+  public int linesAvailableAtExcluding(int newStart, int firstLine, int lastLine) {
+    Integer nextExisting = code.ceilingKey(newStart);
+    if (nextExisting == null) {
+      return MAX_LINE_NUMBER - newStart;
+    }
+
+    if (nextExisting >= firstLine && nextExisting <= lastLine) {
+      nextExisting = code.ceilingKey(lastLine);
+    }
+
+    if (nextExisting == null || nextExisting == code.lastKey()) {
+      return MAX_LINE_NUMBER - newStart;
+    }
+
+    return nextExisting - newStart;
+  }
+
+  public synchronized Iterable<CodeLine> allLines() {
+    ArrayList<CodeLine> result = new ArrayList<>();
+    result.addAll(code.values());
+    return result;
   }
 
   class StatementIterator implements Iterator<Node> {
-        final Iterator<Map.Entry<Integer, CodeLine>> lineIterator;
+    final Iterator<Map.Entry<Integer, CodeLine>> lineIterator;
 
-        private Node next;
-        private Map.Entry<Integer, CodeLine> currentLine;
-        int index;
-        int toLine;
-        int toIndex;
+    private Node next;
+    private Map.Entry<Integer, CodeLine> currentLine;
+    int index;
+    int toLine;
+    int toIndex;
 
-        StatementIterator(int fromLine, int fromIndex, int toLine, int toIndex) {
-            lineIterator = code.subMap(fromLine, true, toLine, true).entrySet().iterator();
-            currentLine = lineIterator.hasNext() ? lineIterator.next() : null;
-            index = fromIndex;
-            this.toLine = toLine;
-            this.toIndex = toIndex;
-        }
-
-        public boolean hasNext() {
-            if (next != null) {
-                return true;
-            }
-            if (currentLine == null) {
-                return false;
-            }
-            while (index >= currentLine.getValue().length()) {
-                if (!lineIterator.hasNext()) {
-                    return false;
-                }
-                currentLine = lineIterator.next();
-                index = 0;
-            }
-            if (currentLine.getKey() == toLine && index >= toIndex) {
-                return false;
-            }
-            next = currentLine.getValue().get(index++);
-            return true;
-        }
-
-        public Node next() {
-            if (next == null && !hasNext()) {
-                throw new IndexOutOfBoundsException();
-            }
-            Node result = next;
-            next = null;
-            return result;
-        }
+    StatementIterator(int fromLine, int fromIndex, int toLine, int toIndex) {
+      lineIterator = code.subMap(fromLine, true, toLine, true).entrySet().iterator();
+      currentLine = lineIterator.hasNext() ? lineIterator.next() : null;
+      index = fromIndex;
+      this.toLine = toLine;
+      this.toIndex = toIndex;
     }
 
-    class DescendingStatementIterator implements Iterator<Node> {
-        final Iterator<Map.Entry<Integer, CodeLine>> lineIterator;
-
-        private Node next;
-        private Map.Entry<Integer, CodeLine> currentLine;
-        int index;
-        int toLine;
-        int toIndex;
-
-        DescendingStatementIterator(int fromLine, int fromIndex, int toLine, int toIndex) {
-            lineIterator = code.subMap(toLine, true, fromLine, true).descendingMap().entrySet().iterator();
-            currentLine = lineIterator.hasNext() ? lineIterator.next() : null;
-            index = fromIndex;
-            this.toLine = toLine;
-            this.toIndex = toIndex;
+    public boolean hasNext() {
+      if (next != null) {
+        return true;
+      }
+      if (currentLine == null) {
+        return false;
+      }
+      while (index >= currentLine.getValue().length()) {
+        if (!lineIterator.hasNext()) {
+          return false;
         }
-
-        public boolean hasNext() {
-            if (next != null) {
-                return true;
-            }
-            if (currentLine == null) {
-                return false;
-            }
-            while (index < 0) {
-                if (!lineIterator.hasNext()) {
-                    return false;
-                }
-                currentLine = lineIterator.next();
-                index = currentLine.getValue().length() - 1;
-            }
-            if (currentLine.getKey() == toLine && index <= toIndex) {
-                return false;
-            }
-            next = currentLine.getValue().get(index--);
-            return true;
-        }
-
-        public Node next() {
-            if (next == null && !hasNext()) {
-                throw new IndexOutOfBoundsException();
-            }
-            Node result = next;
-            next = null;
-            return result;
-        }
+        currentLine = lineIterator.next();
+        index = 0;
+      }
+      if (currentLine.getKey() == toLine && index >= toIndex) {
+        return false;
+      }
+      next = currentLine.getValue().get(index++);
+      return true;
     }
+
+    public Node next() {
+      if (next == null && !hasNext()) {
+        throw new IndexOutOfBoundsException();
+      }
+      Node result = next;
+      next = null;
+      return result;
+    }
+  }
+
+  class DescendingStatementIterator implements Iterator<Node> {
+    final Iterator<Map.Entry<Integer, CodeLine>> lineIterator;
+
+    private Node next;
+    private Map.Entry<Integer, CodeLine> currentLine;
+    int index;
+    int toLine;
+    int toIndex;
+
+    DescendingStatementIterator(int fromLine, int fromIndex, int toLine, int toIndex) {
+      lineIterator = code.subMap(toLine, true, fromLine, true).descendingMap().entrySet().iterator();
+      currentLine = lineIterator.hasNext() ? lineIterator.next() : null;
+      index = fromIndex;
+      this.toLine = toLine;
+      this.toIndex = toIndex;
+    }
+
+    public boolean hasNext() {
+      if (next != null) {
+        return true;
+      }
+      if (currentLine == null) {
+        return false;
+      }
+      while (index < 0) {
+        if (!lineIterator.hasNext()) {
+          return false;
+        }
+        currentLine = lineIterator.next();
+        index = currentLine.getValue().length() - 1;
+      }
+      if (currentLine.getKey() == toLine && index <= toIndex) {
+        return false;
+      }
+      next = currentLine.getValue().get(index--);
+      return true;
+    }
+
+    public Node next() {
+      if (next == null && !hasNext()) {
+        throw new IndexOutOfBoundsException();
+      }
+      Node result = next;
+      next = null;
+      return result;
+    }
+  }
+
+  public int[] getLineNumberRange() {
+    return code.size() == 0 ? null : new int[] {code.firstKey(), code.lastKey()};
+  }
 
 }
