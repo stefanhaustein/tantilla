@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CodeLine implements Iterable<Node> {
-  private final int lineNumber;
+  private int lineNumber;
   private Node[] statements;
   public int indent;
 
@@ -75,6 +75,10 @@ public class CodeLine implements Iterable<Node> {
 
   public Integer getNumber() {
     return lineNumber;
+  }
+
+  public void setNumber(int newNumber) {
+    lineNumber = newNumber;
   }
 
   public void append(Node node) {

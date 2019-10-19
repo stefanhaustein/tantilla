@@ -33,9 +33,9 @@ public class FunctionImplementation implements Function, Declaration {
   private StaticSymbol declaringSymbol;
 
   public FunctionImplementation(Program program, FunctionType type, String... parameterNames) {
-        this.program = program;
-        this.type = type;
-        this.parameterNames = parameterNames;
+    this.program = program;
+    this.type = type;
+    this.parameterNames = parameterNames;
   }
 
   public void validate(FunctionValidationContext functionValidationContext) {
@@ -197,6 +197,32 @@ public class FunctionImplementation implements Function, Declaration {
     }
 
 
+  public void renumber(int first, int last, int newStart, int step) {
+    int currentNumber = newStart;
+
+    for (CodeLine line : code.subMap(first, last + 1).values()) {
+      line.setNumber(currentNumber);
+      currentNumber += step;
+    }
+
+    for (Node statement : allStatement()) {
+      statement.renumber(code);
+    }
+
+    TreeMap<Integer, CodeLine> renumbered = new TreeMap<>();
+    for (CodeLine line : code.values()) {
+      renumbered.put(line.getNumber(), line);
+    }
+
+    code = renumbered;
+
+    if (declaringSymbol != null) {
+      program.notifySymbolChanged(declaringSymbol);
+    }
+  }
+
+
+
   public Node find(StatementMatcher matcher, int... position) {
         StatementSearch search = new StatementSearch(this) {
             @Override
@@ -211,8 +237,13 @@ public class FunctionImplementation implements Function, Declaration {
   }
 
   public void setType(FunctionType functionType) {
-        this.type = functionType;
-    }
+    this.type = functionType;
+  }
+
+
+  public Iterable<Node> allStatement() {
+    return statements(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
+  }
 
   public Iterable<Node> statements(int fromLine, int fromIndex, int toLine, int toIndex) {
     return () -> new StatementIterator(fromLine, fromIndex, toLine, toIndex);

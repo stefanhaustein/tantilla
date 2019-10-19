@@ -3,12 +3,14 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.TreeMap;
 
 public abstract class Node {
 
@@ -96,4 +98,11 @@ public abstract class Node {
   }
 
   public abstract Type returnType();
+
+
+  public void renumber(TreeMap<Integer, CodeLine> renumbered) {
+    for (Node child : children) {
+      child.renumber(renumbered);
+    }
+  }
 }

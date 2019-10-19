@@ -4,6 +4,8 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.JumpStackEntry;
+import org.kobjects.asde.lang.node.Literal;
+import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.node.Node;
@@ -13,6 +15,7 @@ import org.kobjects.typesystem.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.TreeMap;
 
 
 public class LegacyStatement extends Node {
@@ -110,9 +113,6 @@ public class LegacyStatement extends Node {
     return null;
   }
 
-
-
-
   @Override
   public Type returnType() {
     return Types.VOID;
@@ -136,4 +136,24 @@ public class LegacyStatement extends Node {
       }
     }
   }
+
+
+  @Override
+  public void renumber(TreeMap<Integer, CodeLine> renumbered) {
+    if (kind == Kind.GOSUB || kind == Kind.ON) {
+      for (int i = 0; i < children.length; i++) {
+        if (children[i] instanceof Literal) {
+          Literal literal = (Literal) children[i];
+          if (literal.value instanceof Number) {
+            int target = ((Number) literal.value).intValue();
+            Map.Entry<Integer, CodeLine> entry = renumbered.ceilingEntry(target);
+            if (entry != null) {
+              children[i] = new Literal(Double.valueOf(entry.getValue().getNumber()));
+            }
+          }
+        }
+      }
+    }
+  }
+
 }
