@@ -139,16 +139,16 @@ public class LegacyStatement extends Node {
 
 
   @Override
-  public void renumber(TreeMap<Integer, CodeLine> renumbered) {
+  public void renumber(TreeMap<Integer, Integer> renumbered) {
     if (kind == Kind.GOSUB || kind == Kind.ON) {
       for (int i = 0; i < children.length; i++) {
         if (children[i] instanceof Literal) {
           Literal literal = (Literal) children[i];
           if (literal.value instanceof Number) {
             int target = ((Number) literal.value).intValue();
-            Map.Entry<Integer, CodeLine> entry = renumbered.ceilingEntry(target);
+            Map.Entry<Integer, Integer> entry = renumbered.ceilingEntry(target);
             if (entry != null) {
-              children[i] = new Literal(Double.valueOf(entry.getValue().getNumber()));
+              children[i] = new Literal(Double.valueOf(entry.getValue()));
             }
           }
         }

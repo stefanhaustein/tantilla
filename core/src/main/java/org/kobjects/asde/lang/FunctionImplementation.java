@@ -181,8 +181,17 @@ public class FunctionImplementation implements Function, Declaration {
     return code.ceilingEntry(i);
   }
 
+  public synchronized CodeLine getExactLine(int lineNumber) {
+    return code.get(lineNumber);
+  }
+
   public synchronized CodeLine findNextLine(int i) {
     Map.Entry<Integer, CodeLine> entry = code.ceilingEntry(i);
+    return entry == null ? null : entry.getValue();
+  }
+
+  public synchronized CodeLine findLineBefore(int i) {
+    Map.Entry<Integer, CodeLine> entry = code.floorEntry(i - 1);
     return entry == null ? null : entry.getValue();
   }
 
@@ -203,16 +212,22 @@ public class FunctionImplementation implements Function, Declaration {
       currentNumber += step;
     }
 
-    for (Node statement : allStatement()) {
-      statement.renumber(code);
-    }
-
+    TreeMap<Integer, Integer> renumberMap = new TreeMap<>();
     TreeMap<Integer, CodeLine> renumbered = new TreeMap<>();
-    for (CodeLine line : code.values()) {
+    for (Map.Entry<Integer, CodeLine> entry: code.entrySet()) {
+      CodeLine line = entry.getValue();
       renumbered.put(line.getNumber(), line);
+      renumberMap.put(entry.getKey(), line.getNumber());
     }
 
     code = renumbered;
+
+    for (Node statement : allStatement()) {
+      statement.renumber(renumberMap);
+    }
+
+
+
 
     if (declaringSymbol != null) {
       program.notifySymbolChanged(declaringSymbol);
@@ -264,23 +279,6 @@ public class FunctionImplementation implements Function, Declaration {
 
   public int countLines(int firstLine, int lastLine) {
     return code.subMap(firstLine, lastLine).size() + 1;
-  }
-
-  public int linesAvailableAtExcluding(int newStart, int firstLine, int lastLine) {
-    Integer nextExisting = code.ceilingKey(newStart);
-    if (nextExisting == null) {
-      return MAX_LINE_NUMBER - newStart;
-    }
-
-    if (nextExisting >= firstLine && nextExisting <= lastLine) {
-      nextExisting = code.ceilingKey(lastLine);
-    }
-
-    if (nextExisting == null || nextExisting == code.lastKey()) {
-      return MAX_LINE_NUMBER - newStart;
-    }
-
-    return nextExisting - newStart;
   }
 
   public synchronized Iterable<CodeLine> allLines() {

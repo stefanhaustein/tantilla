@@ -86,10 +86,10 @@ public class GotoStatement extends Node {
     }
 
   @Override
-  public void renumber(TreeMap<Integer, CodeLine> renumbered) {
-    Map.Entry<Integer, CodeLine> entry = renumbered.ceilingEntry(target);
+  public void renumber(TreeMap<Integer, Integer> renumbered) {
+    Map.Entry<Integer, Integer> entry = renumbered.ceilingEntry(target);
     if (entry != null) {
-      target = entry.getValue().getNumber();
+      target = entry.getValue();
     }
   }
 }

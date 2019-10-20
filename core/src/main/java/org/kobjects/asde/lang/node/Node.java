@@ -100,9 +100,9 @@ public abstract class Node {
   public abstract Type returnType();
 
 
-  public void renumber(TreeMap<Integer, CodeLine> renumbered) {
+  public void renumber(TreeMap<Integer, Integer> renumberMap) {
     for (Node child : children) {
-      child.renumber(renumbered);
+      child.renumber(renumberMap);
     }
   }
 }

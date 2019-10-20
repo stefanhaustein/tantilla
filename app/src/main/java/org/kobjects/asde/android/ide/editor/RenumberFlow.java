@@ -16,6 +16,8 @@ public class RenumberFlow {
   private int step;
   private final int lineCount;
   private int spaceAvailable;
+  private int firstAvailableLine;
+  private int lastAvailableLine;
 
   public static void start(MainActivity mainActivity, StaticSymbol symbol, int firstLine, int lastLine) {
     new RenumberFlow(mainActivity, symbol, firstLine, lastLine).start();
@@ -28,7 +30,18 @@ public class RenumberFlow {
     this.lastLine = lastLine;
     functionImplementation = (FunctionImplementation) symbol.getValue();
 
+    firstAvailableLine = functionImplementation.findLineBefore(firstLine) == null ? 1 : functionImplementation.findLineBefore(firstLine).getNumber() + 1;
+    lastAvailableLine = functionImplementation.findNextLine(lastLine + 1) == null ? FunctionImplementation.MAX_LINE_NUMBER : functionImplementation.findNextLine(lastLine + 1).getNumber() - 1;
+
     lineCount = functionImplementation.countLines(firstLine, lastLine);
+
+    step = (lastAvailableLine - newStart + 1) / lineCount;
+    for (int i = 10; i > 1; i /= 2) {
+      if (step > i) {
+        step = i;
+        break;
+      }
+    }
   }
 
   private String validateFirstLine(String text) {
@@ -38,20 +51,13 @@ public class RenumberFlow {
       return "Integer required";
     }
 
-    if (newStart < 1) {
-      return "Minimum: 1";
+    if (newStart < firstAvailableLine) {
+      return "Minimum: " + firstAvailableLine;
     }
 
-    if (newStart > FunctionImplementation.MAX_LINE_NUMBER) {
-      return "Maximum: " + FunctionImplementation.MAX_LINE_NUMBER;
+    if (newStart > lastAvailableLine - lineCount + 1) {
+      return "Maximum: " + (lastAvailableLine - lineCount + 1);
     }
-
-    spaceAvailable = functionImplementation.linesAvailableAtExcluding(newStart, firstLine, lastLine);
-
-    if (lineCount > spaceAvailable) {
-      return lineCount + " lines can't be renumbered into " + spaceAvailable + " numbers available at " + newStart;
-    }
-
     return null;
   }
 
@@ -67,9 +73,9 @@ public class RenumberFlow {
     if (step > 10000) {
       return "Step out of range";
     }
-    int maxStep = spaceAvailable / lineCount;
+    int maxStep = (lastAvailableLine - newStart + 1) / lineCount;
     if (step > maxStep) {
-      return "Step must be <= " + maxStep + " for space at " + newStart;
+      return "Step must be < " + (maxStep + 1) + " to fit below " + (lastAvailableLine + 1);
     }
     return null;
   }
@@ -84,7 +90,7 @@ public class RenumberFlow {
             return validateFirstLine(text);
           }
         })
-        .addInput("Step", 10, new TextValidator() {
+        .addInput("Step", step, new TextValidator() {
           @Override
           public String validate(String text) {
             return validateStep(text);

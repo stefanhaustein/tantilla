@@ -14,11 +14,13 @@ import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.editor.DeleteFlow;
 import org.kobjects.asde.android.ide.editor.FunctionSignatureFlow;
+import org.kobjects.asde.android.ide.editor.InsertFlow;
 import org.kobjects.asde.android.ide.editor.RenameFlow;
 import org.kobjects.asde.android.ide.editor.RenumberFlow;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.type.CodeLine;
+import org.kobjects.asde.lang.type.Function;
 import org.kobjects.asde.lang.type.Types;
 
 import java.util.ArrayList;
@@ -204,13 +206,33 @@ public class FunctionView extends SymbolView {
       editItem.setEnabled(false);
     }
 
+
     menu.add("Copy").setOnMenuItemClickListener(item -> {
       mainActivity.copyBuffer.clear();
       for (int i = selection.getStartIndex(); i < selection.getEndIndex(); i++) {
-        mainActivity.copyBuffer.add(functionImplementation.findNextLine(getCodeLineView(i).lineNumber));
+        CodeLineView codeLineView = getCodeLineView(i);
+        mainActivity.copyBuffer.put(getCodeLineView(i).lineNumber, codeLineView.statementView.getText().toString());
       }
       return true;
     });
+
+    if (mainActivity.copyBuffer.size() == 0) {
+      menu.add("Paste").setEnabled(false);
+    } else {
+      Menu insertMenu = menu.addSubMenu("Paste");
+      insertMenu.add("Before").setOnMenuItemClickListener(item -> {
+        int targetLine = selection.getStartIndex() == 0 ? 1 : getCodeLineView(selection.getStartIndex() - 1).lineNumber + 1;
+        InsertFlow.start(mainActivity, symbol, targetLine);
+        return true;
+      });
+      insertMenu.add("After").setOnMenuItemClickListener((item -> {
+        int targetLine = getCodeLineView(selection.getEndIndex() - 1).lineNumber + 1;
+        InsertFlow.start(mainActivity, symbol, targetLine);
+        return true;
+      }));
+    }
+
+
     menu.add("Renumber").setOnMenuItemClickListener(item -> {
       RenumberFlow.start(mainActivity, symbol, getCodeLineView(selection.getStartIndex()).lineNumber, getCodeLineView(selection.getEndIndex() - 1).lineNumber);
       return true;

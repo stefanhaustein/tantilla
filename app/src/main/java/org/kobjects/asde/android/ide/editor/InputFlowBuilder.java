@@ -93,13 +93,15 @@ public class InputFlowBuilder {
     }
 
     alertBuilder.setNegativeButton(negativeLabel, null);
-    alertBuilder.setPositiveButton(positiveLabel, (a, b) -> {
-      String[] result = new String[inputLayoutList.size()];
-      for (int i = 0; i < inputLayoutList.size(); i++) {
-        result[i] = inputLayoutList.get(i).getEditText().getText().toString();
-      }
-      resultHandler.handleResult(result);
-    });
+    if (resultHandler != null) {
+      alertBuilder.setPositiveButton(positiveLabel, (a, b) -> {
+        String[] result = new String[inputLayoutList.size()];
+        for (int i = 0; i < inputLayoutList.size(); i++) {
+          result[i] = inputLayoutList.get(i).getEditText().getText().toString();
+        }
+        resultHandler.handleResult(result);
+      });
+    }
 
     AlertDialog alert = alertBuilder.show();
 
