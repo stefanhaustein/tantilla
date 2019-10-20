@@ -7,7 +7,7 @@
         android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:title="@string/app_name"
+        android:label="@string/app_name"
         android:theme="@style/AppTheme"
         >
         <activity

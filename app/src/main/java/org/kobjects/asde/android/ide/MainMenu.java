@@ -2,13 +2,7 @@ package org.kobjects.asde.android.ide;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.PopupMenu;
@@ -25,18 +19,19 @@ import java.io.IOException;
 
 public class MainMenu {
 
-  private static String[][] CLASSICS = {
-      {"Classics"}, {
-        "aceyducey.bas", "AceyDucey (Card Game)",
-        "aceyducey.bas", "AceyDucey (Card Game)",
-        "blackjack.bas",	"Blackjack (Las Vegas Rules)",
-        "hangman.bas",	"Hangman word guessing game",
-        "checkers.bas", "Game of checkers",
+  private static String[] CLASSICS = {
+//        "aceyducey.bas", "AceyDucey (Card Game)",  // lame
+  //      "blackjack.bas",	"Blackjack (Las Vegas Rules)",  // Requires relaxed number / boolean conversion
+      "amazing.bas",	"A Maze Generator",
+      "hangman.bas",	"Hangman word guessing game",
+      "hammurabi.bas",	"Hammurabi: Govern an ancient city-state",
+
+//      "checkers.bas", "Game of checkers",   // Crappy UI
       "poker.bas", "Poker game",
       "superstartrek.bas", "Super Star Trek Game",
       "superstartrekins.bas", "Super Star Trek Instructions",
-      },
-      {"Sport Games"}, {
+
+      /*
         "basketball.bas", "Basketball Strategy",
         "bowling.bas", "Bowling",
         "boxing.bas",	"3-round boxing match",
@@ -45,20 +40,17 @@ public class MainMenu {
         "ftball.bas",	"American football—you vs. the computer",
         "football.bas",	"American football for two players",
         "golf.bas",	"Golf game—choose your clubs and swing",
-      },
-      {"War Games"}, {
+
         "battle.bas",	"Battle (Ship Location Game)",
         "bombardment.bas", "Bombardment",
         "bombsaway.bas", "Bombs Away (WWII Bombing Sim)",
         "civilwar.bas",	"Civil War",
         "combat.bas",	"Combat: small war with the computer",
-      "depthcharge.bas",	"Depth Charge: destroy a submarine",
-      "gunner.bas",	"Fire a cannon at a stationary target",
+        "depthcharge.bas",	"Depth Charge: destroy a submarine",
+        "gunner.bas",	"Fire a cannon at a stationary target",
         "orbit.bas", "Orbit: Destroy an orbiting germ-laden enemy spaceship",
-      "war.bas", "Card game of war",
-      },
-      {"Misc"}, {
-        "amazing.bas",	"A Maze Generator",
+        "war.bas", "Card game of war",
+
         "animal.bas",	"Animal Guessing",
         "awari.bas", "Awari Game",
         "bagels.bas",	"Bagles (Number Guessing)",
@@ -85,7 +77,6 @@ public class MainMenu {
   "furtrader.bas",	"Trade furs with the white man",
   "gomoko.bas",	"Gomoko: Ancient strategy board game",
   "guess.bas",	"Guess a mystery number—computer gives you clues",
-  "hammurabi.bas",	"Hammurabi: Govern an ancient city-state",
   "hexapawn.bas", "Hexapawn game",
   "hi-lo.bas",	"Hi-Lo: Hit the mystery jackpot",
   "highiq.bas", "High IQ: Remove all the pegs",
@@ -137,7 +128,9 @@ public class MainMenu {
   "23matches.bas", "23 Matches: don't take the last one",
   "weekday.bas", "Facts about your birthday",
   "word.bas", "Word guessing game"
-  }};
+
+       */
+  };
 
 
 
@@ -194,16 +187,11 @@ public class MainMenu {
 
     Menu classicsMenu = examplesMenu.addSubMenu("vintage-basic.net");
     for (int i = 0; i < CLASSICS.length; i+=2) {
-      final String categoryName = CLASSICS[i][0];
-      Menu categoryMenu = classicsMenu.addSubMenu(CLASSICS[i][0]);
-      String[] array = CLASSICS[i + 1];
-      for (int j = 0; j < array.length; j += 2) {
-        String fileName = array[j];
-        categoryMenu.add(array[j + 1]).setOnMenuItemClickListener(item -> {
+        String fileName = CLASSICS[i];
+        classicsMenu.add(CLASSICS[i + 1]).setOnMenuItemClickListener(item -> {
           mainActivity.load(new ProgramReference(fileName, "http://vintage-basic.net/bcg/" + fileName, false), true, false);
           return true;
         });
-      }
     }
 
     loadMenu.add("Load local file").setOnMenuItemClickListener(item -> {
