@@ -46,7 +46,7 @@ public class RelationalOperator extends Node {
     if (lVal.getClass() != rVal.getClass()) {
       throw new RuntimeException("Types (" + lVal.getClass() + " and " + rVal.getClass() + ") don't match for relational operator '" + getName() + "'");
     }
-    int cmp = (((Comparable) lVal).compareTo(rVal));
+    int cmp = Integer.signum(((Comparable) lVal).compareTo(rVal));
     return cmp == val1 || cmp == val2;
   }
 
