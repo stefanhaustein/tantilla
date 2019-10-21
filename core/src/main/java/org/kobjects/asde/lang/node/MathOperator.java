@@ -16,6 +16,8 @@ public class MathOperator extends Node {
 
   public final Kind kind;
 
+  public boolean stringAdd;
+
   public MathOperator(Kind kind, Node child1, Node child2) {
     super(child1, child2);
     this.kind = kind;
@@ -40,36 +42,30 @@ public class MathOperator extends Node {
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
-    boolean bothNumber = Types.match(children[0].returnType(), Types.NUMBER)
-            && Types.match(children[1].returnType(), Types.NUMBER);
-    if (kind == Kind.ADD) {
-      if (!Types.match(children[0].returnType(), Types.STRING) && !bothNumber) {
-        throw new RuntimeException("Number or String arguments expected for '+'");
+    stringAdd = false;
+    Type t0 = children[0].returnType();
+    if (t0 != Types.BOOLEAN && t0 != Types.NUMBER) {
+      if (kind == Kind.ADD) {
+        if (t0 == Types.STRING) {
+          stringAdd = true;
+          return;
+        }
+        throw new RuntimeException("Left parameter type should be String or Number; got: " + t0);
       }
-    } else {
-      if (!bothNumber) {
-        throw new RuntimeException("Number arguments expected for " + getName());
-      }
+      throw new RuntimeException("Left parameter expected to be a Number but is " + t0);
+    }
+    Type t1 = children[0].returnType();
+    if (t1 != Types.BOOLEAN && t0 != Types.NUMBER) {
+      throw new RuntimeException("Right parameter expected to be a Number but is " + t1);
     }
   }
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
-    double l;
-    if (kind == Kind.ADD) {
-      Object lVal = children[0].eval(evaluationContext);
-      if (lVal instanceof Double) {
-        l = ((Double) lVal).doubleValue();
-      } else if (lVal instanceof Boolean) {
-        l = ((Boolean) lVal) ? 1.0 : 0.0;
-      } else if (lVal instanceof String) {
-        return "" + lVal + evalChildToString(evaluationContext, 1);
-      } else {
-        throw new EvaluationException(children[0], "Number or String expected for operator '+'");
-      }
-    } else {
-      l = evalChildToDouble(evaluationContext, 0);
+    if (stringAdd) {
+      return evalChildToString(evaluationContext, 0) + evalChildToString(evaluationContext, 1);
     }
+    double l = evalChildToDouble(evaluationContext, 0);
     double r = evalChildToDouble(evaluationContext, 1);
     switch (kind) {
       case POW:
@@ -89,7 +85,7 @@ public class MathOperator extends Node {
 
   @Override
   public Type returnType() {
-    return (kind == Kind.ADD && children[0].returnType() == Types.STRING) ? Types.STRING : Types.NUMBER;
+    return stringAdd ? Types.STRING : Types.NUMBER;
   }
 
   @Override

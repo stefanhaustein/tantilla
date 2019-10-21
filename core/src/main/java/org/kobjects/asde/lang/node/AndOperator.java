@@ -14,33 +14,32 @@ public class AndOperator extends Node {
     super(child1, child2);
   }
 
-  public Object eval(EvaluationContext evaluationContext) {
-    Object lVal = children[0].eval(evaluationContext);
-    if (lVal instanceof Boolean) {
-      return ((Boolean) lVal) ? evalChildToBoolean(evaluationContext, 1) : Boolean.FALSE;
-    }
-    if (lVal instanceof Double) {
-      return ((Double) lVal).intValue() & evalChildToInt(evaluationContext,1);
-    }
-    throw new EvaluationException(children[0], "Boolean or Number expected for AND.");
-  }
+  boolean boolMode;
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
-    if (!Types.match(children[0].returnType(), children[1].returnType())) {
-      throw new RuntimeException("Matching Boolean or Number argument expected; got "
-              + children[0].returnType() + " and " + children[1].returnType());
+    Type t0 = children[0].returnType();
+    if (t0 != Types.BOOLEAN && t0 != Types.NUMBER) {
+      throw new IllegalArgumentException("First argument must be number or boolean instead of " + t0);
     }
-    if (!Types.match(children[0].returnType(), Types.BOOLEAN)
-            && !Types.match(children[0].returnType(), Types.NUMBER)) {
-      throw new RuntimeException("Boolean or Number arguments expected; got: " + children[0].returnType());
+    Type t1 = children[1].returnType();
+    if (t1 != Types.BOOLEAN && t1 != Types.NUMBER) {
+      throw new IllegalArgumentException("Second argument must be number or boolean instead of " + t1);
     }
+    boolMode = children[0].returnType() == Types.BOOLEAN || children[1].returnType() == Types.BOOLEAN;
+  }
+
+  @Override
+  public Object eval(EvaluationContext evaluationContext) {
+    if (boolMode) {
+      return evalChildToBoolean(evaluationContext, 0) ? evalChildToBoolean(evaluationContext, 1) : Boolean.FALSE;
+    }
+    return (double) (evalChildToInt(evaluationContext, 0) & evalChildToInt(evaluationContext, 1));
   }
 
   @Override
   public Type returnType() {
-    return children[0].returnType() == Types.BOOLEAN || children[0].returnType() == Types.BOOLEAN
-            ? children[0].returnType() : null;
+    return boolMode ? Types.BOOLEAN : Types.NUMBER;
   }
 
   @Override

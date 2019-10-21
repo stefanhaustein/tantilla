@@ -10,35 +10,30 @@ import java.util.Map;
 
 public class NotOperator extends Node {
 
+  boolean boolMode;
+
   public NotOperator(Node child) {
     super(child);
   }
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
-    if (!Types.match(children[0].returnType(), Types.BOOLEAN)
-            && !Types.match(children[0].returnType(), Types.NUMBER)) {
+    boolean boolMode = Types.BOOLEAN == children[0].returnType();
+    if (!boolMode && Types.NUMBER != children[0].returnType()) {
       throw new RuntimeException("Boolean or Number parameter expected.");
     }
   }
 
   public Object eval(EvaluationContext evaluationContext) {
-    Object lVal = children[0].eval(evaluationContext);
-    if (lVal instanceof Boolean) {
-      return !((Boolean) lVal);
+    if (boolMode) {
+      return !evalChildToBoolean(evaluationContext, 0);
     }
-    if (lVal instanceof Double) {
-      return ~((Double) lVal).intValue();
-    }
-    throw new EvaluationException(children[0], "Boolean or Number expected for NOT.");
+    return ~evalChildToInt(evaluationContext, 0);
   }
-
-
 
   @Override
   public Type returnType() {
-    return children[0].returnType() == Types.BOOLEAN || children[0].returnType() == Types.BOOLEAN
-            ? children[0].returnType() : null;
+    return children[0].returnType();
   }
 
   @Override

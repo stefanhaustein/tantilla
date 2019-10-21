@@ -21,7 +21,7 @@ public class MainMenu {
 
   private static String[] CLASSICS = {
 //        "aceyducey.bas", "AceyDucey (Card Game)",  // lame
-  //      "blackjack.bas",	"Blackjack (Las Vegas Rules)",  // Requires relaxed number / boolean conversion
+        "blackjack.bas",	"Blackjack (Las Vegas Rules)",  // Requires relaxed number / boolean conversion
       "amazing.bas",	"A Maze Generator",
       "hangman.bas",	"Hangman word guessing game",
       "hammurabi.bas",	"Hammurabi: Govern an ancient city-state",
