@@ -26,9 +26,9 @@ public class NotOperator extends Node {
 
   public Object eval(EvaluationContext evaluationContext) {
     if (boolMode) {
-      return !evalChildToBoolean(evaluationContext, 0);
+      return !children[0].evalBoolean(evaluationContext);
     }
-    return ~evalChildToInt(evaluationContext, 0);
+    return ~children[0].evalInt(evaluationContext);
   }
 
   @Override

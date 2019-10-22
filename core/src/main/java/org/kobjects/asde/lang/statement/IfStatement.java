@@ -54,7 +54,7 @@ public class IfStatement extends Node {
 
     @Override
     public Object eval(EvaluationContext evaluationContext) {
-        if (!evalChildToBoolean(evaluationContext, 0)) {
+      if (!children[0].evalBoolean(evaluationContext)) {
             evaluationContext.currentLine = resolvedLine;
             evaluationContext.currentIndex = resolvedIndex;
         }

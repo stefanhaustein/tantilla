@@ -26,7 +26,7 @@ public class NextStatement extends Node {
         double step = resolvedForStatement.evalStep(evaluationContext);
         double current = ((Double) resolvedForStatement.resolvedVariable.get(evaluationContext)) + step;
         resolvedForStatement.resolvedVariable.set(evaluationContext, current);
-        if (Math.signum(step) != Math.signum(Double.compare(current, resolvedForStatement.evalChildToDouble(evaluationContext, 1)))) {
+      if (Math.signum(step) != Math.signum(Double.compare(current, resolvedForStatement.children[1].evalDouble(evaluationContext)))) {
             evaluationContext.currentLine = resolvedForLine;
             evaluationContext.currentIndex = resolvedForIndex + 1;
         }

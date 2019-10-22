@@ -32,9 +32,9 @@ public class AndOperator extends Node {
   @Override
   public Object eval(EvaluationContext evaluationContext) {
     if (boolMode) {
-      return evalChildToBoolean(evaluationContext, 0) ? evalChildToBoolean(evaluationContext, 1) : Boolean.FALSE;
+      return children[0].evalBoolean(evaluationContext) ? children[1].evalBoolean(evaluationContext) : Boolean.FALSE;
     }
-    return (double) (evalChildToInt(evaluationContext, 0) & evalChildToInt(evaluationContext, 1));
+    return (double) (children[0].evalInt(evaluationContext) & children[1].evalInt(evaluationContext));
   }
 
   @Override

@@ -63,10 +63,10 @@ public class MathOperator extends Node {
   @Override
   public Object eval(EvaluationContext evaluationContext) {
     if (stringAdd) {
-      return evalChildToString(evaluationContext, 0) + evalChildToString(evaluationContext, 1);
+      return children[0].evalString(evaluationContext) + children[1].evalString(evaluationContext);
     }
-    double l = evalChildToDouble(evaluationContext, 0);
-    double r = evalChildToDouble(evaluationContext, 1);
+    double l = children[0].evalDouble(evaluationContext);
+    double r = children[1].evalDouble(evaluationContext);
     switch (kind) {
       case POW:
         return Math.pow(l, r);

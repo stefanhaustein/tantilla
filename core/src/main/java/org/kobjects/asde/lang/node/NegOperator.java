@@ -22,7 +22,7 @@ public class NegOperator extends Node {
   }
 
   public Object eval(EvaluationContext evaluationContext) {
-    return -evalChildToDouble(evaluationContext, 0);
+    return -children[0].evalDouble(evaluationContext);
   }
 
   @Override

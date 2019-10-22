@@ -2,12 +2,9 @@ package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.JumpStackEntry;
 import org.kobjects.asde.lang.node.Literal;
-import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
@@ -63,13 +60,13 @@ public class LegacyStatement extends Node {
         entry.lineNumber = evaluationContext.currentLine;
         entry.statementIndex = evaluationContext.currentIndex;
         evaluationContext.getJumpStack().add(entry);
-        evaluationContext.currentLine = evalChildToInt(evaluationContext, 0);
+        evaluationContext.currentLine = children[0].evalInt(evaluationContext);
         evaluationContext.currentIndex = 0;
         break;
       }
 
       case ON: {
-        int index = (int) Math.round(evalChildToDouble(evaluationContext,0));
+        int index = (int) Math.round(children[0].evalDouble(evaluationContext));
         if (index < children.length && index > 0) {
           if (delimiter[0].equals(" GOSUB ")) {
             JumpStackEntry entry = new JumpStackEntry();
@@ -77,7 +74,7 @@ public class LegacyStatement extends Node {
             entry.statementIndex = evaluationContext.currentIndex;
             evaluationContext.getJumpStack().add(entry);
           }
-          evaluationContext.currentLine = (int) evalChildToDouble(evaluationContext, index);
+          evaluationContext.currentLine = (int) children[index].evalDouble(evaluationContext);
           evaluationContext.currentIndex = 0;
         }
         break;
@@ -88,7 +85,7 @@ public class LegacyStatement extends Node {
         int[] dataPosition = evaluationContext.getDataPosition();
         Arrays.fill(dataPosition, 0);
         if (children.length > 0) {
-          dataPosition[0] = (int) evalChildToDouble(evaluationContext, 0);
+          dataPosition[0] = (int) children[0].evalDouble(evaluationContext);
         }
         break;
 

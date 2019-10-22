@@ -41,40 +41,41 @@ public abstract class Node {
 
   public abstract Object eval(EvaluationContext evaluationContext);
 
-  /** eval without null substitution */
-  public Object evalRaw(EvaluationContext evaluationContext) {
-    return eval(evaluationContext);
-  }
-
-  public boolean evalChildToBoolean(EvaluationContext evaluationContext, int i) {
-    Object o = children[i].eval(evaluationContext);
+  public boolean evalBoolean(EvaluationContext evaluationContext) {
+    Object o = eval(evaluationContext);
     if (o instanceof Boolean) {
       return (Boolean) o;
     }
-    if (o instanceof Double) {
-      return ((Double) o).doubleValue() != 0;
+    if (o instanceof Number) {
+      return ((Number) o).doubleValue() != 0;
     }
-    throw new EvaluationException(children[i], "Boolean or Number expected; got " + Types.of(o));
+    throw new EvaluationException(this, "Boolean or Number expected; got " + Types.of(o));
   }
 
-
-  public double evalChildToDouble(EvaluationContext evaluationContext, int i) {
-    Object o = children[i].eval(evaluationContext);
-    if (o instanceof Double) {
-      return (Double) o;
+  public double evalDouble(EvaluationContext evaluationContext) {
+    Object o = eval(evaluationContext);
+    if (o instanceof Number) {
+      return ((Number) o).doubleValue();
     }
     if (o instanceof Boolean) {
       return ((Boolean) o) ? 1.0 : 0.0;
     }
-    throw new EvaluationException(children[i], "Number expected.");
+    throw new EvaluationException(this, "Number expected.");
   }
 
-  public int evalChildToInt(EvaluationContext evaluationContext, int i) {
-    return (int) evalChildToDouble(evaluationContext, i);
+  public int evalInt(EvaluationContext evaluationContext) {
+    Object o = eval(evaluationContext);
+    if (o instanceof Number) {
+      return ((Number) o).intValue();
+    }
+    if (o instanceof Boolean) {
+      return ((Boolean) o) ? 1 : 0;
+    }
+    throw new EvaluationException(this, "Number expected.");
   }
 
-  public String evalChildToString(EvaluationContext evaluationContext, int i) {
-    return Program.toString(children[i].eval(evaluationContext));
+  public String evalString(EvaluationContext evaluationContext) {
+    return Program.toString(eval(evaluationContext));
   }
 
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {

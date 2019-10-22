@@ -44,7 +44,7 @@ public class Command extends Statement {
         break;
 
       case DELETE:
-        program.console.delete(evalChildToInt(evaluationContext, 0));
+        program.console.delete(children[0].evalInt(evaluationContext));
         break;
 
       case DUMP:
@@ -63,7 +63,7 @@ public class Command extends Statement {
         break;
 
       case EDIT:
-        program.console.edit(evalChildToInt(evaluationContext, 0));
+        program.console.edit(children[0].evalInt(evaluationContext));
         break;
 
       case LIST: {
@@ -73,7 +73,7 @@ public class Command extends Statement {
 
       case LOAD:
         try {
-          program.load(program.console.nameToReference(evalChildToString(evaluationContext, 0)));
+          program.load(program.console.nameToReference(children[0].evalString(evaluationContext)));
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
@@ -83,13 +83,13 @@ public class Command extends Statement {
       case RUN:
         program.clear(evaluationContext);
 
-        evaluationContext.currentLine = children.length == 0 ? 0 : (int) evalChildToDouble(evaluationContext,0);
+        evaluationContext.currentLine = children.length == 0 ? 0 : (int) children[0].evalDouble(evaluationContext);
         evaluationContext.currentIndex = 0;
         break;
 
       case SAVE:
         try {
-          program.save(children.length == 0 ? program.reference : program.console.nameToReference(evalChildToString(evaluationContext, 0)));
+          program.save(children.length == 0 ? program.reference : program.console.nameToReference(children[0].evalString(evaluationContext)));
         } catch (IOException e) {
           throw new RuntimeException(e);
         }

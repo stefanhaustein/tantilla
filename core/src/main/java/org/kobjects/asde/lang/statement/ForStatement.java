@@ -44,9 +44,9 @@ public class ForStatement extends Node {
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
-    double current = evalChildToDouble(evaluationContext,0);
+    double current = children[0].evalDouble(evaluationContext);
     resolvedVariable.set(evaluationContext, current);
-    double end = evalChildToDouble(evaluationContext, 1);
+    double end = children[1].evalDouble(evaluationContext);
     if (Math.signum(evalStep(evaluationContext)) == Math.signum(Double.compare(current, end))) {
       evaluationContext.currentLine = resolvedNextLine;
       evaluationContext.currentIndex = resolvedNextIndex + 1;
@@ -55,7 +55,7 @@ public class ForStatement extends Node {
   }
 
   double evalStep(EvaluationContext evaluationContext) {
-    return children.length > 2 ? evalChildToDouble(evaluationContext, 2) : 1.0;
+    return children.length > 2 ? children[2].evalDouble(evaluationContext) : 1.0;
   }
 
   @Override

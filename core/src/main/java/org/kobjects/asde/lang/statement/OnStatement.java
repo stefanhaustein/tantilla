@@ -79,7 +79,7 @@ public class OnStatement extends Statement  {
           evaluationContext.control.getState() == ProgramControl.State.ENDED) {
         return;
       }
-      if (evalChildToBoolean(evaluationContext, 0)) {
+      if (children[0].evalBoolean(evaluationContext)) {
         System.out.println("Condition did trigger");
         new Thread(() -> {
           try {

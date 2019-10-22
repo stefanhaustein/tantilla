@@ -348,25 +348,13 @@ public class MainActivity extends AppCompatActivity implements Console {
 
   @Override
   public void print(final CharSequence chars) {
+    if (chars.length() == 0) {
+      return;
+    }
     final AnnotatedString s = AnnotatedString.of(chars);
     int cut = s.indexOf('\n');
     runOnUiThread(() -> {
-      if (pendingOutput == null) {
-        pendingOutput = new EmojiTextView(this);
-        pendingOutput.setTypeface(Typeface.MONOSPACE);
-
-        outputView.addContent(pendingOutput);
-        postScrollIfAtEnd();
-      }
-      if (cut == -1) {
-        pendingOutput.append(AnnotatedStringConverter.toSpanned(this, s, true));
-      } else {
-        pendingOutput.append(AnnotatedStringConverter.toSpanned(this, s.subSequence(0, cut), true));
-        pendingOutput = null;
-        if (cut < s.length() - 1) {
-          print(s.subSequence(cut + 1, s.length()));
-        }
-      }
+      printImpl(s);
     });
     if (cut != -1) {
       lineCount++;
@@ -377,6 +365,29 @@ public class MainActivity extends AppCompatActivity implements Console {
       }
     }
   }
+
+  private void printImpl(AnnotatedString s) {
+    if (pendingOutput == null) {
+      pendingOutput = new EmojiTextView(this);
+      pendingOutput.setTypeface(Typeface.MONOSPACE);
+
+      outputView.addContent(pendingOutput);
+      postScrollIfAtEnd();
+    }
+    int cut = s.indexOf('\n');
+    if (cut == -1) {
+      pendingOutput.append(AnnotatedStringConverter.toSpanned(this, s, true));
+    } else {
+      pendingOutput.append(AnnotatedStringConverter.toSpanned(this, s.subSequence(0, cut), true));
+      pendingOutput = null;
+      if (cut < s.length() - 1) {
+        printImpl(s.subSequence(cut + 1, s.length()));
+      }
+    }
+
+  }
+
+
 
     /*
      * Syncs the displayed program code to the program code. If the sync is incremental,

@@ -67,15 +67,6 @@ public class Identifier extends SymbolNode {
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
-    Object result = evalRaw(evaluationContext);
-    if (result == null) {
-      throw new IllegalStateException("Undefined variable '" + name + "'");
-    }
-    return result;
-  }
-
-  @Override
-  public Object evalRaw(EvaluationContext evaluationContext) {
     return resolved.get(evaluationContext);
   }
 

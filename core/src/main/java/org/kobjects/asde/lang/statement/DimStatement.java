@@ -44,7 +44,7 @@ public class DimStatement extends Node {
   public Object eval(EvaluationContext evaluationContext) {
     int[] dims = new int[children.length];
     for (int i = 0; i < children.length; i++) {
-      dims[i] = evalChildToInt(evaluationContext, i) + (evaluationContext.control.program.legacyMode ? 1 : 0);
+      dims[i] = children[i].evalInt(evaluationContext) + (evaluationContext.control.program.legacyMode ? 1 : 0);
     }
     resolved.set(evaluationContext, new Array(elementType, dims));
     return null;

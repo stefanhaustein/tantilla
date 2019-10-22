@@ -57,11 +57,11 @@ public class Apply extends AssignableNode {
 
 
     public void set(EvaluationContext evaluationContext, Object value) {
-        Object base = children[0].evalRaw(evaluationContext);
+        Object base = children[0].eval(evaluationContext);
         Array array = (Array) base;
         int[] indices = new int[children.length - 1];
         for (int i = 1; i < children.length; i++) {
-            indices[i - 1] = evalChildToInt(evaluationContext, i);
+            indices[i - 1] = children[i].evalInt(evaluationContext);
         }
         array.setValueAt(value, indices);
     }
@@ -98,7 +98,7 @@ public class Apply extends AssignableNode {
     }
 
     public Object eval(EvaluationContext evaluationContext) {
-        Object base = children[0].evalRaw(evaluationContext);
+        Object base = children[0].eval(evaluationContext);
         if (!(base instanceof Function)) {
             throw new EvaluationException(this, "Can't apply parameters to " + base + " / " + children[0]);
         }
