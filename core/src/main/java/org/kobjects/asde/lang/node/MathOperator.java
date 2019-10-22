@@ -63,8 +63,18 @@ public class MathOperator extends Node {
   @Override
   public Object eval(EvaluationContext evaluationContext) {
     if (stringAdd) {
-      return children[0].evalString(evaluationContext) + children[1].evalString(evaluationContext);
+      return evalString(evaluationContext);
     }
+    return evalDouble(evaluationContext);
+  }
+
+  @Override
+  public String evalString(EvaluationContext evaluationContext) {
+    return children[0].evalString(evaluationContext) + children[1].evalString(evaluationContext);
+  }
+
+  @Override
+  public double evalDouble(EvaluationContext evaluationContext) {
     double l = children[0].evalDouble(evaluationContext);
     double r = children[1].evalDouble(evaluationContext);
     switch (kind) {
