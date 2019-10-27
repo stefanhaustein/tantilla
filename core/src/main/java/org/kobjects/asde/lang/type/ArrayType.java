@@ -15,6 +15,9 @@ public class ArrayType implements FunctionType, InstanceType {
   private final Type elementType;
 
   public ArrayType(Type elementType) {
+    if (elementType == null) {
+      throw new RuntimeException("ElementType must not be null");
+    }
     this.elementType = elementType;
   }
 
@@ -27,10 +30,14 @@ public class ArrayType implements FunctionType, InstanceType {
     return elementType;
   }
 
+  @Override
   public Type getReturnType(int parameterCount) {
     Type returnType = getReturnType();
     for (int i = 1; i < parameterCount; i++) {
       returnType = ((ArrayType) returnType).getReturnType();
+    }
+    if (returnType == null) {
+      throw new RuntimeException();
     }
     return returnType;
   }

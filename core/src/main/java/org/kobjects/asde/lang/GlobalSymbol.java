@@ -133,7 +133,7 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
         program.currentStamp++;
       }
 
-      FunctionValidationContext context = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.FUNCTION, function);
+      FunctionValidationContext context = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.PROGRAM, function);
       function.validate(context);
       this.errors = context.errors;
       this.dependencies = context.dependencies;

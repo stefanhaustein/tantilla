@@ -123,9 +123,7 @@ public class Apply extends AssignableNode {
         if (children[0].returnType() instanceof FunctionType) {
             return ((FunctionType) children[0].returnType()).getReturnType(children.length - 1);
         }
-        if (children[0].returnType() == null) {
-            return null;
-        }
+
         throw new RuntimeException("Can't apply parameters to " + children[0].returnType());
     }
 

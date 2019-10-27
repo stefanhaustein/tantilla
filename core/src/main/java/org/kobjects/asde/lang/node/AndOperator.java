@@ -10,11 +10,11 @@ import java.util.Map;
 
 public class AndOperator extends Node {
 
+  boolean boolMode;
+
   public AndOperator(Node child1, Node child2) {
     super(child1, child2);
   }
-
-  boolean boolMode;
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
@@ -30,12 +30,28 @@ public class AndOperator extends Node {
   }
 
   @Override
+  public boolean evalBoolean(EvaluationContext evaluationContext) {
+    return children[0].evalBoolean(evaluationContext) && children[1].evalBoolean(evaluationContext);
+  }
+
+  @Override
+  public double evalDouble(EvaluationContext evaluationContext) {
+    return children[0].evalInt(evaluationContext) & children[1].evalInt(evaluationContext);
+  }
+
+  @Override
+  public int evalInt(EvaluationContext evaluationContext) {
+    return children[0].evalInt(evaluationContext) & children[1].evalInt(evaluationContext);
+  }
+
+  @Override
   public Object eval(EvaluationContext evaluationContext) {
     if (boolMode) {
-      return children[0].evalBoolean(evaluationContext) ? children[1].evalBoolean(evaluationContext) : Boolean.FALSE;
+      return evalBoolean(evaluationContext);
     }
-    return (double) (children[0].evalInt(evaluationContext) & children[1].evalInt(evaluationContext));
+    return evalDouble(evaluationContext);
   }
+
 
   @Override
   public Type returnType() {

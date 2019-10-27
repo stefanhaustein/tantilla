@@ -26,8 +26,20 @@ public class NotOperator extends Node {
 
   public Object eval(EvaluationContext evaluationContext) {
     if (boolMode) {
-      return !children[0].evalBoolean(evaluationContext);
+      return evalBoolean(evaluationContext);
     }
+    return evalDouble(evaluationContext);
+  }
+
+  public boolean evalBoolean(EvaluationContext evaluationContext) {
+    return !children[0].evalBoolean(evaluationContext);
+  }
+
+  public double evalDouble(EvaluationContext evaluationContext) {
+    return ~children[0].evalInt(evaluationContext);
+  }
+
+  public int evalInt(EvaluationContext evaluationContext) {
     return ~children[0].evalInt(evaluationContext);
   }
 

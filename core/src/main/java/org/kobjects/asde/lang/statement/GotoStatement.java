@@ -2,7 +2,6 @@ package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
@@ -25,7 +24,7 @@ public class GotoStatement extends Node {
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
-    if (resolutionContext.mode == FunctionValidationContext.ResolutionMode.BASIC) {
+    if (resolutionContext.mode == FunctionValidationContext.ResolutionMode.LEGACY) {
       return;
     }
 

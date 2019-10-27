@@ -91,6 +91,7 @@ public class Array extends Instance implements Function {
         return (ArrayType) super.getType();
     }
 
+
     public synchronized Object get(int index) {
         return data.get(index);
     }

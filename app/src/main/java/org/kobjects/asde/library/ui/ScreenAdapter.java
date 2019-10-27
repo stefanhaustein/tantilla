@@ -16,18 +16,21 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
   public static EnumType X_ALIGN = Types.wrapEnum(XAlign.values());
   public static EnumType Y_ALIGN = Types.wrapEnum(YAlign.values());
 
-    private final Screen screen;
-    private float scale;
+  private final Screen screen;
+  private float scale;
 
-    // Hack; access from viewport instead.
-    float width;
-    float height;
+  // Hack; access from viewport instead.
+  float width;
+  float height;
 
-    final PhysicalProperty<Double> widthProperty = new PhysicalProperty<>(0.0);
-    final PhysicalProperty<Double> heightProperty = new PhysicalProperty<>(0.0);
+  final PhysicalProperty<Double> widthProperty = new PhysicalProperty<>(0.0);
+  final PhysicalProperty<Double> heightProperty = new PhysicalProperty<>(0.0);
 
-  public static final InstanceType TYPE =
-            new InstanceTypeImpl("Screen", ScreenMetaProperty.values());
+  public static final InstanceTypeImpl TYPE = new InstanceTypeImpl("Screen");
+
+  static {
+    TYPE.addProperties(ScreenMetaProperty.values());
+  }
 
     public ScreenAdapter(Screen screen) {
         super(TYPE);

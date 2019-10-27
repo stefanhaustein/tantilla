@@ -6,8 +6,8 @@ import org.kobjects.typesystem.InstanceTypeImpl;
 import org.kobjects.typesystem.PropertyDescriptor;
 
 public abstract class InstantiableTypeImpl extends InstanceTypeImpl implements InstantiableType {
-  public InstantiableTypeImpl(String name, PropertyDescriptor... properties) {
-    super(name, properties);
+  public InstantiableTypeImpl(String name) {
+    super(name);
   }
 
   @Override

@@ -24,6 +24,7 @@ import org.kobjects.asde.lang.type.Function;
 import org.kobjects.asde.lang.type.Types;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class FunctionView extends SymbolView {
@@ -86,6 +87,7 @@ public class FunctionView extends SymbolView {
     titleView.setSubtitles(subtitles);
   }
 
+  int syncedTo;
 
   public void syncContent() {
     refresh();
@@ -97,6 +99,7 @@ public class FunctionView extends SymbolView {
       if (codeView == contentView) {
         codeView.removeAllViews();
       }
+      syncedTo = 0;
       return;
     }
     int index = 0;
@@ -105,17 +108,30 @@ public class FunctionView extends SymbolView {
       codeView.removeAllViews();
     }
 
+    int updated = 0;
+
     for (CodeLine codeLine : functionImplementation.allLines()) {
-      CodeLineView codeLineView;
-      if (index < codeView.getChildCount()) {
-        codeLineView = (CodeLineView) codeView.getChildAt(index);
-      } else {
-        codeLineView = new CodeLineView(mainActivity, index % 2 == 1);
-        codeView.addView(codeLineView);
+      if (index >= syncedTo) {
+        updated++;
+        CodeLineView codeLineView;
+        if (index < codeView.getChildCount()) {
+          codeLineView = (CodeLineView) codeView.getChildAt(index);
+        } else {
+          codeLineView = new CodeLineView(mainActivity, index % 2 == 1);
+          codeView.addView(codeLineView);
+        }
+        codeLineView.setCodeLine(codeLine, symbol.getErrors());
       }
-      codeLineView.setCodeLine(codeLine, symbol.getErrors());
       index++;
+      if (updated > 8) {
+        syncedTo += updated;
+        post(this::syncContent);
+        return;
+      }
     }
+
+    syncedTo = 0;
+
     while (index < codeView.getChildCount()) {
       codeView.removeViewAt(codeView.getChildCount() - 1);
     }

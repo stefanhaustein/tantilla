@@ -8,7 +8,6 @@ import org.kobjects.asde.lang.ResolvedSymbol;
 import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
 
@@ -27,7 +26,7 @@ public class Identifier extends SymbolNode {
 
   public void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     Type impliedType;
-    if (resolutionContext.mode != FunctionValidationContext.ResolutionMode.BASIC) {
+    if (resolutionContext.mode != FunctionValidationContext.ResolutionMode.LEGACY) {
       impliedType = null;
     } else {
       impliedType = name.endsWith("$") ? Types.STRING : Types.NUMBER;

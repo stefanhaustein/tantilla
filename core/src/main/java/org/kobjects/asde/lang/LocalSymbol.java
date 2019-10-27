@@ -10,6 +10,9 @@ public class LocalSymbol implements ResolvedSymbol {
     public LocalSymbol(int index, Type type, boolean constant) {
         this.index = index;
         this.type = type;
+        if (type == null) {
+            throw new NullPointerException("type must not be null");
+        }
         this.constant = constant;
     }
 

@@ -31,9 +31,21 @@ public final class OrOperator extends Node {
 
   public Object eval(EvaluationContext evaluationContext) {
     if (boolMode) {
-      return children[0].evalBoolean(evaluationContext) ? Boolean.TRUE : children[1].evalBoolean(evaluationContext);
+      return evalBoolean(evaluationContext);
     }
-    return (double) (children[0].evalInt(evaluationContext) & children[1].evalInt(evaluationContext));
+    return evalDouble(evaluationContext);
+  }
+
+  public boolean evalBoolean(EvaluationContext evaluationContext) {
+    return children[0].evalBoolean(evaluationContext) || children[1].evalBoolean(evaluationContext);
+  }
+
+  public double evalDouble(EvaluationContext evaluationContext) {
+    return children[0].evalInt(evaluationContext) & children[1].evalInt(evaluationContext);
+  }
+
+  public int evalInt(EvaluationContext evaluationContext) {
+    return children[0].evalInt(evaluationContext) & children[1].evalInt(evaluationContext);
   }
 
   @Override

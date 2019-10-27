@@ -787,7 +787,7 @@ public class MainActivity extends AppCompatActivity implements Console {
       if (url.startsWith("file:///android_asset/")) {
         return getAssets().open(url.substring(22));
       }
-      if (url.startsWith("http://vintage-basic.net/")) {
+      if (url.startsWith("http://vintage-basic.net/") || url.startsWith("https://raw.githubusercontent.com")) {
         return new URL(url).openConnection().getInputStream();
       }
       Uri uri = Uri.parse(url);

@@ -80,18 +80,14 @@ public class OnStatement extends Statement  {
         return;
       }
       if (children[0].evalBoolean(evaluationContext)) {
-        System.out.println("Condition did trigger");
+//        System.out.println("Condition did trigger: " + OnStatement.this);
         new Thread(() -> {
           try {
-            System.out.println("Thread started");
             evaluationContext.function.callImpl(new EvaluationContext(evaluationContext));
-            System.out.println("Thread ended");
           } catch (Exception e) {
             e.printStackTrace();
           }
         }).start();
-      } else {
-        System.out.println("*** condition did not trigger ***");
       }
     }
 

@@ -1,19 +1,16 @@
 package org.kobjects.asde.lang;
 
 
-import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
-import org.omg.CORBA.TRANSIENT;
 
 import java.util.HashMap;
 import java.util.HashSet;
 
 public class FunctionValidationContext {
-  public enum ResolutionMode {FUNCTION, INTERACTIVE, BASIC};
+  public enum ResolutionMode {PROGRAM, INTERACTIVE, LEGACY};
   public enum BlockType {
     ROOT, FOR, IF
   }
@@ -35,7 +32,7 @@ public class FunctionValidationContext {
     this.programValidationContext = programValidationContext;
     this.classValidationContext = classValidationContext;
     this.program = programValidationContext.program;
-    this.mode = (program.legacyMode && functionImplementation == program.main) ? ResolutionMode.BASIC : mode;
+    this.mode = (program.legacyMode && functionImplementation == program.main) ? ResolutionMode.LEGACY : mode;
     this.functionImplementation = functionImplementation;
     startBlock(BlockType.ROOT);
     if (functionImplementation != null) {
@@ -50,7 +47,7 @@ public class FunctionValidationContext {
   }
 
   public FunctionValidationContext(ClassValidationContext classValidationContext, FunctionImplementation functionImplementation) {
-    this (classValidationContext.programValidationContext, classValidationContext, ResolutionMode.FUNCTION, functionImplementation);
+    this (classValidationContext.programValidationContext, classValidationContext, ResolutionMode.PROGRAM, functionImplementation);
   }
 
 
@@ -68,7 +65,7 @@ public class FunctionValidationContext {
 
 
   public ResolvedSymbol resolveVariableDeclaration(String name, Type type, boolean constant) {
-    if (mode != ResolutionMode.FUNCTION) {
+    if (mode != ResolutionMode.PROGRAM) {
       return resolveVariableAssignment(name, type, false);
     }
     if (currentBlock.localSymbols.containsKey(name)) {
@@ -84,10 +81,12 @@ public class FunctionValidationContext {
   }
 
   private ResolvedSymbol resolveVariableAssignment(String name, Type type, boolean addDependency) {
+
     ResolvedSymbol resolved = resolveVariableAccess(name, type, addDependency, true);
     // Doesn't check for assigning to constants here because this is also called from
     // resolveVariableDeclaration handling the initial assignment, so that part is checked in
     // AssignStatement.
+
     if (!Types.match(type, resolved.getType())) {
       throw new RuntimeException("Cannot assign value of type " + type + " to " + name + " of type " + resolved.getType());
     }
@@ -100,10 +99,6 @@ public class FunctionValidationContext {
   }
 
   private ResolvedSymbol resolveVariableAccess(String name, Type impliedType, boolean addDependency, boolean forAssignment) {
-
-    if (name.equalsIgnoreCase("int")) {
-      System.out.println("WTF?");
-    }
 
     // Block level
 
@@ -123,7 +118,7 @@ public class FunctionValidationContext {
 
     // Globals
 
-    if (mode == ResolutionMode.BASIC
+    if (mode == ResolutionMode.LEGACY
         && impliedType instanceof ArrayType
         && (program.getSymbol(name) == null
           || program.getSymbol(name).scope == GlobalSymbol.Scope.TRANSIENT)) {
@@ -135,7 +130,7 @@ public class FunctionValidationContext {
         : program.getSymbol(name);
 
     // Refresh or invalidate transient symbols from previous runs.
-    if (symbol != null && mode == ResolutionMode.BASIC && symbol.scope == GlobalSymbol.Scope.TRANSIENT && symbol.stamp < program.currentStamp) {
+    if (symbol != null && mode == ResolutionMode.LEGACY && symbol.scope == GlobalSymbol.Scope.TRANSIENT && symbol.stamp < program.currentStamp) {
       if (symbol.type == impliedType) {
         symbol.stamp = program.currentStamp;
       } else {
@@ -144,7 +139,7 @@ public class FunctionValidationContext {
     }
 
     if (symbol == null) {
-      if (mode != ResolutionMode.FUNCTION && (forAssignment || mode == ResolutionMode.BASIC)) {
+      if (mode != ResolutionMode.PROGRAM && (forAssignment || mode == ResolutionMode.LEGACY)) {
         symbol = program.addTransientSymbol(name, impliedType, programValidationContext);
       } else {
         throw new RuntimeException("Variable not found: \"" + name + "\"");

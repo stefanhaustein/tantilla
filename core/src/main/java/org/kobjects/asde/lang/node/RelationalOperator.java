@@ -52,8 +52,7 @@ public class RelationalOperator extends Node {
 
   @Override
   public Type returnType() {
-    return (children[0].returnType() == null || children[1].returnType() == null)
-            ? null : Types.BOOLEAN;
+    return Types.BOOLEAN;
   }
 
   @Override
