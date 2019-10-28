@@ -63,7 +63,7 @@ public class RunControlView extends LinearLayout {
         closeButton = new IconButton(mainActivity, R.drawable.baseline_clear_24, item -> {
             hideControlButtons();
             startButton.show();
-            mainActivity.clearScreen(Console.ClearScreenType.PROGRAM_CLOSED);
+            mainActivity.console.clearScreen(Console.ClearScreenType.PROGRAM_CLOSED);
             mainActivity.fullScreenMode = false;
             mainActivity.arrangeUi();
         });
@@ -96,13 +96,13 @@ public class RunControlView extends LinearLayout {
             public void programAborted(Exception cause) {
                 mainActivity.runOnUiThread(() -> {
                     hideControlButtons();
-                    mainActivity.clearScreen(Console.ClearScreenType.PROGRAM_CLOSED);
+                    mainActivity.console.clearScreen(Console.ClearScreenType.PROGRAM_CLOSED);
                     startButton.show();
                     mainActivity.fullScreenMode = false;
                     mainActivity.arrangeUi();
 
                     if (cause != null && !(cause instanceof ForcedStopException)) {
-                        mainActivity.showError(null, cause);
+                        mainActivity.console.showError(null, cause);
                     }
 
                 });

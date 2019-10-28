@@ -118,7 +118,7 @@ public class ControlView extends LinearLayout  {
 
 
   public void enter() {
-    mainActivity.print(resultView.getText() + "\n");
+    mainActivity.console.print(resultView.getText() + "\n");
     resultView.setText("");
 
     String line = codeEditText.getText().toString();

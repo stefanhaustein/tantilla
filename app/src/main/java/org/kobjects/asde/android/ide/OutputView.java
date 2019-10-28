@@ -24,7 +24,7 @@ public class OutputView extends LinearLayout {
    static void populateMenu(MainActivity mainActivity, Menu menu) {
 
      menu.add("Clear").setOnMenuItemClickListener(menuItem -> {
-       mainActivity.clearScreen(Console.ClearScreenType.CLS_STATEMENT);
+       mainActivity.console.clearScreen(Console.ClearScreenType.CLS_STATEMENT);
        return true;
      });
 

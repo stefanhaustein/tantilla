@@ -69,7 +69,6 @@ import org.kobjects.asde.lang.io.Console;
 import org.kobjects.abcnotation.SampleManager;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;
-import org.kobjects.typesystem.Type;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,9 +77,8 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.concurrent.SynchronousQueue;
 
-public class MainActivity extends AppCompatActivity implements Console {
+public class MainActivity extends AppCompatActivity {
   static final int SAVE_EXTERNALLY_REQUEST_CODE = 420;
   static final int LOAD_EXTERNALLY_REQUEST_CODE = 421;
   static final int OPEN_EXTERNALLY_REQUEST_CODE = 422;
@@ -100,15 +98,14 @@ public class MainActivity extends AppCompatActivity implements Console {
   ScrollView leftScrollView;
   FloatingActionButton runButton;
   public ControlView controlView;
-  public Program program = new Program(this);
+  AndroidConsole console = new AndroidConsole(this);
+  public Program program = new Program(console);
   public OutputView outputView;
-  public String readLine;
   ResizableFrameLayout resizableFrameLayout;
   ScreenAdapter screenAdapter;
   //  public ProgramControl mainControl = new ProgramControl(program);
   // ProgramControl shellControl = new ProgramControl(program);
   AsdePreferences preferences;
-  boolean autoScroll = true;
   public boolean fullScreenMode;
   public ProgramView programView;
   public Shell shell = new Shell(program);
@@ -122,8 +119,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
 
   RunControlView runControlView;
-  private Screen screen;
-  private TextView pendingOutput;
+  Screen screen;
   boolean windowMode;
   boolean runningFromShortcut;
 
@@ -215,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
       @Override
       public Object call(EvaluationContext evaluationContext, int paramCount) {
-        clearScreen(ClearScreenType.CLS_STATEMENT);
+        console.clearScreen(Console.ClearScreenType.CLS_STATEMENT);
         return null;
       }
     });
@@ -254,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements Console {
         @Override
         public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
           if (scrollY < oldScrollY) {
-            autoScroll = false;
+            console.autoScroll = false;
           }
         }
       });
@@ -268,7 +264,7 @@ public class MainActivity extends AppCompatActivity implements Console {
       programReference = ProgramReference.parse(runIntent);
     } else {
       arrangeUi();
-      print("  " + (Runtime.getRuntime().totalMemory() / 1024) + "K SYSTEM  "
+      console.print("  " + (Runtime.getRuntime().totalMemory() / 1024) + "K SYSTEM  "
           + Runtime.getRuntime().freeMemory() + " ASDE BYTES FREE\n\n");
 
       programReference = preferences.getProgramReference();
@@ -331,69 +327,6 @@ public class MainActivity extends AppCompatActivity implements Console {
   }
 
 
-  int lineCount;
-
-  void postScrollIfAtEnd() {
-    if (scrollContentView.getHeight() <= mainScrollView.getHeight() + mainScrollView.getScrollY()
-        || mainScrollView.getScrollY() == 0) {
-      autoScroll = true;
-    }
-    if (autoScroll) {
-      mainScrollView.post(new Runnable() {
-
-        @Override
-        public void run() {
-          if (scrollContentView.getHeight() != mainScrollView.getHeight() + mainScrollView.getScrollY()) {
-            mainScrollView.scrollTo(0, Integer.MAX_VALUE / 2);
-            mainScrollView.post(this);
-          }
-        }
-      });
-    }
-  }
-
-  @Override
-  public void print(final CharSequence chars) {
-    if (chars.length() == 0) {
-      return;
-    }
-    final AnnotatedString s = AnnotatedString.of(chars);
-    int cut = s.indexOf('\n');
-    runOnUiThread(() -> {
-      printImpl(s);
-    });
-    if (cut != -1) {
-      lineCount++;
-      try {
-        Thread.sleep(Math.round(Math.log(lineCount + 1)));
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-      }
-    }
-  }
-
-  private void printImpl(AnnotatedString s) {
-    if (pendingOutput == null) {
-      pendingOutput = new EmojiTextView(this);
-      pendingOutput.setTypeface(Typeface.MONOSPACE);
-
-      outputView.addContent(pendingOutput);
-      postScrollIfAtEnd();
-    }
-    int cut = s.indexOf('\n');
-    if (cut == -1) {
-      pendingOutput.append(AnnotatedStringConverter.toSpanned(this, s, true));
-    } else {
-      pendingOutput.append(AnnotatedStringConverter.toSpanned(this, s.subSequence(0, cut), true));
-      pendingOutput = null;
-      if (cut < s.length() - 1) {
-        printImpl(s.subSequence(cut + 1, s.length()));
-      }
-    }
-
-  }
-
-
 
     /*
      * Syncs the displayed program code to the program code. If the sync is incremental,
@@ -431,7 +364,7 @@ public class MainActivity extends AppCompatActivity implements Console {
 
           return;
         } catch (Exception e) {
-          showError("Icon loading error", e);
+          console.showError("Icon loading error", e);
         }
       }
 
@@ -465,7 +398,7 @@ public class MainActivity extends AppCompatActivity implements Console {
           try {
             program.load(programReference);
           } catch (Exception e) {
-            showError("Error loading external file", e);
+            console.showError("Error loading external file", e);
           }
           break;
 
@@ -473,7 +406,7 @@ public class MainActivity extends AppCompatActivity implements Console {
           try {
             program.save(programReference);
           } catch (Exception e) {
-            showError("Error saving external file", e);
+            console.showError("Error saving external file", e);
           }
           break;
       }
@@ -642,196 +575,11 @@ public class MainActivity extends AppCompatActivity implements Console {
   }
 
 
-
-  @Override
-  public String input(Type typeHint) {
-    SynchronousQueue<String> inputQueue = new SynchronousQueue<>();
-    final EditText[] inputEditText = new EditText[1];
-    runOnUiThread(() -> {
-      final LinearLayout inputView = new LinearLayout(this);
-      inputEditText[0] = new EditText(this);
-
-      inputEditText[0].setInputType(
-          InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-              | InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE
-              | (program.legacyMode ? InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS : 0)
-      | (typeHint == Types.NUMBER ? InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL|InputType.TYPE_NUMBER_FLAG_SIGNED : 0));
-      inputEditText[0].setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI|EditorInfo.IME_FLAG_NO_FULLSCREEN);
-      inputEditText[0].setOnEditorActionListener((view, actionId, event) -> {
-        if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED
-            && event.getAction() == KeyEvent.ACTION_DOWN) {
-          outputView.removeContent(inputView);
-          inputQueue.add(inputEditText[0].getText().toString());
-          return true;
-        }
-        return false;
-      });
-
-      inputView.addView(inputEditText[0], new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
-      IconButton inputButton = new IconButton(this, R.drawable.baseline_keyboard_return_24);
-      inputView.addView(inputButton);
-      outputView.addContent(inputView);
-      inputView.requestFocus();
-      inputButton.setOnClickListener(item -> {
-        outputView.removeContent(inputView);
-        inputQueue.add(inputEditText[0].getText().toString());
-      });
-    });
-
-    try {
-      String result = inputQueue.take();
-      AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-      asb.append(result, Annotations.ACCENT_COLOR);
-      asb.append("\n");
-      print(asb.build());
-      readLine = null;
-      return result;
-    } catch (InterruptedException e) {
-      if (inputEditText[0] != null) {
-        runOnUiThread(() -> inputEditText[0].setEnabled(false));
-      }
-      throw new ForcedStopException(e);
-    }
-  }
-
-
   public File getProgramStoragePath() {
     File result = new File(getFilesDir(), "programs");
     // Mkdirs needed to make sure there is a programs storage path.
     result.mkdirs();
     return result;
-  }
-
-  @Override
-  public ProgramReference nameToReference(String name) {
-    String url;
-    int cut0 = name.lastIndexOf("/");
-    int cut1 = name.indexOf(".", cut0 + 1);
-    String displayName = name.substring(cut0 + 1, cut1 == -1 ? name.length() : cut1);
-
-    if (name.startsWith("/")) {
-      url = "file://" + name;
-    } else if (name.indexOf(':') != -1) {
-      url = name;
-    } else {
-      url = "file://" + getProgramStoragePath().getAbsolutePath() + "/" + name;
-    }
-    return new ProgramReference(displayName, url, true);
-  }
-
-  ProgressDialog progressDialog;
-  int openProgressCount;
-
-  @Override
-  public void startProgress(String title) {
-    if (openProgressCount == 0) {
-      runOnUiThread(() -> {
-        if (progressDialog == null) {
-          progressDialog = ProgressDialog.show(this, title, "", true);
-        }
-      });
-    }
-    openProgressCount++;
-  }
-
-  @Override
-  public void updateProgress(String update) {
-    runOnUiThread(() -> {
-      if (progressDialog != null) {
-        progressDialog.setMessage(update);
-      }
-    });
-  }
-
-  @Override
-  public void endProgress() {
-    openProgressCount--;
-    runOnUiThread(() -> {
-      if (openProgressCount == 0) {
-        progressDialog.dismiss();
-        progressDialog = null;
-      }
-    });
-  }
-
-  @Override
-  public void delete(int line) {
-    FunctionView functionView = programView.currentFunctionView;
-    program.deleteLine(functionView.symbol, line);
-  }
-
-  @Override
-  public void edit(int line) {
-    runOnUiThread(() -> {
-      FunctionView functionView = programView.currentFunctionView;
-      // Append moves the cursor to the end.
-      controlView.codeEditText.setText("");
-      if (functionView != null) {
-        FunctionImplementation functionImplementation = functionView.functionImplementation;
-        CodeLine codeLine = functionImplementation.getExactLine(line);
-        if (codeLine != null) {
-          controlView.codeEditText.append(line + " " + codeLine);
-          return;
-        }
-      }
-      controlView.codeEditText.append("" + line + " ");
-    });
-  }
-
-  @Override
-  public void clearScreen(ClearScreenType clearScreenType) {
-    switch (clearScreenType) {
-      case PROGRAM_CLOSED:
-        screen.clearAll();  // sprites
-        break;
-      case CLEAR_STATEMENT:
-        screen.clearAll();
-        // Fall_through intended;
-      case CLS_STATEMENT:
-        clearOutput();
-        screen.cls();
-        break;
-    }
-  }
-
-  void clearOutput() {
-    runOnUiThread(() -> {
-      outputView.clear();
-      controlView.resultView.setText("");
-      pendingOutput = null;
-    });
-  }
-
-
-  @Override
-  public void highlight(FunctionImplementation function, int lineNumber) {
-    runOnUiThread(() -> programView.highlight(function, lineNumber));
-  }
-
-  @Override
-  public InputStream openInputStream(String url) {
-    try {
-      if (url.startsWith("file:///android_asset/")) {
-        return getAssets().open(url.substring(22));
-      }
-      if (url.startsWith("http://vintage-basic.net/") || url.startsWith("https://raw.githubusercontent.com")) {
-        return new URL(url).openConnection().getInputStream();
-      }
-      Uri uri = Uri.parse(url);
-      return getContentResolver().openInputStream(uri);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  @Override
-  public OutputStream openOutputStream(String url) {
-    try {
-      Uri uri = Uri.parse(url);
-      return getContentResolver().openOutputStream(uri);
-    } catch (IOException e) {
-      throw new RuntimeException("Can't write to URL " + url, e);
-    }
   }
 
   public void eraseProgram() {
@@ -849,7 +597,7 @@ public class MainActivity extends AppCompatActivity implements Console {
         }
       } catch (Exception e) {
         if (showErrors) {
-          showError("Error loading " + programReference.url, e);
+          console.showError("Error loading " + programReference.url, e);
         } else {
           e.printStackTrace();
         }
@@ -857,25 +605,6 @@ public class MainActivity extends AppCompatActivity implements Console {
     }).start();
   }
 
-  public void showError(String s, Exception e) {
-    e.printStackTrace();
-    runOnUiThread(() -> {
-      if (e instanceof WrappedExecutionException) {
-        WrappedExecutionException wrappedExecutionException = (WrappedExecutionException) e;
-
-        while (wrappedExecutionException.getCause() instanceof WrappedExecutionException) {
-          wrappedExecutionException = (WrappedExecutionException) wrappedExecutionException.getCause();
-        }
-
-        highlight(wrappedExecutionException.functionImplementation, wrappedExecutionException.lineNumber);
-      }
-
-      AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-      alertBuilder.setTitle(s == null ? "Error" : s);
-      alertBuilder.setMessage(Format.exceptionToString(e));
-      alertBuilder.show();
-    });
-  }
 
   public boolean sharedCodeViewAvailable() {
     return codeView != null;

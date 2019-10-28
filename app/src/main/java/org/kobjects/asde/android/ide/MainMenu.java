@@ -237,7 +237,7 @@ public class MainMenu {
       dialog.setTitle("Select Program File");
       dialog.show();
       dialog.setDialogSelectionListener(files -> {
-        mainActivity.load(mainActivity.nameToReference(files[0]), true, false);
+        mainActivity.load(mainActivity.console.nameToReference(files[0]), true, false);
       });
       return true;
     });
@@ -273,9 +273,9 @@ public class MainMenu {
         String name = fileNameInput.getText().toString();
         if (!name.isEmpty()) {
           try {
-            mainActivity.program.save(mainActivity.nameToReference(fileNameInput.getText().toString()));
+            mainActivity.program.save(mainActivity.console.nameToReference(fileNameInput.getText().toString()));
           } catch (Exception e) {
-            mainActivity.showError("Error saving file " + fileNameInput.getText().toString(), e);
+            mainActivity.console.showError("Error saving file " + fileNameInput.getText().toString(), e);
           }
         }
       });
