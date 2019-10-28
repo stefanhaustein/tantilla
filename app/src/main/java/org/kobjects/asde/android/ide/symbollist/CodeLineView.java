@@ -85,7 +85,7 @@ public class CodeLineView extends LinearLayout {
 
     AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
     codeLine.toString(asb, errors, false);
-    SpannableString spannable = AnnotatedStringConverter.toSpanned(context, asb.build(), true);
+    SpannableString spannable = AnnotatedStringConverter.toSpanned(context, asb.build(), lineNumber);
 
     int factor = Math.round(statementView.getTextSize() / 2);
 

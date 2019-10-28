@@ -150,14 +150,14 @@ public class ControlView extends LinearLayout  {
       asb.append(line, 0, sanitizedStart);
       asb.append(line.subSequence(sanitizedStart, sanitizedEnd), e);
       asb.append(line, sanitizedEnd, line.length());
-      codeEditText.append(AnnotatedStringConverter.toSpanned(mainActivity, asb.build(), false));
+      codeEditText.append(AnnotatedStringConverter.toSpanned(mainActivity, asb.build(), -1));
     } catch (ValidationException e) {
       e.printStackTrace();
       codeEditText.setText("");
       resultView.setText(Format.exceptionToString(e.getErrors().values().iterator().next()));
       AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
       e.getCodeLine().toString(asb, e.getErrors(), true);
-      codeEditText.append(AnnotatedStringConverter.toSpanned(mainActivity, asb.build(), false));
+      codeEditText.append(AnnotatedStringConverter.toSpanned(mainActivity, asb.build(), -1));
     } catch (Throwable e) {
       e.printStackTrace();
       resultView.setText(Format.exceptionToString(e));

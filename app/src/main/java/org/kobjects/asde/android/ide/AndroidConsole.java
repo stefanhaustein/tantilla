@@ -258,9 +258,9 @@ public class AndroidConsole implements Console {
     }
     int cut = s.indexOf('\n');
     if (cut == -1) {
-      pendingOutput.append(AnnotatedStringConverter.toSpanned(mainActivity, s, true));
+      pendingOutput.append(AnnotatedStringConverter.toSpanned(mainActivity, s, 0));
     } else {
-      pendingOutput.append(AnnotatedStringConverter.toSpanned(mainActivity, s.subSequence(0, cut), true));
+      pendingOutput.append(AnnotatedStringConverter.toSpanned(mainActivity, s.subSequence(0, cut), 0));
       pendingOutput = null;
       if (cut < s.length() - 1) {
         printImpl(s.subSequence(cut + 1, s.length()));
