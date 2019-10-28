@@ -1,7 +1,6 @@
 package org.kobjects.asde.android.ide;
 
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -18,7 +17,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.lang.Format;
-import org.kobjects.asde.lang.io.ValidationException;
+import org.kobjects.asde.lang.io.MultiValidationException;
 import org.kobjects.expressionparser.ExpressionParser;
 
 
@@ -151,7 +150,7 @@ public class ControlView extends LinearLayout  {
       asb.append(line.subSequence(sanitizedStart, sanitizedEnd), e);
       asb.append(line, sanitizedEnd, line.length());
       codeEditText.append(AnnotatedStringConverter.toSpanned(mainActivity, asb.build(), -1));
-    } catch (ValidationException e) {
+    } catch (MultiValidationException e) {
       e.printStackTrace();
       codeEditText.setText("");
       resultView.setText(Format.exceptionToString(e.getErrors().values().iterator().next()));

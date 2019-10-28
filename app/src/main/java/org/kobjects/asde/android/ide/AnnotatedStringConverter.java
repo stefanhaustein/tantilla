@@ -1,8 +1,6 @@
 package org.kobjects.asde.android.ide;
 
-import android.content.DialogInterface;
 import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
@@ -11,7 +9,6 @@ import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.annotatedtext.Span;
 import org.kobjects.asde.lang.Format;
-import org.kobjects.asde.lang.io.ValidationException;
 
 public class AnnotatedStringConverter {
 

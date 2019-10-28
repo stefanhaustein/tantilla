@@ -20,7 +20,6 @@ import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.asde.lang.refactor.ChangeSignature;
 import org.kobjects.asde.lang.statement.RemStatement;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;
@@ -343,7 +342,7 @@ public class FunctionSignatureFlow {
     functionImplementation.setType(new FunctionTypeImpl(returnType, types));
 
     if (moved) {
-      mainActivity.program.accept(new ChangeSignature(symbol, oldIndices));
+      mainActivity.program.processNodes(node -> node.changeSignature(symbol, oldIndices));
     }
 
     mainActivity.program.notifyProgramChanged();
