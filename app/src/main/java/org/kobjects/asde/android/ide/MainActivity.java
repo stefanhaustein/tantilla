@@ -17,10 +17,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -34,6 +37,8 @@ import com.vanniktech.emoji.twitter.TwitterEmojiProvider;
 
 import org.kobjects.abcnotation.AbcScore;
 import org.kobjects.annotatedtext.AnnotatedString;
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.symbollist.FunctionView;
 import org.kobjects.asde.android.ide.symbollist.ProgramView;
@@ -64,6 +69,7 @@ import org.kobjects.asde.lang.io.Console;
 import org.kobjects.abcnotation.SampleManager;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;
+import org.kobjects.typesystem.Type;
 
 import java.io.File;
 import java.io.IOException;
@@ -635,13 +641,32 @@ public class MainActivity extends AppCompatActivity implements Console {
     }
   }
 
+
+
   @Override
-  public String input() {
+  public String input(Type typeHint) {
     SynchronousQueue<String> inputQueue = new SynchronousQueue<>();
     final EditText[] inputEditText = new EditText[1];
     runOnUiThread(() -> {
       final LinearLayout inputView = new LinearLayout(this);
       inputEditText[0] = new EditText(this);
+
+      inputEditText[0].setInputType(
+          InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+              | InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE
+              | (program.legacyMode ? InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS : 0)
+      | (typeHint == Types.NUMBER ? InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL|InputType.TYPE_NUMBER_FLAG_SIGNED : 0));
+      inputEditText[0].setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI|EditorInfo.IME_FLAG_NO_FULLSCREEN);
+      inputEditText[0].setOnEditorActionListener((view, actionId, event) -> {
+        if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED
+            && event.getAction() == KeyEvent.ACTION_DOWN) {
+          outputView.removeContent(inputView);
+          inputQueue.add(inputEditText[0].getText().toString());
+          return true;
+        }
+        return false;
+      });
+
       inputView.addView(inputEditText[0], new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
       IconButton inputButton = new IconButton(this, R.drawable.baseline_keyboard_return_24);
       inputView.addView(inputButton);
@@ -655,7 +680,10 @@ public class MainActivity extends AppCompatActivity implements Console {
 
     try {
       String result = inputQueue.take();
-      print(result + "\n");
+      AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
+      asb.append(result, Annotations.ACCENT_COLOR);
+      asb.append("\n");
+      print(asb.build());
       readLine = null;
       return result;
     } catch (InterruptedException e) {
@@ -677,8 +705,9 @@ public class MainActivity extends AppCompatActivity implements Console {
   @Override
   public ProgramReference nameToReference(String name) {
     String url;
-    int cut = name.lastIndexOf("/");
-    String displayName = cut == -1 ? name : name.substring(cut + 1);
+    int cut0 = name.lastIndexOf("/");
+    int cut1 = name.indexOf(".", cut0 + 1);
+    String displayName = name.substring(cut0 + 1, cut1 == -1 ? name.length() : cut1);
 
     if (name.startsWith("/")) {
       url = "file://" + name;
@@ -766,12 +795,10 @@ public class MainActivity extends AppCompatActivity implements Console {
   }
 
   void clearOutput() {
-    runOnUiThread(new Runnable() {
-      public void run() {
-        outputView.clear();
-        controlView.resultView.setText("");
-        pendingOutput = null;
-      }
+    runOnUiThread(() -> {
+      outputView.clear();
+      controlView.resultView.setText("");
+      pendingOutput = null;
     });
   }
 

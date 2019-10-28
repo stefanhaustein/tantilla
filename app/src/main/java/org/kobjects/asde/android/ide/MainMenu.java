@@ -166,7 +166,7 @@ public class MainMenu {
     for (int i = 0; i < list.length; i += 2) {
       String fileName = list[i];
       menu.add(list[i + 1]).setOnMenuItemClickListener(item -> {
-        mainActivity.load(new ProgramReference(fileName, baseUrl + fileName, false), true, false);
+        mainActivity.load(new ProgramReference(fileName.substring(0, fileName.indexOf(".")), baseUrl + fileName, false), true, false);
         return true;
       });
     }

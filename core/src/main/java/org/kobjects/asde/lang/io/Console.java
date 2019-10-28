@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.io;
 
 import org.kobjects.asde.lang.FunctionImplementation;
+import org.kobjects.typesystem.Type;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,7 +12,7 @@ public interface Console {
     }
 
     void print(CharSequence s);
-    String input();
+    String input(Type typeHint);
 
     void clearScreen(ClearScreenType clearScreenType);
 

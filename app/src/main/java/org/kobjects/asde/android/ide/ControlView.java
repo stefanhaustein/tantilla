@@ -50,8 +50,7 @@ public class ControlView extends LinearLayout  {
 
     codeEditText = new EmojiEditText(mainActivity);
     codeEditText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS|InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
-    codeEditText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-    // codeEditText.setImeActionLabel("Done", EditorInfo.IME_ACTION_SEND);
+    codeEditText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI|EditorInfo.IME_FLAG_NO_FULLSCREEN);
     codeEditText.setOnEditorActionListener((view, actionId, event) -> {
       if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED
           && event.getAction() == KeyEvent.ACTION_DOWN) {

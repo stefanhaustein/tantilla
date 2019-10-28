@@ -7,6 +7,7 @@ import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.io.Shell;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.expressionparser.ExpressionParser;
+import org.kobjects.typesystem.Type;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -74,7 +75,7 @@ public class AsdeShell {
     }
 
     @Override
-    public String input() {
+    public String input(Type typeHint) {
       try {
         return reader.readLine();
       } catch (IOException e) {

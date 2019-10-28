@@ -146,7 +146,7 @@ public class ProgramView extends LinearLayout {
   void synchronize() {
     titleView.setTitle(
         (program.reference.name.equals("Unnamed") ? "ASDE" : program.reference.name)
-        //    + (program.legacyMode ? "\uD83D\uDD78️" : "")
+            + (program.legacyMode ? " (legacy mode)️" : "")
         + (program.hasUnsavedChanges ? "*" : ""));
 
     if (!expanded) {

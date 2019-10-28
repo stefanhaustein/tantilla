@@ -69,7 +69,7 @@ public class IoStatement extends Node {
         }
         Object value;
         while(true) {
-          value = program.console.input();
+          value = program.console.input(child.returnType());
           if (child.returnType() == Types.STRING) {
             break;
           }
