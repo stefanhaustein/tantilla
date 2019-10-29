@@ -39,7 +39,7 @@ public class ClassView extends SymbolView {
   public ClassView(MainActivity mainActivity, StaticSymbol symbol) {
     super(mainActivity, symbol);
 
-    titleView.setTypeIndicator('C', Colors.CYAN);
+    titleView.setTypeIndicator('C', Colors.BLUE);
 
     titleView.setMoreClickListener(clicked -> {
       PopupMenu popupMenu = new PopupMenu(mainActivity, clicked);

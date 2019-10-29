@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="primary">#777777</color>
+    <color name="primary">#888888</color>  <!-- app bar etc. -->
     <color name="primaryDark">#333333</color>
-    <color name="accent">#dd8855</color>
-    <color name="background">#000</color>
+    <color name="accent">#ef9108</color>
+    <color name="background">#293137</color>
 
 </resources>
