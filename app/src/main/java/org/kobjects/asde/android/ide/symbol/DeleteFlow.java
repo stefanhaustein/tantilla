@@ -9,7 +9,7 @@ public class DeleteFlow {
   public static void start(final MainActivity mainActivity, final StaticSymbol symbol) {
 
     new InputFlowBuilder(mainActivity, "Delete '" + symbol.getName() + "'")
-        .setMessage("Are you sure?")
+        .setConfirmationCheckbox("Yes, I am sure!")
         .setPositiveLabel("Delete")
         .start(result -> {
           symbol.getOwner().removeSymbol(symbol);

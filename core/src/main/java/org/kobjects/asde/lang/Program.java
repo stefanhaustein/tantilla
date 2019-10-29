@@ -396,7 +396,7 @@ public class Program implements SymbolOwner {
   @Override
   public void addSymbol(StaticSymbol symbol) {
     symbolMap.put(symbol.getName().toLowerCase(), (GlobalSymbol) symbol);
-    notifyProgramChanged();
+//    notifyProgramChanged();  // crashes refactoring....
   }
 
 }

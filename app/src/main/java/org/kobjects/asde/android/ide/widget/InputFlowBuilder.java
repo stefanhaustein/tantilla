@@ -25,6 +25,7 @@ public class InputFlowBuilder {
   private String positiveLabel = "Ok";
   private String negativeLabel = "Cancel";
   private ArrayList<Input> inputList = new ArrayList<>();
+  private String confirmationCheckbox;
 
 
   public InputFlowBuilder(MainActivity mainActivity, String title) {
@@ -42,6 +43,10 @@ public class InputFlowBuilder {
     return this;
   }
 
+  public InputFlowBuilder setConfirmationCheckbox(String message) {
+    this.confirmationCheckbox = message;
+    return this;
+  }
 
   public InputFlowBuilder setPositiveLabel(String label) {
     this.positiveLabel = label;
@@ -50,6 +55,7 @@ public class InputFlowBuilder {
 
 
   public void start(ResultHandler resultHandler) {
+    AlertDialog[] alert = new AlertDialog[1];
     AlertDialog.Builder alertBuilder = new AlertDialog.Builder(mainActivity);
     alertBuilder.setTitle(title);
     if (message != null) {
@@ -57,52 +63,6 @@ public class InputFlowBuilder {
     }
 
     ArrayList<TextInputLayout> inputLayoutList = new ArrayList<>();
-
-    if (!inputList.isEmpty()) {
-      LinearLayout mainLayout = new LinearLayout(alertBuilder.getContext());
-
-      mainLayout.setOrientation(LinearLayout.VERTICAL);
-
-      if (message == null) {
-        mainLayout.addView(new TextView(mainActivity));
-      }
-
-      for (Input input : inputList) {
-        TextInputLayout inputLayout = new TextInputLayout(mainActivity);
-        if (input.label != null) {
-          inputLayout.setHint(input.label);
-          inputLayout.setHintEnabled(true);
-        }
-        inputLayoutList.add(inputLayout);
-        inputLayout.addView(new EditText(mainActivity));
-        if (input.initialValue != null) {
-          inputLayout.getEditText().setText(String.valueOf(input.initialValue));
-          if (input.initialValue instanceof Integer) {
-            inputLayout.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER);
-          }
-        }
-        inputLayout.setErrorEnabled(true);
-
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.leftMargin = 56;
-        layoutParams.rightMargin = 56;
-        mainLayout.addView(inputLayout, layoutParams);
-      }
-      alertBuilder.setView(mainLayout);
-    }
-
-    alertBuilder.setNegativeButton(negativeLabel, null);
-    if (resultHandler != null) {
-      alertBuilder.setPositiveButton(positiveLabel, (a, b) -> {
-        String[] result = new String[inputLayoutList.size()];
-        for (int i = 0; i < inputLayoutList.size(); i++) {
-          result[i] = inputLayoutList.get(i).getEditText().getText().toString();
-        }
-        resultHandler.handleResult(result);
-      });
-    }
-
-    AlertDialog alert = alertBuilder.show();
 
     TextWatcher overWatch = new TextWatcher() {
       @Override
@@ -124,16 +84,75 @@ public class InputFlowBuilder {
             anyError |= error != null;
           }
         }
-        alert.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(!anyError);
+        alert[0].getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(!anyError);
       }
     };
 
+    if (!inputList.isEmpty()) {
+      LinearLayout mainLayout = new LinearLayout(alertBuilder.getContext());
+
+      mainLayout.setOrientation(LinearLayout.VERTICAL);
+
+      if (message == null) {
+        mainLayout.addView(new TextView(mainActivity));
+      }
+
+      for (Input input : inputList) {
+        TextInputLayout inputLayout = new TextInputLayout(mainActivity);
+        if (input.label != null) {
+          inputLayout.setHint(input.label);
+          inputLayout.setHintEnabled(true);
+        }
+        inputLayoutList.add(inputLayout);
+        EditText editText = new EditText(mainActivity);
+        inputLayout.addView(editText);
+        if (input.initialValue != null) {
+          inputLayout.getEditText().setText(String.valueOf(input.initialValue));
+          if (input.initialValue instanceof Integer) {
+            inputLayout.getEditText().setInputType(InputType.TYPE_CLASS_NUMBER);
+          }
+        }
+        inputLayout.setErrorEnabled(true);
+
+        if (input.validator != null) {
+          inputLayout.getEditText().addTextChangedListener(overWatch);
+        }
+
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.leftMargin = 56;
+        layoutParams.rightMargin = 56;
+        mainLayout.addView(inputLayout, layoutParams);
+      }
+
+      alertBuilder.setView(mainLayout);
+    }
+
+    if (confirmationCheckbox != null) {
+      alertBuilder.setMultiChoiceItems(new CharSequence[]{confirmationCheckbox}, new boolean[1], new DialogInterface.OnMultiChoiceClickListener() {
+        @Override
+        public void onClick(DialogInterface dialogInterface, int i, boolean b) {
+          alert[0].getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(b);
+        }
+      });
+    }
+
+    alertBuilder.setNegativeButton(negativeLabel, null);
+    if (resultHandler != null) {
+      alertBuilder.setPositiveButton(positiveLabel, (a, b) -> {
+        String[] result = new String[inputLayoutList.size()];
+        for (int i = 0; i < inputLayoutList.size(); i++) {
+          result[i] = inputLayoutList.get(i).getEditText().getText().toString();
+        }
+        resultHandler.handleResult(result);
+      });
+    }
+
+    alert[0] = alertBuilder.show();
+
     overWatch.afterTextChanged(null);
 
-    for (int i = 0; i < inputList.size(); i++) {
-      if (inputList.get(i).validator != null) {
-        inputLayoutList.get(i).getEditText().addTextChangedListener(overWatch);
-      }
+    if (confirmationCheckbox != null) {
+      alert[0].getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(false);
     }
   }
 

@@ -169,7 +169,7 @@ public class FunctionSignatureFlow {
         });
       }
 
-      parameterListView.addView(parameterView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+      parameterListView.addView(parameterView,new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
       index++;
     }
     LinearLayout addParameterView = new LinearLayout(mainActivity);
@@ -194,6 +194,8 @@ public class FunctionSignatureFlow {
     TextView paramLabel = new TextView(mainActivity);
     paramLabel.setText("Parameter List");
     mainLayout.addView(paramLabel);
+    ((LinearLayout.LayoutParams) paramLabel.getLayoutParams()).leftMargin = 56;
+    ((LinearLayout.LayoutParams) paramLabel.getLayoutParams()).rightMargin = 56;
 
     parameterListView = new LinearLayout(mainActivity);
     parameterListView.setOrientation(LinearLayout.VERTICAL);
@@ -201,6 +203,8 @@ public class FunctionSignatureFlow {
     updateParameterList();
 
     mainLayout.addView(parameterListView);
+    ((LinearLayout.LayoutParams) parameterListView.getLayoutParams()).leftMargin = 56;
+    ((LinearLayout.LayoutParams) parameterListView.getLayoutParams()).rightMargin = 56;
 
 
     TypeSpinner typeInput = new TypeSpinner(mainActivity, "(none)");
@@ -208,7 +212,11 @@ public class FunctionSignatureFlow {
     typeLabel.setText("Return Type");
     typeInput.selectType(returnType);
     mainLayout.addView(typeLabel);
+    ((LinearLayout.LayoutParams) typeLabel.getLayoutParams()).leftMargin = 56;
+    ((LinearLayout.LayoutParams) typeLabel.getLayoutParams()).rightMargin = 56;
     mainLayout.addView(typeInput);
+    ((LinearLayout.LayoutParams) typeInput.getLayoutParams()).leftMargin = 56;
+    ((LinearLayout.LayoutParams) typeInput.getLayoutParams()).rightMargin = 56;
 
     ScrollView parameterScrollView = new ScrollView(mainActivity);
     parameterScrollView.addView(mainLayout);
