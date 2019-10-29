@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide.widget;
+package org.kobjects.asde.android.ide.symbol;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import org.kobjects.asde.R;
+import org.kobjects.asde.Dimensions;
+import org.kobjects.asde.android.ide.widget.IconButton;
 
 import java.util.List;
 

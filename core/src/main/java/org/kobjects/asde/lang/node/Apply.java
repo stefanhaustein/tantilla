@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.StaticSymbol;
+import org.kobjects.asde.lang.statement.UnparseableStatement;
 import org.kobjects.asde.lang.type.Array;
 import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.type.Function;
@@ -22,9 +24,22 @@ public class Apply extends AssignableNode {
         this.parenthesis = parenthesis;
     }
 
-
-    public void accept(Visitor visitor) {
-        visitor.visitApply(this);
+    @Override
+    public void changeSignature(StaticSymbol symbol, int[] newOrder) {
+        Node base = children[0];
+        if (!(base instanceof SymbolNode) || !((SymbolNode) base).matches(symbol, symbol.getName())) {
+            return;
+        }
+        Node[] oldChildren = children;
+        children = new Node[newOrder.length + 1];
+        children[0] = base;
+        for (int i = 0; i < newOrder.length; i++) {
+            if (newOrder[i] != -1) {
+                children[i + 1] = oldChildren[newOrder[i] + 1];
+            } else {
+                children[i + 1] = new Identifier("placeholder" + i);
+            }
+        }
     }
 
 

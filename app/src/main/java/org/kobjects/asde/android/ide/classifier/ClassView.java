@@ -1,13 +1,16 @@
-package org.kobjects.asde.android.ide.symbollist;
+package org.kobjects.asde.android.ide.classifier;
 
 import android.widget.PopupMenu;
 
-import org.kobjects.asde.android.ide.Colors;
+import org.kobjects.asde.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.android.ide.editor.DeleteFlow;
-import org.kobjects.asde.android.ide.editor.FunctionSignatureFlow;
-import org.kobjects.asde.android.ide.editor.PropertyFlow;
-import org.kobjects.asde.android.ide.editor.RenameFlow;
+import org.kobjects.asde.android.ide.symbol.DeleteFlow;
+import org.kobjects.asde.android.ide.function.FunctionSignatureFlow;
+import org.kobjects.asde.android.ide.symbol.RenameFlow;
+import org.kobjects.asde.android.ide.function.FunctionView;
+import org.kobjects.asde.android.ide.symbol.SymbolListView;
+import org.kobjects.asde.android.ide.symbol.SymbolView;
+import org.kobjects.asde.android.ide.symbol.ExpandListener;
 import org.kobjects.asde.lang.ClassImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
 
@@ -17,7 +20,7 @@ public class ClassView extends SymbolView {
 
   SymbolView currentSymbolView;
 
-  final ExpandListener expandListener = new ExpandListener() {
+  public final ExpandListener expandListener = new ExpandListener() {
     @Override
     public void notifyExpanding(SymbolView symbolView, boolean animated) {
       if (symbolView != currentSymbolView) {
@@ -33,7 +36,7 @@ public class ClassView extends SymbolView {
   };
 
 
-  ClassView(MainActivity mainActivity, StaticSymbol symbol) {
+  public ClassView(MainActivity mainActivity, StaticSymbol symbol) {
     super(mainActivity, symbol);
 
     titleView.setTypeIndicator('C', Colors.CYAN);

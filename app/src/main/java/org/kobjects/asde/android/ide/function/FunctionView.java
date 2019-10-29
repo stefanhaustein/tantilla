@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide.symbollist;
+package org.kobjects.asde.android.ide.function;
 
 import android.app.AlertDialog;
 import android.view.GestureDetector;
@@ -10,22 +10,17 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
-import org.kobjects.asde.android.ide.Colors;
+import org.kobjects.asde.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.android.ide.editor.DeleteFlow;
-import org.kobjects.asde.android.ide.editor.FunctionSignatureFlow;
-import org.kobjects.asde.android.ide.editor.InsertFlow;
-import org.kobjects.asde.android.ide.editor.RenameFlow;
-import org.kobjects.asde.android.ide.editor.RenumberFlow;
+import org.kobjects.asde.android.ide.symbol.DeleteFlow;
+import org.kobjects.asde.android.ide.symbol.RenameFlow;
+import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.type.CodeLine;
-import org.kobjects.asde.lang.type.Function;
 import org.kobjects.asde.lang.type.Types;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class FunctionView extends SymbolView {
   public FunctionImplementation functionImplementation;
@@ -141,7 +136,7 @@ public class FunctionView extends SymbolView {
   }
 
 
-  CodeLineView findLineIndex(int lineNumber) {
+  public CodeLineView findLineIndex(int lineNumber) {
     LinearLayout codeView = getContentView();
     for (int i = 0; i < codeView.getChildCount(); i++) {
       CodeLineView codeLineView = (CodeLineView) codeView.getChildAt(i);

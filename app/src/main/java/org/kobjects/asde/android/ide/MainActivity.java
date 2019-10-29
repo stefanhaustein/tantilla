@@ -1,61 +1,43 @@
 package org.kobjects.asde.android.ide;
 
-import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
-import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.OpenableColumns;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.Display;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vanniktech.emoji.EmojiManager;
-import com.vanniktech.emoji.EmojiTextView;
 import com.vanniktech.emoji.twitter.TwitterEmojiProvider;
 
 import org.kobjects.abcnotation.AbcScore;
-import org.kobjects.annotatedtext.AnnotatedString;
-import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.asde.R;
-import org.kobjects.asde.android.ide.symbollist.FunctionView;
-import org.kobjects.asde.android.ide.symbollist.ProgramView;
-import org.kobjects.asde.android.ide.symbollist.SymbolView;
-import org.kobjects.asde.android.ide.widget.Dimensions;
-import org.kobjects.asde.android.ide.widget.IconButton;
+import org.kobjects.asde.android.ide.program.ProgramView;
+import org.kobjects.asde.android.ide.symbol.SymbolView;
+import org.kobjects.asde.Colors;
+import org.kobjects.asde.Dimensions;
 import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.ForcedStopException;
-import org.kobjects.asde.lang.Format;
-import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.StaticSymbol;
-import org.kobjects.asde.lang.WrappedExecutionException;
 import org.kobjects.asde.lang.event.ProgramChangeListener;
-import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Function;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.io.Shell;
@@ -71,10 +53,7 @@ import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -98,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
   ScrollView leftScrollView;
   FloatingActionButton runButton;
   public ControlView controlView;
-  AndroidConsole console = new AndroidConsole(this);
+  public AndroidConsole console = new AndroidConsole(this);
   public Program program = new Program(console);
   public OutputView outputView;
   ResizableFrameLayout resizableFrameLayout;

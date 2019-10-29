@@ -1,11 +1,17 @@
-package org.kobjects.asde.android.ide.symbollist;
+package org.kobjects.asde.android.ide.program;
 
 import android.view.View;
 import android.view.ViewParent;
 import android.widget.LinearLayout;
 
-import org.kobjects.asde.android.ide.Colors;
+import org.kobjects.asde.Colors;
 import org.kobjects.asde.android.ide.MainMenu;
+import org.kobjects.asde.android.ide.classifier.ClassView;
+import org.kobjects.asde.android.ide.function.CodeLineView;
+import org.kobjects.asde.android.ide.function.FunctionView;
+import org.kobjects.asde.android.ide.symbol.ExpandListener;
+import org.kobjects.asde.android.ide.symbol.SymbolListView;
+import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.lang.ClassImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.event.ProgramChangeListener;

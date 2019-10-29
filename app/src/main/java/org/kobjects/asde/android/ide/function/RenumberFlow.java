@@ -1,7 +1,8 @@
-package org.kobjects.asde.android.ide.editor;
+package org.kobjects.asde.android.ide.function;
 
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.android.ide.widget.TextValidator;
+import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
+import org.kobjects.asde.android.ide.text.TextValidator;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
 

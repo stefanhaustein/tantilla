@@ -1,6 +1,9 @@
-package org.kobjects.asde.android.ide.editor;
+package org.kobjects.asde.android.ide.classifier;
 
 import org.kobjects.asde.android.ide.MainActivity;
+import org.kobjects.asde.android.ide.text.ExpressionValidator;
+import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
+import org.kobjects.asde.android.ide.symbol.SymbolNameValidator;
 import org.kobjects.asde.lang.ClassImplementation;
 import org.kobjects.asde.lang.node.Node;
 

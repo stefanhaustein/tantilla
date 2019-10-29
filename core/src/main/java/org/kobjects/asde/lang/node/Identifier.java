@@ -15,12 +15,10 @@ import java.util.Map;
 
 // Not static for access to the variables.
 public class Identifier extends SymbolNode {
-  final Program program;
   String name;
   ResolvedSymbol resolved;
 
-  public Identifier(Program program, String name) {
-    this.program = program;
+  public Identifier(String name) {
     this.name = name;
   }
 
@@ -77,25 +75,27 @@ public class Identifier extends SymbolNode {
     appendLinked(asb, name, errors);
   }
 
-  public void accept(Visitor visitor) {
-    visitor.visitIdentifier(this);
-  }
 
   public String getName() {
     return name;
   }
 
-  public ResolvedSymbol getResolved() {
-    return resolved;
+
+  @Override
+  public void rename(StaticSymbol symbol, String oldName, String newName) {
+    if (matches(symbol, oldName)) {
+      setName(newName);
+    }
   }
 
   @Override
   public boolean matches(StaticSymbol symbol, String oldName) {
-    return symbol instanceof StaticSymbol && name.equals(oldName);
+    return resolved instanceof StaticSymbol && name.equals(oldName);
   }
 
   @Override
   public void setName(String name) {
     this.name = name;
   }
+
 }

@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide.symbollist;
+package org.kobjects.asde.android.ide.variable;
 
 import android.graphics.Typeface;
 import android.view.ViewGroup;
@@ -6,12 +6,12 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import org.kobjects.asde.android.ide.Colors;
+import org.kobjects.asde.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.android.ide.editor.DeleteFlow;
-import org.kobjects.asde.android.ide.editor.PropertyFlow;
-import org.kobjects.asde.android.ide.editor.RenameFlow;
-import org.kobjects.asde.android.ide.widget.ExpandableList;
+import org.kobjects.asde.android.ide.symbol.DeleteFlow;
+import org.kobjects.asde.android.ide.classifier.PropertyFlow;
+import org.kobjects.asde.android.ide.symbol.RenameFlow;
+import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.lang.ClassImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.type.ArrayType;

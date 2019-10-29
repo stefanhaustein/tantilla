@@ -1,29 +1,27 @@
-package org.kobjects.asde.android.ide.symbollist;
+package org.kobjects.asde.android.ide.symbol;
 
 import android.widget.LinearLayout;
 
-import org.kobjects.asde.android.ide.Colors;
+import org.kobjects.asde.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
-import org.kobjects.asde.android.ide.widget.SymbolTitleView;
-import org.kobjects.asde.lang.GlobalSymbol;
 import org.kobjects.asde.lang.StaticSymbol;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class SymbolView extends LinearLayout {
-    final MainActivity mainActivity;
+    protected final MainActivity mainActivity;
 
-    SymbolTitleView titleView;
+    public SymbolTitleView titleView;
     List<ExpandListener> expandListeners = new ArrayList<>();
-    boolean expanded;
+    public boolean expanded;
     public StaticSymbol symbol;
 
-    ExpandableList contentView;
+    protected ExpandableList contentView;
 
 
-    SymbolView(MainActivity mainActivity, StaticSymbol symbol) {
+    protected SymbolView(MainActivity mainActivity, StaticSymbol symbol) {
         super(mainActivity);
         this.mainActivity = mainActivity;
         this.symbol = symbol;

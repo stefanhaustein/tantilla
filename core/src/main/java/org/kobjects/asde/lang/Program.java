@@ -6,7 +6,7 @@ import org.kobjects.asde.lang.event.ProgramChangeListener;
 import org.kobjects.asde.lang.event.ProgramRenameListener;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.node.Literal;
-import org.kobjects.asde.lang.node.Visitor;
+import org.kobjects.asde.lang.node.NodeProcessor;
 import org.kobjects.asde.lang.parser.ProgramParser;
 import org.kobjects.asde.lang.statement.DefStatement;
 import org.kobjects.asde.lang.statement.DimStatement;
@@ -79,9 +79,10 @@ public class Program implements SymbolOwner {
     }
   }
 
-  public void accept(Visitor visitor) {
-        visitor.visitProgram(this);
-    }
+  public void processNodes(Consumer<Node> action) {
+    new NodeProcessor(action).processProgram(this);
+    notifyProgramChanged();
+  }
 
   public synchronized void deleteAll() {
     main.clear();

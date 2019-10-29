@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide.widget;
+package org.kobjects.asde;
 
 import android.content.Context;
 

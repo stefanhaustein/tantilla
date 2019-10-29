@@ -1,8 +1,7 @@
-package org.kobjects.asde.android.ide.editor;
-
-import android.app.AlertDialog;
+package org.kobjects.asde.android.ide.symbol;
 
 import org.kobjects.asde.android.ide.MainActivity;
+import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.lang.StaticSymbol;
 
 public class DeleteFlow {

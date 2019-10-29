@@ -92,7 +92,7 @@ public class Shell {
                 wrapper.validate(functionValidationContext);
 
                 if (functionValidationContext.errors.size() > 0) {
-                    throw new ValidationException(codeLine, functionValidationContext.errors);
+                    throw new MultiValidationException(codeLine, functionValidationContext.errors);
                 }
                 AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
                 asb.append(codeLine.toString(), Annotations.ACCENT_COLOR);

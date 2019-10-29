@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide;
+package org.kobjects.asde;
 
 import androidx.core.content.ContextCompat;
 

@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide.editor;
+package org.kobjects.asde.android.ide.widget;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -9,12 +9,11 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.android.ide.widget.TextValidator;
+import org.kobjects.asde.android.ide.text.TextValidator;
 
 import java.util.ArrayList;
 

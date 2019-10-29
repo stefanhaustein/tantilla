@@ -23,10 +23,6 @@ public class Path extends SymbolNode {
     pathName = ((Identifier) right).name;
   }
 
-  public void accept(Visitor visitor) {
-    visitor.visitPath(this);
-  }
-
   public Property evalProperty(EvaluationContext evaluationContext) {
     Object base = children[0].eval(evaluationContext);
     if (!(base instanceof Instance)) {
@@ -83,6 +79,11 @@ public class Path extends SymbolNode {
     resolve(resolutionContext, parent, line, index);
 
     // TODO: Check support...
+  }
+
+  @Override
+  public void addPropertyChangeListener(EvaluationContext evaluationContext, PropertyChangeListener listener) {
+    evalProperty(evaluationContext).addListener(listener);
   }
 
   @Override

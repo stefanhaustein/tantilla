@@ -6,8 +6,7 @@ import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.StatementMatcher;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.node.Path;
-import org.kobjects.asde.lang.node.Visitor;
+import org.kobjects.asde.lang.node.NodeProcessor;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.typesystem.Property;
 import org.kobjects.typesystem.PropertyChangeListener;
@@ -44,7 +43,10 @@ public class OnStatement extends Statement  {
   public Object eval(EvaluationContext evaluationContext) {
     EvaluationContext newContectBase = new EvaluationContext(evaluationContext);
     newContectBase.currentIndex++;
-    children[0].accept(new ListenerAttachmentVisitor(newContectBase));
+
+    new NodeProcessor(node -> node.addPropertyChangeListener(evaluationContext, new Trigger(newContectBase)))
+        .processNode(children[0]);
+
     evaluationContext.currentLine = lineBeyondEnd;
     return null;
   }
@@ -55,22 +57,13 @@ public class OnStatement extends Statement  {
     children[0].toString(asb, errors);
   }
 
-  class ListenerAttachmentVisitor extends Visitor implements PropertyChangeListener {
+  class Trigger implements PropertyChangeListener {
 
     final EvaluationContext evaluationContext;
 
-    public ListenerAttachmentVisitor(EvaluationContext evaluationContext) {
+    public Trigger(EvaluationContext evaluationContext) {
       this.evaluationContext = evaluationContext;
     }
-
-
-    /*
-    @Override
-    public void visitIdentifier(Identifier identifier) {
-      // identifier.eval(evaluationContext);
-
-    }
-    */
 
 
     @Override
@@ -92,11 +85,6 @@ public class OnStatement extends Statement  {
     }
 
 
-    @Override
-    public void visitPath(Path path) {
-      Property property = path.evalProperty(evaluationContext);
-      property.addListener(this);
-    }
   }
 
 

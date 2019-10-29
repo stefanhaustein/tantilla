@@ -3,6 +3,8 @@ package org.kobjects.asde.android.ide.widget;
 import android.content.Context;
 import androidx.appcompat.widget.AppCompatImageView;
 
+import org.kobjects.asde.Dimensions;
+
 public class IconButton extends AppCompatImageView {
     public IconButton(Context context, int resId) {
         super(context);

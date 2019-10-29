@@ -1,14 +1,9 @@
-package org.kobjects.asde.android.ide.editor;
+package org.kobjects.asde.android.ide.symbol;
 
-import com.google.android.material.textfield.TextInputLayout;
-import android.widget.EditText;
-import android.widget.TextView;
-
-import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.android.ide.widget.TextValidator;
+import org.kobjects.asde.android.ide.text.TextValidator;
 import org.kobjects.asde.lang.SymbolOwner;
 
-class SymbolNameValidator extends TextValidator {
+public class SymbolNameValidator extends TextValidator {
     private SymbolOwner symbolOwner;
 
     public SymbolNameValidator(SymbolOwner symbolOwner) {

@@ -1,39 +1,27 @@
-package org.kobjects.asde.android.ide.symbollist;
+package org.kobjects.asde.android.ide.function;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import androidx.appcompat.widget.AppCompatTextView;
 
 import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.LeadingMarginSpan;
-import android.view.DragEvent;
-import android.view.GestureDetector;
 import android.view.Gravity;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
-import android.view.textclassifier.TextLinks;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.vanniktech.emoji.EmojiTextView;
 
-import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.annotatedtext.Span;
-import org.kobjects.asde.android.ide.AnnotatedStringConverter;
-import org.kobjects.asde.android.ide.Colors;
+import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
+import org.kobjects.asde.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.node.Node;
 
 import java.util.Map;
-
-import static android.util.TypedValue.COMPLEX_UNIT_PX;
-import static androidx.annotation.Dimension.PX;
 
 public class CodeLineView extends LinearLayout {
   TextView lineNumberView;
@@ -99,7 +87,7 @@ public class CodeLineView extends LinearLayout {
     }
   }
 
-  void setHighlighted(boolean highlighted) {
+  public void setHighlighted(boolean highlighted) {
     if (highlighted != this.highlighted) {
       this.highlighted = highlighted;
       updateColor();

@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide;
+package org.kobjects.asde.android.ide.text;
 
 import android.text.SpannableString;
 import android.text.style.BackgroundColorSpan;
@@ -8,6 +8,8 @@ import android.view.View;
 import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.annotatedtext.Span;
+import org.kobjects.asde.android.ide.MainActivity;
+import org.kobjects.asde.Colors;
 import org.kobjects.asde.lang.Format;
 
 public class AnnotatedStringConverter {

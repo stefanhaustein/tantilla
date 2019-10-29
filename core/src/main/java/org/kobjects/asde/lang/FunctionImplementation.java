@@ -222,7 +222,7 @@ public class FunctionImplementation implements Function, Declaration {
 
     code = renumbered;
 
-    for (Node statement : allStatement()) {
+    for (Node statement : allStatements()) {
       statement.renumber(renumberMap);
     }
 
@@ -253,7 +253,7 @@ public class FunctionImplementation implements Function, Declaration {
   }
 
 
-  public Iterable<Node> allStatement() {
+  public Iterable<Node> allStatements() {
     return statements(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
   }
 

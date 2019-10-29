@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide.widget;
+package org.kobjects.asde.android.ide.text;
 
 import com.google.android.material.textfield.TextInputLayout;
 import android.text.Editable;

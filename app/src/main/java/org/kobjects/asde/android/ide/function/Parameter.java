@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide.editor;
+package org.kobjects.asde.android.ide.function;
 
 import org.kobjects.typesystem.Type;
 

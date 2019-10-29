@@ -3,9 +3,10 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.Program;
-import org.kobjects.asde.lang.type.CodeLine;
+import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.FunctionValidationContext;
+import org.kobjects.typesystem.PropertyChangeListener;
 import org.kobjects.typesystem.Type;
 
 import java.util.Collections;
@@ -22,8 +23,7 @@ public abstract class Node {
     this.children = children == null || children.length == 0 ? EMPTY_ARRAY : children;
   }
 
-  public void accept(Visitor visitor) {
-    visitor.visitNode(this);
+  public void addPropertyChangeListener(EvaluationContext evaluationContext, PropertyChangeListener listener) {
   }
 
   protected abstract void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index);
@@ -86,6 +86,12 @@ public abstract class Node {
         children[i].toString(asb, errors);
       }
     }
+  }
+
+  public void rename(StaticSymbol symbol, String oldName, String newName) {
+  }
+  
+  public void changeSignature(StaticSymbol symbol, int[] newOrder) {
   }
 
   protected void appendLinked(AnnotatedStringBuilder asb, String s, Map<Node, Exception> errors) {

@@ -11,8 +11,8 @@ import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 
-import org.kobjects.asde.android.ide.editor.CreateClassFlow;
-import org.kobjects.asde.android.ide.editor.FunctionSignatureFlow;
+import org.kobjects.asde.android.ide.classifier.CreateClassFlow;
+import org.kobjects.asde.android.ide.function.FunctionSignatureFlow;
 import org.kobjects.asde.lang.io.ProgramReference;
 
 import java.io.IOException;

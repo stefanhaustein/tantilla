@@ -1,6 +1,9 @@
-package org.kobjects.asde.android.ide.symbollist;
+package org.kobjects.asde.android.ide.symbol;
 
 import org.kobjects.asde.android.ide.MainActivity;
+import org.kobjects.asde.android.ide.function.FunctionView;
+import org.kobjects.asde.android.ide.classifier.ClassView;
+import org.kobjects.asde.android.ide.variable.VariableView;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.lang.ClassImplementation;
 import org.kobjects.asde.lang.FunctionImplementation;
@@ -12,7 +15,7 @@ import java.util.HashMap;
 
 
 public class SymbolListView extends ExpandableList {
-  HashMap<String, SymbolView> nameViewMap = new HashMap<>();
+  public HashMap<String, SymbolView> nameViewMap = new HashMap<>();
   HashMap<StaticSymbol, SymbolView> symbolViewMap = new HashMap<>();
   private final MainActivity mainActivity;
 

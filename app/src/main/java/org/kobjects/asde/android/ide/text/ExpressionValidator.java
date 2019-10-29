@@ -1,15 +1,13 @@
-package org.kobjects.asde.android.ide.editor;
-
-import com.google.android.material.textfield.TextInputLayout;
+package org.kobjects.asde.android.ide.text;
 
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.android.ide.widget.TextValidator;
+import org.kobjects.asde.android.ide.text.TextValidator;
 import org.kobjects.asde.lang.Format;
 
 public class ExpressionValidator extends TextValidator {
   private MainActivity mainActivity;
 
-  ExpressionValidator(MainActivity mainActivity) {
+  public ExpressionValidator(MainActivity mainActivity) {
     this.mainActivity = mainActivity;
 
   }

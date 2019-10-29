@@ -131,7 +131,7 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
       case "SELF":
         return new Self();
     }
-    return new Identifier(program, name);
+    return new Identifier(name);
   }
 
   @Override
