@@ -14,7 +14,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.symbol.SymbolNameValidator;
-import org.kobjects.asde.android.ide.type.TypeSpinner;
+import org.kobjects.asde.android.ide.widget.TypeSpinner;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.text.TextValidator;
 import org.kobjects.asde.lang.ClassImplementation;

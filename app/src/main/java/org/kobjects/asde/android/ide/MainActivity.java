@@ -395,7 +395,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   int getBackgroundColor() {
-    return program.c64Mode ? Colors.BLUE : Colors.BLACK;
+    return program.c64Mode ? Colors.C64_BLUE : Colors.BACKGROUND;
   }
 
   void arrangeUi() {

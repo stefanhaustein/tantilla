@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide.variable;
+package org.kobjects.asde.android.ide.program;
 
 import android.graphics.Typeface;
 import android.view.ViewGroup;
@@ -33,7 +33,7 @@ public class VariableView extends SymbolView {
         super(mainActivity, symbol);
         this.mainActivity = mainActivity;
         this.symbol = symbol;
-        titleView.setTypeIndicator(symbol instanceof PropertyDescriptor ? 'p': symbol.isConstant() ? 'C' : 'V', Colors.ORANGE);
+        titleView.setTypeIndicator(symbol instanceof PropertyDescriptor ? 'p': symbol.isConstant() ? 'C' : 'V', Colors.DARK_ORANGE);
         titleView.setMoreClickListener(view -> {
             PopupMenu popupMenu = new PopupMenu(getContext(), view);
             popupMenu.getMenu().add("Edit").setOnMenuItemClickListener(item -> {

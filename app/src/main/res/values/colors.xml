@@ -2,8 +2,8 @@
 <resources>
 
     <color name="primary">#888888</color>  <!-- app bar etc. -->
-    <color name="primaryDark">#333333</color>
+    <color name="primaryDark">#444444</color>  <!-- used for popup background???? -->
     <color name="accent">#ef9108</color>
-    <color name="background">#293137</color>
+    <color name="background">#222222</color>
 
 </resources>

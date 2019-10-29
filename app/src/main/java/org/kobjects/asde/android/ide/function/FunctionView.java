@@ -37,7 +37,7 @@ public class FunctionView extends SymbolView {
 
     titleView.setTypeIndicator(
         isMain ? 'M' : isMethod ? 'm' : isVoid ? 'S' : 'F',
-        isMain ? Colors.PRIMARY_FILTER : Colors.PURPLE);
+        isMain ? Colors.PRIMARY_FILTER : Colors.DARK_PURPLE);
 
     titleView.setMoreClickListener(clicked -> {
       PopupMenu popup = new PopupMenu(mainActivity, clicked);

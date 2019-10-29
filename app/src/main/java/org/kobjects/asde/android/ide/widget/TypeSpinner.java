@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide.type;
+package org.kobjects.asde.android.ide.widget;
 
 import androidx.appcompat.widget.AppCompatSpinner;
 import android.widget.ArrayAdapter;

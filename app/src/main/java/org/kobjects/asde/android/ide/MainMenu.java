@@ -243,7 +243,7 @@ public class MainMenu {
     });
 
 
-    loadMenu.add("Load external file").setOnMenuItemClickListener(item -> {
+    loadMenu.add("Load from cloud storage").setOnMenuItemClickListener(item -> {
       Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
       intent.addCategory(Intent.CATEGORY_OPENABLE);
       intent.setType("text/plain");
@@ -251,7 +251,7 @@ public class MainMenu {
       return true;
     });
 
-    loadMenu.add("Import external file").setOnMenuItemClickListener(item -> {
+    loadMenu.add("Import").setOnMenuItemClickListener(item -> {
       Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
       intent.addCategory(Intent.CATEGORY_OPENABLE);
       intent.setType("text/plain");

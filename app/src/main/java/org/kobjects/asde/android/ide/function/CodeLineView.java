@@ -98,7 +98,7 @@ public class CodeLineView extends LinearLayout {
     if (highlighted) {
       setBackgroundColor(Colors.RED);
     } else if (isSelected()) {
-      setBackgroundColor(Colors.ORANGE);
+      setBackgroundColor(Colors.DARK_ORANGE);
     } else if (odd) {
       setBackgroundColor(Colors.PRIMARY_LIGHT_FILTER);
     } else {

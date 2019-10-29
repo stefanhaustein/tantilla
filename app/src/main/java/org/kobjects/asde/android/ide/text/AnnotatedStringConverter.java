@@ -25,7 +25,7 @@ public class AnnotatedStringConverter {
         if (span.annotation == Annotations.ACCENT_COLOR) {
           s.setSpan(new ForegroundColorSpan(Colors.ACCENT), span.start, span.end, 0);
         } else if (span.annotation instanceof Exception) {
-          s.setSpan(new BackgroundColorSpan(Colors.ORANGE), span.start, span.end, 0);
+          s.setSpan(new BackgroundColorSpan(Colors.DARK_ORANGE), span.start, span.end, 0);
           if (linkedLine > NO_LINKS) {
             ((Exception) span.annotation).printStackTrace();
             s.setSpan(new ClickableSpan() {
