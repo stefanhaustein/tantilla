@@ -2,7 +2,6 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.asde.lang.ResolvedSymbol;
 import org.kobjects.asde.lang.StaticSymbol;
@@ -84,18 +83,13 @@ public class Identifier extends SymbolNode {
   @Override
   public void rename(StaticSymbol symbol, String oldName, String newName) {
     if (matches(symbol, oldName)) {
-      setName(newName);
+      this.name = newName;
     }
   }
 
   @Override
-  public boolean matches(StaticSymbol symbol, String oldName) {
-    return resolved instanceof StaticSymbol && name.equals(oldName);
-  }
-
-  @Override
-  public void setName(String name) {
-    this.name = name;
+  public boolean matches(StaticSymbol symbol, String name) {
+    return resolved instanceof StaticSymbol && this.name.equals(name);
   }
 
 }

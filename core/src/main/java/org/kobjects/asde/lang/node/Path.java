@@ -110,9 +110,4 @@ public class Path extends SymbolNode {
   public boolean matches(StaticSymbol symbol, String oldName) {
     return symbol == resolvedPropertyDescriptor;
   }
-
-  @Override
-  public void setName(String name) {
-    this.pathName = name;
-  }
 }

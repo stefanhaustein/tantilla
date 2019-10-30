@@ -10,24 +10,18 @@ import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
-/**
- * Assignments are handled here because they might implicitly declare a transient variable -- but resolve visits the
- * children first, hitting "variable not found". An alternative might be to override resolve()
- * (in addition to onResolve) in AssignStatement.
- */
-public class DeclarationStatement extends Node {
+
+public class DeclarationStatement extends AbstractDeclarationStatement {
+
   public enum Kind {
     LET, CONST
   }
 
-  public final String varName;
-  ResolvedSymbol resolved;
   public final Kind kind;
 
   public DeclarationStatement(Kind kind, String varName, Node init) {
-    super(init);
+    super(varName, init);
     this.kind = kind;
-    this.varName = varName;
   }
 
   public void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
@@ -39,11 +33,6 @@ public class DeclarationStatement extends Node {
     Object value = children[0].eval(evaluationContext);
     resolved.set(evaluationContext, value);
     return null;
-  }
-
-  @Override
-  public Type returnType() {
-    return Types.VOID;
   }
 
   @Override

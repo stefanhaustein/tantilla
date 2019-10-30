@@ -52,7 +52,7 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
       Node node = codeLine.get(i);
       if (node instanceof DeclarationStatement) {
         DeclarationStatement declaration = (DeclarationStatement) node;
-        propertyMap.put(declaration.varName, new ClassPropertyDescriptor(declaration.varName, declaration.children[0]));
+        propertyMap.put(declaration.getVarName(), new ClassPropertyDescriptor(declaration.getVarName(), declaration.children[0]));
       } else {
         throw new RuntimeException("Unsupported declaration in class: " + node);
       }

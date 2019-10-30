@@ -1,6 +1,8 @@
 package org.kobjects.asde.android.ide.symbol;
 
 import org.kobjects.asde.android.ide.text.TextValidator;
+import org.kobjects.asde.lang.GlobalSymbol;
+import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.SymbolOwner;
 
 public class SymbolNameValidator extends TextValidator {
@@ -19,7 +21,9 @@ public class SymbolNameValidator extends TextValidator {
         if (!Character.isJavaIdentifierStart(text.charAt(0))) {
             return "'" + text.charAt(0) + "' is not a valid name start character. Function names should start with a lowercase letter.";
         }
-        if (symbolOwner.getSymbol(text) != null) {
+        StaticSymbol existing = symbolOwner.getSymbol(text);
+        if (existing != null && existing.getScope() != GlobalSymbol.Scope.TRANSIENT) {
+            System.out.println("Existing: " + symbolOwner.getSymbol(text));
             return "Name exists already.";
         }
 

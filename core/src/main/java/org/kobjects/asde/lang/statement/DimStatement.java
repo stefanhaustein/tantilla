@@ -3,6 +3,7 @@ package org.kobjects.asde.lang.statement;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.ResolvedSymbol;
 import org.kobjects.asde.lang.node.Literal;
+import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.type.Array;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.ArrayType;
@@ -13,13 +14,11 @@ import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
-public class DimStatement extends Node {
-  public final String varName;
+public class DimStatement extends AbstractDeclarationStatement {
   public final Type elementType;
-  private ResolvedSymbol resolved;
 
   public DimStatement(Type elementType, String varName, Node... children) {
-    super(children);
+    super(varName, children);
     this.elementType = elementType;
     this.varName = varName;
   }
@@ -51,11 +50,6 @@ public class DimStatement extends Node {
   }
 
   @Override
-  public Type returnType() {
-    return Types.VOID;
-  }
-
-  @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
     appendLinked(asb, "DIM " + varName + "(", errors);
     if (children.length > 0) {
@@ -71,4 +65,5 @@ public class DimStatement extends Node {
       asb.append(elementType.toString());
     }
   }
+
 }

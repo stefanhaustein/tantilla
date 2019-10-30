@@ -1,7 +1,5 @@
 package org.kobjects.asde.lang.node;
 
-import org.kobjects.asde.lang.node.Node;
-
 public class EvaluationException extends RuntimeException {
 
     public final Node node;

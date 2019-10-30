@@ -54,11 +54,13 @@ public class NodeProcessor {
   }
 
   public void processProgram(Program program) {
-    for (GlobalSymbol symbol : program.getSymbols()) {
-      processSymbol(symbol);
-    }
+    synchronized (program) {
+      for (GlobalSymbol symbol : program.getSymbols()) {
+        processSymbol(symbol);
+      }
 
-    processCallableUnit(program.main);
+      processCallableUnit(program.main);
+    }
   }
 
 }

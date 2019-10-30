@@ -2,7 +2,6 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.StaticSymbol;
-import org.kobjects.asde.lang.statement.UnparseableStatement;
 import org.kobjects.asde.lang.type.Array;
 import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.type.Function;

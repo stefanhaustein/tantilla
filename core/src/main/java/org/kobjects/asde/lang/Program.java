@@ -8,6 +8,7 @@ import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.NodeProcessor;
 import org.kobjects.asde.lang.parser.ProgramParser;
+import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
 import org.kobjects.asde.lang.statement.DefStatement;
 import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
@@ -220,15 +221,12 @@ public class Program implements SymbolOwner {
   public void processStandaloneDeclarations(CodeLine codeLine) {
     for (int i = 0; i < codeLine.length(); i++) {
       Node node = codeLine.get(i);
-      if (node instanceof DeclarationStatement) {
-        DeclarationStatement declaration = (DeclarationStatement) node;
-        setPersistentInitializer(declaration.varName, declaration);
-      } else if (node instanceof DimStatement) {
-        DimStatement dim = (DimStatement) node;
-        setPersistentInitializer(dim.varName, dim);
-      } else if (node instanceof DefStatement) {
+      if (node instanceof DefStatement) {
         DefStatement def = (DefStatement) node;
-        setDeclaration(def.name, def.implementation);
+        setDeclaration(def.getVarName(), def.implementation);
+      } else if (node instanceof AbstractDeclarationStatement) {
+        AbstractDeclarationStatement declaration = (AbstractDeclarationStatement) node;
+        setPersistentInitializer(declaration.getVarName(), declaration);
       }
     }
   }
@@ -262,9 +260,9 @@ public class Program implements SymbolOwner {
     }
   }
 
-  public void validate() {
+  public synchronized void validate() {
         ProgramValidationContext context = new ProgramValidationContext(this);
-        for (Map.Entry<String,GlobalSymbol> entry : symbolMap.entrySet()) {
+        for (Map.Entry<String,GlobalSymbol> entry : new TreeMap<>(symbolMap).entrySet()) {
             context.startChain(entry.getKey());
             entry.getValue().validate(context);
         }

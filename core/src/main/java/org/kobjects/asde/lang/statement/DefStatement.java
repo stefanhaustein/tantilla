@@ -11,14 +11,12 @@ import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
-public class DefStatement extends Node {
+public class DefStatement extends AbstractDeclarationStatement {
 
-  public final String name;
   public final FunctionImplementation implementation;
-  ResolvedSymbol resolved;
 
   public DefStatement(String name, FunctionImplementation implementation) {
-    this.name = name;
+    super(name);
     this.implementation = implementation;
   }
 
@@ -26,7 +24,7 @@ public class DefStatement extends Node {
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     FunctionValidationContext innerContext = new FunctionValidationContext(resolutionContext.programValidationContext, resolutionContext.mode, implementation);
     implementation.validate(innerContext);
-    resolved = resolutionContext.resolveVariableDeclaration(name, implementation.getType(), true);
+    resolved = resolutionContext.resolveVariableDeclaration(varName, implementation.getType(), true);
   }
 
   @Override
@@ -35,16 +33,10 @@ public class DefStatement extends Node {
     return null;
   }
 
-  @Override
-  public Type returnType() {
-    return Types.VOID;
-  }
-
-
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
-    appendLinked(asb, "DEF " + name + "(", errors);
+    appendLinked(asb, "DEF " + varName + "(", errors);
     if (implementation.parameterNames.length > 0) {
       asb.append(implementation.parameterNames[0]);
       for (int i = 1; i < implementation.parameterNames.length; i++) {

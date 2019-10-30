@@ -5,7 +5,6 @@ import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
