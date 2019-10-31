@@ -6,7 +6,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import org.kobjects.asde.Colors;
+import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.symbol.DeleteFlow;
 import org.kobjects.asde.android.ide.classifier.PropertyFlow;

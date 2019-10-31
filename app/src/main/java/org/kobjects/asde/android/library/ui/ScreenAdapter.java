@@ -1,4 +1,4 @@
-package org.kobjects.asde.library.ui;
+package org.kobjects.asde.android.library.ui;
 
 import android.view.View;
 

@@ -74,7 +74,7 @@ public class Program implements SymbolOwner {
   public Program(Console console) {
     this.console = console;
     main.setDeclaringSymbol(mainSymbol);
-    this.reference = new ProgramReference("Scratch", null, false);
+    this.reference = console.nameToReference(null);
     for (Builtin builtin : Builtin.values()) {
       addBuiltin(builtin.name().toLowerCase(), builtin);
     }
@@ -96,8 +96,11 @@ public class Program implements SymbolOwner {
     }
     symbolMap = cleared;
     notifyProgramChanged();
-    reference = console.nameToReference("Unnamed");
-    notifyProgramRenamed();
+    ProgramReference newReference = console.nameToReference(null);
+    if (!reference.equals(newReference)) {
+      reference = newReference;
+      notifyProgramRenamed();
+    }
   }
 
 
@@ -204,8 +207,10 @@ public class Program implements SymbolOwner {
       if (!programReference.urlWritable) {
           throw new IOException("Can't write to URL: " + programReference.url);
       }
-      reference = programReference;
-      notifyProgramRenamed();
+      if (!programReference.equals(reference)) {
+        reference = programReference;
+        notifyProgramRenamed();
+      }
       OutputStreamWriter writer = new OutputStreamWriter(console.openOutputStream(programReference.url), "utf8");
       writer.write(toString());
       writer.close();
@@ -395,6 +400,19 @@ public class Program implements SymbolOwner {
   public void addSymbol(StaticSymbol symbol) {
     symbolMap.put(symbol.getName().toLowerCase(), (GlobalSymbol) symbol);
 //    notifyProgramChanged();  // crashes refactoring....
+  }
+
+
+  public boolean isEmpty() {
+    if (main.countLines(0, Integer.MAX_VALUE) > 0) {
+      return false;
+    }
+    for (StaticSymbol symbol : symbolMap.values()) {
+      if (symbol.getScope() == GlobalSymbol.Scope.PERSISTENT) {
+        return false;
+      }
+    }
+    return true;
   }
 
 }

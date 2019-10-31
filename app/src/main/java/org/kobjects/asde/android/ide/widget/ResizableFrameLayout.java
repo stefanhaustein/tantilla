@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import org.kobjects.asde.Dimensions;
+import org.kobjects.asde.android.ide.Dimensions;
 
 public class ResizableFrameLayout extends FrameLayout{
     static final int PADDING = 12;

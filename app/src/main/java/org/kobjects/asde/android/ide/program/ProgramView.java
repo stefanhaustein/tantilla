@@ -4,7 +4,7 @@ import android.view.View;
 import android.view.ViewParent;
 import android.widget.LinearLayout;
 
-import org.kobjects.asde.Colors;
+import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainMenu;
 import org.kobjects.asde.android.ide.classifier.ClassView;
 import org.kobjects.asde.android.ide.function.CodeLineView;
@@ -150,10 +150,14 @@ public class ProgramView extends LinearLayout {
   }
 
   void synchronize() {
+    boolean isDefaultSaveLocation = program.reference.name.isEmpty();
+    boolean unsaved = program.hasUnsavedChanges
+        || (isDefaultSaveLocation && !program.isEmpty());
+
     titleView.setTitle(
-        (program.reference.name.equals("Unnamed") ? "ASDE" : program.reference.name)
+        (isDefaultSaveLocation ? "ASDE" : program.reference.name)
             + (program.legacyMode ? " (legacy mode)️" : "")
-        + (program.hasUnsavedChanges ? "*" : ""));
+        + (unsaved ? "*" : ""));
 
     if (!expanded) {
       symbolList.synchronizeTo(Collections.emptyList(), expandListener, null);

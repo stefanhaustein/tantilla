@@ -278,7 +278,7 @@ public class FunctionImplementation implements Function, Declaration {
   }
 
   public int countLines(int firstLine, int lastLine) {
-    return code.subMap(firstLine, lastLine).size() + 1;
+    return code.subMap(firstLine, lastLine == Integer.MAX_VALUE ? lastLine : (lastLine + 1)).size();
   }
 
   public synchronized Iterable<CodeLine> allLines() {

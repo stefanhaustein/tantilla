@@ -2,7 +2,7 @@ package org.kobjects.asde.android.ide.classifier;
 
 import android.widget.PopupMenu;
 
-import org.kobjects.asde.Colors;
+import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.symbol.DeleteFlow;
 import org.kobjects.asde.android.ide.function.FunctionSignatureFlow;

@@ -1,4 +1,4 @@
-package org.kobjects.asde.library.ui;
+package org.kobjects.asde.android.library.ui;
 
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Array;
@@ -10,7 +10,6 @@ import org.kobjects.graphics.EdgeMode;
 import org.kobjects.graphics.Sprite;
 import org.kobjects.graphics.XAlign;
 import org.kobjects.graphics.YAlign;
-import org.kobjects.typesystem.InstanceType;
 import org.kobjects.typesystem.EnumType;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;

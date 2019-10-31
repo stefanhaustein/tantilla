@@ -1,6 +1,7 @@
 package org.kobjects.asde.android.ide.widget;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -18,7 +19,7 @@ import org.kobjects.asde.android.ide.text.TextValidator;
 import java.util.ArrayList;
 
 public class InputFlowBuilder {
-  private final MainActivity mainActivity;
+  private final Context mainActivity;
   private final String title;
 
   private String message;
@@ -28,7 +29,7 @@ public class InputFlowBuilder {
   private String confirmationCheckbox;
 
 
-  public InputFlowBuilder(MainActivity mainActivity, String title) {
+  public InputFlowBuilder(Context mainActivity, String title) {
     this.mainActivity = mainActivity;
     this.title = title;
   }

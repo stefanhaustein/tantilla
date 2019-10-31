@@ -32,6 +32,7 @@ import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.typesystem.Type;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -131,17 +132,23 @@ public class AndroidConsole implements Console {
 
   @Override
   public ProgramReference nameToReference(String name) {
+    String displayName;
     String url;
-    int cut0 = name.lastIndexOf("/");
-    int cut1 = name.indexOf(".", cut0 + 1);
-    String displayName = name.substring(cut0 + 1, cut1 == -1 ? name.length() : cut1);
-
-    if (name.startsWith("/")) {
-      url = "file://" + name;
-    } else if (name.indexOf(':') != -1) {
-      url = name;
+    if (name == null || name.isEmpty()) {
+      displayName = "";
+      url = "file://" + mainActivity.getFilesDir().getAbsolutePath() + "/Unnamed";
     } else {
-      url = "file://" + mainActivity.getProgramStoragePath().getAbsolutePath() + "/" + name;
+      int cut0 = name.lastIndexOf("/");
+      int cut1 = name.indexOf(".", cut0 + 1);
+      displayName = name.substring(cut0 + 1, cut1 == -1 ? name.length() : cut1);
+
+      if (name.startsWith("/")) {
+        url = "file://" + name;
+      } else if (name.indexOf(':') != -1) {
+        url = name;
+      } else {
+        url = "file://" + mainActivity.getProgramStoragePath().getAbsolutePath() + "/" + name;
+      }
     }
     return new ProgramReference(displayName, url, true);
   }
@@ -315,7 +322,12 @@ public class AndroidConsole implements Console {
 
   @Override
   public OutputStream openOutputStream(String url) {
+
     try {
+      // Why is this needed?
+      if (url.startsWith("file://")) {
+        return new FileOutputStream(url.substring(6));
+      }
       Uri uri = Uri.parse(url);
       return mainActivity.getContentResolver().openOutputStream(uri);
     } catch (IOException e) {

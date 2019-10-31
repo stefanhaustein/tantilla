@@ -2,7 +2,7 @@ package org.kobjects.asde.android.ide.symbol;
 
 import android.widget.LinearLayout;
 
-import org.kobjects.asde.Colors;
+import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.lang.StaticSymbol;

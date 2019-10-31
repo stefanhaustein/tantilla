@@ -1,10 +1,9 @@
-package org.kobjects.asde.library.ui;
+package org.kobjects.asde.android.library.ui;
 
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.TextBox;
 import org.kobjects.graphics.XAlign;
 import org.kobjects.graphics.YAlign;
-import org.kobjects.typesystem.InstanceType;
 import org.kobjects.typesystem.Instance;
 import org.kobjects.typesystem.InstanceTypeImpl;
 import org.kobjects.typesystem.Property;

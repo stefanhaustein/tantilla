@@ -7,17 +7,22 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.PopupMenu;
 
-import com.github.angads25.filepicker.model.DialogConfigs;
-import com.github.angads25.filepicker.model.DialogProperties;
-import com.github.angads25.filepicker.view.FilePickerDialog;
-
 import org.kobjects.asde.android.ide.classifier.CreateClassFlow;
+import org.kobjects.asde.android.ide.filepicker.AssetNode;
+import org.kobjects.asde.android.ide.filepicker.FileDialog;
+import org.kobjects.asde.android.ide.filepicker.FileNode;
+import org.kobjects.asde.android.ide.filepicker.SimpleLeaf;
+import org.kobjects.asde.android.ide.filepicker.SimpleNode;
 import org.kobjects.asde.android.ide.function.FunctionSignatureFlow;
 import org.kobjects.asde.lang.io.ProgramReference;
 
+import java.io.File;
 import java.io.IOException;
 
 public class MainMenu {
+
+  private static final String CLOUD_OPEN_URL = "cloud:open";
+  private static final String CLOUD_GET_URL = "cloud:get";
 
   private static String[] REFURBISHED = {
       "poker.bas", "Poker"
@@ -147,30 +152,33 @@ public class MainMenu {
   };
 
 
-  private static void addExamples(MainActivity mainActivity, Menu menu, String basePath) throws IOException {
-    for (final String fileName : mainActivity.getAssets().list(basePath)) {
-      String filePath = basePath + "/" + fileName;
-      if (mainActivity.getAssets().list(filePath).length > 0) {
-        addExamples(mainActivity, menu.addSubMenu(fileName), filePath);
-      } else {
-        menu.add(fileName).setOnMenuItemClickListener(item -> {
-              mainActivity.load(new ProgramReference(fileName, "file:///android_asset/" + filePath, false), true, false);
-              return true;
-            }
-        );
-      }
-    }
+  public static SimpleNode getRootNode(MainActivity mainActivity) {
+      return new SimpleNode("Root",
+          new FileNode("Local Files", new File(mainActivity.getProgramStoragePath().getAbsolutePath())),
+          new AssetNode(mainActivity.getAssets(), "Examples", "examples",
+            new SimpleNode("Refurbished classics",
+              addRemoteExamples(
+              "https://raw.githubusercontent.com/stefanhaustein/basic-classics/master/src/main/assets/classics/",
+                  REFURBISHED)),
+            new SimpleNode("vintage-basic.net",
+              addRemoteExamples(
+              "http://vintage-basic.net/bcg/",
+                VINTAGE_BASIC))),
+          new SimpleLeaf("Cloud Connection", CLOUD_OPEN_URL),
+          new SimpleLeaf("Cloud Import", CLOUD_GET_URL));
   }
 
-  private static void addRemoteExamples(MainActivity mainActivity, Menu menu, String baseUrl, String[] list) {
+
+
+
+  private static SimpleLeaf[] addRemoteExamples(String baseUrl, String[] list) {
+    SimpleLeaf[] result = new SimpleLeaf[list.length / 2];
+    int index = 0;
     for (int i = 0; i < list.length; i += 2) {
       String fileName = list[i];
-      menu.add(list[i + 1]).setOnMenuItemClickListener(item -> {
-        mainActivity.load(new ProgramReference(fileName.substring(0, fileName.indexOf(".")), baseUrl + fileName, false), true, false);
-        return true;
-      });
+      result[index++] = new SimpleLeaf(list[i + 1], baseUrl + fileName);
     }
-
+    return result;
   }
 
 
@@ -199,55 +207,35 @@ public class MainMenu {
       return true;
     });
 
-    Menu loadMenu = mainMenu.addSubMenu("Load");
 
-
-    Menu examplesMenu = loadMenu.addSubMenu("Examples");
-    try {
-      addExamples(mainActivity, examplesMenu, "examples");
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-
-    addRemoteExamples(
-        mainActivity,
-        examplesMenu.addSubMenu("Refurbished Classics"),
-        "https://raw.githubusercontent.com/stefanhaustein/basic-classics/master/src/main/assets/classics/",
-        REFURBISHED);
-
-    addRemoteExamples(
-          mainActivity,
-          examplesMenu.addSubMenu("vintage-basic.net"),
-          "http://vintage-basic.net/bcg/",
-          VINTAGE_BASIC);
-
-
-    loadMenu.add("Load local file").setOnMenuItemClickListener(item -> {
-      DialogProperties properties = new DialogProperties();
-      properties.root = mainActivity.getProgramStoragePath();
-      properties.error_dir = mainActivity.getProgramStoragePath();
-      properties.offset = mainActivity.getProgramStoragePath();
-      properties.selection_mode = DialogConfigs.SINGLE_MODE;
-      properties.selection_type = DialogConfigs.FILE_SELECT;
-
-      // TODO: new String[] {".bas", ".asde", ""};
-      properties.extensions = null;
-
-      FilePickerDialog dialog = new FilePickerDialog(mainActivity, properties);
-      dialog.setTitle("Select Program File");
-      dialog.show();
-      dialog.setDialogSelectionListener(files -> {
-        mainActivity.load(mainActivity.console.nameToReference(files[0]), true, false);
-      });
+    mainMenu.add("Open...").setOnMenuItemClickListener(item -> {
+      new FileDialog(mainActivity, getRootNode(mainActivity), node -> {
+        if (node.getUrl().equals(CLOUD_OPEN_URL)) {
+          Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+          intent.addCategory(Intent.CATEGORY_OPENABLE);
+          intent.setType("text/plain");
+          mainActivity.startActivityForResult(intent, MainActivity.OPEN_EXTERNALLY_REQUEST_CODE);
+        } else if (node.getUrl().equals(CLOUD_GET_URL)) {
+          Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+          intent.addCategory(Intent.CATEGORY_OPENABLE);
+          intent.setType("text/plain");
+          mainActivity.startActivityForResult(intent, MainActivity.OPEN_EXTERNALLY_REQUEST_CODE);
+        } else {
+          if (node instanceof FileNode && !((FileNode) node).getFile().exists()) {
+            try {
+              ((FileNode) node).getFile().createNewFile();
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
+          }
+          mainActivity.load(new ProgramReference(node.getName(), node.getUrl(), node.isWriteable()), true, false);
+        }
+        }).show();
       return true;
     });
 
-
+/*
     loadMenu.add("Load from cloud storage").setOnMenuItemClickListener(item -> {
-      Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-      intent.addCategory(Intent.CATEGORY_OPENABLE);
-      intent.setType("text/plain");
-      mainActivity.startActivityForResult(intent, MainActivity.OPEN_EXTERNALLY_REQUEST_CODE);
       return true;
     });
 
@@ -258,7 +246,7 @@ public class MainMenu {
       mainActivity.startActivityForResult(intent, MainActivity.LOAD_EXTERNALLY_REQUEST_CODE);
       return true;
     });
-
+*/
 
     Menu saveMenu = mainMenu.addSubMenu("Save");
 

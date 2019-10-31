@@ -6,7 +6,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 import android.view.Gravity;
 import android.widget.LinearLayout;
 
-import org.kobjects.asde.Dimensions;
+import org.kobjects.asde.android.ide.Dimensions;
 import org.kobjects.asde.R;
 
 public class TitleView extends LinearLayout {

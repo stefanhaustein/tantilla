@@ -19,7 +19,7 @@ public class AsdePreferences {
 
     public ProgramReference getProgramReference() {
         return ProgramReference.parse(sharedPreferences.getString(PROGRAM_REFERENCE,
-                "Unnamed\n" + mainActivity.console.nameToReference("Unnamed") + "\nfalse"));
+                "\n" + mainActivity.console.nameToReference(null).url + "\ntrue"));
     }
 
     public void setProgramReference(ProgramReference programReference) {

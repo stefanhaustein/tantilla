@@ -30,8 +30,6 @@ import org.kobjects.abcnotation.AbcScore;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.program.ProgramView;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
-import org.kobjects.asde.Colors;
-import org.kobjects.asde.Dimensions;
 import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.Program;
@@ -42,10 +40,10 @@ import org.kobjects.asde.lang.type.Function;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.io.Shell;
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.asde.library.ui.DpadAdapter;
-import org.kobjects.asde.library.ui.ScreenAdapter;
-import org.kobjects.asde.library.ui.SpriteAdapter;
-import org.kobjects.asde.library.ui.TextBoxAdapter;
+import org.kobjects.asde.android.library.ui.DpadAdapter;
+import org.kobjects.asde.android.library.ui.ScreenAdapter;
+import org.kobjects.asde.android.library.ui.SpriteAdapter;
+import org.kobjects.asde.android.library.ui.TextBoxAdapter;
 import org.kobjects.graphics.Screen;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.abcnotation.SampleManager;
@@ -77,8 +75,8 @@ public class MainActivity extends AppCompatActivity {
   ScrollView leftScrollView;
   FloatingActionButton runButton;
   public ControlView controlView;
-  public AndroidConsole console = new AndroidConsole(this);
-  public Program program = new Program(console);
+  public AndroidConsole console;
+  public Program program;
   public OutputView outputView;
   ResizableFrameLayout resizableFrameLayout;
   ScreenAdapter screenAdapter;
@@ -87,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
   AsdePreferences preferences;
   public boolean fullScreenMode;
   public ProgramView programView;
-  public Shell shell = new Shell(program);
+  public Shell shell;
 
 
   /**
@@ -117,6 +115,11 @@ public class MainActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    console = new AndroidConsole(this);
+    program = new Program(console);
+    shell = new Shell(program);
+
     preferences = new AsdePreferences(this);
 
     EmojiManager.install(new TwitterEmojiProvider());
@@ -349,7 +352,7 @@ public class MainActivity extends AppCompatActivity {
 
 
       Uri uri = resultData.getData();
-      String displayName = "Unnamed";
+      String displayName = "Unknown";
       Cursor cursor = getContentResolver().query(uri, null, null, null, null, null);
       try {
         if (cursor != null && cursor.moveToFirst()) {

@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import org.kobjects.asde.R;
-import org.kobjects.asde.Dimensions;
+import org.kobjects.asde.android.ide.Dimensions;
 import org.kobjects.asde.android.ide.widget.IconButton;
 
 import java.util.List;

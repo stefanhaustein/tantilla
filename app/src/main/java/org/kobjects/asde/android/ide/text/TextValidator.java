@@ -9,12 +9,18 @@ public abstract class TextValidator {
   public abstract String validate(String text);
 
 
-  public void attach(TextInputLayout textInputLayout) {
-    new TextInputLayoutValidator(textInputLayout);
+  public TextInputLayoutValidator attach(TextInputLayout textInputLayout) {
+    return new TextInputLayoutValidator(textInputLayout);
   }
 
-  class TextInputLayoutValidator implements TextWatcher {
+  public class TextInputLayoutValidator implements TextWatcher {
     private final TextInputLayout textInputLayout;
+    String error;
+
+    public boolean update() {
+      afterTextChanged(textInputLayout.getEditText().getText());
+      return error == null;
+    }
 
     public TextInputLayoutValidator(TextInputLayout textInputLayout) {
       this.textInputLayout = textInputLayout;
@@ -26,8 +32,7 @@ public abstract class TextValidator {
     @Override
     final public void afterTextChanged(Editable s) {
       String text = textInputLayout.getEditText().getText().toString();
-      String error = validate(text);
-
+      error = validate(text);
       textInputLayout.setError(error);
     }
 

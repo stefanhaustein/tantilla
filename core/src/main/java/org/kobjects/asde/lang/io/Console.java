@@ -22,6 +22,9 @@ public interface Console {
 
     OutputStream openOutputStream(String url);
 
+    /**
+     * Use null for the "scratch" / default reference.
+     */
     ProgramReference nameToReference(String name);
 
     void startProgress(String title);
