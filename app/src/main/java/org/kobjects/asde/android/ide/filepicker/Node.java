@@ -7,6 +7,7 @@ public interface Node {
   String getUrl();
   boolean isLeaf();
   List<Node> getChildren();
-  boolean isWriteable();
+  boolean isWritable();
+  Node createChild(boolean leaf, String name);
   void delete();
 }

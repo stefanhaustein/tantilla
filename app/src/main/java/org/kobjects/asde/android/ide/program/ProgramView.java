@@ -151,13 +151,10 @@ public class ProgramView extends LinearLayout {
 
   void synchronize() {
     boolean isDefaultSaveLocation = program.reference.name.isEmpty();
-    boolean unsaved = program.hasUnsavedChanges
-        || (isDefaultSaveLocation && !program.isEmpty());
-
     titleView.setTitle(
         (isDefaultSaveLocation ? "ASDE" : program.reference.name)
             + (program.legacyMode ? " (legacy mode)️" : "")
-        + (unsaved ? "*" : ""));
+        + (mainActivity.isUnsaved() ? "*" : ""));
 
     if (!expanded) {
       symbolList.synchronizeTo(Collections.emptyList(), expandListener, null);

@@ -4,6 +4,7 @@ import android.content.res.AssetManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AssetNode implements Node {
@@ -50,6 +51,9 @@ public class AssetNode implements Node {
       for (Node extra : extraNodes) {
         result.add(extra);
       }
+
+      Collections.sort(result, new NodeComparator());
+
       return result;
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -57,8 +61,13 @@ public class AssetNode implements Node {
   }
 
   @Override
-  public boolean isWriteable() {
+  public boolean isWritable() {
     return false;
+  }
+
+  @Override
+  public Node createChild(boolean leaf, String name) {
+    throw new UnsupportedOperationException();
   }
 
   @Override

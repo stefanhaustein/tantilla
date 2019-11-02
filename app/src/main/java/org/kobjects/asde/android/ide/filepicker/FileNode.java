@@ -1,6 +1,7 @@
 package org.kobjects.asde.android.ide.filepicker;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,16 +38,34 @@ public class FileNode implements Node {
   @Override
   public List<Node> getChildren() {
     ArrayList<Node> result = new ArrayList<>();
-    for(File child : file.listFiles()) {
-      result.add(new FileNode(child));
+    File[] files = file.listFiles();
+    if (files != null) {
+      for (File child : file.listFiles()) {
+        result.add(new FileNode(child));
+      }
+      Collections.sort(result, new NodeComparator());
     }
-    Collections.sort(result, new NodeComparator());
     return result;
   }
 
   @Override
-  public boolean isWriteable() {
+  public boolean isWritable() {
     return file.canWrite();
+  }
+
+  @Override
+  public Node createChild(boolean leaf, String childName) {
+    File childFile = new File(file, childName);
+    if (leaf) {
+      try {
+        childFile.createNewFile();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    } else {
+      childFile.mkdir();
+    }
+    return new FileNode(childFile);
   }
 
   @Override

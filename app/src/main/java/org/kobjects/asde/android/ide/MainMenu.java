@@ -1,28 +1,28 @@
 package org.kobjects.asde.android.ide;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.PopupMenu;
 
 import org.kobjects.asde.android.ide.classifier.CreateClassFlow;
 import org.kobjects.asde.android.ide.filepicker.AssetNode;
-import org.kobjects.asde.android.ide.filepicker.FileDialog;
+import org.kobjects.asde.android.ide.filepicker.FilePicker;
 import org.kobjects.asde.android.ide.filepicker.FileNode;
+import org.kobjects.asde.android.ide.filepicker.Node;
 import org.kobjects.asde.android.ide.filepicker.SimpleLeaf;
 import org.kobjects.asde.android.ide.filepicker.SimpleNode;
 import org.kobjects.asde.android.ide.function.FunctionSignatureFlow;
+import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.lang.io.ProgramReference;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.List;
 
 public class MainMenu {
 
-  private static final String CLOUD_OPEN_URL = "cloud:open";
-  private static final String CLOUD_GET_URL = "cloud:get";
+  private static final Node GENERAL_STORAGE_NODE = new SimpleLeaf("General Storage…", null);
+  private static final Node IMPORT_NODE = new SimpleLeaf("Import…", null);
 
   private static String[] REFURBISHED = {
       "poker.bas", "Poker"
@@ -152,9 +152,14 @@ public class MainMenu {
   };
 
 
-  public static SimpleNode getRootNode(MainActivity mainActivity) {
-      return new SimpleNode("Root",
-          new FileNode("Local Files", new File(mainActivity.getProgramStoragePath().getAbsolutePath())),
+  public static SimpleNode getRootNode(MainActivity mainActivity, boolean forSave) {
+    Node applicationStorage = new FileNode("Application Storage", new File(mainActivity.getProgramStoragePath().getAbsolutePath()));
+
+    return forSave
+        ? new SimpleNode("Storage Selection", applicationStorage, GENERAL_STORAGE_NODE)
+        : new SimpleNode("Storage Selection",
+          applicationStorage,
+        GENERAL_STORAGE_NODE,
           new AssetNode(mainActivity.getAssets(), "Examples", "examples",
             new SimpleNode("Refurbished classics",
               addRemoteExamples(
@@ -164,11 +169,8 @@ public class MainMenu {
               addRemoteExamples(
               "http://vintage-basic.net/bcg/",
                 VINTAGE_BASIC))),
-          new SimpleLeaf("Cloud Connection", CLOUD_OPEN_URL),
-          new SimpleLeaf("Cloud Import", CLOUD_GET_URL));
+          IMPORT_NODE);
   }
-
-
 
 
   private static SimpleLeaf[] addRemoteExamples(String baseUrl, String[] list) {
@@ -181,21 +183,117 @@ public class MainMenu {
     return result;
   }
 
+  public static void confirmLosingUnsavedChanges(MainActivity mainActivity, String actionName, Runnable conditionalAction) {
+    if (mainActivity.isUnsaved()) {
+      new InputFlowBuilder(mainActivity, actionName).setConfirmationCheckbox("Confirm losing unsaved changes.").start(result -> conditionalAction.run());
+    } else {
+      conditionalAction.run();
+    }
+  }
+
 
   public static void show(MainActivity mainActivity, View menuButton) {
     PopupMenu popupMenu = new PopupMenu(mainActivity, menuButton);
     Menu mainMenu = popupMenu.getMenu();
 
-    mainMenu.add("Erase all and restart").setOnMenuItemClickListener(item -> {
-      mainActivity.eraseProgram();
-      try {
-        mainActivity.program.save(mainActivity.program.reference);
-        mainActivity.restart();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
+    ProgramReference programReference = mainActivity.program.reference;
+
+    mainMenu.add("New Project" + (mainActivity.isUnsaved() ? "…" : "")).setOnMenuItemClickListener(item -> {
+      confirmLosingUnsavedChanges(mainActivity, "New Project", () -> {
+        mainActivity.eraseProgram();
+        try {
+          mainActivity.program.save(mainActivity.program.reference);
+          mainActivity.restart();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      });
       return true;
     });
+
+
+    mainMenu.add("Open…").setOnMenuItemClickListener(item -> {
+      confirmLosingUnsavedChanges(mainActivity, "Open File", () -> {
+        new FilePicker(mainActivity, node -> {
+          if (node == GENERAL_STORAGE_NODE) {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("text/plain");
+            mainActivity.startActivityForResult(intent, MainActivity.OPEN_EXTERNALLY_REQUEST_CODE);
+          } else if (node == IMPORT_NODE) {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("text/plain");
+            mainActivity.startActivityForResult(intent, MainActivity.LOAD_EXTERNALLY_REQUEST_CODE);
+          } else {
+            mainActivity.load(new ProgramReference(node.getName(), node.getUrl(), node.isWritable()), true, false);
+          }
+        }).setTitle("Open")
+            .setRootNode(getRootNode(mainActivity, false))
+            .setOptions()
+            .show();
+      });
+      return true;
+    });
+
+    List<ProgramReference> recentList = mainActivity.preferences.getRecents();
+    if (recentList.size() >= 2) {
+      Menu openRecentMenu = mainMenu.addSubMenu("Open Recent");
+      for (ProgramReference reference : mainActivity.preferences.getRecents()) {
+        if (!reference.equals(programReference)) {
+          openRecentMenu.add(reference.name).setOnMenuItemClickListener(item -> {
+            mainActivity.load(reference, true, false);
+            return true;
+          });
+        }
+      }
+    }
+
+
+    mainMenu.add("Save as…").setOnMenuItemClickListener(item -> {
+      new FilePicker(mainActivity, node -> {
+        if (node == GENERAL_STORAGE_NODE) {
+          Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+          intent.setType("text/plain");
+
+          mainActivity.startActivityForResult(intent, MainActivity.SAVE_EXTERNALLY_REQUEST_CODE);
+        } else {
+          try {
+            ProgramReference reference = new ProgramReference(node.getName(), node.getUrl(), true);
+            mainActivity.program.save(reference);
+          } catch (Exception e) {
+            mainActivity.console.showError("Error saving file " + node.getName(), e);
+          }
+        }
+      }).setTitle("Save as")
+          .setRootNode(getRootNode(mainActivity, true))
+          .show();
+      return true;
+    });
+
+
+    mainMenu.add("Delete…")
+        .setEnabled(programReference.urlWritable && programReference.url.startsWith("file://"))
+        .setOnMenuItemClickListener(item -> {
+          File file = new File(programReference.url.substring(6));
+          new InputFlowBuilder(mainActivity, "Delete " + programReference.name)
+              .setConfirmationCheckbox("Delete " + file.getAbsolutePath())
+              .start(result -> {
+                mainActivity.eraseProgram();
+                try {
+                  mainActivity.program.save(mainActivity.program.reference);
+                  file.delete();
+                } catch (Exception e) {
+                  e.printStackTrace();
+                }
+              });
+          return true;
+        });
+
+    mainMenu.add("Home shortcut…").setOnMenuItemClickListener(item -> {
+      mainActivity.addShortcut();
+      return true;
+    }).setEnabled(!mainActivity.program.reference.name.isEmpty());
 
     Menu addMenu = mainMenu.addSubMenu("Add");
     addMenu.add("Class").setOnMenuItemClickListener(item -> {
@@ -208,87 +306,10 @@ public class MainMenu {
     });
 
 
-    mainMenu.add("Open...").setOnMenuItemClickListener(item -> {
-      new FileDialog(mainActivity, getRootNode(mainActivity), node -> {
-        if (node.getUrl().equals(CLOUD_OPEN_URL)) {
-          Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-          intent.addCategory(Intent.CATEGORY_OPENABLE);
-          intent.setType("text/plain");
-          mainActivity.startActivityForResult(intent, MainActivity.OPEN_EXTERNALLY_REQUEST_CODE);
-        } else if (node.getUrl().equals(CLOUD_GET_URL)) {
-          Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-          intent.addCategory(Intent.CATEGORY_OPENABLE);
-          intent.setType("text/plain");
-          mainActivity.startActivityForResult(intent, MainActivity.OPEN_EXTERNALLY_REQUEST_CODE);
-        } else {
-          if (node instanceof FileNode && !((FileNode) node).getFile().exists()) {
-            try {
-              ((FileNode) node).getFile().createNewFile();
-            } catch (IOException e) {
-              e.printStackTrace();
-            }
-          }
-          mainActivity.load(new ProgramReference(node.getName(), node.getUrl(), node.isWriteable()), true, false);
-        }
-        }).show();
-      return true;
-    });
-
-/*
-    loadMenu.add("Load from cloud storage").setOnMenuItemClickListener(item -> {
-      return true;
-    });
-
-    loadMenu.add("Import").setOnMenuItemClickListener(item -> {
-      Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-      intent.addCategory(Intent.CATEGORY_OPENABLE);
-      intent.setType("text/plain");
-      mainActivity.startActivityForResult(intent, MainActivity.LOAD_EXTERNALLY_REQUEST_CODE);
-      return true;
-    });
-*/
-
-    Menu saveMenu = mainMenu.addSubMenu("Save");
-
-    saveMenu.add("Save locally as...").setOnMenuItemClickListener(item -> {
-      AlertDialog.Builder dialog = new AlertDialog.Builder(mainActivity);
-      EditText fileNameInput = new EditText(mainActivity);
-      fileNameInput.setText(mainActivity.preferences.getProgramReference().name);
-      dialog.setTitle("Save as...");
-      dialog.setMessage("File name");
-      dialog.setView(fileNameInput);
-      dialog.setPositiveButton("Save", (dlg, btn) -> {
-        String name = fileNameInput.getText().toString();
-        if (!name.isEmpty()) {
-          try {
-            mainActivity.program.save(mainActivity.console.nameToReference(fileNameInput.getText().toString()));
-          } catch (Exception e) {
-            mainActivity.console.showError("Error saving file " + fileNameInput.getText().toString(), e);
-          }
-        }
-      });
-      dialog.show();
-      return true;
-    });
-
-    saveMenu.add("Save externally as...").setOnMenuItemClickListener(item -> {
-      Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-      intent.setType("text/plain");
-
-      mainActivity.startActivityForResult(intent, MainActivity.SAVE_EXTERNALLY_REQUEST_CODE);
-      return true;
-    });
-
-    saveMenu.add("Add shortcut").setOnMenuItemClickListener(item -> {
-      mainActivity.addShortcut();
-      return true;
-    });
-
     if (mainActivity.sharedCodeViewAvailable()) {
       OutputView.populateMenu(mainActivity, mainMenu.addSubMenu("Output"));
     }
     popupMenu.show();
-
   }
 
 }

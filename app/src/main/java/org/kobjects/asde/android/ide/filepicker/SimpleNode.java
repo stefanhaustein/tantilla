@@ -35,8 +35,13 @@ public class SimpleNode implements Node {
   }
 
   @Override
-  public boolean isWriteable() {
+  public boolean isWritable() {
     return false;
+  }
+
+  @Override
+  public Node createChild(boolean leaf, String name) {
+    throw new UnsupportedOperationException();
   }
 
   @Override

@@ -48,6 +48,7 @@ public class ShortcutHandler {
             if (bitmap != null) {
                 alert.setIcon(new BitmapDrawable(bitmap));
             }
+
             alert.setView(shortcutLayout);
 
             alert.setNegativeButton("Cancel", null);

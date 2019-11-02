@@ -95,12 +95,12 @@ public class Program implements SymbolOwner {
       }
     }
     symbolMap = cleared;
-    notifyProgramChanged();
     ProgramReference newReference = console.nameToReference(null);
     if (!reference.equals(newReference)) {
       reference = newReference;
       notifyProgramRenamed();
     }
+    notifyProgramChanged();
   }
 
 

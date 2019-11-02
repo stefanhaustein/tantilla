@@ -310,11 +310,14 @@ public class AndroidConsole implements Console {
       if (url.startsWith("file:///android_asset/")) {
         return mainActivity.getAssets().open(url.substring(22));
       }
-      if (url.startsWith("http://vintage-basic.net/") || url.startsWith("https://raw.githubusercontent.com")) {
+//      if (url.startsWith("http://vintage-basic.net/") || url.startsWith("https://raw.githubusercontent.com")) {
+  //    }
+      Uri uri = Uri.parse(url);
+      try {
+        return mainActivity.getContentResolver().openInputStream(uri);
+      } catch (IOException e) {
         return new URL(url).openConnection().getInputStream();
       }
-      Uri uri = Uri.parse(url);
-      return mainActivity.getContentResolver().openInputStream(uri);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

@@ -255,7 +255,11 @@ public class MainActivity extends AppCompatActivity {
     program.addProgramRenameListener((program, newReference) -> {
       programView.requestSynchronization();
       preferences.setProgramReference(newReference);
-      runOnUiThread(() -> rootView.setBackgroundColor(getBackgroundColor()));
+      runOnUiThread(() -> {
+        if (rootView != null) {
+          rootView.setBackgroundColor(getBackgroundColor());
+        }
+      });
     });
 
 
@@ -478,7 +482,6 @@ public class MainActivity extends AppCompatActivity {
       } else {
         rootLayout.setOrientation(LinearLayout.HORIZONTAL);
 
-
         leftScrollView.addView(programView);
 
         controlView.arrangeButtons(true);
@@ -604,4 +607,11 @@ public class MainActivity extends AppCompatActivity {
     currentCodeViewOwner = owner;
     return codeView;
   }
+
+
+  public boolean isUnsaved() {
+    return program.hasUnsavedChanges
+        || (program.reference.name.isEmpty() && !program.isEmpty());
+  }
+
 }
