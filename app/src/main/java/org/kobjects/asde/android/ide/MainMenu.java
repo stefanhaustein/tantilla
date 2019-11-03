@@ -22,7 +22,8 @@ import java.util.List;
 
 public class MainMenu {
 
-  private static final Node GENERAL_STORAGE_NODE = new SimpleLeaf("General Storage…", null);
+  private static final Node GENERAL_STORAGE_NODE = new SimpleLeaf("Shared and Cloud Storage…", null);
+  private static final Node IMPORT_NODE = new SimpleLeaf("Import…", null);
 
   private static String[] REFURBISHED = {
       "poker.bas", "Poker"
@@ -164,9 +165,11 @@ public class MainMenu {
   }
 
 
-  public static SimpleNode getRootNode(MainActivity mainActivity) {
-    return  new SimpleNode("Storage Selection",
-        new FileNode("Application Storage", new File(mainActivity.getProgramStoragePath().getAbsolutePath())), GENERAL_STORAGE_NODE);
+  public static SimpleNode getRootNode(MainActivity mainActivity, boolean forSave) {
+    Node internalStorgae = new FileNode("Application Internal Storage", new File(mainActivity.getProgramStoragePath().getAbsolutePath()));
+    return forSave
+        ? new SimpleNode("Storage Selection", internalStorgae, GENERAL_STORAGE_NODE)
+        : new SimpleNode("Storage Selection", internalStorgae, GENERAL_STORAGE_NODE, getExamplesNode(mainActivity), IMPORT_NODE);
   }
 
 
@@ -219,17 +222,23 @@ public class MainMenu {
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setType("text/plain");
             mainActivity.startActivityForResult(intent, MainActivity.OPEN_EXTERNALLY_REQUEST_CODE);
+          } else  if (node == IMPORT_NODE) {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("text/plain");
+            mainActivity.startActivityForResult(intent, MainActivity.LOAD_EXTERNALLY_REQUEST_CODE);
           } else {
             mainActivity.load(new ProgramReference(node.getName(), node.getUrl(), node.isWritable()), true, false);
           }
         }).setTitle("Open")
-            .setRootNode(getRootNode(mainActivity))
+            .setRootNode(getRootNode(mainActivity, false))
             .setOptions()
             .show();
       });
       return true;
     });
 
+    /*
     projectMenu.add("Import…").setOnMenuItemClickListener(item -> {
       Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
       intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -237,7 +246,7 @@ public class MainMenu {
       mainActivity.startActivityForResult(intent, MainActivity.LOAD_EXTERNALLY_REQUEST_CODE);
       return true;
     });
-
+    */
 
     /*
     List<ProgramReference> recentList = mainActivity.preferences.getRecents();
@@ -269,7 +278,7 @@ public class MainMenu {
           }
         }
       }).setTitle("Save as")
-          .setRootNode(getRootNode(mainActivity))
+          .setRootNode(getRootNode(mainActivity, true))
           .show();
       return true;
     });
@@ -298,6 +307,7 @@ public class MainMenu {
       return true;
     }).setEnabled(!mainActivity.program.reference.name.isEmpty());
 
+    /*
     mainMenu.add("Examples…").setOnMenuItemClickListener(item -> {
       confirmLosingUnsavedChanges(mainActivity, "Open Example", () -> {
         new FilePicker(mainActivity, node ->
@@ -309,6 +319,7 @@ public class MainMenu {
       });
       return true;
     });
+     */
 
     Menu displayMenu = mainMenu.addSubMenu("Display");
     displayMenu.add("Clear").setOnMenuItemClickListener(item -> {

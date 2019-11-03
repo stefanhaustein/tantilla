@@ -47,6 +47,7 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
     switch (name.toUpperCase()) {
       case "NOT":
         return new NotOperator(param);
+      case "−":
       case "-":
         return new NegOperator(param);
       case "+":
