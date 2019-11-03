@@ -20,13 +20,28 @@ public class RelationalOperator extends Node {
   }
 
   public String getName() {
-    switch (val1) {
-      case -1:
-        return val2 == 0 ? "≤" : val2 == 1 ? "≠" : "<";
-      case 0:
-        return val2 == 0 ? "=" : val2 == -1 ? "≤" : "≥";
-      case 1:
-        return val2 == 0 ? "≥" : val2 == -1 ? "≠" : ">";
+    return getName(false);
+  }
+
+  private String getName(boolean preferAscii) {
+    if (preferAscii) {
+      switch (val1) {
+        case -1:
+          return val2 == 0 ? "<=" : val2 == 1 ? "<>" : "<";
+        case 0:
+          return val2 == 0 ? "=" : val2 == -1 ? "<=" : ">=";
+        case 1:
+          return val2 == 0 ? ">=" : val2 == -1 ? "<>" : ">";
+      }
+    } else {
+      switch (val1) {
+        case -1:
+          return val2 == 0 ? "≤" : val2 == 1 ? "≠" : "<";
+        case 0:
+          return val2 == 0 ? "=" : val2 == -1 ? "≤" : "≥";
+        case 1:
+          return val2 == 0 ? "≥" : val2 == -1 ? "≠" : ">";
+      }
     }
     throw new IllegalStateException();
   }
@@ -56,10 +71,10 @@ public class RelationalOperator extends Node {
   }
 
   @Override
-  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
-      children[0].toString(asb, errors);
-      appendLinked(asb, ' ' + getName() + ' ', errors);
-      children[1].toString(asb, errors);
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
+      children[0].toString(asb, errors, preferAscii);
+      appendLinked(asb, ' ' + getName(preferAscii) + ' ', errors);
+      children[1].toString(asb, errors, preferAscii);
   }
 
 }

@@ -52,9 +52,9 @@ public class OnStatement extends Statement  {
   }
 
   @Override
-  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     appendLinked(asb, "ON ", errors);
-    children[0].toString(asb, errors);
+    children[0].toString(asb, errors, preferAscii);
   }
 
   class Trigger implements PropertyChangeListener {

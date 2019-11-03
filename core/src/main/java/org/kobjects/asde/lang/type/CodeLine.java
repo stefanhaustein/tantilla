@@ -27,7 +27,7 @@ public class CodeLine implements Iterable<Node> {
     this(lineNumber, statements.toArray(new Node[0]));
   }
 
-  public void toString(AnnotatedStringBuilder sb, Map<Node, Exception> errors, boolean indent) {
+  public void toString(AnnotatedStringBuilder sb, Map<Node, Exception> errors, boolean indent, boolean preferAscii) {
     if (indent) {
       for (int i = 0; i < this.indent; i++) {
         sb.append(' ');
@@ -40,7 +40,7 @@ public class CodeLine implements Iterable<Node> {
             || (statements[i] instanceof EndStatement && ((EndStatement) statements[i]).invisible))
             ? " " : " : ");
       }
-      statements[i].toString(sb, errors);
+      statements[i].toString(sb, errors, preferAscii);
     }
     if (statements.length > 0 && statements[statements.length - 1] instanceof OnStatement) {
       sb.append(" :");
@@ -50,7 +50,7 @@ public class CodeLine implements Iterable<Node> {
   @Override
   public String toString() {
     AnnotatedStringBuilder sb = new AnnotatedStringBuilder();
-    toString(sb, Collections.<Node, Exception>emptyMap(), true);
+    toString(sb, Collections.<Node, Exception>emptyMap(), true, true);
     return sb.toString();
   }
 

@@ -142,15 +142,15 @@ public class Apply extends AssignableNode {
     }
 
   @Override
-  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
      int start = asb.length();
-     children[0].toString(asb, errors);
+     children[0].toString(asb, errors, preferAscii);
      asb.append(parenthesis ? '(' : ' ');
      for (int i = 1; i < children.length; i++) {
           if (i > 1) {
               asb.append(", ");
           }
-          children[i].toString(asb, errors);
+          children[i].toString(asb, errors, preferAscii);
       }
       if (parenthesis) {
           asb.append(')');

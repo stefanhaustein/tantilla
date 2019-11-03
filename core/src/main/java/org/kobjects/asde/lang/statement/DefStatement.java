@@ -4,10 +4,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.FunctionValidationContext;
-import org.kobjects.asde.lang.ResolvedSymbol;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.type.Types;
-import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
@@ -35,7 +32,7 @@ public class DefStatement extends AbstractDeclarationStatement {
 
 
   @Override
-  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     appendLinked(asb, "DEF " + varName + "(", errors);
     if (implementation.parameterNames.length > 0) {
       asb.append(implementation.parameterNames[0]);
@@ -45,6 +42,6 @@ public class DefStatement extends AbstractDeclarationStatement {
       }
     }
     asb.append(") = ");
-    ((FunctionReturnStatement) implementation.findNextLine(10).get(0)).children[0].toString(asb, errors);
+    ((FunctionReturnStatement) implementation.findNextLine(10).get(0)).children[0].toString(asb, errors, preferAscii);
   }
 }

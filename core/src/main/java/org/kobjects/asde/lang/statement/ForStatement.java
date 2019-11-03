@@ -64,14 +64,14 @@ public class ForStatement extends Node {
     }
 
   @Override
-  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     appendLinked(asb, "FOR " + variableName + " = ", errors);
-    children[0].toString(asb, errors);
+    children[0].toString(asb, errors, preferAscii);
     asb.append(" TO ");
-    children[1].toString(asb, errors);
+    children[1].toString(asb, errors, preferAscii);
     if (children.length > 2) {
       asb.append(" STEP ");
-      children[2].toString(asb, errors);
+      children[2].toString(asb, errors, preferAscii);
     }
   }
 

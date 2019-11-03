@@ -23,14 +23,14 @@ public class MathOperator extends Node {
     this.kind = kind;
   }
 
-  String getName() {
+  String getName(boolean preferAscii) {
     switch (kind) {
       case ADD:
         return "+";
       case SUB:
-        return "−";
+        return preferAscii ? "-" : "−";
       case MUL:
-        return "×";
+        return preferAscii ? "*" : "×";
       case DIV:
         return "/";
       case POW:
@@ -99,14 +99,14 @@ public class MathOperator extends Node {
   }
 
   @Override
-  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
-      children[0].toString(asb, errors);
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
+      children[0].toString(asb, errors, preferAscii);
       if (kind == Kind.ADD || kind == Kind.SUB) {
-        appendLinked(asb, ' ' + getName() + ' ', errors);
+        appendLinked(asb, ' ' + getName(preferAscii) + ' ', errors);
       } else {
-        appendLinked(asb, getName(), errors);
+        appendLinked(asb, getName(preferAscii), errors);
       }
-      children[1].toString(asb, errors);
+      children[1].toString(asb, errors, preferAscii);
 
   }
 }

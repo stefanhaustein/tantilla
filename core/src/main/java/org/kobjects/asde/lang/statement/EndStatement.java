@@ -38,7 +38,7 @@ public class EndStatement extends Statement {
 
 
   @Override
-  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     if (!invisible) {
       appendLinked(asb, "END", errors);
     }

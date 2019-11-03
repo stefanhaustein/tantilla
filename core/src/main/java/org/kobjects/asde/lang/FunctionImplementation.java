@@ -157,7 +157,7 @@ public class FunctionImplementation implements Function, Declaration {
     for (Map.Entry<Integer, CodeLine> entry : code.entrySet()) {
       sb.append(String.valueOf(entry.getKey()));
       sb.append(' ');
-      entry.getValue().toString(sb, errors, true);
+      entry.getValue().toString(sb, errors, true, true);
       sb.append('\n');
     }
 

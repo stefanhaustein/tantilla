@@ -26,7 +26,7 @@ public class EndIfStatement extends Node {
   }
 
   @Override
-  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     appendLinked(asb, "ENDIF", errors);
   }
 }

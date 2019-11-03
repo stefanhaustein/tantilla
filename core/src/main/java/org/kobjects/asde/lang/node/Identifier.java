@@ -70,7 +70,7 @@ public class Identifier extends SymbolNode {
     return  resolved.getType();
   }
 
-  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     appendLinked(asb, name, errors);
   }
 

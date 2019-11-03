@@ -70,6 +70,7 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
         return new RelationalOperator(0, 0, left, right);
       case "<>":
       case "≠":
+      case "!=":
         return new RelationalOperator(-1, 1, left, right);
       case ">":
         return new RelationalOperator(1, 1, left, right);

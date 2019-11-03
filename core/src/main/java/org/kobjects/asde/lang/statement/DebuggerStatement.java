@@ -20,7 +20,7 @@ public class DebuggerStatement extends Statement {
   }
 
   @Override
-  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     appendLinked(asb, "DEBUGGER", errors);
   }
 }

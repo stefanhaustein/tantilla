@@ -1,9 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.ResolvedSymbol;
 import org.kobjects.asde.lang.node.Literal;
-import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.type.Array;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.ArrayType;
@@ -50,13 +48,13 @@ public class DimStatement extends AbstractDeclarationStatement {
   }
 
   @Override
-  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     appendLinked(asb, "DIM " + varName + "(", errors);
     if (children.length > 0) {
-      children[0].toString(asb, errors);
+      children[0].toString(asb, errors, preferAscii);
       for (int i = 1; i < children.length; i++) {
         asb.append(", ");
-        children[i].toString(asb, errors);
+        children[i].toString(asb, errors, preferAscii);
       }
     }
     asb.append(')');

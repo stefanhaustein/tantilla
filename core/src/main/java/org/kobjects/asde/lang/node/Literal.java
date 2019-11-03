@@ -44,7 +44,7 @@ public class Literal extends Node {
   }
 
   @Override
-  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     if (value != Program.INVISIBLE_STRING && value instanceof String) {
       appendLinked(asb, "\"" + ((String) value).replace("\"", "\"\"") + '"', errors);
     } else if (format == Format.HEX && returnType() == Types.NUMBER && ((Number) value).longValue() == ((Number) value).doubleValue()) {

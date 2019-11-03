@@ -46,7 +46,7 @@ public class NextStatement extends Node {
     }
 
     @Override
-    public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+    public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
         if (varName == null) {
             appendLinked(asb, "NEXT", errors);
         } else {

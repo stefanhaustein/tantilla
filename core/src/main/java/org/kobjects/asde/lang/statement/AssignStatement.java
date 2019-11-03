@@ -44,9 +44,9 @@ public class AssignStatement extends Statement {
 
 
   @Override
-  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
-    children[0].toString(asb, errors);
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
+    children[0].toString(asb, errors, preferAscii);
     appendLinked(asb, " = ", errors);
-    children[1].toString(asb, errors);
+    children[1].toString(asb, errors, preferAscii);
   }
 }

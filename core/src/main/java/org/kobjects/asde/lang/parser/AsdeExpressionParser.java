@@ -25,9 +25,9 @@ public class AsdeExpressionParser extends ExpressionParser<Node> {
     addOperators(ExpressionParser.OperatorType.INFIX, 10, ".");
     addOperators(ExpressionParser.OperatorType.INFIX, 8, "^");
     addOperators(ExpressionParser.OperatorType.PREFIX, 7, "-");
-    addOperators(ExpressionParser.OperatorType.INFIX, 6, "*", "/");
-    addOperators(ExpressionParser.OperatorType.INFIX, 5, "+", "-");
-    addOperators(ExpressionParser.OperatorType.INFIX, 4, ">=", "<=", "<>", ">", "<", "=");
+    addOperators(ExpressionParser.OperatorType.INFIX, 6, "*", "/", "×", "⋅", "÷");
+    addOperators(ExpressionParser.OperatorType.INFIX, 5, "+", "-", "−");
+    addOperators(ExpressionParser.OperatorType.INFIX, 4, ">=", "<=", "<>", ">", "<", "=", "≠", "!=", "≥", "≤");
     addOperators(ExpressionParser.OperatorType.PREFIX, 3, "not", "NOT", "Not");
     addOperators(ExpressionParser.OperatorType.INFIX, 2, "and", "AND", "And");
     addOperators(ExpressionParser.OperatorType.INFIX, 1, "or", "OR", "Or");

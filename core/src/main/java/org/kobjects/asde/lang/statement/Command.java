@@ -107,15 +107,15 @@ public class Command extends Statement {
   }
 
   @Override
-  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     if (children.length == 0) {
       appendLinked(asb, kind.name(), errors);
     } else {
       appendLinked(asb, kind.name() + " ", errors);
-      children[0].toString(asb, errors);
+      children[0].toString(asb, errors, preferAscii);
       for (int i = 1; i < children.length; i++) {
         asb.append(", ");
-        children[i].toString(asb, errors);
+        children[i].toString(asb, errors, preferAscii);
       }
     }
   }

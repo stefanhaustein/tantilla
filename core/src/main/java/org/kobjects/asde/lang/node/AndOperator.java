@@ -59,9 +59,9 @@ public class AndOperator extends Node {
   }
 
   @Override
-  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
-    children[0].toString(asb, errors);
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
+    children[0].toString(asb, errors, preferAscii);
     appendLinked(asb, " AND ", errors);
-    children[1].toString(asb, errors);
+    children[1].toString(asb, errors, preferAscii);
   }
 }

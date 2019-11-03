@@ -109,14 +109,14 @@ public class IoStatement extends Node {
 
 
   @Override
-  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     appendLinked(asb, kind.name(), errors);
     if (children.length > 0) {
       appendLinked(asb, " ", errors);
-      children[0].toString(asb, errors);
+      children[0].toString(asb, errors, preferAscii);
       for (int i = 1; i < children.length; i++) {
         asb.append((delimiter == null || i > delimiter.length) ? ", " : delimiter[i - 1]);
-        children[i].toString(asb, errors);
+        children[i].toString(asb, errors, preferAscii);
       }
       if (delimiter != null && delimiter.length == children.length) {
         asb.append(delimiter[delimiter.length - 1]);

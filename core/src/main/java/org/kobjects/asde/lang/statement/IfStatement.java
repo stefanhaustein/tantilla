@@ -67,9 +67,9 @@ public class IfStatement extends Node {
     }
 
     @Override
-    public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+    public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
         appendLinked(asb, "IF ", errors);
-        children[0].toString(asb, errors);
+        children[0].toString(asb, errors, preferAscii);
         asb.append(" THEN");
     }
 

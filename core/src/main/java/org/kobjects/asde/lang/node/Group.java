@@ -28,10 +28,10 @@ public class Group extends Node {
     }
 
     @Override
-    public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+    public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
         appendLinked(asb, "(", errors);
 
-        children[0].toString(asb, errors);
+        children[0].toString(asb, errors, preferAscii);
         appendLinked(asb, ")", errors);
     }
 }

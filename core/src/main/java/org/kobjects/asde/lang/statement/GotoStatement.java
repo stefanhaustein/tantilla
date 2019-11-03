@@ -79,7 +79,7 @@ public class GotoStatement extends Node {
 
 
   @Override
-  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors) {
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     appendLinked(asb, "GOTO " + target, errors);
   }
 
