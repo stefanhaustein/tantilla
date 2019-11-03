@@ -12,7 +12,7 @@ import org.kobjects.asde.lang.io.Console;
 
 import java.util.ArrayList;
 
-public class OutputView extends LinearLayout {
+public class TextOutputView extends LinearLayout {
 
   private final MainActivity mainActivity;
   final TitleView titleView;
@@ -27,23 +27,9 @@ public class OutputView extends LinearLayout {
        mainActivity.console.clearScreen(Console.ClearScreenType.CLS_STATEMENT);
        return true;
      });
-
-
-     menu.add(1, 0, 0, "Overlay Graphics").setChecked(!mainActivity.windowMode).setOnMenuItemClickListener(item -> {
-      mainActivity.windowMode = false;
-      mainActivity.arrangeUi();
-      return true;
-    });
-    menu.add(1, 0, 0, "Graphics Window").setChecked(mainActivity.windowMode).setOnMenuItemClickListener(item -> {
-      mainActivity.windowMode = true;
-      mainActivity.arrangeUi();
-      return true;
-    });
-    menu.setGroupCheckable(1, true, true);
-
   }
 
-  OutputView(MainActivity mainActivity) {
+  TextOutputView(MainActivity mainActivity) {
     super(mainActivity);
     this.mainActivity = mainActivity;
     setOrientation(LinearLayout.VERTICAL);

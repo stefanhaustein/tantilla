@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -21,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vanniktech.emoji.EmojiManager;
@@ -28,6 +30,7 @@ import com.vanniktech.emoji.twitter.TwitterEmojiProvider;
 
 import org.kobjects.abcnotation.AbcScore;
 import org.kobjects.asde.R;
+import org.kobjects.asde.android.ide.program.ProgramTitleView;
 import org.kobjects.asde.android.ide.program.ProgramView;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
@@ -70,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   LinearLayout scrollContentView;
+  FrameLayout trueRootView;
   public View rootView;
   ScrollView mainScrollView;
   ScrollView leftScrollView;
@@ -77,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
   public ControlView controlView;
   public AndroidConsole console;
   public Program program;
-  public OutputView outputView;
+  public TextOutputView textOutputView;
   ResizableFrameLayout resizableFrameLayout;
   ScreenAdapter screenAdapter;
   //  public ProgramControl mainControl = new ProgramControl(program);
@@ -85,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
   AsdePreferences preferences;
   public boolean fullScreenMode;
   public ProgramView programView;
+  public ProgramTitleView programTitleView;
   public Shell shell;
 
 
@@ -116,6 +121,9 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    trueRootView = new FrameLayout(this);
+    setContentView(trueRootView);
+
     console = new AndroidConsole(this);
     program = new Program(console);
     shell = new Shell(program);
@@ -124,9 +132,9 @@ public class MainActivity extends AppCompatActivity {
 
     EmojiManager.install(new TwitterEmojiProvider());
 
-    programView = new ProgramView(this, program);
-
-    outputView = new OutputView(this);
+    programView = new ProgramView(this);
+    programTitleView = new ProgramTitleView(this);
+    textOutputView = new TextOutputView(this);
 
     SampleManager sampleManager = new SampleManager(this);
 
@@ -231,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
       mainScrollView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
         @Override
         public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+          // Manually scrolling up turns off autoScroll.
           if (scrollY < oldScrollY) {
             console.autoScroll = false;
           }
@@ -288,6 +297,7 @@ public class MainActivity extends AppCompatActivity {
           Thread.sleep(100);
           autosaveTriggered = false;
           program.save(program.reference);
+          programTitleView.refresh();
           programView.refresh();
         } catch (Exception e) {
           autosaveTriggered = false;
@@ -419,10 +429,11 @@ public class MainActivity extends AppCompatActivity {
     removeFromParent(screen.view);
     removeFromParent(controlView);
     removeFromParent(programView);
+    removeFromParent(programTitleView);
     removeFromParent(codeView);
     removeFromParent(runControlView);
     removeFromParent(resizableFrameLayout);
-    removeFromParent(outputView);
+    removeFromParent(textOutputView);
     removeFromParent(runButton);
 
     if (leftScrollView != null) {
@@ -440,34 +451,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
     if (fullScreenMode) {
-      FrameLayout mainView = new FrameLayout(this);
-      mainView.addView(mainScrollView);
-      mainView.addView(screen.view);
-      outputView.titleView.setVisibility(View.GONE);
+      FrameLayout rootLayout = new FrameLayout(this);
 
-//         setContentView(viewport, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-      //       rootView = null;
+      rootLayout.addView(mainScrollView);
+      rootLayout.addView(screen.view);
+      textOutputView.titleView.setVisibility(View.GONE);
+
       FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
       layoutParams.gravity = Gravity.TOP | Gravity.RIGHT;
-      mainView.addView(runControlView, layoutParams);
+      rootLayout.addView(runControlView, layoutParams);
       screen.view.setBackgroundColor(0);
-      rootView = mainView;
 
-      scrollContentView.addView(outputView);
+      scrollContentView.addView(textOutputView);
+      rootView = rootLayout;
 
     } else {
       LinearLayout rootLayout = new LinearLayout(this);
-      // rootLayout.setDividerDrawable(systemListDivider);
-      rootLayout.setDividerDrawable(new ColorDrawable(Colors.PRIMARY_FILTER));
-      rootLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
-
       FrameLayout mainView = new FrameLayout(this);
 
+      rootLayout.setDividerDrawable(new ColorDrawable(Colors.PRIMARY_LIGHT_FILTER));
+      rootLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+
       if (displayHeight >= displayWidth) {
-        outputView.titleView.setVisibility(View.VISIBLE);
+
+        textOutputView.titleView.setVisibility(View.VISIBLE);
 
         rootLayout.setOrientation(LinearLayout.VERTICAL);
+        rootLayout.addView(programTitleView);
         rootLayout.addView(mainView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
+    //    View dividerView = new View(this);
+      //  dividerView.setBackgroundColor(Colors.PRIMARY_FILTER);
+        //rootLayout.addView(dividerView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1, 0));
         rootLayout.addView(controlView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         controlView.arrangeButtons(false);
@@ -475,37 +489,46 @@ public class MainActivity extends AppCompatActivity {
         scrollContentView.addView(programView, 0);
         scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
 
-        scrollContentView.addView(outputView);
+        scrollContentView.addView(textOutputView);
 
         rootLayout.setClipChildren(false);
 
       } else {
         rootLayout.setOrientation(LinearLayout.HORIZONTAL);
 
+        LinearLayout leftView = new LinearLayout(this);
+        leftView.setOrientation(LinearLayout.VERTICAL);
+        leftView.addView(programTitleView);
         leftScrollView.addView(programView);
-
-        controlView.arrangeButtons(true);
-
-        codeView = new LinearLayout(this);
-        codeView.setOrientation(LinearLayout.VERTICAL);
-        scrollContentView.addView(codeView, 0);
-        scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
+        leftView.addView(leftScrollView);
 
         LinearLayout rightView = new LinearLayout(this);
         rightView.setOrientation(LinearLayout.VERTICAL);
         rightView.setDividerDrawable(new ColorDrawable(Colors.PRIMARY_FILTER));
         rightView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+
+        controlView.arrangeButtons(true);
+
+        boolean showCodeView = windowMode || runButton.isOrWillBeShown();
+
+        if (showCodeView) {
+          codeView = new LinearLayout(this);
+          codeView.setOrientation(LinearLayout.VERTICAL);
+          scrollContentView.addView(codeView, 0);
+        } else {
+          scrollContentView.addView(textOutputView);
+        }
+        scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
+
         rightView.addView(mainView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
         rightView.addView(controlView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mainView.addView(mainScrollView);
 
-
-        rootLayout.addView(leftScrollView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
-        rootLayout.addView(rightView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 2));
+        rootLayout.addView(leftView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
+        rootLayout.addView(rightView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, showCodeView ? 2 : 1));
 
         rightView.setClipChildren(false);
-
       }
 
       FrameLayout.LayoutParams runButtonParams = new FrameLayout.LayoutParams(
@@ -544,11 +567,12 @@ public class MainActivity extends AppCompatActivity {
             rootLayout.addView(codingLayout, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
             rootLayout.addView(viewport, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
         } */
-      outputView.syncContent();
+      textOutputView.syncContent();
       rootView = rootLayout;
     }
     rootView.setBackgroundColor(getBackgroundColor());
-    setContentView(rootView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+    setContentView(rootView);
   }
 
   public void onBackPressed() {

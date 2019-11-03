@@ -23,14 +23,11 @@ import org.kobjects.asde.lang.event.StartStopListener;
 
 import java.util.Collections;
 
-public class ProgramView extends LinearLayout {
-  private boolean expanded;
-  private SymbolListView symbolList;
+public class ProgramView extends SymbolListView {
+  boolean expanded;
   public final FunctionView mainFunctionView;
-  private final Program program;
   private final MainActivity mainActivity;
   private CodeLineView highlightedLine;
-  TitleView titleView;
   public FunctionView currentFunctionView;
   public SymbolView currentSymbolView;
   int syncRequestCount;
@@ -48,29 +45,12 @@ public class ProgramView extends LinearLayout {
     }
   };
 
-  public ProgramView(MainActivity context, Program program) {
+  public ProgramView(MainActivity context) {
     super(context);
-    setOrientation(VERTICAL);
 
     this.mainActivity = context;
-    this.program = program;
 
-    titleView = new TitleView(context, Colors.PRIMARY_FILTER, view -> {
-      MainMenu.show(mainActivity, view);
-    });
-    addView(titleView);
-    titleView.setOnClickListener(view -> {
-        if (mainActivity.sharedCodeViewAvailable()) {
-          mainActivity.outputView.syncContent();
-        } else {
-          expand(!expanded);
-      }
-    });
-
-    symbolList = new SymbolListView(context);
-    addView(symbolList);
-
-    mainFunctionView = new FunctionView(context, program.mainSymbol);
+    mainFunctionView = new FunctionView(context, mainActivity.program.mainSymbol);
     mainFunctionView.addExpandListener(expandListener);
     mainFunctionView.setExpanded(true, false);
     currentFunctionView = mainFunctionView;
@@ -102,10 +82,10 @@ public class ProgramView extends LinearLayout {
     context.shell.mainControl.addStartStopListener(startStopRefresher);
     context.shell.shellControl.addStartStopListener(startStopRefresher);
 
-    program.addProgramChangeListener(new ProgramChangeListener() {
+    mainActivity.program.addProgramChangeListener(new ProgramChangeListener() {
       @Override
       public void programChanged(Program program) {
-        requestSynchronization();
+        //   requestSynchronization();
       }
 
       @Override
@@ -122,13 +102,13 @@ public class ProgramView extends LinearLayout {
   void expand(boolean expand) {
     if (this.expanded != expand) {
       this.expanded = expand;
-      symbolList.animateNextChanges();
+      animateNextChanges();
       synchronize();
     }
   }
 
   public void refreshImpl() {
-    for (SymbolView symbolView : symbolList.nameViewMap.values()) {
+    for (SymbolView symbolView : nameViewMap.values()) {
       symbolView.refresh();
     }
   }
@@ -143,6 +123,7 @@ public class ProgramView extends LinearLayout {
       @Override
       public void run() {
         if (thisSyncRequest == syncRequestCount) {
+          mainActivity.programTitleView.refresh();
           synchronize();
         }
       }
@@ -150,22 +131,23 @@ public class ProgramView extends LinearLayout {
   }
 
   void synchronize() {
+    /*
     boolean isDefaultSaveLocation = program.reference.name.isEmpty();
     titleView.setTitle(
         (isDefaultSaveLocation ? "ASDE" : program.reference.name)
             + (program.legacyMode ? " (legacy mode)️" : "")
-        + (mainActivity.isUnsaved() ? "*" : ""));
+        + (mainActivity.isUnsaved() ? "*" : "")); */
 
     if (!expanded) {
-      symbolList.synchronizeTo(Collections.emptyList(), expandListener, null);
+      synchronizeTo(Collections.emptyList(), expandListener, null);
       return;
     }
 
-    SymbolView expandView = symbolList.synchronizeTo(program.getSymbols(), expandListener, expandOnSync);
-    symbolList.addView(mainFunctionView);
+    SymbolView expandView = synchronizeTo(mainActivity.program.getSymbols(), expandListener, expandOnSync);
+    addView(mainFunctionView);
 
     mainFunctionView.syncContent();
-    if (expandOnSync == program.mainSymbol) {
+    if (expandOnSync == mainActivity.program.mainSymbol) {
       expandView = mainFunctionView;
     }
 
@@ -182,15 +164,15 @@ public class ProgramView extends LinearLayout {
     if (currentFunctionView != null && currentFunctionView.functionImplementation == function) {
       targetView = currentFunctionView;
     } else {
-      for (int i = 0; i < symbolList.getChildCount(); i++) {
-        if (symbolList.getChildAt(i) instanceof FunctionView) {
-          FunctionView functionView = (FunctionView) symbolList.getChildAt(i);
+      for (int i = 0; i < getChildCount(); i++) {
+        if (getChildAt(i) instanceof FunctionView) {
+          FunctionView functionView = (FunctionView) getChildAt(i);
           if (functionView.functionImplementation == function) {
             targetView = functionView;
             break;
           }
-        } else if (symbolList.getChildAt(i) instanceof ClassView) {
-          ClassView classView = (ClassView) symbolList.getChildAt(i);
+        } else if (getChildAt(i) instanceof ClassView) {
+          ClassView classView = (ClassView) getChildAt(i);
           ClassImplementation classImplementation = (ClassImplementation) classView.symbol.getValue();
           StaticSymbol symbolFound = null;
           for (ClassImplementation.ClassPropertyDescriptor descriptor : classImplementation.propertyMap.values()) {

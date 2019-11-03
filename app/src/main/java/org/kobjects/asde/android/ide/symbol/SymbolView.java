@@ -33,7 +33,7 @@ public abstract class SymbolView extends LinearLayout {
             setExpanded(!expanded, true);
 
             if (!expanded && mainActivity.sharedCodeViewAvailable()) {
-                mainActivity.outputView.syncContent();
+                mainActivity.textOutputView.syncContent();
             }
 
         });

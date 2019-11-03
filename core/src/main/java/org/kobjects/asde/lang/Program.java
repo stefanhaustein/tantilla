@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeMap;
 
 
@@ -42,6 +44,9 @@ import java.util.TreeMap;
 public class Program implements SymbolOwner {
 
   public static final String INVISIBLE_STRING = new String();
+
+  private static final int PROGRAM_CHANGE_FLAG = 1;
+  private static final int SYMBOL_CHANGE_FLAG = 2;
 
   public static String toString(double d) {
     return d == (int) d ? String.valueOf((int) d) : String.valueOf(d);
@@ -70,6 +75,10 @@ public class Program implements SymbolOwner {
   private boolean loading;
   int currentStamp;
   public boolean hasUnsavedChanges;
+
+  private boolean notificationPending;
+  private StaticSymbol notificaitonPendingForSymbol;
+  private Timer notificationTimer = new Timer();
 
   public Program(Console console) {
     this.console = console;
@@ -371,26 +380,48 @@ public class Program implements SymbolOwner {
     }
   }
 
-  public void notifySymbolChanged(StaticSymbol symbol) {
+  synchronized void deferNotification(StaticSymbol symbol) {
     if (loading) {
       return;
     }
     hasUnsavedChanges = true;
-    symbol.validate();
-    for (ProgramChangeListener changeListener : programChangeListeners) {
-      changeListener.symbolChangedByUser(this, symbol);
+    if (notificationPending) {
+      if (symbol != notificaitonPendingForSymbol) {
+        notificaitonPendingForSymbol = null;
+      }
+    } else {
+      notificationPending = true;
+      notificaitonPendingForSymbol = symbol;
+      notificationTimer.schedule(new TimerTask() {
+        @Override
+        public void run() {
+          synchronized (Program.this) {
+            notificationPending = false;
+            if (notificaitonPendingForSymbol != null) {
+              notificaitonPendingForSymbol.validate();
+              for (ProgramChangeListener changeListener : programChangeListeners) {
+                changeListener.symbolChangedByUser(Program.this, notificaitonPendingForSymbol);
+              }
+              notificaitonPendingForSymbol = null;
+            } else {
+              validate();
+              for (ProgramChangeListener changeListener : programChangeListeners) {
+                changeListener.programChanged(Program.this);
+              }
+            }
+          }
+        }
+      }, 200);
     }
   }
 
+
+  public void notifySymbolChanged(StaticSymbol symbol) {
+    deferNotification(symbol);
+  }
+
   public void notifyProgramChanged() {
-    if (loading) {
-      return;
-    }
-    hasUnsavedChanges = true;
-    validate();
-    for (ProgramChangeListener changeListener : programChangeListeners) {
-      changeListener.programChanged(this);
-    }
+    deferNotification(null);
   }
 
   /**

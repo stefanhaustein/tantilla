@@ -29,9 +29,8 @@ public class Colors {
   public static final int BACKGROUND = 0xff222222;
 
 
-  public static final int PRIMARY_FILTER = 0x44ffffff;
-
-  public static final int PRIMARY_LIGHT_FILTER = 0x22ffffff;
+  public static final int PRIMARY_FILTER = 0x33ffffff;
+  public static final int PRIMARY_LIGHT_FILTER = 0x11ffffff;
 
   public static final int ACCENT = DARK_ORANGE;
 

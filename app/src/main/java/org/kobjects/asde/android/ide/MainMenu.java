@@ -14,6 +14,7 @@ import org.kobjects.asde.android.ide.filepicker.SimpleLeaf;
 import org.kobjects.asde.android.ide.filepicker.SimpleNode;
 import org.kobjects.asde.android.ide.function.FunctionSignatureFlow;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
+import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
 
 import java.io.File;
@@ -22,7 +23,6 @@ import java.util.List;
 public class MainMenu {
 
   private static final Node GENERAL_STORAGE_NODE = new SimpleLeaf("General Storage…", null);
-  private static final Node IMPORT_NODE = new SimpleLeaf("Import…", null);
 
   private static String[] REFURBISHED = {
       "poker.bas", "Poker"
@@ -151,25 +151,22 @@ public class MainMenu {
       "word.bas", "Word guessing game"
   };
 
+  public static Node getExamplesNode(MainActivity mainActivity) {
+    return new AssetNode(mainActivity.getAssets(), "Examples", "examples",
+        new SimpleNode("Refurbished classics",
+            addRemoteExamples(
+                "https://raw.githubusercontent.com/stefanhaustein/basic-classics/master/src/main/assets/classics/",
+                REFURBISHED)),
+        new SimpleNode("vintage-basic.net",
+            addRemoteExamples(
+                "http://vintage-basic.net/bcg/",
+                VINTAGE_BASIC)));
+  }
 
-  public static SimpleNode getRootNode(MainActivity mainActivity, boolean forSave) {
-    Node applicationStorage = new FileNode("Application Storage", new File(mainActivity.getProgramStoragePath().getAbsolutePath()));
 
-    return forSave
-        ? new SimpleNode("Storage Selection", applicationStorage, GENERAL_STORAGE_NODE)
-        : new SimpleNode("Storage Selection",
-          applicationStorage,
-        GENERAL_STORAGE_NODE,
-          new AssetNode(mainActivity.getAssets(), "Examples", "examples",
-            new SimpleNode("Refurbished classics",
-              addRemoteExamples(
-              "https://raw.githubusercontent.com/stefanhaustein/basic-classics/master/src/main/assets/classics/",
-                  REFURBISHED)),
-            new SimpleNode("vintage-basic.net",
-              addRemoteExamples(
-              "http://vintage-basic.net/bcg/",
-                VINTAGE_BASIC))),
-          IMPORT_NODE);
+  public static SimpleNode getRootNode(MainActivity mainActivity) {
+    return  new SimpleNode("Storage Selection",
+        new FileNode("Application Storage", new File(mainActivity.getProgramStoragePath().getAbsolutePath())), GENERAL_STORAGE_NODE);
   }
 
 
@@ -198,7 +195,9 @@ public class MainMenu {
 
     ProgramReference programReference = mainActivity.program.reference;
 
-    mainMenu.add("New Project" + (mainActivity.isUnsaved() ? "…" : "")).setOnMenuItemClickListener(item -> {
+    Menu projectMenu = mainMenu.addSubMenu("Project");
+
+    projectMenu.add("New" + (mainActivity.isUnsaved() ? "…" : "")).setOnMenuItemClickListener(item -> {
       confirmLosingUnsavedChanges(mainActivity, "New Project", () -> {
         mainActivity.eraseProgram();
         try {
@@ -212,7 +211,7 @@ public class MainMenu {
     });
 
 
-    mainMenu.add("Open…").setOnMenuItemClickListener(item -> {
+    projectMenu.add("Open…").setOnMenuItemClickListener(item -> {
       confirmLosingUnsavedChanges(mainActivity, "Open File", () -> {
         new FilePicker(mainActivity, node -> {
           if (node == GENERAL_STORAGE_NODE) {
@@ -220,25 +219,30 @@ public class MainMenu {
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setType("text/plain");
             mainActivity.startActivityForResult(intent, MainActivity.OPEN_EXTERNALLY_REQUEST_CODE);
-          } else if (node == IMPORT_NODE) {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.setType("text/plain");
-            mainActivity.startActivityForResult(intent, MainActivity.LOAD_EXTERNALLY_REQUEST_CODE);
           } else {
             mainActivity.load(new ProgramReference(node.getName(), node.getUrl(), node.isWritable()), true, false);
           }
         }).setTitle("Open")
-            .setRootNode(getRootNode(mainActivity, false))
+            .setRootNode(getRootNode(mainActivity))
             .setOptions()
             .show();
       });
       return true;
     });
 
+    projectMenu.add("Import…").setOnMenuItemClickListener(item -> {
+      Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+      intent.addCategory(Intent.CATEGORY_OPENABLE);
+      intent.setType("text/plain");
+      mainActivity.startActivityForResult(intent, MainActivity.LOAD_EXTERNALLY_REQUEST_CODE);
+      return true;
+    });
+
+
+    /*
     List<ProgramReference> recentList = mainActivity.preferences.getRecents();
     if (recentList.size() >= 2) {
-      Menu openRecentMenu = mainMenu.addSubMenu("Open Recent");
+      Menu openRecentMenu = projectMenu.addSubMenu("Open Recent");
       for (ProgramReference reference : mainActivity.preferences.getRecents()) {
         if (!reference.equals(programReference)) {
           openRecentMenu.add(reference.name).setOnMenuItemClickListener(item -> {
@@ -248,14 +252,13 @@ public class MainMenu {
         }
       }
     }
+     */
 
-
-    mainMenu.add("Save as…").setOnMenuItemClickListener(item -> {
+    projectMenu.add("Save as…").setOnMenuItemClickListener(item -> {
       new FilePicker(mainActivity, node -> {
         if (node == GENERAL_STORAGE_NODE) {
           Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
           intent.setType("text/plain");
-
           mainActivity.startActivityForResult(intent, MainActivity.SAVE_EXTERNALLY_REQUEST_CODE);
         } else {
           try {
@@ -266,14 +269,14 @@ public class MainMenu {
           }
         }
       }).setTitle("Save as")
-          .setRootNode(getRootNode(mainActivity, true))
+          .setRootNode(getRootNode(mainActivity))
           .show();
       return true;
     });
 
 
-    mainMenu.add("Delete…")
-        .setEnabled(programReference.urlWritable && programReference.url.startsWith("file://"))
+    projectMenu.add("Delete…")
+        .setEnabled(programReference.urlWritable && programReference.url.startsWith("file://") && !programReference.name.isEmpty())
         .setOnMenuItemClickListener(item -> {
           File file = new File(programReference.url.substring(6));
           new InputFlowBuilder(mainActivity, "Delete " + programReference.name)
@@ -290,24 +293,48 @@ public class MainMenu {
           return true;
         });
 
-    mainMenu.add("Home shortcut…").setOnMenuItemClickListener(item -> {
+    projectMenu.add("Home shortcut…").setOnMenuItemClickListener(item -> {
       mainActivity.addShortcut();
       return true;
     }).setEnabled(!mainActivity.program.reference.name.isEmpty());
 
-    Menu addMenu = mainMenu.addSubMenu("Add");
-    addMenu.add("Class").setOnMenuItemClickListener(item -> {
+    mainMenu.add("Examples…").setOnMenuItemClickListener(item -> {
+      confirmLosingUnsavedChanges(mainActivity, "Open Example", () -> {
+        new FilePicker(mainActivity, node ->
+            mainActivity.load(new ProgramReference(node.getName(), node.getUrl(), node.isWritable()), true, false))
+            .setTitle("Open Example")
+            .setRootNode(getExamplesNode(mainActivity))
+            .setOptions()
+            .show();
+      });
+      return true;
+    });
+
+    Menu displayMenu = mainMenu.addSubMenu("Display");
+    displayMenu.add("Clear").setOnMenuItemClickListener(item -> {
+      mainActivity.console.clearScreen(Console.ClearScreenType.CLS_STATEMENT);
+      return true;
+    });
+    displayMenu.add("Debug graphics window").setCheckable(true).setChecked(mainActivity.windowMode).setOnMenuItemClickListener(item -> {
+      mainActivity.windowMode = !mainActivity.windowMode;
+      mainActivity.arrangeUi();
+      return true;
+    });;
+
+
+    Menu addMenu = mainMenu.addSubMenu("Edit");
+    addMenu.add("Add Class…").setOnMenuItemClickListener(item -> {
       CreateClassFlow.start(mainActivity);
       return true;
     });
-    addMenu.add("Function").setOnMenuItemClickListener(item -> {
+    addMenu.add("Add Function…").setOnMenuItemClickListener(item -> {
       FunctionSignatureFlow.createFunction(mainActivity);
       return true;
     });
 
 
     if (mainActivity.sharedCodeViewAvailable()) {
-      OutputView.populateMenu(mainActivity, mainMenu.addSubMenu("Output"));
+      TextOutputView.populateMenu(mainActivity, mainMenu.addSubMenu("Output"));
     }
     popupMenu.show();
   }

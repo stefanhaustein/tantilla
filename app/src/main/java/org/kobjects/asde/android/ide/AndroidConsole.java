@@ -54,7 +54,7 @@ public class AndroidConsole implements Console {
 
   void clearOutput() {
     mainActivity.runOnUiThread(() -> {
-      mainActivity.outputView.clear();
+      mainActivity.textOutputView.clear();
       mainActivity.controlView.resultView.setText("");
       pendingOutput = null;
     });
@@ -95,7 +95,7 @@ public class AndroidConsole implements Console {
       inputEditText[0].setOnEditorActionListener((view, actionId, event) -> {
         if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED
             && event.getAction() == KeyEvent.ACTION_DOWN) {
-          mainActivity.outputView.removeContent(inputView);
+          mainActivity.textOutputView.removeContent(inputView);
           inputQueue.add(inputEditText[0].getText().toString());
           return true;
         }
@@ -105,10 +105,10 @@ public class AndroidConsole implements Console {
       inputView.addView(inputEditText[0], new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
       IconButton inputButton = new IconButton(mainActivity, R.drawable.baseline_keyboard_return_24);
       inputView.addView(inputButton);
-      mainActivity.outputView.addContent(inputView);
+      mainActivity.textOutputView.addContent(inputView);
       inputView.requestFocus();
       inputButton.setOnClickListener(item -> {
-        mainActivity.outputView.removeContent(inputView);
+        mainActivity.textOutputView.removeContent(inputView);
         inputQueue.add(inputEditText[0].getText().toString());
       });
     });
@@ -223,16 +223,9 @@ public class AndroidConsole implements Console {
       autoScroll = true;
     }
     if (autoScroll) {
-      mainActivity.mainScrollView.post(new Runnable() {
-
-        @Override
-        public void run() {
-          if (mainActivity.scrollContentView.getHeight() != mainActivity.mainScrollView.getHeight() + mainActivity.mainScrollView.getScrollY()) {
+      mainActivity.mainScrollView.postDelayed(() -> {
             mainActivity.mainScrollView.scrollTo(0, Integer.MAX_VALUE / 2);
-            mainActivity.mainScrollView.post(this);
-          }
-        }
-      });
+            }, 100);
     }
   }
 
@@ -260,7 +253,7 @@ public class AndroidConsole implements Console {
       pendingOutput = new EmojiTextView(mainActivity);
       pendingOutput.setTypeface(Typeface.MONOSPACE);
 
-      mainActivity.outputView.addContent(pendingOutput);
+      mainActivity.textOutputView.addContent(pendingOutput);
       postScrollIfAtEnd();
     }
     int cut = s.indexOf('\n');
