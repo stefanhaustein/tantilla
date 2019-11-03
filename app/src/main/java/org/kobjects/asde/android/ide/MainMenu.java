@@ -26,6 +26,7 @@ public class MainMenu {
   private static final Node IMPORT_NODE = new SimpleLeaf("Import…", null);
 
   private static String[] REFURBISHED = {
+      "hangman.bas", "Hangman",
       "poker.bas", "Poker"
   };
 
@@ -166,7 +167,7 @@ public class MainMenu {
 
 
   public static SimpleNode getRootNode(MainActivity mainActivity, boolean forSave) {
-    Node internalStorgae = new FileNode("Application Internal Storage", new File(mainActivity.getProgramStoragePath().getAbsolutePath()));
+    Node internalStorgae = new FileNode("Application Storage", new File(mainActivity.getProgramStoragePath().getAbsolutePath()));
     return forSave
         ? new SimpleNode("Storage Selection", internalStorgae, GENERAL_STORAGE_NODE)
         : new SimpleNode("Storage Selection", internalStorgae, GENERAL_STORAGE_NODE, getExamplesNode(mainActivity), IMPORT_NODE);
