@@ -10,7 +10,10 @@ import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.annotatedtext.Span;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.Colors;
+import org.kobjects.asde.android.ide.help.HelpDialog;
 import org.kobjects.asde.lang.Format;
+import org.kobjects.asde.lang.StaticSymbol;
+import org.kobjects.asde.lang.node.SymbolNode;
 
 public class AnnotatedStringConverter {
 
@@ -25,7 +28,7 @@ public class AnnotatedStringConverter {
         if (span.annotation == Annotations.ACCENT_COLOR) {
           s.setSpan(new ForegroundColorSpan(Colors.ACCENT), span.start, span.end, 0);
         } else if (span.annotation instanceof Exception) {
-          s.setSpan(new BackgroundColorSpan(Colors.DARK_ORANGE), span.start, span.end, 0);
+          s.setSpan(new BackgroundColorSpan(Colors.RED), span.start, span.end, 0);
           if (linkedLine > NO_LINKS) {
             ((Exception) span.annotation).printStackTrace();
             s.setSpan(new ClickableSpan() {
@@ -44,6 +47,20 @@ public class AnnotatedStringConverter {
               }
             }, span.start, span.end, 0);
           }
+        } else if (span.annotation instanceof StaticSymbol && linkedLine > NO_LINKS) {
+          s.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+              HelpDialog.showHelp(mainActivity, (StaticSymbol) span.annotation);
+            }
+          }, span.start, span.end, 0);
+        } else if (span.annotation instanceof Runnable && linkedLine > NO_LINKS) {
+          s.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+              ((Runnable) span.annotation).run();
+            }
+          }, span.start, span.end, 0);
         }
       }
       return s;

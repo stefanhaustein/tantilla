@@ -472,6 +472,8 @@ public class MainActivity extends AppCompatActivity {
       rootLayout.setDividerDrawable(new ColorDrawable(Colors.PRIMARY_LIGHT_FILTER));
       rootLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
 
+      boolean running = runButton.getVisibility() != View.VISIBLE;
+
       if (displayHeight >= displayWidth) {
 
         textOutputView.titleView.setVisibility(View.VISIBLE);
@@ -494,6 +496,8 @@ public class MainActivity extends AppCompatActivity {
         rootLayout.setClipChildren(false);
 
       } else {
+        textOutputView.titleView.setVisibility(View.GONE);
+
         rootLayout.setOrientation(LinearLayout.HORIZONTAL);
 
         LinearLayout leftView = new LinearLayout(this);
@@ -509,7 +513,7 @@ public class MainActivity extends AppCompatActivity {
 
         controlView.arrangeButtons(true);
 
-        boolean showCodeView = windowMode || runButton.isOrWillBeShown();
+        boolean showCodeView = windowMode || !running;
 
         if (showCodeView) {
           codeView = new LinearLayout(this);
@@ -538,7 +542,7 @@ public class MainActivity extends AppCompatActivity {
       mainView.addView(runButton, runButtonParams);
 
 
-      if (windowMode) {
+      if (windowMode && running) {
         resizableFrameLayout.addView(screen.view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         FrameLayout.LayoutParams resizableFrameLayoutParmas =

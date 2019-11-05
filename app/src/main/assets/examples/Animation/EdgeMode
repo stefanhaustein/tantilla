@@ -1,15 +1,17 @@
 ASDE
-100 let ghost = screen.newSprite()
-110 ghost.face = "👻"
-115 ghost.size = 30
-120 ghost.edgeMode = EdgeMode.WRAP
-130 ghost.dx = 17
-140 ghost.dy = 19
-150 ghost.say "EdgeMode.WRAP"
-200 let ball = screen.newSprite()
-210 ball.face = "🎱"
-215 ball.size = 30
-220 ball.edgeMode = EdgeMode.BOUNCE
-230 ball.dx = -23
-240 ball.dy = 19
-250 ball.say "EdgeMode.BOUNCE"
+100 let ball = screen.newSprite()
+110 ball.face = "🎱"
+115 ball.size = 30
+120 ball.edgeMode = EdgeMode.BOUNCE
+125 ball.rotation = 300
+130 ball.dx = -57
+140 ball.dy = 31
+150 ball.say "EdgeMode.BOUNCE"
+200 let ghost = screen.newSprite()
+210 ghost.face = "👻"
+215 ghost.size = 30
+220 ghost.edgeMode = EdgeMode.WRAP
+224 ghost.opacity = 0.7
+230 ghost.dx = 13
+240 ghost.dy = 7
+250 ghost.say "EdgeMode.WRAP"

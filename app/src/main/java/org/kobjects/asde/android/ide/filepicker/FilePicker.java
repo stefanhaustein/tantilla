@@ -33,7 +33,7 @@ import java.util.List;
 public class FilePicker {
 
   public enum Option {
-    DELETE, CREATE_FILE, CREATE_FOLDER, CONFIRM_OVERWRITE
+    DELETE, CREATE_FILE, CREATE_FOLDER, CONFIRM_OVERWRITE, SINGLE_CLICK
   }
 
   private static final String NEW_FILE = "New File";
@@ -44,9 +44,8 @@ public class FilePicker {
   private final List<Node> path = new ArrayList<>();
 
   private String title = "Open File";
-  private long lastChange;
 
-  private EnumSet<Option> options = EnumSet.allOf(Option.class);
+  private EnumSet<Option> options = EnumSet.noneOf(Option.class);
 
   public FilePicker(Context context, Consumer<Node> callback) {
     this.context = context;
@@ -187,7 +186,8 @@ public class FilePicker {
       @Override
       public void onItemClick(AdapterView<?> adapterView, View view, int index, long l) {
         Node node = chidren.get(index);
-        if (selectedNode[0] == node) {
+        if (selectedNode[0] == node || options.contains(Option.SINGLE_CLICK)) {
+          selectedNode[0] = node;
           alert[0].dismiss();
           itemAction.run();
         } else {
@@ -328,12 +328,14 @@ public class FilePicker {
     }
 
 
-    builder.setPositiveButton("Open", new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialogInterface, int i) {
-        itemAction.run();
-      }
-    });
+    if (!options.contains(Option.SINGLE_CLICK)) {
+      builder.setPositiveButton("Open", new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialogInterface, int i) {
+          itemAction.run();
+        }
+      });
+    }
 
     alert[0] = builder.show();
     alert[0].getButton(AlertDialog.BUTTON_NEUTRAL).setEnabled(false);

@@ -79,6 +79,7 @@ public class CodeLineView extends LinearLayout {
 
     spannable.setSpan(new LeadingMarginSpan.Standard(codeLine.indent * factor, (codeLine.indent + 2) * factor),0,spannable.length(),0);
 
+    statementView.setTextScaleX(0.9f);
     statementView.setText(spannable);
     if (spannable.getSpans(0, spannable.length(), ClickableSpan.class).length > 0) {
       statementView.setMovementMethod(LinkMovementMethod.getInstance());

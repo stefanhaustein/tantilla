@@ -1,49 +1,58 @@
 package org.kobjects.asde.android.ide;
 
-import android.view.Menu;
+import android.graphics.Typeface;
+import android.text.SpannableString;
+import android.text.style.StyleSpan;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
+import android.widget.TextView;
 
+import androidx.appcompat.widget.Toolbar;
+
+import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
-import org.kobjects.asde.android.ide.widget.TitleView;
-import org.kobjects.asde.lang.io.Console;
+import org.kobjects.asde.android.ide.widget.IconButton;
 
 import java.util.ArrayList;
 
 public class TextOutputView extends LinearLayout {
 
   private final MainActivity mainActivity;
-  final TitleView titleView;
+  final Toolbar titleView;
   private final ArrayList<View> viewList = new ArrayList<>();
 
   private ExpandableList contentView;
 
-
-   static void populateMenu(MainActivity mainActivity, Menu menu) {
-
-     menu.add("Clear").setOnMenuItemClickListener(menuItem -> {
-       mainActivity.console.clearScreen(Console.ClearScreenType.CLS_STATEMENT);
-       return true;
-     });
-  }
 
   TextOutputView(MainActivity mainActivity) {
     super(mainActivity);
     this.mainActivity = mainActivity;
     setOrientation(LinearLayout.VERTICAL);
 
-    titleView = new TitleView(mainActivity, Colors.PRIMARY_FILTER, view -> {
-      PopupMenu popupMenu = new PopupMenu(mainActivity, view);
-      populateMenu(mainActivity, popupMenu.getMenu());
-      popupMenu.show();
-    });
+    titleView = new Toolbar(mainActivity);
+
+ //   SpannableString spannableString = new SpannableString("Text Output");
+   // spannableString.setSpan(new StyleSpan(Typeface.NORMAL), 0, 11, 0);
+
+   /* TextView titleTextView = new TextView(mainActivity);
+    titleTextView.setText("Output");
+    titleTextView.setTextSize(24);*/
+
+//    titleView.addView(titleTextView);
+   // titleView.setTitle(spannableString);
+//    titleView.setTitleTextColor(0xffaaaaaa);
     titleView.setTitle("Output");
+    titleView.setBackgroundColor(Colors.PRIMARY_FILTER);
 
-    titleView.setOnClickListener(view -> syncContent());
+    Toolbar.LayoutParams clearParams =new Toolbar.LayoutParams(Toolbar.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT);
+    clearParams.gravity = Gravity.END;
+    IconButton clearButton = new IconButton(getContext(), R.drawable.baseline_delete_24);
+    clearButton.setOnClickListener(view -> clear());
+    titleView.addView(clearButton, clearParams);
 
-    addView(titleView);
+    addView(titleView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Dimensions.dpToPx(mainActivity, 48)));
   }
 
   public void syncContent() {

@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.type;
 
+import org.kobjects.asde.lang.Documented;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.typesystem.FunctionType;
@@ -7,9 +8,10 @@ import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Parameter;
 import org.kobjects.typesystem.Type;
 
-public enum Builtin implements Function {
+public enum Builtin implements Function, Documented {
 
-    ABS(1, Types.NUMBER), ASC(1, Types.STRING),
+    ABS("Calculates the absolute value of the input",
+        1, Types.NUMBER), ASC(1, Types.STRING),
     CHR$(1, Types.NUMBER), COS(1, Types.NUMBER),
     EXP(1, Types.NUMBER),
     INT(1, Types.NUMBER),
@@ -26,9 +28,11 @@ public enum Builtin implements Function {
 
 
   public int minParams;
-    public FunctionType signature;
+  public FunctionType signature;
+  private final String documentation;
 
-    Builtin(int minParams, Type... parameterTypes) {
+    Builtin(String documentation, int minParams, Type... parameterTypes) {
+      this.documentation = documentation;
       this.minParams = minParams;
       Parameter[] parameters = new Parameter[parameterTypes.length];
       for (int i = 0; i < parameters.length; i++) {
@@ -36,6 +40,11 @@ public enum Builtin implements Function {
       }
       this.signature = new FunctionTypeImpl(name().endsWith("$") ? Types.STRING : Types.NUMBER, minParams, parameterTypes);
     }
+
+  Builtin(int minParams, Type... parameterTypes) {
+    this(null, minParams, parameterTypes);
+  }
+
 
   @Override
   public FunctionType getType() {
@@ -86,4 +95,8 @@ public enum Builtin implements Function {
     }
   }
 
+  @Override
+  public String getDocumentation() {
+    return null;
+  }
 }

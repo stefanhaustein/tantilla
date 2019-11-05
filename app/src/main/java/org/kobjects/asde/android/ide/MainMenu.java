@@ -13,12 +13,12 @@ import org.kobjects.asde.android.ide.filepicker.Node;
 import org.kobjects.asde.android.ide.filepicker.SimpleLeaf;
 import org.kobjects.asde.android.ide.filepicker.SimpleNode;
 import org.kobjects.asde.android.ide.function.FunctionSignatureFlow;
+import org.kobjects.asde.android.ide.help.HelpDialog;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
 
 import java.io.File;
-import java.util.List;
 
 public class MainMenu {
 
@@ -193,13 +193,11 @@ public class MainMenu {
   }
 
 
-  public static void show(MainActivity mainActivity, View menuButton) {
+  public static void showProjectMenu(MainActivity mainActivity, View menuButton) {
     PopupMenu popupMenu = new PopupMenu(mainActivity, menuButton);
-    Menu mainMenu = popupMenu.getMenu();
+    Menu projectMenu = popupMenu.getMenu();
 
     ProgramReference programReference = mainActivity.program.reference;
-
-    Menu projectMenu = mainMenu.addSubMenu("Project");
 
     projectMenu.add("New" + (mainActivity.isUnsaved() ? "…" : "")).setOnMenuItemClickListener(item -> {
       confirmLosingUnsavedChanges(mainActivity, "New Project", () -> {
@@ -233,7 +231,7 @@ public class MainMenu {
           }
         }).setTitle("Open")
             .setRootNode(getRootNode(mainActivity, false))
-            .setOptions()
+            .setOptions(FilePicker.Option.SINGLE_CLICK)
             .show();
       });
       return true;
@@ -280,6 +278,7 @@ public class MainMenu {
         }
       }).setTitle("Save as")
           .setRootNode(getRootNode(mainActivity, true))
+          .setOptions(FilePicker.Option.CONFIRM_OVERWRITE, FilePicker.Option.CREATE_FILE, FilePicker.Option.CREATE_FOLDER)
           .show();
       return true;
     });
@@ -308,6 +307,19 @@ public class MainMenu {
       return true;
     }).setEnabled(!mainActivity.program.reference.name.isEmpty());
 
+    popupMenu.show();
+
+  }
+
+
+  public static void show(MainActivity mainActivity, View menuButton) {
+
+    PopupMenu popupMenu = new PopupMenu(mainActivity, menuButton);
+    Menu mainMenu = popupMenu.getMenu();
+
+//    Menu projectMenu = mainMenu.addSubMenu("Project");
+
+
     /*
     mainMenu.add("Examples…").setOnMenuItemClickListener(item -> {
       confirmLosingUnsavedChanges(mainActivity, "Open Example", () -> {
@@ -334,20 +346,21 @@ public class MainMenu {
     });;
 
 
-    Menu addMenu = mainMenu.addSubMenu("Edit");
-    addMenu.add("Add Class…").setOnMenuItemClickListener(item -> {
+    mainMenu.add("Help").setOnMenuItemClickListener(item -> {
+      HelpDialog.showHelp(mainActivity);
+      return true;
+    });
+
+   // Menu addMenu = mainMenu.addSubMenu("Edit");
+    mainMenu.add("Add Class…").setOnMenuItemClickListener(item -> {
       CreateClassFlow.start(mainActivity);
       return true;
     });
-    addMenu.add("Add Function…").setOnMenuItemClickListener(item -> {
+    mainMenu.add("Add Function…").setOnMenuItemClickListener(item -> {
       FunctionSignatureFlow.createFunction(mainActivity);
       return true;
     });
 
-
-    if (mainActivity.sharedCodeViewAvailable()) {
-      TextOutputView.populateMenu(mainActivity, mainMenu.addSubMenu("Output"));
-    }
     popupMenu.show();
   }
 
