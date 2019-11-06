@@ -13,10 +13,16 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.lang.GlobalSymbol;
 import org.kobjects.asde.lang.StaticSymbol;
+import org.kobjects.asde.lang.type.Array;
+import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.type.Function;
 import org.kobjects.asde.lang.type.Types;
+import org.kobjects.typesystem.EnumType;
 import org.kobjects.typesystem.FunctionType;
+import org.kobjects.typesystem.InstanceType;
 import org.kobjects.typesystem.MetaType;
+import org.kobjects.typesystem.Property;
+import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
 
 import java.util.ArrayList;
@@ -32,6 +38,7 @@ public class HelpDialog {
   public static void showHelp(MainActivity mainActivity) {
     new HelpDialog(mainActivity).navigateTo(null);
   }
+
 
 
   final MainActivity mainActivity;
@@ -68,11 +75,81 @@ public class HelpDialog {
     alertDialog.show();
   }
 
+  void addLink(AnnotatedStringBuilder asb, Object linked) {
+    if (linked instanceof StaticSymbol) {
+      StaticSymbol symbol = (StaticSymbol) linked;
+      if (symbol.getValue() instanceof Function) {
+        addFunctionLink(asb, (StaticSymbol) linked);
+      } else if (symbol.getValue() instanceof Type) {
+        addLink(asb, symbol.getValue());
+      } else {
+        asb.append(symbol.getName());
+        asb.append(": ");
+        addLink(asb, symbol.getType());
+      }
+    } else if (linked instanceof PropertyDescriptor) {
+      addPropertyLink(asb, (PropertyDescriptor) linked);
+    } else {
+      addLink(asb, String.valueOf(linked), linked);
+    }
+  }
+
+  private void addPropertyLink(AnnotatedStringBuilder asb, PropertyDescriptor linked) {
+    addLink(asb, linked.name(), linked);
+    if (linked.type() instanceof FunctionType && !(linked.type() instanceof ArrayType)) {
+      appendShortSignature(asb, (FunctionType) linked.type());
+    } else {
+      asb.append(": ");
+      asb.append(String.valueOf(linked.type()));
+    }
+
+  }
+
+  void addLink(AnnotatedStringBuilder asb, String text, Object linked) {
+    asb.append(text, (Runnable) () -> navigateTo(linked));
+  }
+
+  void appendShortSignature(AnnotatedStringBuilder asb, FunctionType functionType) {
+    asb.append('(');
+    for (int i = 0; i < functionType.getParameterCount(); i++) {
+      if (i > 0) {
+        asb.append(", ");
+      }
+      asb.append(functionType.getParameterType(i).toString());
+    }
+    asb.append(")");
+
+    if (functionType.getReturnType() != Types.VOID) {
+      asb.append(" -> ").append(functionType.getReturnType().toString());
+    }
+  }
+
+  void addFunctionLink(AnnotatedStringBuilder sb, StaticSymbol functionSymbol) {
+    Function function = (Function) functionSymbol.getValue();
+
+    addLink(sb, functionSymbol.getName(), functionSymbol);
+
+    appendShortSignature(sb, function.getType());
+  }
+
+
 
   HelpDialog navigateTo(Object o) {
     navigationStack.add(o);
     updateContent();
     return this;
+  }
+
+  void addAll(String subtitle, Predicate<StaticSymbol> filter) {
+    addSubtitle(subtitle);
+
+    for (StaticSymbol s : mainActivity.program.getSymbols()) {
+      if (s.getScope() == GlobalSymbol.Scope.BUILTIN && filter.test(s)) {
+        AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
+        addLink(asb, s);
+        addParagraph(asb.build());
+      }
+    }
   }
 
   HelpDialog updateContent() {
@@ -82,113 +159,114 @@ public class HelpDialog {
       alertDialog.setTitle("Help");
       linearLayout.removeAllViews();
 
-      subtitle("Constants");
+      addAll("Constants", s -> !(s.getValue() instanceof Function) && !(s.getType() instanceof MetaType));
 
-      for (StaticSymbol s : mainActivity.program.getSymbols()) {
-        if (s.getScope() == GlobalSymbol.Scope.BUILTIN && !(s.getValue() instanceof Function) && !(s.getType() instanceof MetaType)) {
-          addSymbolDescription(s, false);
-        }
-      }
+      addAll("Classes", s -> s.getValue() instanceof InstanceType);
 
-      subtitle("Types");
+      addAll("Enums", s -> s.getValue() instanceof EnumType);
 
-      for (StaticSymbol s : mainActivity.program.getSymbols()) {
-        if (s.getScope() == GlobalSymbol.Scope.BUILTIN && s.getType() instanceof MetaType) {
-          addSymbolDescription(s, false);
-        }
-      }
-
-      subtitle("Functions");
-
-      for (StaticSymbol s : mainActivity.program.getSymbols()) {
-        if (s.getScope() == GlobalSymbol.Scope.BUILTIN && s.getValue() instanceof Function) {
-          addFunctionDescription(s, false);
-        }
-      }
-
-
-    } else if (o instanceof StaticSymbol) {
-      alertDialog.setTitle(((StaticSymbol) o).getName());
-      addSymbolDescription((StaticSymbol) o, true);
-    } else if (o instanceof Type) {
-      alertDialog.setTitle(o.toString());
-      addTypeDescription((Type) o, true);
+      addAll("Functions", s -> s.getValue() instanceof Function);
+    } else {
+      renderObject(o);
     }
 
     alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setEnabled(navigationStack.size() > 1);
     return this;
   }
 
-  private void subtitle(String text) {
+  private void addSubtitle(String text) {
     TextView textView = new TextView(mainActivity);
     textView.setText(text);
     textView.setPadding(0, 50, 0, 50);
     linearLayout.addView(textView);
   }
 
-  void addLink(AnnotatedStringBuilder asb, String text, Object linked) {
-    asb.append(text, (Runnable) () -> navigateTo(linked));
+
+  void renderObject(Object o) {
+    if (o instanceof StaticSymbol) {
+      StaticSymbol symbol = (StaticSymbol) o;
+      if (symbol.getValue() instanceof Function) {
+        renderFunction(symbol);
+      } else if (symbol.getValue() instanceof Type) {
+        renderObject(symbol.getValue());
+      } else {
+        throw new RuntimeException("Don't know how to render " + symbol);
+      }
+    } else if (o instanceof InstanceType) {
+      renderClass((InstanceType) o);
+    } else if (o instanceof PropertyDescriptor) {
+      renderProperty((PropertyDescriptor) o);
+    } else if (o instanceof EnumType) {
+      renderEnum((EnumType) o);
+    } else {
+      alertDialog.setTitle("Unknown");
+      AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
+      asb.append(String.valueOf(o));
+      addParagraph(asb.build());
+    }
   }
 
-  void addTypeDescription(Type type, boolean full) {
+  private void renderProperty(PropertyDescriptor o) {
+    if (o.type() instanceof FunctionType && !(o.type() instanceof ArrayType)) {
+      renderMethod(o);
+    }
+
+    alertDialog.setTitle("Property " + o.name());
+
     AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
     asb.append("Type: ");
-    asb.append(type.toString());
-    addText(asb.build());
+    addLink(asb, o.type());
+
+    addParagraph(asb.build());
   }
 
-  void addFunctionDescription(StaticSymbol functionSymbol, boolean full) {
+  private void renderMethod(PropertyDescriptor o) {
+    alertDialog.setTitle("Method " + o.name());
 
-      Function function = (Function) functionSymbol.getValue();
+    AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
 
-      AnnotatedStringBuilder sb = new AnnotatedStringBuilder();
-      if (full) {
-        sb.append(functionSymbol.getName());
-      } else {
-        addLink(sb, functionSymbol.getName(), functionSymbol);
-      }
-      sb.append("(");
 
-      FunctionType functionType = function.getType();
-      for (int i = 0; i < functionType.getParameterCount(); i++) {
-        if (i > 0) {
-          sb.append(", ");
-        }
-        sb.append(functionType.getParameterType(i).toString());
-      }
-      sb.append(")");
+  }
 
-      if (functionType.getReturnType() != Types.VOID) {
-        sb.append(" -> ").append(functionType.getReturnType().toString());
-      }
 
-      addText(sb.build());
+  void renderFunction(StaticSymbol functionSymbol) {
+    Function function = (Function) functionSymbol.getValue();
+
+    alertDialog.setTitle("Function " + functionSymbol.getName());
+
+    AnnotatedStringBuilder sb = new AnnotatedStringBuilder();
+    sb.append(functionSymbol.getName());
+    appendShortSignature(sb, function.getType());
+
+    addParagraph(sb.build());
+  }
+
+
+  void renderEnum(EnumType enumType) {
+    alertDialog.setTitle("Enum " + enumType.toString());
+
+    for (Object literal : enumType.literals) {
+      AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
+      asb.append(String.valueOf(literal));
+      addParagraph(asb.build());
+    }
+  }
+
+
+    void renderClass(InstanceType classifier) {
+    alertDialog.setTitle("Class " + classifier.toString());
+
+
+    for (PropertyDescriptor descriptor : classifier.getPropertyDescriptors()) {
+      AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
+      addPropertyLink(asb, descriptor);
+      addParagraph(asb.build());
     }
 
-    void addDescription(Object o, boolean full) {
-      if (o instanceof StaticSymbol) {
-        addSymbolDescription((StaticSymbol) o, full);
-      } else if (o instanceof Type) {
-        addTypeDescription((Type) o, full);
-      }
-    }
+  }
 
-    void addSymbolDescription(StaticSymbol symbol, boolean full) {
-      if (symbol.getValue() instanceof Function) {
-        addFunctionDescription(symbol, full);
-      } else if (symbol.getValue() instanceof Type) {
-        addTypeDescription((Type) symbol.getValue(), full);
-      } else {
-        AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-        asb.append(symbol.getName());
-        asb.append(": ");
-        addLink(asb, symbol.getType().toString(), symbol.getType());
 
-        addText(asb.build());
-      }
-    }
-
-  private void addText(AnnotatedString annotatedString) {
+  private void addParagraph(AnnotatedString annotatedString) {
     TextView textView = new TextView(mainActivity);
     textView.setText(AnnotatedStringConverter.toSpanned(mainActivity, annotatedString, AnnotatedStringConverter.NO_LINKED_LINE));
     textView.setMovementMethod(LinkMovementMethod.getInstance());
@@ -196,4 +274,7 @@ public class HelpDialog {
   }
 
 
+  interface Predicate<T> {
+    boolean test(T value);
+  }
 }

@@ -46,8 +46,8 @@ public class Types {
     return type1 == null || type2 == null || type1.equals(type2);
   }
 
-  public static EnumType wrapEnum(Object[] values) {
-    EnumType type = new EnumType(values);
+  public static EnumType wrapEnum(String name, Object[] values) {
+    EnumType type = new EnumType(name, values);
     for (Object value : values) {
       typeMap.put(value, type);
     }

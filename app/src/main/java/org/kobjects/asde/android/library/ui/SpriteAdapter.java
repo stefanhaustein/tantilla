@@ -30,7 +30,7 @@ public class SpriteAdapter extends Instance implements Animated {
     TYPE.addProperties(SpriteAdapter.SpriteMetaProperty.values());
   }
 
-  public static EnumType EDGE_MODE = Types.wrapEnum(EdgeMode.values());
+  public static EnumType EDGE_MODE = Types.wrapEnum("EdgeMode", EdgeMode.values());
 
   final Sprite sprite;
 

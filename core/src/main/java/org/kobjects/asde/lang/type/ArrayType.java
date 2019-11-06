@@ -8,6 +8,8 @@ import org.kobjects.typesystem.MetaType;
 import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.TreeMap;
 
 public class ArrayType implements FunctionType, InstanceType {
@@ -87,6 +89,15 @@ public class ArrayType implements FunctionType, InstanceType {
       default:
         throw new IllegalArgumentException("Unrecognized array property: '" + name + "'");
     }
+  }
+
+  @Override
+  public Collection<? extends PropertyDescriptor> getPropertyDescriptors() {
+    ArrayList<PropertyDescriptor> result = new ArrayList<>();
+    result.add(getPropertyDescriptor("append"));
+    result.add(getPropertyDescriptor("remove"));
+    result.add(getPropertyDescriptor("length"));
+    return result;
   }
 
   @Override

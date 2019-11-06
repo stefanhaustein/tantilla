@@ -12,7 +12,7 @@ import org.kobjects.typesystem.Type;
 
 public class TextBoxAdapter extends Instance {
 
-    public static final InstanceTypeImpl TYPE =new InstanceTypeImpl("Sprite");
+    public static final InstanceTypeImpl TYPE =new InstanceTypeImpl("TextBox");
     static {
         TYPE.addProperties(TextMetaProperty.values());
     }

@@ -4,8 +4,10 @@ import java.util.Arrays;
 
 public class EnumType implements Type, Typed {
   public final Object[] literals;
+  private final String name;
 
-  public EnumType(Object... literals) {
+  public EnumType(String name, Object... literals) {
+    this.name = name;
     this.literals = literals;
   }
 
@@ -31,5 +33,10 @@ public class EnumType implements Type, Typed {
   @Override
   public Object getDefaultValue() {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public String toString() {
+    return name;
   }
 }

@@ -334,6 +334,12 @@ public class MainMenu {
     });
      */
 
+    mainMenu.add("Help").setOnMenuItemClickListener(item -> {
+      HelpDialog.showHelp(mainActivity);
+      return true;
+    });
+
+
     Menu displayMenu = mainMenu.addSubMenu("Display");
     displayMenu.add("Clear").setOnMenuItemClickListener(item -> {
       mainActivity.console.clearScreen(Console.ClearScreenType.CLS_STATEMENT);
@@ -346,10 +352,6 @@ public class MainMenu {
     });;
 
 
-    mainMenu.add("Help").setOnMenuItemClickListener(item -> {
-      HelpDialog.showHelp(mainActivity);
-      return true;
-    });
 
    // Menu addMenu = mainMenu.addSubMenu("Edit");
     mainMenu.add("Add Class…").setOnMenuItemClickListener(item -> {

@@ -13,6 +13,7 @@ import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
@@ -32,6 +33,11 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
   @Override
   public ClassPropertyDescriptor getPropertyDescriptor(String name) {
     return propertyMap.get(name);
+  }
+
+  @Override
+  public Collection<? extends PropertyDescriptor> getPropertyDescriptors() {
+    return propertyMap.values();
   }
 
   @Override

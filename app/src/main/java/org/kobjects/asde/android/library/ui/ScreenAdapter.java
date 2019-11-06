@@ -13,8 +13,8 @@ import org.kobjects.typesystem.*;
 
 public class ScreenAdapter extends Instance implements View.OnLayoutChangeListener{
 
-  public static EnumType X_ALIGN = Types.wrapEnum(XAlign.values());
-  public static EnumType Y_ALIGN = Types.wrapEnum(YAlign.values());
+  public static EnumType X_ALIGN = Types.wrapEnum("XAlign", XAlign.values());
+  public static EnumType Y_ALIGN = Types.wrapEnum("YAlign", YAlign.values());
 
   private final Screen screen;
   private float scale;
@@ -26,7 +26,7 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
   final PhysicalProperty<Double> widthProperty = new PhysicalProperty<>(0.0);
   final PhysicalProperty<Double> heightProperty = new PhysicalProperty<>(0.0);
 
-  public static final InstanceTypeImpl TYPE = new InstanceTypeImpl("Screen");
+  public static final InstanceTypeImpl TYPE = new InstanceTypeImpl("ScreenType");
 
   static {
     TYPE.addProperties(ScreenMetaProperty.values());

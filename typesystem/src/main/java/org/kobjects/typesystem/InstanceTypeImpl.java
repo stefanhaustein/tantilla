@@ -1,5 +1,8 @@
 package org.kobjects.typesystem;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.TreeMap;
 
 public class InstanceTypeImpl extends TypeImpl implements InstanceType {
@@ -20,6 +23,11 @@ public class InstanceTypeImpl extends TypeImpl implements InstanceType {
   }
 
   public PropertyDescriptor getPropertyDescriptor(String name) {
-        return propertyDescriptors.get(name);
-    }
+    return propertyDescriptors.get(name);
+  }
+
+  @Override
+  public Collection<? extends PropertyDescriptor> getPropertyDescriptors() {
+    return propertyDescriptors.values();
+  }
 }
