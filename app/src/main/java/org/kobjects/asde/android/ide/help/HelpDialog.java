@@ -27,19 +27,24 @@ import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import static android.graphics.Typeface.BOLD;
 
 
 public class HelpDialog {
 
+  public static void showHelp(MainActivity mainActivity, List<Object> stack) {
+    new HelpDialog(mainActivity, stack);
+  }
+
   public static void showHelp(MainActivity mainActivity, StaticSymbol symbol) {
-    new HelpDialog(mainActivity).navigateTo(symbol);
+    showHelp(mainActivity, Collections.singletonList(symbol));
   }
 
 
-  public static void showHelp(MainActivity mainActivity) {
-    new HelpDialog(mainActivity).navigateTo(null);
+    public static void showHelp(MainActivity mainActivity ) {
+    showHelp(mainActivity, Collections.singletonList(null));
   }
 
 
@@ -50,8 +55,9 @@ public class HelpDialog {
   final ArrayList<Object> navigationStack = new ArrayList<>();
 
 
-  HelpDialog(MainActivity mainActivity) {
+  HelpDialog(MainActivity mainActivity, List<Object> stack) {
     this.mainActivity = mainActivity;
+    navigationStack.addAll(stack);
     linearLayout = new LinearLayout(mainActivity);
     linearLayout.setOrientation(LinearLayout.VERTICAL);
     linearLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
@@ -68,14 +74,15 @@ public class HelpDialog {
 
 
     alertBuilder.setView(scrollView);
-    alertBuilder.setPositiveButton("Ok", null);
-    /*  alertBuilder.setNegativeButton("Back", (a, b) -> {
-      navigationStack.remove(navigationStack.size() - 1);
-      updateContent();
-    }); */
+    alertBuilder.setPositiveButton("Close", null);
+      alertBuilder.setNegativeButton("Back", (a, b) -> {
+        showHelp(mainActivity, navigationStack.subList(0, navigationStack.size() - 1));
+    });
 
     alertDialog = alertBuilder.create();
     alertDialog.show();
+
+    updateContent();
   }
 
   void appendLink(AnnotatedStringBuilder asb, Object linked) {
@@ -162,12 +169,12 @@ public class HelpDialog {
   }
 
 
-
   HelpDialog navigateTo(Object o) {
     navigationStack.add(o);
     updateContent();
     return this;
   }
+
 
   void addAll(String subtitle, Predicate<StaticSymbol> filter) {
     addSubtitle(subtitle);
@@ -206,7 +213,7 @@ public class HelpDialog {
   private void addSubtitle(String text) {
     TextView textView = new TextView(mainActivity);
     SpannableString spanned = new SpannableString(text);
-    spanned.setSpan(new StyleSpan(BOLD), 0, text.length(), 0);
+    //spanned.setSpan(new StyleSpan(BOLD), 0, text.length(), 0);
     textView.setText(spanned);
     int padding = Dimensions.dpToPx(mainActivity, 12);
     textView.setPadding(0, (linearLayout.getChildCount() == 0) ? 0 : padding, 0, padding);
@@ -265,6 +272,12 @@ public class HelpDialog {
     alertDialog.setTitle("Function " + functionSymbol.getName());
 
     addSignaure(functionSymbol.getName(), function.getType());
+
+    AnnotatedString documentation = function.getDocumentation();
+    if (documentation != null) {
+      addSubtitle("Description");
+      addParagraph(documentation);
+    }
   }
 
 

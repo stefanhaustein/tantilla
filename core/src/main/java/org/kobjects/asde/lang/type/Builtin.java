@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.type;
 
+import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.asde.lang.Documented;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.Program;
@@ -8,9 +9,9 @@ import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Parameter;
 import org.kobjects.typesystem.Type;
 
-public enum Builtin implements Function, Documented {
+public enum Builtin implements Function {
 
-    ABS("Calculates the absolute value of the input",
+    ABS("Calculates the absolute value of the input.\n\nExamples:\n\n * abs(3.4) = 3.4\n * abs(-4) = 4\n * abs(0) = 0",
         1, Types.NUMBER), ASC(1, Types.STRING),
     CHR$(1, Types.NUMBER), COS(1, Types.NUMBER),
     EXP(1, Types.NUMBER),
@@ -29,10 +30,10 @@ public enum Builtin implements Function, Documented {
 
   public int minParams;
   public FunctionType signature;
-  private final String documentation;
+  private final AnnotatedString documentation;
 
     Builtin(String documentation, int minParams, Type... parameterTypes) {
-      this.documentation = documentation;
+      this.documentation = documentation == null ? null : new AnnotatedString(documentation);
       this.minParams = minParams;
       Parameter[] parameters = new Parameter[parameterTypes.length];
       for (int i = 0; i < parameters.length; i++) {
@@ -96,7 +97,7 @@ public enum Builtin implements Function, Documented {
   }
 
   @Override
-  public String getDocumentation() {
-    return null;
+  public AnnotatedString getDocumentation() {
+    return documentation;
   }
 }

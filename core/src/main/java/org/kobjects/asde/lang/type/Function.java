@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.type;
 
+import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Typed;
@@ -17,4 +18,6 @@ public interface Function extends Typed {
     default int getLocalVariableCount() {
         return getType().getParameterCount();
     }
+
+    default AnnotatedString getDocumentation() { return null; }
 }
