@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
-import android.text.style.StyleSpan;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
