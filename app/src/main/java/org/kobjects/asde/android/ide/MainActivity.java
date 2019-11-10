@@ -8,6 +8,8 @@ import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.DrawableWrapper;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.OpenableColumns;
@@ -20,6 +22,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -144,8 +147,15 @@ public class MainActivity extends AppCompatActivity {
     scrollContentView.setOrientation(LinearLayout.VERTICAL);
 
     runButton = new FloatingActionButton(this);
-    runButton.setImageResource(R.drawable.baseline_play_arrow_24);
-    runButton.setSize(FloatingActionButton.SIZE_MINI);
+    runButton.setImageResource(R.drawable.ic_asde);
+//    runButton.setPadding(0, 0, 0, 0);
+    runButton.setScaleType(ImageView.ScaleType.CENTER);
+  //  runButton.setIm
+    //runButton.setMaxWidth(10);
+    //runButton.setMaxHeight(10);
+
+//    runButton.setScaleType(ImageView.ScaleType.CENTER);
+  //  runButton.setSize(FloatingActionButton.SIZE_MINI);
 
     ColorDrawable divider = new ColorDrawable(0x0) {
       @Override
@@ -537,8 +547,8 @@ public class MainActivity extends AppCompatActivity {
 
       FrameLayout.LayoutParams runButtonParams = new FrameLayout.LayoutParams(
           ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.RIGHT | Gravity.BOTTOM);
-      runButtonParams.bottomMargin = -24;
-      runButtonParams.rightMargin = 3 * 24;
+      runButtonParams.bottomMargin = Dimensions.dpToPx(this, -12);
+      runButtonParams.rightMargin = Dimensions.dpToPx(this, 24);
       mainView.addView(runButton, runButtonParams);
 
 

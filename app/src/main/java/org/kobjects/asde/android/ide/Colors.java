@@ -26,7 +26,7 @@ public class Colors {
   public static final int LIGHT_BROWN = 0xffda9f83;
   public static final int DARK_BROWN = 0xffda9f83;
 
-  public static final int BACKGROUND = 0xff222222;
+  public static final int BACKGROUND = 0xff111111;
 
 
   public static final int PRIMARY_FILTER = 0x33ffffff;

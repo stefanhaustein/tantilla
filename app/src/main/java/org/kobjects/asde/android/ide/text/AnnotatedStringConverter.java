@@ -58,7 +58,7 @@ public class AnnotatedStringConverter {
               }
             }, span.start, span.end, 0);
           }
-        } else if (linkedLine > NO_LINKS) {
+        } else if (span.annotation != null && linkedLine > NO_LINKS) {
           s.setSpan(new ClickableSpan() {
             @Override
             public void onClick(View widget) {
@@ -69,7 +69,7 @@ public class AnnotatedStringConverter {
               }
             }
           }, span.start, span.end, 0);
-        } 
+        }
       }
       return s;
     }

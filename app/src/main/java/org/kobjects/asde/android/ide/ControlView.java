@@ -32,6 +32,7 @@ public class ControlView extends LinearLayout  {
   public ControlView(MainActivity mainActivity) {
     super(mainActivity);
     setOrientation(VERTICAL);
+    //this.setBackgroundColor(Colors.PRIMARY_LIGHT_FILTER);
     this.mainActivity = mainActivity;
 
     enterButton = new IconButton(mainActivity, R.drawable.baseline_keyboard_return_24);
