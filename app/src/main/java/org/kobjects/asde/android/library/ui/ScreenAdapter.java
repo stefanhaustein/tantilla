@@ -26,7 +26,8 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
   final PhysicalProperty<Double> widthProperty = new PhysicalProperty<>(0.0);
   final PhysicalProperty<Double> heightProperty = new PhysicalProperty<>(0.0);
 
-  public static final InstanceTypeImpl TYPE = new InstanceTypeImpl("ScreenType");
+  public static final InstanceTypeImpl TYPE = new InstanceTypeImpl("Screen (Singleton)",
+    "Representation of the main device screen.");
 
   static {
     TYPE.addProperties(ScreenMetaProperty.values());
@@ -47,7 +48,7 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
         switch ((ScreenMetaProperty) property) {
             case width: return widthProperty;
             case height: return heightProperty;
-            case createPen: return new Method((FunctionType) ScreenMetaProperty.createPen.type) {
+            case newPen: return new Method((FunctionType) ScreenMetaProperty.newPen.type) {
                 @Override
                 public Object call(EvaluationContext evaluationContext, int paramCount) {
                     return new PenAdapter(screen.createPen());
@@ -90,7 +91,7 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
 
     private enum ScreenMetaProperty implements PropertyDescriptor {
         width(Types.NUMBER), height(Types.NUMBER),
-        createPen(new FunctionTypeImpl(PenAdapter.TYPE)),
+        newPen(new FunctionTypeImpl(PenAdapter.TYPE)),
         newSprite(new FunctionTypeImpl(SpriteAdapter.TYPE)),
         newTextBox(new FunctionTypeImpl(TextBoxAdapter.TYPE));
 

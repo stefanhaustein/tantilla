@@ -1,16 +1,16 @@
 package org.kobjects.typesystem;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.TreeMap;
 
 public class InstanceTypeImpl extends TypeImpl implements InstanceType {
 
   private final TreeMap<String, PropertyDescriptor> propertyDescriptors = new TreeMap<>();
+  private final CharSequence documentation;
 
-  public InstanceTypeImpl(String name) {
+  public InstanceTypeImpl(String name, CharSequence documentation) {
     super(name, null);
+    this.documentation = documentation;
   }
 
   /**
@@ -30,4 +30,9 @@ public class InstanceTypeImpl extends TypeImpl implements InstanceType {
   public Collection<? extends PropertyDescriptor> getPropertyDescriptors() {
     return propertyDescriptors.values();
   }
+
+  public CharSequence getDocumentation() {
+    return documentation;
+  }
 }
+

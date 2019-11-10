@@ -9,7 +9,7 @@ public class AnnotatedString implements CharSequence {
     private final String text;
     private final Set<Span> spans;
 
-    public AnnotatedString(String text) {
+    private AnnotatedString(String text) {
         this.text = text;
         this.spans = Collections.emptySet();
     }
@@ -20,7 +20,7 @@ public class AnnotatedString implements CharSequence {
     }
 
     public static AnnotatedString of(CharSequence chars) {
-        return chars instanceof AnnotatedString ? (AnnotatedString) chars : new AnnotatedString(chars.toString());
+        return chars == null ? null : chars instanceof AnnotatedString ? (AnnotatedString) chars : new AnnotatedString(chars.toString());
     }
 
     @Override

@@ -61,7 +61,7 @@ public enum Builtin implements Function {
   private final AnnotatedString documentation;
 
     Builtin(String documentation, int minParams, Type... parameterTypes) {
-      this.documentation = documentation == null ? null : new AnnotatedString(documentation);
+      this.documentation = AnnotatedString.of(documentation);
       this.minParams = minParams;
       Parameter[] parameters = new Parameter[parameterTypes.length];
       for (int i = 0; i < parameters.length; i++) {

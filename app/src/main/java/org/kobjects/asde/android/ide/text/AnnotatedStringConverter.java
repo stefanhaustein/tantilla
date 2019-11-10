@@ -15,14 +15,25 @@ import org.kobjects.asde.lang.Format;
 import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.node.SymbolNode;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class AnnotatedStringConverter {
 
   public static final int NO_LINKS = -1;
   public static final int NO_LINKED_LINE = 0;
 
+  public static SpannableString toSpanned(MainActivity mainActivity, AnnotatedString annotated, HelpDialog helpDialog) {
+    return toSpanned(mainActivity, annotated, NO_LINKED_LINE, helpDialog);
+
+  }
 
   public static SpannableString toSpanned(MainActivity mainActivity, AnnotatedString annotated, int linkedLine) {
+    return toSpanned(mainActivity, annotated, linkedLine, null);
+  }
 
+  private static SpannableString toSpanned(MainActivity mainActivity, AnnotatedString annotated, int linkedLine, HelpDialog helpDialog) {
       SpannableString s = new SpannableString(annotated.toString());
       for (final Span span : annotated.spans()) {
         if (span.annotation == Annotations.ACCENT_COLOR) {
@@ -47,21 +58,18 @@ public class AnnotatedStringConverter {
               }
             }, span.start, span.end, 0);
           }
-        } else if (span.annotation instanceof StaticSymbol && linkedLine > NO_LINKS) {
+        } else if (linkedLine > NO_LINKS) {
           s.setSpan(new ClickableSpan() {
             @Override
             public void onClick(View widget) {
-              HelpDialog.showHelp(mainActivity, (StaticSymbol) span.annotation);
+              if (helpDialog == null) {
+                HelpDialog.showHelp(mainActivity, span.annotation);
+              } else {
+                helpDialog.navigateTo(span.annotation);
+              }
             }
           }, span.start, span.end, 0);
-        } else if (span.annotation instanceof Runnable && linkedLine > NO_LINKS) {
-          s.setSpan(new ClickableSpan() {
-            @Override
-            public void onClick(View widget) {
-              ((Runnable) span.annotation).run();
-            }
-          }, span.start, span.end, 0);
-        }
+        } 
       }
       return s;
     }

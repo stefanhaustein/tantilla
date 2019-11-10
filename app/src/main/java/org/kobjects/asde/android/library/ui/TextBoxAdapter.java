@@ -12,7 +12,8 @@ import org.kobjects.typesystem.Type;
 
 public class TextBoxAdapter extends Instance {
 
-    public static final InstanceTypeImpl TYPE =new InstanceTypeImpl("TextBox");
+    public static final InstanceTypeImpl TYPE =new InstanceTypeImpl("TextBox",
+        "Class representing a box of text on the screen.");
     static {
         TYPE.addProperties(TextMetaProperty.values());
     }

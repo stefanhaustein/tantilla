@@ -3,7 +3,7 @@ DIM grid(21, 21)
 LET allPieces = {{1, 0, 1, 1, 1, 2, 0, 2}, {1, 0, 1, 1, 2, 1, 2, 2}, {1, 0, 1, 1, 1, 2, 2, 2}, {2, 0, 2, 1, 1, 1, 1, 2}, {1, 0, 0, 1, 1, 1, 2, 1}, {1, 0, 2, 0, 1, 1, 2, 1}, {2, 0, 2, 1, 2, 2, 2, 3}}
 LET pc = 0
 LET pp = 0
-LET pen = screen.createPen()
+LET pen = screen.newPen()
 DIM pieceX(4)
 DIM pieceY(4)
 DIM previewX(4)

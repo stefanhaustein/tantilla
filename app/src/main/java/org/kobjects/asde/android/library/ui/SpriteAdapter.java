@@ -23,14 +23,16 @@ import org.kobjects.typesystem.Type;
 import java.util.Collection;
 
 public class SpriteAdapter extends Instance implements Animated {
+  public static EnumType EDGE_MODE = Types.wrapEnum("EdgeMode", EdgeMode.values());
+
   public static final InstanceTypeImpl TYPE =
-      new InstanceTypeImpl("Sprite");
+      new InstanceTypeImpl("Sprite",
+          "Class representing character objects on the screen.");
 
   static {
     TYPE.addProperties(SpriteAdapter.SpriteMetaProperty.values());
   }
 
-  public static EnumType EDGE_MODE = Types.wrapEnum("EdgeMode", EdgeMode.values());
 
   final Sprite sprite;
 

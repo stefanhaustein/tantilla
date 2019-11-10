@@ -22,7 +22,11 @@ public class DpadAdapter extends Instance {
     final TouchProperty fire;
     final Property<Boolean> visible;
 
-    static InstanceTypeImpl TYPE = new InstanceTypeImpl("DpadType");
+    static InstanceTypeImpl TYPE = new InstanceTypeImpl("Dpad (Singleton)",
+        "Virtual directional pad that is displayed at the bottom of the screen"
+            + "when the visible property is set. Other properties are true when the "
+            + "corresponding key is pressed.");
+
     static {
         TYPE.addProperties(DpadMetaProperty.values());
     }

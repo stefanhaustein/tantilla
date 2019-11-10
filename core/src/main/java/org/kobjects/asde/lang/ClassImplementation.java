@@ -41,6 +41,11 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
   }
 
   @Override
+  public CharSequence getDocumentation() {
+    return null;
+  }
+
+  @Override
   public Type getType() {
     return new MetaType(this);
   }

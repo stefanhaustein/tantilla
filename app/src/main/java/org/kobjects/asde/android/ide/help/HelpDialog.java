@@ -37,8 +37,8 @@ public class HelpDialog {
     new HelpDialog(mainActivity, stack);
   }
 
-  public static void showHelp(MainActivity mainActivity, StaticSymbol symbol) {
-    showHelp(mainActivity, Collections.singletonList(symbol));
+  public static void showHelp(MainActivity mainActivity, Object o) {
+    showHelp(mainActivity, Collections.singletonList(o));
   }
 
 
@@ -120,7 +120,7 @@ public class HelpDialog {
   }
 
   void appendLink(AnnotatedStringBuilder asb, String text, Object linked) {
-    asb.append(text, (Runnable) () -> navigateTo(linked));
+    asb.append(text, linked);
   }
 
   void addSignaure(String name, FunctionType functionType) {
@@ -168,7 +168,7 @@ public class HelpDialog {
   }
 
 
-  HelpDialog navigateTo(Object o) {
+  public HelpDialog navigateTo(Object o) {
     navigationStack.add(o);
     updateContent();
     return this;
@@ -296,6 +296,8 @@ public class HelpDialog {
     void renderClass(InstanceType classifier) {
     alertDialog.setTitle("Class " + classifier.toString());
 
+    addParagraph(AnnotatedString.of(classifier.getDocumentation()));
+
     for (boolean methods : new boolean[]{false, true}) {
 
       boolean first = true;
@@ -320,10 +322,12 @@ public class HelpDialog {
 
 
   private void addParagraph(AnnotatedString annotatedString) {
-    TextView textView = new TextView(mainActivity);
-    textView.setText(AnnotatedStringConverter.toSpanned(mainActivity, annotatedString, AnnotatedStringConverter.NO_LINKED_LINE));
-    textView.setMovementMethod(LinkMovementMethod.getInstance());
-    linearLayout.addView(textView);
+    if (annotatedString != null) {
+      TextView textView = new TextView(mainActivity);
+      textView.setText(AnnotatedStringConverter.toSpanned(mainActivity, annotatedString, this));
+      textView.setMovementMethod(LinkMovementMethod.getInstance());
+      linearLayout.addView(textView);
+    }
   }
 
 

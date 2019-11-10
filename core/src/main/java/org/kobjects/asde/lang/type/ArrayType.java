@@ -101,6 +101,11 @@ public class ArrayType implements FunctionType, InstanceType {
   }
 
   @Override
+  public CharSequence getDocumentation() {
+    return null;
+  }
+
+  @Override
   public boolean hasDefaultValue() {
     return false;
   }

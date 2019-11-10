@@ -14,7 +14,10 @@ import org.kobjects.typesystem.Type;
 
 public class PenAdapter extends Instance {
 
-    static final InstanceTypeImpl TYPE = new InstanceTypeImpl("Pen");
+    static final InstanceTypeImpl TYPE = new InstanceTypeImpl("Pen",
+        "Object that provides methods for drawing on the screen. "
+        +"Its properties influences the drawing style");
+
     static {
         TYPE.addProperties(PenPropertyDescriptor.values());
     }
