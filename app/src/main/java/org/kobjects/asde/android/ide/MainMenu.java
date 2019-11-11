@@ -278,12 +278,12 @@ public class MainMenu {
         }
       }).setTitle("Save as")
           .setRootNode(getRootNode(mainActivity, true))
-          .setOptions(FilePicker.Option.CONFIRM_OVERWRITE, FilePicker.Option.CREATE_FILE, FilePicker.Option.CREATE_FOLDER)
+          .setOptions(FilePicker.Option.CONFIRM_OVERWRITE, FilePicker.Option.CREATE_FILE, FilePicker.Option.CREATE_FOLDER, FilePicker.Option.DELETE)
           .show();
       return true;
     });
 
-
+/*
     projectMenu.add("Delete…")
         .setEnabled(programReference.urlWritable && programReference.url.startsWith("file://") && !programReference.name.isEmpty())
         .setOnMenuItemClickListener(item -> {
@@ -301,6 +301,7 @@ public class MainMenu {
               });
           return true;
         });
+ */
 
     projectMenu.add("Home shortcut…").setOnMenuItemClickListener(item -> {
       mainActivity.addShortcut();

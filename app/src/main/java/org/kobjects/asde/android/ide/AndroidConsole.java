@@ -25,6 +25,7 @@ import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.lang.ForcedStopException;
 import org.kobjects.asde.lang.Format;
 import org.kobjects.asde.lang.FunctionImplementation;
+import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.WrappedExecutionException;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
@@ -247,6 +248,16 @@ public class AndroidConsole implements Console {
     });
   }
 
+  @Override
+  public void edit(StaticSymbol symbol) {
+    mainActivity.runOnUiThread(() -> mainActivity.programView.selectImpl(symbol));
+  }
+
+  @Override
+  public FunctionImplementation getSelectedFunction() {
+    return mainActivity.programView.currentFunctionView.functionImplementation;
+  }
+
 
   private void printImpl(AnnotatedString s) {
     if (pendingOutput == null) {
@@ -294,7 +305,7 @@ public class AndroidConsole implements Console {
 
   @Override
   public void highlight(FunctionImplementation function, int lineNumber) {
-    mainActivity.runOnUiThread(() -> mainActivity.programView.highlight(function, lineNumber));
+    mainActivity.runOnUiThread(() -> mainActivity.programView.highlightImpl(function, lineNumber));
   }
 
   @Override

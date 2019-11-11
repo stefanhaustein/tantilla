@@ -55,6 +55,56 @@ public enum Builtin implements Function {
     return Math.round(((Double) o).floatValue());
   }
 
+  private static String left(String s, int count) {
+    int pos = 0;
+    for (int i = 0; i < count && pos < s.length(); i++) {
+      int cp = Character.codePointAt(s, pos);
+      pos += Character.charCount(cp);
+    }
+    return pos >= s.length() ? s : s.substring(0, pos);
+  }
+
+  private static int len(String s) {
+    int pos = 0;
+    int count = 0;
+    int len = s.length();
+    while (pos < len) {
+      int cp = Character.codePointAt(s, pos);
+      pos += Character.charCount(cp);
+      count++;
+    }
+    return count;
+  }
+
+  private static String mid(String s, int start) {
+    int pos = 0;
+    int len = s.length();
+    for (int i = 1; i < start && pos < len; i++) {
+      int cp = Character.codePointAt(s, pos);
+      pos += Character.charCount(cp);
+    }
+    return pos >= len ? "" : s.substring(pos);
+  }
+
+  private static String right(String s, int count) {
+    return mid(s, len(s) - count + 1);
+  }
+
+  private static String mid(String s, int start, int count) {
+    int p0 = 0;
+    int len = s.length();
+    for (int i = 1; i < start && p0 < len; i++) {
+      int cp = Character.codePointAt(s, p0);
+      p0 += Character.charCount(cp);
+    }
+    int p1 = p0;
+    while (p1 < len && count > 0) {
+      int cp = Character.codePointAt(s, p1);
+      p1 += Character.charCount(cp);
+      count--;
+    }
+    return p0 >= len ? "" : s.substring(p0, Math.min(p1, len));
+  }
 
   public int minParams;
   public FunctionType signature;
@@ -82,43 +132,55 @@ public enum Builtin implements Function {
 
   public Object call(EvaluationContext evaluationContext, int paramCount) {
     switch (this) {
-      case ABS: return Math.abs((Double) evaluationContext.getParameter(0));
+      case ABS:
+        return Math.abs((Double) evaluationContext.getParameter(0));
       case ASC: {
         String s = (String) evaluationContext.getParameter(0);
-        return s.length() == 0 ? 0.0 : (double) s.charAt(0);
+        return s.length() == 0 ? 0.0 : (double) Character.codePointAt(s, 0);
       }
-      case CHR$: return String.valueOf((char) ((Double)(evaluationContext.getParameter(0))).intValue());
-      case COS: return Math.cos((Double) evaluationContext.getParameter(0));
-      case EXP: return Math.exp((Double) evaluationContext.getParameter(0));
-      case INT: return Math.floor((Double) evaluationContext.getParameter(0));
-      case LEFT$: {
-        String s = (String) evaluationContext.getParameter(0);
-        return s.substring(0, Math.min(s.length(), asInt(evaluationContext.getParameter(1))));
-      }
-      case LEN: return Double.valueOf(((String) evaluationContext.getParameter(0)).length());
-      case LOG: return Math.log((Double) evaluationContext.getParameter(0));
+      case CHR$:
+        return String.valueOf(Character.toChars(((Double) (evaluationContext.getParameter(0))).intValue()));
+      case COS:
+        return Math.cos((Double) evaluationContext.getParameter(0));
+      case EXP:
+        return Math.exp((Double) evaluationContext.getParameter(0));
+      case INT:
+        return Math.floor((Double) evaluationContext.getParameter(0));
+      case LEFT$:
+        return left((String) evaluationContext.getParameter(0), asInt(evaluationContext.getParameter(1)));
+      case LEN:
+        return Double.valueOf(len((String) evaluationContext.getParameter(0)));
+      case LOG:
+        return Math.log((Double) evaluationContext.getParameter(0));
       case MID$: {
         String s = (String) evaluationContext.getParameter(0);
-        int start = Math.max(0, Math.min(asInt(evaluationContext.getParameter(1)) - 1, s.length()));
+        int start = asInt(evaluationContext.getParameter(1));
         if (paramCount == 2) {
-          return s.substring(start);
+          return mid(s, start);
         }
-        int count = asInt(evaluationContext.getParameter(2));
-        int end = Math.min(s.length(), start + count);
-        return s.substring(start, end);
+        return mid(s, start, asInt(evaluationContext.getParameter(2)));
       }
-      case SGN: return Math.signum((Double) evaluationContext.getParameter(0));
-      case SIN: return Math.sin((Double) evaluationContext.getParameter(0));
-      case SQR: return Math.sqrt((Double) evaluationContext.getParameter(0));
-      case STR$: return Program.toString(evaluationContext.getParameter(0));
+      case SGN:
+        return Math.signum((Double) evaluationContext.getParameter(0));
+      case SIN:
+        return Math.sin((Double) evaluationContext.getParameter(0));
+      case SQR:
+        return Math.sqrt((Double) evaluationContext.getParameter(0));
+      case STR$:
+        return Program.toString(evaluationContext.getParameter(0));
       case RIGHT$: {
-        String s = (String) evaluationContext.getParameter(0);
-        return s.substring(Math.min(s.length(), s.length() - asInt(evaluationContext.getParameter(1))));
+        return right(
+            (String) evaluationContext.getParameter(0),
+            asInt(evaluationContext.getParameter(1)));
       }
-      case RND: return Math.random();
-      case TAB: return evaluationContext.control.program.tab(asInt(evaluationContext.getParameter(0)));
-      case TAN: return Math.tan((Double) evaluationContext.getParameter(0));
-      case VAL: return Double.parseDouble((String) evaluationContext.getParameter(0));
+      case RND:
+        return Math.random();
+      case TAB:
+        return evaluationContext.control.program.tab(asInt(evaluationContext.getParameter(0)));
+      case TAN:
+        return Math.tan((Double) evaluationContext.getParameter(0));
+      case VAL:
+        return Double.parseDouble((String) evaluationContext.getParameter(0));
       default:
         throw new IllegalArgumentException("NYI: " + name());
     }

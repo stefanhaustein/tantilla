@@ -1,6 +1,7 @@
 package org.kobjects.asde.demo;
 
 import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.WrappedExecutionException;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
@@ -64,6 +65,8 @@ public class AsdeShell {
   static class StdioConsole implements Console {
 
     private final BufferedReader reader;
+    private FunctionImplementation selectedFunction;
+    private StaticSymbol selectedSymbol;
 
     StdioConsole(BufferedReader reader) {
       this.reader = reader;
@@ -132,6 +135,19 @@ public class AsdeShell {
     @Override
     public void edit(int i) {
       throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void edit(StaticSymbol symbol) {
+      this.selectedSymbol = symbol;
+      if (symbol.getValue() instanceof FunctionImplementation) {
+        selectedFunction = (FunctionImplementation) symbol.getValue();
+      }
+    }
+
+    @Override
+    public FunctionImplementation getSelectedFunction() {
+      return selectedFunction;
     }
 
     @Override

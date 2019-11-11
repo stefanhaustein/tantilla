@@ -2,10 +2,7 @@ package org.kobjects.asde.android.ide.program;
 
 import android.view.View;
 import android.view.ViewParent;
-import android.widget.LinearLayout;
 
-import org.kobjects.asde.android.ide.Colors;
-import org.kobjects.asde.android.ide.MainMenu;
 import org.kobjects.asde.android.ide.classifier.ClassView;
 import org.kobjects.asde.android.ide.function.CodeLineView;
 import org.kobjects.asde.android.ide.function.FunctionView;
@@ -16,7 +13,6 @@ import org.kobjects.asde.lang.ClassImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.asde.lang.event.ProgramChangeListener;
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.android.ide.widget.TitleView;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.event.StartStopListener;
@@ -157,41 +153,11 @@ public class ProgramView extends SymbolListView {
     expandOnSync = null;
   }
 
-
-  public void highlight(FunctionImplementation function, int lineNumber) {
+  public void highlightImpl(FunctionImplementation function, int lineNumber) {
     unHighlight();
-    FunctionView targetView = null;
-    if (currentFunctionView != null && currentFunctionView.functionImplementation == function) {
-      targetView = currentFunctionView;
-    } else {
-      for (int i = 0; i < getChildCount(); i++) {
-        if (getChildAt(i) instanceof FunctionView) {
-          FunctionView functionView = (FunctionView) getChildAt(i);
-          if (functionView.functionImplementation == function) {
-            targetView = functionView;
-            break;
-          }
-        } else if (getChildAt(i) instanceof ClassView) {
-          ClassView classView = (ClassView) getChildAt(i);
-          ClassImplementation classImplementation = (ClassImplementation) classView.symbol.getValue();
-          StaticSymbol symbolFound = null;
-          for (ClassImplementation.ClassPropertyDescriptor descriptor : classImplementation.propertyMap.values()) {
-            if (descriptor.getValue() == function) {
-              symbolFound = descriptor;
-              break;
-            }
-          }
-          targetView = (FunctionView) classView.getContentView().synchronizeTo(classImplementation.propertyMap.values(), classView.expandListener, symbolFound);
-          break;
-        }
-      }
-    }
-    if (targetView != null) {
-      boolean expanded = targetView.expanded;
-      if (!expanded) {
-        targetView.setExpanded(true, true);
-        targetView.requestChildFocus(targetView.titleView, targetView.titleView);
-      }
+    SymbolView selectedView = selectImpl(function.getDeclaringSymbol());
+    if (selectedView instanceof FunctionView) {
+      FunctionView targetView = (FunctionView) selectedView;
       highlightedLine = targetView.findLineIndex(lineNumber);
       if (highlightedLine != null) {
         highlightedLine.setHighlighted(true);
@@ -216,5 +182,46 @@ public class ProgramView extends SymbolListView {
       highlightedLine.setHighlighted(false);
       highlightedLine = null;
     }
+  }
+
+  /**
+   * Users should call console.edit(symbol) instead.
+   */
+  public SymbolView selectImpl(StaticSymbol symbol) {
+    SymbolView targetView = null;
+    if (currentSymbolView != null && currentSymbolView.symbol == symbol) {
+      targetView = currentSymbolView;
+    } else {
+      for (int i = 0; i < getChildCount(); i++) {
+        SymbolView childView = (SymbolView) getChildAt(i);
+        if (childView.symbol == symbol) {
+          targetView = childView;
+          break;
+        }
+        if (childView instanceof ClassView) {
+          ClassView classView = (ClassView) childView;
+          ClassImplementation classImplementation = (ClassImplementation) classView.symbol.getValue();
+          StaticSymbol symbolFound = null;
+          for (ClassImplementation.ClassPropertyDescriptor descriptor : classImplementation.propertyMap.values()) {
+            if (descriptor == symbol) {
+              symbolFound = descriptor;
+              break;
+            }
+          }
+          targetView = classView.getContentView().synchronizeTo(classImplementation.propertyMap.values(), classView.expandListener, symbolFound);
+          break;
+        }
+      }
+    }
+
+    if (targetView != null) {
+      boolean expanded = targetView.expanded;
+      if (!expanded) {
+        targetView.setExpanded(true, true);
+        targetView.requestChildFocus(targetView.titleView, targetView.titleView);
+      }
+    }
+
+    return targetView;
   }
 }

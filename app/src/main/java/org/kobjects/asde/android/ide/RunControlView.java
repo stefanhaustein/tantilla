@@ -55,7 +55,7 @@ public class RunControlView extends LinearLayout {
            mainActivity.programTitleView.refresh();
            mainActivity.programView.refresh();
 
-           mainActivity.programView.highlight(
+           mainActivity.programView.highlightImpl(
                mainActivity.shell.mainControl.lastCreatedContext.function,
                mainActivity.shell.mainControl.lastCreatedContext.currentLine);
 

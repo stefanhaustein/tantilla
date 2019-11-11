@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.io;
 
 import org.kobjects.asde.lang.FunctionImplementation;
+import org.kobjects.asde.lang.StaticSymbol;
 import org.kobjects.typesystem.Type;
 
 import java.io.InputStream;
@@ -33,6 +34,9 @@ public interface Console {
 
     void delete(int line);
     void edit(int i);
+    void edit(StaticSymbol symbol);
+
+    FunctionImplementation getSelectedFunction();
 
     void showError(String message, Exception e);
 }
