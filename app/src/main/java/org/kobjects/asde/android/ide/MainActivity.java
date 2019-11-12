@@ -69,6 +69,11 @@ public class MainActivity extends AppCompatActivity {
 
   static final FunctionType FUNCTION_VOID_0 = new FunctionTypeImpl(Types.VOID);
 
+  static final String[] HINTS = {
+      "Try the classic:\n\n  10 PRINT \"Hello\"\n  20 GOTO 10",
+      "ASDE is a simple programming environment for mobile devices.",
+  };
+
   public static void removeFromParent(View view) {
     if (view != null && view.getParent() instanceof ViewGroup) {
       ((ViewGroup) view.getParent()).removeView(view);
@@ -265,9 +270,15 @@ public class MainActivity extends AppCompatActivity {
       programReference = ProgramReference.parse(runIntent);
     } else {
       arrangeUi();
+
+      console.print("\n");
+      console.print(HINTS[(int)(Math.random()*HINTS.length)]);
+      console.print("\n\n\n\n");
+
+      /*
       console.print("  " + (Runtime.getRuntime().totalMemory() / 1024) + "K SYSTEM  "
           + Runtime.getRuntime().freeMemory() + " ASDE BYTES FREE\n\n");
-
+*/
       programReference = preferences.getProgramReference();
     }
 
