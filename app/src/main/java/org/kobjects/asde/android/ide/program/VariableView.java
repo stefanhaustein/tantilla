@@ -6,6 +6,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.symbol.DeleteFlow;
@@ -33,7 +34,8 @@ public class VariableView extends SymbolView {
         super(mainActivity, symbol);
         this.mainActivity = mainActivity;
         this.symbol = symbol;
-        titleView.setTypeIndicator(symbol instanceof PropertyDescriptor ? 'p': symbol.isConstant() ? 'C' : 'V', Colors.DARK_ORANGE);
+//        titleView.setTypeIndicator(symbol instanceof PropertyDescriptor ? 'p': symbol.isConstant() ? 'C' : 'V', Colors.DARK_ORANGE);
+        titleView.setTypeIndicator(symbol.isConstant() ? R.drawable.alpha_c : R.drawable.variable, Colors.DARK_ORANGE, symbol instanceof PropertyDescriptor);
         titleView.setMoreClickListener(view -> {
             PopupMenu popupMenu = new PopupMenu(getContext(), view);
             popupMenu.getMenu().add("Edit").setOnMenuItemClickListener(item -> {

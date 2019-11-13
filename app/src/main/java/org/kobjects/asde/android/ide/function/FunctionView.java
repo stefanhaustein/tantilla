@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
+import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.symbol.DeleteFlow;
@@ -35,9 +36,11 @@ public class FunctionView extends SymbolView {
     boolean isVoid = functionImplementation.getType().getReturnType() == Types.VOID;
     boolean isMethod = functionImplementation.isMethod();
 
-    titleView.setTypeIndicator(
-        isMain ? 'M' : isMethod ? 'm' : isVoid ? 'S' : 'F',
-        isMain ? Colors.PRIMARY_FILTER : Colors.DARK_PURPLE);
+
+      titleView.setTypeIndicator(
+          isMain ? R.drawable.playlist_play : R.drawable.function_variant,
+          isMain ? Colors.PRIMARY_FILTER : Colors.DARK_PURPLE,
+          isMethod);
 
     titleView.setMoreClickListener(clicked -> {
       PopupMenu popup = new PopupMenu(mainActivity, clicked);

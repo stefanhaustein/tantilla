@@ -7,8 +7,11 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import androidx.appcompat.widget.AppCompatTextView;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.Dimensions;
@@ -20,7 +23,7 @@ public class SymbolTitleView extends LinearLayout {
 
   final LinearLayout vertical;
   final AppCompatTextView textView;
-  AppCompatTextView typeView;
+  View typeView;
   IconButton moreButton;
 
   public SymbolTitleView(Context context, String name) {
@@ -52,8 +55,12 @@ public class SymbolTitleView extends LinearLayout {
   public void setTypeIndicator(char c, int color) {
     boolean small = c == Character.toLowerCase(c);
 
-    if (typeView == null) {
-      typeView = new AppCompatTextView(getContext());
+    if (typeView != null) {
+      removeView(typeView);
+    }
+
+
+    TextView typeView = new AppCompatTextView(getContext());
       typeView.setGravity(Gravity.CENTER);
       typeView.setTextSize(20);
       typeView.setTypeface(Typeface.MONOSPACE);
@@ -61,7 +68,6 @@ public class SymbolTitleView extends LinearLayout {
       LayoutParams typeLayoutParams =  new LayoutParams(size, size);
       typeLayoutParams.gravity = Gravity.TOP;
       addView(typeView, 0, typeLayoutParams);
-    }
 
     ShapeDrawable shape = new ShapeDrawable(new OvalShape());
     shape.getPaint().setColor(color);
@@ -72,7 +78,46 @@ public class SymbolTitleView extends LinearLayout {
     /*  if (small) {
       typeView.setPadding(Dimensions.dpToPx(getContext(), 8), 0, 0, 0);
     }*/
+
+    this.typeView = typeView;
   }
+
+  public void setTypeIndicator(int res, int color, boolean small) {
+
+    if (typeView != null) {
+      removeView(typeView);
+    }
+
+    ImageView typeView = new ImageView(getContext());
+    typeView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
+    typeView.setImageResource(res);
+
+    //  typeView.setGravity(Gravity.CENTER);
+     // typeView.setTextSize(20);
+     // typeView.setTypeface(Typeface.MONOSPACE);
+      int size = Dimensions.dpToPx(getContext(), 48);
+      LayoutParams typeLayoutParams =  new LayoutParams(size, size);
+      typeLayoutParams.gravity = Gravity.TOP;
+      addView(typeView, 0, typeLayoutParams);
+
+
+    ShapeDrawable shape = new ShapeDrawable(new OvalShape());
+    shape.getPaint().setColor(color);
+
+    if (small) {
+      typeView.setScaleX(0.75f);
+      typeView.setScaleY(0.75f);
+    }
+    int padding = Dimensions.dpToPx(getContext(), 6);
+
+    typeView.setBackground(new InsetDrawable(shape, padding));
+//    typeView.setText(String.valueOf(c));
+    /*  if (small) {
+      typeView.setPadding(Dimensions.dpToPx(getContext(), 8), 0, 0, 0);
+    }*/
+  }
+
 
   public void setMoreClickListener(OnClickListener moreClickListener) {
     if (moreButton == null) {
