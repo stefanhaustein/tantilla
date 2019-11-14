@@ -3,6 +3,7 @@ package org.kobjects.asde.lang.statement;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
 
@@ -63,11 +64,17 @@ public class Command extends Statement {
         break;
 
       case EDIT:
-        program.console.edit(children[0].evalInt(evaluationContext));
+        if (children.length == 0) {
+          program.console.edit(program.mainSymbol);
+        } else if (children[0] instanceof Identifier) {
+          program.console.edit(program.getSymbol(((Identifier) children[0]).getName()));
+        } else {
+          program.console.edit(children[0].evalInt(evaluationContext));
+        }
         break;
 
       case LIST: {
-        program.print(program.toString());
+        program.print(program.console.getSelectedFunction().toString());
         break;
       }
 

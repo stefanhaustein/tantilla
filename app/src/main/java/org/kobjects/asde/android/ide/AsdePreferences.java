@@ -10,6 +10,7 @@ import java.util.List;
 
 public class AsdePreferences {
 
+  private static final String HELLO_COPIED = "hello-copied";
   private static final String RECENT = "recent";
   private static final int MAX_RECENTS = 9;
 
@@ -24,6 +25,14 @@ public class AsdePreferences {
   public ProgramReference getProgramReference() {
     return ProgramReference.parse(sharedPreferences.getString(RECENT + 0,
         "\n" + mainActivity.console.nameToReference(null).url + "\ntrue"));
+  }
+
+  public boolean getHelloCopied() {
+    return sharedPreferences.getBoolean(HELLO_COPIED, false);
+  }
+
+  public void setHelloCopied(boolean newValue) {
+    sharedPreferences.edit().putBoolean(HELLO_COPIED, newValue).commit();
   }
 
   public void setProgramReference(ProgramReference programReference) {

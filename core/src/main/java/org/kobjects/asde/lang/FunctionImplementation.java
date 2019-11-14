@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang;
 
+import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.event.StartStopListener;
 import org.kobjects.asde.lang.statement.ElseStatement;
@@ -17,6 +18,7 @@ import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.PropertyDescriptor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -164,6 +166,12 @@ public class FunctionImplementation implements Function, Declaration {
     if (name != null) {
       sb.append("END ").append(kind).append("\n\n");
     }
+  }
+
+  public String toString() {
+    AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
+    toString(asb, null, Collections.emptyMap());
+    return asb.toString();
   }
 
   public synchronized void deleteLine(int lineNumber) {

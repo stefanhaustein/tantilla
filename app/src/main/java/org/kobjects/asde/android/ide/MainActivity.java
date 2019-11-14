@@ -57,7 +57,10 @@ import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -137,6 +140,28 @@ public class MainActivity extends AppCompatActivity {
     shell = new Shell(program);
 
     preferences = new AsdePreferences(this);
+
+    if (!preferences.getHelloCopied()) {
+      new Thread(() -> {
+        try {
+          preferences.setHelloCopied(true); 
+          InputStream is = getAssets().open("Hello");
+          OutputStream os = new FileOutputStream(new File(getProgramStoragePath(), "Hello"));
+          while (true) {
+            int i = is.read();
+            if (i < 0) {
+              break;
+            }
+            os.write(i);
+          }
+          is.close();
+          os.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+
+      }).start();
+    }
 
     EmojiManager.install(new TwitterEmojiProvider());
 

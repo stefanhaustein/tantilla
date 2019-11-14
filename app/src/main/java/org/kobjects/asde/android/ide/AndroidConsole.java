@@ -255,7 +255,9 @@ public class AndroidConsole implements Console {
 
   @Override
   public FunctionImplementation getSelectedFunction() {
-    return mainActivity.programView.currentFunctionView.functionImplementation;
+    return mainActivity.programView.currentFunctionView == null
+        ? mainActivity.program.main
+        : mainActivity.programView.currentFunctionView.functionImplementation;
   }
 
 

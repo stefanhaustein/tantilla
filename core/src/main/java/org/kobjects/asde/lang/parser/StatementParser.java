@@ -230,6 +230,7 @@ public class StatementParser {
   Command parseCommand(ExpressionParser.Tokenizer tokenizer, Command.Kind kind) {
     tokenizer.nextToken();
     switch (kind) {
+      case EDIT:
       case RUN:  // 0 or 1 param; Default is 0
       case SAVE:
         if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF &&
@@ -239,7 +240,6 @@ public class StatementParser {
         return new Command(kind);
 
       case DELETE:
-      case EDIT:
       case LOAD: // Exactly one param
         return new Command(kind, expressionParser.parse(tokenizer));
 
