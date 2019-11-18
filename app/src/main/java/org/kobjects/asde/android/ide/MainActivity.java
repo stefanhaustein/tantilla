@@ -6,10 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.DrawableWrapper;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.OpenableColumns;
@@ -25,7 +22,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vanniktech.emoji.EmojiManager;
@@ -144,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
     if (!preferences.getHelloCopied()) {
       new Thread(() -> {
         try {
-          preferences.setHelloCopied(true); 
+          preferences.setHelloCopied(true);
           InputStream is = getAssets().open("Hello");
           OutputStream os = new FileOutputStream(new File(getProgramStoragePath(), "Hello"));
           while (true) {
@@ -307,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
       programReference = preferences.getProgramReference();
     }
 
-    program.addProgramRenameListener((program, newReference) -> {
+    program.addProgramNameChangeListener((program, newReference) -> {
       programView.requestSynchronization();
       preferences.setProgramReference(newReference);
       runOnUiThread(() -> {

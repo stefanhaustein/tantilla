@@ -127,7 +127,7 @@ public class ControlView extends LinearLayout  {
     if (line.equalsIgnoreCase("go 64") || line.equalsIgnoreCase("go 64!")) {
       mainActivity.program.legacyMode = true;
       mainActivity.program.c64Mode = true;
-      mainActivity.program.notifyProgramRenamed();
+      mainActivity.program.notifyProgramNameChanged();
     }
     try {
       mainActivity.shell.enter(line, mainActivity.programView.currentFunctionView.symbol, result -> {

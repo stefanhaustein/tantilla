@@ -107,7 +107,7 @@ public class Program implements SymbolOwner {
     ProgramReference newReference = console.nameToReference(null);
     if (!reference.equals(newReference)) {
       reference = newReference;
-      notifyProgramRenamed();
+      notifyProgramNameChanged();
     }
     notifyProgramChanged();
   }
@@ -218,7 +218,7 @@ public class Program implements SymbolOwner {
       }
       if (!programReference.equals(reference)) {
         reference = programReference;
-        notifyProgramRenamed();
+        notifyProgramNameChanged();
       }
       OutputStreamWriter writer = new OutputStreamWriter(console.openOutputStream(programReference.url), "utf8");
       writer.write(toString());
@@ -252,6 +252,8 @@ public class Program implements SymbolOwner {
     console.updateProgress("Url: " + fileReference.url);
 
     loading = true;
+    System.out.println("########  lading set to true");
+
     hasUnsavedChanges = false;
 
     try {
@@ -259,16 +261,17 @@ public class Program implements SymbolOwner {
 
       deleteAll();
       this.reference = fileReference;
-      notifyProgramRenamed();
 
       new ProgramParser(this).parseProgram(reader);
 
 
     } finally {
        console.endProgress();
+        System.out.println("########  lading set to false");
        loading = false;
 
       // change notification triggers validation
+      notifyProgramNameChanged();
       notifyProgramChanged();
       hasUnsavedChanges = false;
     }
@@ -366,7 +369,7 @@ public class Program implements SymbolOwner {
   }
 
 
-  public void addProgramRenameListener(ProgramRenameListener listener) {
+  public void addProgramNameChangeListener(ProgramRenameListener listener) {
     programRenameListeners.add(listener);
   }
 
@@ -374,7 +377,7 @@ public class Program implements SymbolOwner {
     programChangeListeners.add(programChangeListener);
   }
 
-  public void notifyProgramRenamed() {
+  public void notifyProgramNameChanged() {
     for (ProgramRenameListener renameListener : programRenameListeners) {
       renameListener.programRenamed(this, reference);
     }
@@ -397,6 +400,9 @@ public class Program implements SymbolOwner {
         public void run() {
           synchronized (Program.this) {
             notificationPending = false;
+            if (loading) {
+              return;
+            }
             if (notificaitonPendingForSymbol != null) {
               notificaitonPendingForSymbol.validate();
               for (ProgramChangeListener changeListener : programChangeListeners) {

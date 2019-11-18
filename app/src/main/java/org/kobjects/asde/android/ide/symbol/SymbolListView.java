@@ -37,6 +37,8 @@ public class SymbolListView extends ExpandableList {
    */
   public SymbolView synchronizeTo(Iterable<? extends StaticSymbol> symbolList, ExpandListener expandListener, StaticSymbol returnViewForSymbol) {
 
+    System.out.println("########  synchronizeTo: " + symbolList);
+
     removeAllViews();
     int varCount = 0;
 

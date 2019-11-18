@@ -55,7 +55,7 @@ public class PropertyFlow {
       switch (mode) {
         case CREATE_PROPERTY:
           owner.setProperty(name, parsed);
-          mainActivity.program.notifyProgramRenamed();
+          mainActivity.program.notifyProgramNameChanged();
           break;
         case EDIT_INITIALIZER:
           symbol.setInitializer(parsed);
