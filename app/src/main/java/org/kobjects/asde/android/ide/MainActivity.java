@@ -210,7 +210,8 @@ public class MainActivity extends AppCompatActivity {
         long lastCall = callTime;
         callTime = System.currentTimeMillis();
         if (shell.mainControl.getState() != ProgramControl.State.PAUSED && callTime - lastCall > 5) {
-          screen.animate(callTime - lastCall);
+          // TODO(haustein): Figure out what to do about this
+          // screen.animate(callTime - lastCall);
         }
         try {
           Thread.sleep(15);
