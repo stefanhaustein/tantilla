@@ -29,9 +29,10 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation 'com.google.android.material:material:1.0.0'
 
-    implementation "com.github.stefanhaustein.emojisprites:core:v1.2.0"
+    implementation "com.github.stefanhaustein.android64:core:v1.0.0"
     implementation "com.github.stefanhaustein.abcnotation:core:v1.0.0"
     implementation "com.github.stefanhaustein.abcnotation:sounds:v1.0.0"
+    implementation "com.github.stefanhaustein.emojisprites:core:v1.2.0"
 
     api project(':core')
     api project(':typesystem')

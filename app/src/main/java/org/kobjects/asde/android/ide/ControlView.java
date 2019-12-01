@@ -13,6 +13,7 @@ import com.vanniktech.emoji.EmojiEditText;
 
 import com.vanniktech.emoji.EmojiTextView;
 
+import org.kobjects.android64.Android64;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
@@ -125,9 +126,7 @@ public class ControlView extends LinearLayout  {
     String line = codeEditText.getText().toString();
 
     if (line.equalsIgnoreCase("go 64") || line.equalsIgnoreCase("go 64!")) {
-      mainActivity.program.legacyMode = true;
-      mainActivity.program.c64Mode = true;
-      mainActivity.program.notifyProgramNameChanged();
+      mainActivity.c64ModeControl.enable();
     }
     try {
       mainActivity.shell.enter(line, mainActivity.programView.currentFunctionView.symbol, result -> {

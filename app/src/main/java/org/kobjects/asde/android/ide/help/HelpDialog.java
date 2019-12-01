@@ -272,7 +272,7 @@ public class HelpDialog {
 
     addSignaure(functionSymbol.getName(), function.getType());
 
-    AnnotatedString documentation = function.getDocumentation();
+    CharSequence documentation = function.getDocumentation();
     if (documentation != null) {
       addSubtitle("Description");
       addParagraph(documentation);
@@ -321,10 +321,10 @@ public class HelpDialog {
   }
 
 
-  private void addParagraph(AnnotatedString annotatedString) {
-    if (annotatedString != null) {
+  private void addParagraph(CharSequence charSequence) {
+    if (charSequence != null) {
       TextView textView = new TextView(mainActivity);
-      textView.setText(AnnotatedStringConverter.toSpanned(mainActivity, annotatedString, this));
+      textView.setText(AnnotatedStringConverter.toSpanned(mainActivity, AnnotatedString.of(charSequence), this));
       textView.setMovementMethod(LinkMovementMethod.getInstance());
       linearLayout.addView(textView);
     }

@@ -15,6 +15,7 @@ import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.ArrayType;
 import org.kobjects.asde.lang.type.Builtin;
+import org.kobjects.asde.lang.type.Callable;
 import org.kobjects.asde.lang.type.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.parser.StatementParser;
@@ -71,7 +72,6 @@ public class Program implements SymbolOwner {
   public int tabPos;
   public final Console console;
   public boolean legacyMode;
-  public boolean c64Mode;
   private boolean loading;
   int currentStamp;
   public boolean hasUnsavedChanges;
@@ -292,6 +292,9 @@ public class Program implements SymbolOwner {
     return symbol;
   }
 
+  public synchronized GlobalSymbol addBuiltinFunction(String name, Callable callable, CharSequence documentation, Type returnType, Type... argTypes) {
+    return addBuiltin(name, new BuiltinFunction(callable, documentation, returnType, argTypes));
+  }
 
 
   public synchronized GlobalSymbol addTransientSymbol(String name, Type type, ProgramValidationContext programValidationContext) {

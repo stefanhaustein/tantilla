@@ -5,7 +5,8 @@ import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Typed;
 
-public interface Function extends Typed {
+public interface Function extends Typed, Callable {
+
 
     @Override
     FunctionType getType();
@@ -13,11 +14,12 @@ public interface Function extends Typed {
     /**
      * Calls this function with the given number of parameters on the stack.
      */
+    @Override
     Object call(EvaluationContext evaluationContext, int paramCount);
 
     default int getLocalVariableCount() {
         return getType().getParameterCount();
     }
 
-    default AnnotatedString getDocumentation() { return null; }
+    default CharSequence getDocumentation() { return null; }
 }

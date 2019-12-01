@@ -34,6 +34,7 @@ import org.kobjects.asde.android.ide.program.ProgramView;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.lang.EvaluationContext;
+import org.kobjects.asde.lang.BuiltinFunction;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.ProgramControl;
 import org.kobjects.asde.lang.StaticSymbol;
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
       "Try the classic:\n\n  10 PRINT \"Hello\"\n  20 GOTO 10",
       "ASDE is a simple programming environment for mobile devices.",
   };
+  public C64ModeControl c64ModeControl;
 
   public static void removeFromParent(View view) {
     if (view != null && view.getParent() instanceof ViewGroup) {
@@ -203,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
     runControlView = new RunControlView(this, runButton);
     controlView = new ControlView(this);
     screen = new Screen(this);
+    c64ModeControl = new C64ModeControl(this);
 
     new Thread(() -> {
       long callTime = System.currentTimeMillis();
@@ -230,34 +233,20 @@ public class MainActivity extends AppCompatActivity {
     program.addBuiltin("Sprite", SpriteAdapter.TYPE);
     program.addBuiltin("TextBox", TextBoxAdapter.TYPE);
     program.addBuiltin("dpad", new DpadAdapter(screen.dpad));
-    program.addBuiltin("cls", new Function() {
-      @Override
-      public FunctionType getType() {
-        return FUNCTION_VOID_0;
+    program.addBuiltinFunction("cls", (evaluationContext, paramCount) -> {
+      console.clearScreen(Console.ClearScreenType.CLS_STATEMENT);
+      return null;
+    }, "Clears the screen", Types.VOID);
+    program.addBuiltinFunction("sleep", (evaluationContext, paramCount) -> {
+      try {
+        Thread.sleep(((Number) evaluationContext.getParameter(0)).intValue());
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
       }
+      return null;
+    }, "Pause the execution for the given number of seconds.",
+        Types.VOID, Types.NUMBER);
 
-      @Override
-      public Object call(EvaluationContext evaluationContext, int paramCount) {
-        console.clearScreen(Console.ClearScreenType.CLS_STATEMENT);
-        return null;
-      }
-    });
-    program.addBuiltin("sleep", new Function() {
-      @Override
-      public FunctionType getType() {
-        return new FunctionTypeImpl(Types.VOID, Types.NUMBER);
-      }
-
-      @Override
-      public Object call(EvaluationContext evaluationContext, int paramCount) {
-        try {
-          Thread.sleep(((Number) evaluationContext.getParameter(0)).intValue());
-        } catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-        }
-        return null;
-      }
-    });
     program.addBuiltin("play", new Function() {
       @Override
       public FunctionType getType() {
@@ -455,7 +444,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   int getBackgroundColor() {
-    return program.c64Mode ? Colors.C64_BLUE : Colors.BACKGROUND;
+    return c64ModeControl.isEnabled() ? Colors.C64_BLUE : Colors.BACKGROUND;
   }
 
   void arrangeUi() {
