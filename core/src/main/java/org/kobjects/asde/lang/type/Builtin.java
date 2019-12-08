@@ -40,7 +40,7 @@ public enum Builtin implements Function {
         + "Example:\n\n * right$(\"abc\", 2) = \"bc\"",
         2, Types.STRING, Types.NUMBER),
     RND("Returns a (pseudo-)random number in the range from 0 (inclusive) to 1 (exclusive)",
-        0, Types.NUMBER),
+        0, Types.NUMBER, Types.NUMBER),
     SGN("Returns the sign of the given number: 1 for positive numbers, 0 for zero and -1 for negative numbers.",
         1, Types.NUMBER),
     STR$("Converts the given number to a string (simiar to PRINT, but without any leading spaces.",

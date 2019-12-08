@@ -16,6 +16,7 @@ public class C64ModeControl {
     if (android64 != null) {
       return;
     }
+    mainActivity.program.legacyMode = true;
 
     android64 = new Android64(mainActivity.screen);
     mainActivity.program.legacyMode = true;
@@ -28,14 +29,21 @@ public class C64ModeControl {
     mainActivity.program.addBuiltinFunction("poke", (evaluationContext, paramCount) -> {
           android64.poke(
               ((Number) evaluationContext.getParameter(0)).intValue(),
-              ((Number) evaluationContext.getParameter(0)).intValue());
+              ((Number) evaluationContext.getParameter(1)).intValue());
           return null;
         },
         "Returns the memory content at the given address", Types.VOID, Types.NUMBER, Types.NUMBER);
 
+      android64.cls();
   }
 
   public boolean isEnabled() {
     return android64 != null;
+  }
+
+  public void cls() {
+    if (android64 != null) {
+      android64.cls();
+    }
   }
 }

@@ -75,6 +75,7 @@ public class AndroidConsole implements Console {
         mainActivity.screen.cls();
         break;
     }
+    mainActivity.c64ModeControl.cls();
   }
 
 

@@ -19,6 +19,7 @@ import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class MainMenu {
 
@@ -154,15 +155,20 @@ public class MainMenu {
   };
 
   public static Node getExamplesNode(MainActivity mainActivity) {
-    return new AssetNode(mainActivity.getAssets(), "Examples", "examples",
-        new SimpleNode("Refurbished classics",
+    ArrayList<Node> exampleDirs = new ArrayList<>();
+    exampleDirs.add(new SimpleNode("Refurbished classics",
             addRemoteExamples(
                 "https://raw.githubusercontent.com/stefanhaustein/basic-classics/master/src/main/assets/classics/",
-                REFURBISHED)),
-        new SimpleNode("vintage-basic.net",
-            addRemoteExamples(
-                "http://vintage-basic.net/bcg/",
-                VINTAGE_BASIC)));
+                REFURBISHED)));
+    exampleDirs.add(new SimpleNode("vintage-basic.net",
+        addRemoteExamples(
+            "http://vintage-basic.net/bcg/",
+            VINTAGE_BASIC)));
+    if (mainActivity.c64ModeControl.isEnabled()) {
+      exampleDirs.add(new AssetNode(mainActivity.getAssets(), "C64", "c64"));
+    }
+
+    return new AssetNode(mainActivity.getAssets(), "Examples", "examples", exampleDirs.toArray(new Node[0]));
   }
 
 
