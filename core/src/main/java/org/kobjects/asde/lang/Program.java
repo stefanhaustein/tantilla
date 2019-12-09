@@ -2,8 +2,8 @@ package org.kobjects.asde.lang;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.io.Console;
-import org.kobjects.asde.lang.event.ProgramChangeListener;
-import org.kobjects.asde.lang.event.ProgramRenameListener;
+import org.kobjects.asde.lang.event.SymbolChangeListener;
+import org.kobjects.asde.lang.event.ProgramListener;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.NodeProcessor;
@@ -46,9 +46,6 @@ public class Program implements SymbolOwner {
 
   public static final String INVISIBLE_STRING = new String();
 
-  private static final int PROGRAM_CHANGE_FLAG = 1;
-  private static final int SYMBOL_CHANGE_FLAG = 2;
-
   public static String toString(double d) {
     return d == (int) d ? String.valueOf((int) d) : String.valueOf(d);
   }
@@ -62,8 +59,8 @@ public class Program implements SymbolOwner {
   public final StatementParser parser = new StatementParser(this);
   public final FunctionImplementation main = new FunctionImplementation(this, new FunctionTypeImpl(Types.VOID));
   public final GlobalSymbol mainSymbol = new GlobalSymbol(this, "", GlobalSymbol.Scope.PERSISTENT, main);
-  private final ArrayList<ProgramChangeListener> programChangeListeners = new ArrayList<>();
-  private final ArrayList<ProgramRenameListener> programRenameListeners = new ArrayList<>();
+  private final ArrayList<SymbolChangeListener> programChangeListeners = new ArrayList<>();
+  private final ArrayList<ProgramListener> programListeners = new ArrayList<>();
 
   // Program state
 
@@ -107,7 +104,7 @@ public class Program implements SymbolOwner {
     ProgramReference newReference = console.nameToReference(null);
     if (!reference.equals(newReference)) {
       reference = newReference;
-      notifyProgramNameChanged();
+      sendProgramEvent(ProgramListener.Event.LOADED);
     }
     notifyProgramChanged();
   }
@@ -218,7 +215,7 @@ public class Program implements SymbolOwner {
       }
       if (!programReference.equals(reference)) {
         reference = programReference;
-        notifyProgramNameChanged();
+        sendProgramEvent(ProgramListener.Event.RENAMED);
       }
       OutputStreamWriter writer = new OutputStreamWriter(console.openOutputStream(programReference.url), "utf8");
       writer.write(toString());
@@ -271,7 +268,7 @@ public class Program implements SymbolOwner {
        loading = false;
 
       // change notification triggers validation
-      notifyProgramNameChanged();
+      sendProgramEvent(ProgramListener.Event.LOADED);
       notifyProgramChanged();
       hasUnsavedChanges = false;
     }
@@ -372,17 +369,21 @@ public class Program implements SymbolOwner {
   }
 
 
-  public void addProgramNameChangeListener(ProgramRenameListener listener) {
-    programRenameListeners.add(listener);
+  public void addProgramNameChangeListener(ProgramListener listener) {
+    programListeners.add(listener);
   }
 
-  public void addProgramChangeListener(ProgramChangeListener programChangeListener) {
+  public void addSymbolChangeListener(SymbolChangeListener programChangeListener) {
     programChangeListeners.add(programChangeListener);
   }
 
-  public void notifyProgramNameChanged() {
-    for (ProgramRenameListener renameListener : programRenameListeners) {
-      renameListener.programRenamed(this, reference);
+  public void sendProgramEvent(ProgramListener.Event event) {
+    if (event == ProgramListener.Event.CHANGED) {
+      deferNotification(null);
+    } else {
+      for (ProgramListener programListener : programListeners) {
+        programListener.programEvent(this, event);
+      }
     }
   }
 
@@ -408,14 +409,14 @@ public class Program implements SymbolOwner {
             }
             if (notificaitonPendingForSymbol != null) {
               notificaitonPendingForSymbol.validate();
-              for (ProgramChangeListener changeListener : programChangeListeners) {
-                changeListener.symbolChangedByUser(Program.this, notificaitonPendingForSymbol);
+              for (SymbolChangeListener changeListener : programChangeListeners) {
+                changeListener.symbolChangedByUser(notificaitonPendingForSymbol);
               }
               notificaitonPendingForSymbol = null;
             } else {
               validate();
-              for (ProgramChangeListener changeListener : programChangeListeners) {
-                changeListener.programChanged(Program.this);
+              for (ProgramListener programListener : programListeners) {
+                programListener.programEvent(Program.this, ProgramListener.Event.CHANGED);
               }
             }
           }

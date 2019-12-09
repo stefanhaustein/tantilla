@@ -11,7 +11,7 @@ import org.kobjects.asde.android.ide.symbol.SymbolListView;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.lang.ClassImplementation;
 import org.kobjects.asde.lang.StaticSymbol;
-import org.kobjects.asde.lang.event.ProgramChangeListener;
+import org.kobjects.asde.lang.event.SymbolChangeListener;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.lang.FunctionImplementation;
 import org.kobjects.asde.lang.Program;
@@ -78,18 +78,11 @@ public class ProgramView extends SymbolListView {
     context.shell.mainControl.addStartStopListener(startStopRefresher);
     context.shell.shellControl.addStartStopListener(startStopRefresher);
 
-    mainActivity.program.addProgramChangeListener(new ProgramChangeListener() {
-      @Override
-      public void programChanged(Program program) {
-        //   requestSynchronization();
-      }
-
-      @Override
-      public void symbolChangedByUser(Program program, StaticSymbol symbol) {
+    mainActivity.program.addSymbolChangeListener(symbol -> {
         expandOnSync = symbol;
         requestSynchronization();
       }
-    });
+    );
 
     expanded = true;
     synchronize();

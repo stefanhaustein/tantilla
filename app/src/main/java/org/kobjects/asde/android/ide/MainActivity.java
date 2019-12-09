@@ -34,11 +34,9 @@ import org.kobjects.asde.android.ide.program.ProgramView;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.BuiltinFunction;
 import org.kobjects.asde.lang.Program;
 import org.kobjects.asde.lang.ProgramControl;
-import org.kobjects.asde.lang.StaticSymbol;
-import org.kobjects.asde.lang.event.ProgramChangeListener;
+import org.kobjects.asde.lang.event.ProgramListener;
 import org.kobjects.asde.lang.type.Function;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.io.Shell;
@@ -293,28 +291,24 @@ public class MainActivity extends AppCompatActivity {
       programReference = preferences.getProgramReference();
     }
 
-    program.addProgramNameChangeListener((program, newReference) -> {
+    program.addProgramNameChangeListener((program, event) -> {
       programView.requestSynchronization();
-      preferences.setProgramReference(newReference);
-      runOnUiThread(() -> {
-        if (rootView != null) {
-          rootView.setBackgroundColor(getBackgroundColor());
-        }
-      });
+      if (event == ProgramListener.Event.LOADED || event == ProgramListener.Event.RENAMED) {
+        preferences.setProgramReference(program.reference);
+        runOnUiThread(() -> {
+          if (rootView != null) {
+            rootView.setBackgroundColor(getBackgroundColor());
+          }
+        });
+      }
     });
 
-
-    program.addProgramChangeListener(new ProgramChangeListener() {
-      @Override
-      public void programChanged(Program program) {
-        triggerAutosave();
-      }
-
-      @Override
-      public void symbolChangedByUser(Program program, StaticSymbol symbol) {
+    program.addProgramNameChangeListener((program, event) -> {
+      if (event == ProgramListener.Event.CHANGED) {
         triggerAutosave();
       }
     });
+    program.addSymbolChangeListener(symbol -> triggerAutosave());
 
     load(programReference, false, runningFromShortcut);
   }

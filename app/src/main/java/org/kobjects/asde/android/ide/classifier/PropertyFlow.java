@@ -5,6 +5,7 @@ import org.kobjects.asde.android.ide.text.ExpressionValidator;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.android.ide.symbol.SymbolNameValidator;
 import org.kobjects.asde.lang.ClassImplementation;
+import org.kobjects.asde.lang.event.ProgramListener;
 import org.kobjects.asde.lang.node.Node;
 
 public class PropertyFlow {
@@ -55,7 +56,7 @@ public class PropertyFlow {
       switch (mode) {
         case CREATE_PROPERTY:
           owner.setProperty(name, parsed);
-          mainActivity.program.notifyProgramNameChanged();
+          mainActivity.program.sendProgramEvent(ProgramListener.Event.CHANGED);
           break;
         case EDIT_INITIALIZER:
           symbol.setInitializer(parsed);

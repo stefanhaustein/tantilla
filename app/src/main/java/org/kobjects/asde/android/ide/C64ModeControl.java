@@ -1,6 +1,7 @@
 package org.kobjects.asde.android.ide;
 
 import org.kobjects.android64.Android64;
+import org.kobjects.asde.lang.event.ProgramListener;
 import org.kobjects.asde.lang.type.Types;
 
 public class C64ModeControl {
@@ -20,7 +21,7 @@ public class C64ModeControl {
 
     android64 = new Android64(mainActivity.screen);
     mainActivity.program.legacyMode = true;
-    mainActivity.program.notifyProgramNameChanged();
+    mainActivity.program.sendProgramEvent(ProgramListener.Event.MODE_CHANGED);
 
     mainActivity.program.addBuiltinFunction("peek", (evaluationContext, paramCount) ->
            android64.peek(((Number) evaluationContext.getParameter(0)).intValue()),
