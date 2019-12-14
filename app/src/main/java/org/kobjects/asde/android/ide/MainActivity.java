@@ -291,19 +291,14 @@ public class MainActivity extends AppCompatActivity {
       programReference = preferences.getProgramReference();
     }
 
-    program.addProgramNameChangeListener((program, event) -> {
+    program.addProgramNameChangeListener((event) -> {
       programView.requestSynchronization();
-      if (event == ProgramListener.Event.LOADED || event == ProgramListener.Event.RENAMED) {
-        preferences.setProgramReference(program.reference);
-        runOnUiThread(() -> {
-          if (rootView != null) {
-            rootView.setBackgroundColor(getBackgroundColor());
-          }
-        });
-      }
-    });
-
-    program.addProgramNameChangeListener((program, event) -> {
+      preferences.setProgramReference(program.reference);
+      runOnUiThread(() -> {
+        if (rootView != null) {
+          rootView.setBackgroundColor(getBackgroundColor());
+        }
+      });
       if (event == ProgramListener.Event.CHANGED) {
         triggerAutosave();
       }

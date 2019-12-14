@@ -80,14 +80,14 @@ public class ProgramParser {
     FunctionImplementation currentFunction = program.main;
     ClassImplementation currentClass = null;
     String line = reader.readLine();
-    program.legacyMode = line != null && !(line + ' ').startsWith("ASDE ");
-    if (!program.legacyMode) {
+    program.setLegacyMode(line != null && !(line + ' ').startsWith("ASDE "));
+    if (!program.isLegacyMode()) {
       line = reader.readLine();
     }
     ArrayList<Exception> exceptions = new ArrayList<>();
     while (line != null) {
       System.out.println("Parsing: '" + line + "'");
-      if (program.legacyMode) {
+      if (program.isLegacyMode()) {
           line = preprocessLegacyIdentifiers(line);
           System.out.println("Preprocessed: '" + line + "'");
       }

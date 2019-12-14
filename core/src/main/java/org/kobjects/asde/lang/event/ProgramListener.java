@@ -8,5 +8,5 @@ public interface ProgramListener {
         RENAMED, CHANGED, LOADED, MODE_CHANGED
     }
 
-    void programEvent(Program program, Event event);
+    void programEvent(Event event);
 }

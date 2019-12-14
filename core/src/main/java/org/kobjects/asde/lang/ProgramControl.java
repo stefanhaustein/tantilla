@@ -77,8 +77,12 @@ public class ProgramControl {
 
     public void start() {
         EvaluationContext context = new EvaluationContext(this, program.main);
-        program.clear(context);
-        runAsync(() -> context.function.callImpl(context));
+        try {
+            program.clear(context);
+            runAsync(() -> context.function.callImpl(context));
+        } catch (Exception e) {
+            program.console.showError("Error starting program", e);
+        }
     }
 
 

@@ -1,6 +1,5 @@
 package org.kobjects.annotatedtext;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 public class AnnotatedStringBuilder implements Appendable {

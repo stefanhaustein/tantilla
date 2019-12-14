@@ -68,7 +68,7 @@ public class Program implements SymbolOwner {
   public Exception lastException;
   public int tabPos;
   public final Console console;
-  public boolean legacyMode;
+  private boolean legacyMode;
   private boolean loading;
   int currentStamp;
   public boolean hasUnsavedChanges;
@@ -382,7 +382,7 @@ public class Program implements SymbolOwner {
       deferNotification(null);
     } else {
       for (ProgramListener programListener : programListeners) {
-        programListener.programEvent(this, event);
+        programListener.programEvent(event);
       }
     }
   }
@@ -416,7 +416,7 @@ public class Program implements SymbolOwner {
             } else {
               validate();
               for (ProgramListener programListener : programListeners) {
-                programListener.programEvent(Program.this, ProgramListener.Event.CHANGED);
+                programListener.programEvent(ProgramListener.Event.CHANGED);
               }
             }
           }
@@ -456,4 +456,12 @@ public class Program implements SymbolOwner {
     return true;
   }
 
+  public boolean isLegacyMode() {
+    return legacyMode;
+  }
+
+  public void setLegacyMode(boolean legacyMode) {
+    this.legacyMode = legacyMode;
+    sendProgramEvent(ProgramListener.Event.MODE_CHANGED);
+  }
 }

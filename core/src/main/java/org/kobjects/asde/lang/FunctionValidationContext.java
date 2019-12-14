@@ -32,7 +32,7 @@ public class FunctionValidationContext {
     this.programValidationContext = programValidationContext;
     this.classValidationContext = classValidationContext;
     this.program = programValidationContext.program;
-    this.mode = (program.legacyMode && functionImplementation == program.main) ? ResolutionMode.LEGACY : mode;
+    this.mode = (program.isLegacyMode() && functionImplementation == program.main) ? ResolutionMode.LEGACY : mode;
     this.functionImplementation = functionImplementation;
     startBlock(BlockType.ROOT);
     if (functionImplementation != null) {

@@ -132,7 +132,7 @@ public class FunctionImplementation implements Function, Declaration {
   }
 
 
-  public void toString(AnnotatedStringBuilder sb, String name, Map<Node, Exception> errors) {
+  public synchronized void toString(AnnotatedStringBuilder sb, String name, Map<Node, Exception> errors) {
     boolean sub = type.getReturnType() == Types.VOID;
     String kind = sub ? "SUB" : "FUNCTION";
     if (name != null) {
@@ -212,7 +212,7 @@ public class FunctionImplementation implements Function, Declaration {
   }
 
 
-  public void renumber(int first, int last, int newStart, int step) {
+  public synchronized void renumber(int first, int last, int newStart, int step) {
     int currentNumber = newStart;
 
     for (CodeLine line : code.subMap(first, last + 1).values()) {
