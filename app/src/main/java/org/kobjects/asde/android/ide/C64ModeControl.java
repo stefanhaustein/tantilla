@@ -25,6 +25,7 @@ public class C64ModeControl implements ProgramListener {
     mainActivity.program.removeSymbol(mainActivity.program.getSymbol("poke"));
     android64 = null;
     mainActivity.program.sendProgramEvent(ProgramListener.Event.MODE_CHANGED);
+    mainActivity.screen.clearAll();
   }
 
 
@@ -47,7 +48,7 @@ public class C64ModeControl implements ProgramListener {
         },
         "Returns the memory content at the given address", Types.VOID, Types.NUMBER, Types.NUMBER);
 
-      android64.cls();
+   android64.cls();
 
     mainActivity.program.sendProgramEvent(ProgramListener.Event.MODE_CHANGED);
   }
