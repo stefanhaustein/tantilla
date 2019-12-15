@@ -24,8 +24,10 @@ public class C64ModeControl implements ProgramListener {
     mainActivity.program.removeSymbol(mainActivity.program.getSymbol("peek"));
     mainActivity.program.removeSymbol(mainActivity.program.getSymbol("poke"));
     android64 = null;
+
     mainActivity.program.sendProgramEvent(ProgramListener.Event.MODE_CHANGED);
     mainActivity.screen.clearAll();
+    mainActivity.screen.resetViewport();
   }
 
 
