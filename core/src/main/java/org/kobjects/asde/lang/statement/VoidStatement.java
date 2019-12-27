@@ -5,6 +5,7 @@ import org.kobjects.asde.lang.EvaluationContext;
 import org.kobjects.asde.lang.type.Function;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.FunctionValidationContext;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -16,7 +17,9 @@ public class VoidStatement extends Node {
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
-    // Nothing to do here.
+    if (children[0].returnType() != Types.VOID) {
+      throw new RuntimeException("Function result ignored.");
+    }
   }
 
   @Override

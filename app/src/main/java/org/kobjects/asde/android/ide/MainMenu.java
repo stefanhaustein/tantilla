@@ -28,7 +28,8 @@ public class MainMenu {
 
   private static String[] REFURBISHED = {
       "hangman.bas", "Hangman",
-      "poker.bas", "Poker"
+      "poker.bas", "Poker",
+      "tiny text adventure.bas", "Tiny Text Adventure"
   };
 
   private static String[] VINTAGE_BASIC = {
@@ -267,6 +268,16 @@ public class MainMenu {
       }
     }
      */
+
+    projectMenu
+        .add("Legacy Mode")
+        .setCheckable(true)
+        .setChecked(mainActivity.program.isLegacyMode())
+        .setOnMenuItemClickListener(event -> {
+          mainActivity.program.setLegacyMode(!mainActivity.program.isLegacyMode());
+          return true;
+        }
+    );
 
     projectMenu.add("Save as…").setOnMenuItemClickListener(item -> {
       new FilePicker(mainActivity, node -> {
