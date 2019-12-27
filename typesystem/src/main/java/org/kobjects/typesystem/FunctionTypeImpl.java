@@ -43,7 +43,7 @@ public class FunctionTypeImpl implements FunctionType {
       sb.append(parameterTypes[i].toString());
     }
     sb.append(") -> ");
-    sb.append(returnType.toString().substring(0, 1));
+    sb.append(returnType.toString());
     return sb.toString();
   }
 
