@@ -122,7 +122,7 @@ public class FunctionValidationContext {
         && impliedType instanceof ArrayType
         && (program.getSymbol(name) == null
           || program.getSymbol(name).scope == GlobalSymbol.Scope.TRANSIENT)) {
-      name += "[" + ((ArrayType) impliedType).getParameterCount() + "]";
+      name += "[" + ((ArrayType) impliedType).getDimension() + "]";
     }
 
     GlobalSymbol symbol = addDependency

@@ -22,7 +22,6 @@ public class VoidStatement extends Node {
     if (returnType instanceof FunctionType) {
       returnType = ((FunctionType) returnType).getReturnType();
     }
-
     if (returnType != Types.VOID) {
       throw new RuntimeException("Function result typed "+ returnType + " ignored.");
     }

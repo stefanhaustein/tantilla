@@ -37,7 +37,7 @@ public class ArrayLiteral extends Node {
         for (int i = 0; i < children.length; i++) {
             values[i] = children[i].eval(evaluationContext);
         }
-        return new Array(resolvedType.getReturnType(), values);
+        return new Array(resolvedType.elementType, values);
     }
 
     @Override

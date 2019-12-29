@@ -90,7 +90,7 @@ public class VariableView extends SymbolView {
 
 
     public boolean isMultiDim(Type type) {
-        return (type instanceof ArrayType && ((ArrayType) type).getReturnType() instanceof ArrayType);
+        return (type instanceof ArrayType && ((ArrayType) type).elementType instanceof ArrayType);
     }
 
     public void refresh() {

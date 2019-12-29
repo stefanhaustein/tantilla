@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
 
-public class ArrayType implements FunctionType, InstanceType {
+public class ArrayType implements InstanceType {
 
-  private final Type elementType;
+  public final Type elementType;
 
   public ArrayType(Type elementType) {
     if (elementType == null) {
@@ -27,49 +27,18 @@ public class ArrayType implements FunctionType, InstanceType {
     this.elementType = dimensionality == 1 ? elementType : new ArrayType(elementType, dimensionality - 1);
   }
 
-  @Override
-  public Type getReturnType() {
-    return elementType;
-  }
-
-  @Override
-  public Type getReturnType(int parameterCount) {
-    Type returnType = getReturnType();
-    for (int i = 1; i < parameterCount; i++) {
-      returnType = ((ArrayType) returnType).getReturnType();
-    }
-    if (returnType == null) {
-      throw new RuntimeException();
-    }
-    return returnType;
-  }
-
-  @Override
-  public Type getParameterType(int index) {
-    return Types.NUMBER;
-  }
-
-  @Override
-  public int getMinParameterCount() {
-    return 1;
-  }
-
-  @Override
-  public int getParameterCount() {
-    return elementType instanceof ArrayType ? ((ArrayType) elementType).getParameterCount() + 1 : 1;
-  }
 
   @Override
   public boolean equals(Object o) {
     if (!(o instanceof ArrayType)) {
       return false;
     }
-    return getReturnType().equals(((ArrayType) o).getReturnType());
+    return elementType.equals(((ArrayType) o).elementType);
   }
 
   @Override
   public String toString() {
-    return getReturnType() + "[]";
+    return elementType + "[]";
   }
 
   @Override
@@ -113,6 +82,28 @@ public class ArrayType implements FunctionType, InstanceType {
   @Override
   public Object getDefaultValue() {
     throw new UnsupportedOperationException();
+  }
+
+  public int getDimension() {
+    int dim = 1;
+    Type type = elementType;
+    while (type instanceof ArrayType) {
+      type = ((ArrayType) type).elementType;
+      dim++;
+    }
+    return dim;
+  }
+
+  public Type getRootElementType() {
+    return getElementType(getDimension() - 1);
+  }
+
+  public Type getElementType(int dim) {
+    Type type = elementType;
+    for (int i = 1; i < dim; i++) {
+      type = ((ArrayType) type).elementType;
+    }
+    return type;
   }
 
   class ArrayPropertyDescriptor implements PropertyDescriptor {

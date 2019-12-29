@@ -9,7 +9,7 @@ import org.kobjects.typesystem.Type;
 
 import java.util.ArrayList;
 
-public class Array extends Instance implements Function {
+public class Array extends Instance {
 
     private final ArrayList<Object> data;
 
@@ -86,11 +86,6 @@ public class Array extends Instance implements Function {
         }
     }
 
-    @Override
-    public ArrayType getType() {
-        return (ArrayType) super.getType();
-    }
-
 
     public synchronized Object get(int index) {
         return data.get(index);
@@ -111,14 +106,6 @@ public class Array extends Instance implements Function {
         length.notifyChanged();
     }
 
-    @Override
-    synchronized public Object call(EvaluationContext evaluationContext, int paramCount) {
-        Object result = this;
-        for (int i = 0; i < paramCount; i++) {
-            result = ((Array) result).data.get(((Number) evaluationContext.getParameter(i)).intValue());
-        }
-        return result;
-    }
 
     synchronized public void setValueAt(Object value, int... indices) {
         Array target = this;

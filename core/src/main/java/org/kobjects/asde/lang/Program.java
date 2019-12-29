@@ -303,12 +303,12 @@ public class Program implements SymbolOwner {
     symbol.stamp = currentStamp;
     if (type instanceof ArrayType) {
       ArrayType arrayType = (ArrayType) type;
-      int dimension = arrayType.getParameterCount();
+      int dimension = arrayType.getDimension();
       Node[] args = new Node[dimension];
       for (int i = 0; i < dimension; i++) {
         args[i] = new Literal(11.0);
       }
-      symbol.initializer = new DimStatement(arrayType.getReturnType(dimension), name, args);
+      symbol.initializer = new DimStatement(arrayType.getRootElementType(), name, args);
     } else if (type instanceof FunctionType) {
       // no init available, should error on access...
     } else {
