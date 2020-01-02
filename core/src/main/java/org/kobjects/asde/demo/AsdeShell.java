@@ -1,12 +1,12 @@
 package org.kobjects.asde.demo;
 
-import org.kobjects.asde.lang.Program;
-import org.kobjects.asde.lang.StaticSymbol;
-import org.kobjects.asde.lang.WrappedExecutionException;
+import org.kobjects.asde.lang.program.Program;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
+import org.kobjects.asde.lang.runtime.WrappedExecutionException;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.io.Shell;
-import org.kobjects.asde.lang.FunctionImplementation;
+import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.typesystem.Type;
 

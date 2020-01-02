@@ -1,9 +1,8 @@
 package org.kobjects.asde.lang.parser;
 
-import org.kobjects.asde.lang.Format;
-import org.kobjects.asde.lang.FunctionImplementation;
-import org.kobjects.asde.lang.GlobalSymbol;
-import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.program.GlobalSymbol;
+import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.NegOperator;
@@ -34,8 +33,8 @@ import org.kobjects.asde.lang.statement.FunctionReturnStatement;
 import org.kobjects.asde.lang.statement.LegacyStatement;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.statement.VoidStatement;
-import org.kobjects.asde.lang.type.CodeLine;
-import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.function.CodeLine;
+import org.kobjects.asde.lang.function.Types;
 import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
@@ -472,11 +471,11 @@ public class StatementParser {
 
 
   public Type parseType(ExpressionParser.Tokenizer tokenizer) {
-     String typeName = Format.toUpperCamel(tokenizer.consumeIdentifier());
-     if (typeName.equals("Number")) {
+     String typeName = tokenizer.consumeIdentifier();
+     if (typeName.equalsIgnoreCase("Number")) {
          return Types.NUMBER;
      }
-     if (typeName.equals("String")) {
+     if (typeName.equalsIgnoreCase("String")) {
          return Types.STRING;
      }
      GlobalSymbol symbol = program.getSymbol(typeName);

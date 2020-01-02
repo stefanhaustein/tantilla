@@ -2,9 +2,9 @@ package org.kobjects.asde.android.library.ui;
 
 import android.view.View;
 
-import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.type.Method;
-import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
+import org.kobjects.asde.lang.classifier.Method;
+import org.kobjects.asde.lang.function.Types;
 import org.kobjects.graphics.Screen;
 import org.kobjects.graphics.XAlign;
 import org.kobjects.graphics.YAlign;

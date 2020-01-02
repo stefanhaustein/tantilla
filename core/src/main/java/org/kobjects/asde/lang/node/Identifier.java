@@ -1,12 +1,12 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.FunctionValidationContext;
-import org.kobjects.asde.lang.ResolvedSymbol;
-import org.kobjects.asde.lang.StaticSymbol;
-import org.kobjects.asde.lang.type.ArrayType;
-import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
+import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.symbol.ResolvedSymbol;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
+import org.kobjects.asde.lang.array.ArrayType;
+import org.kobjects.asde.lang.function.Types;
 import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
 

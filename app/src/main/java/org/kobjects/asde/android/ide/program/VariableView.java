@@ -13,9 +13,9 @@ import org.kobjects.asde.android.ide.symbol.DeleteFlow;
 import org.kobjects.asde.android.ide.classifier.PropertyFlow;
 import org.kobjects.asde.android.ide.symbol.RenameFlow;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
-import org.kobjects.asde.lang.ClassImplementation;
-import org.kobjects.asde.lang.StaticSymbol;
-import org.kobjects.asde.lang.type.ArrayType;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
+import org.kobjects.asde.lang.array.ArrayType;
+import org.kobjects.asde.lang.classifier.ClassPropertyDescriptor;
 import org.kobjects.asde.lang.node.ArrayLiteral;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
@@ -39,8 +39,8 @@ public class VariableView extends SymbolView {
         titleView.setMoreClickListener(view -> {
             PopupMenu popupMenu = new PopupMenu(getContext(), view);
             popupMenu.getMenu().add("Edit").setOnMenuItemClickListener(item -> {
-                if (symbol instanceof ClassImplementation.ClassPropertyDescriptor) {
-                    PropertyFlow.editInitializer(mainActivity, (ClassImplementation.ClassPropertyDescriptor) symbol);
+                if (symbol instanceof ClassPropertyDescriptor) {
+                    PropertyFlow.editInitializer(mainActivity, (ClassPropertyDescriptor) symbol);
                 } else {
                     mainActivity.controlView.codeEditText.setText(String.valueOf(symbol.getInitializer()));
                 }

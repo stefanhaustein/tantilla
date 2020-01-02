@@ -1,8 +1,7 @@
 package org.kobjects.asde.android.ide.text;
 
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.android.ide.text.TextValidator;
-import org.kobjects.asde.lang.Format;
+import org.kobjects.asde.lang.io.Format;
 
 public class ExpressionValidator extends TextValidator {
   private MainActivity mainActivity;

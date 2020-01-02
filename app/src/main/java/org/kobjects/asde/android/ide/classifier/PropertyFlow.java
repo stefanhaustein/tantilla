@@ -4,16 +4,17 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.text.ExpressionValidator;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.android.ide.symbol.SymbolNameValidator;
-import org.kobjects.asde.lang.ClassImplementation;
-import org.kobjects.asde.lang.event.ProgramListener;
-import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.classifier.ClassImplementation;
+import org.kobjects.asde.lang.classifier.ClassPropertyDescriptor;
+import org.kobjects.asde.lang.program.ProgramListener;
+import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
 
 public class PropertyFlow {
 
   enum Mode {EDIT_INITIALIZER, CREATE_PROPERTY};
 
 
-  public static void editInitializer(final MainActivity mainActivity, final ClassImplementation.ClassPropertyDescriptor symbol) {
+  public static void editInitializer(final MainActivity mainActivity, final ClassPropertyDescriptor symbol) {
     new PropertyFlow(mainActivity, Mode.EDIT_INITIALIZER, symbol.getOwner(), symbol).showInitializerDialog();
   }
 
@@ -25,11 +26,11 @@ public class PropertyFlow {
   private final MainActivity mainActivity;
   private final Mode mode;
   private final ClassImplementation owner;
-  private final ClassImplementation.ClassPropertyDescriptor symbol;
+  private final ClassPropertyDescriptor symbol;
 
   private String name;
 
-  PropertyFlow(MainActivity mainActivity, Mode mode, ClassImplementation owner, ClassImplementation.ClassPropertyDescriptor symbol) {
+  PropertyFlow(MainActivity mainActivity, Mode mode, ClassImplementation owner, ClassPropertyDescriptor symbol) {
     this.mainActivity = mainActivity;
     this.mode = mode;
     this.owner = owner;
@@ -52,7 +53,7 @@ public class PropertyFlow {
     InputFlowBuilder builder = new InputFlowBuilder(mainActivity, "Property " + name);
     builder.addInput("Initial value", mode == Mode.EDIT_INITIALIZER ? symbol.getInitializer().toString() : null, new ExpressionValidator(mainActivity));
     builder.start(result -> {
-      Node parsed = mainActivity.program.parser.parseExpression(result[0]);
+      AbstractDeclarationStatement parsed = (AbstractDeclarationStatement) mainActivity.program.parser.parseExpression(result[0]);
       switch (mode) {
         case CREATE_PROPERTY:
           owner.setProperty(name, parsed);

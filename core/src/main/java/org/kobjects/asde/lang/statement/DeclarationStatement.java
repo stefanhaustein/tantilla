@@ -1,9 +1,10 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.EvaluationContext;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.FunctionValidationContext;
+import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
@@ -26,10 +27,13 @@ public class DeclarationStatement extends AbstractDeclarationStatement {
   }
 
   @Override
-  public Object eval(EvaluationContext evaluationContext) {
-    Object value = children[0].eval(evaluationContext);
-    resolved.set(evaluationContext, value);
-    return null;
+  public Object evalValue(EvaluationContext evaluationContext) {
+    return children[0].eval(evaluationContext);
+  }
+
+  @Override
+  public Type getValueType() {
+    return children[0].returnType();
   }
 
   @Override

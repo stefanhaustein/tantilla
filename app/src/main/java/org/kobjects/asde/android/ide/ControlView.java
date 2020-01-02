@@ -13,12 +13,11 @@ import com.vanniktech.emoji.EmojiEditText;
 
 import com.vanniktech.emoji.EmojiTextView;
 
-import org.kobjects.android64.Android64;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.android.ide.widget.IconButton;
-import org.kobjects.asde.lang.Format;
+import org.kobjects.asde.lang.io.Format;
 import org.kobjects.asde.lang.io.MultiValidationException;
 import org.kobjects.expressionparser.ExpressionParser;
 

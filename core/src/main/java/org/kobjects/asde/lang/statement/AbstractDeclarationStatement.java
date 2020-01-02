@@ -1,8 +1,10 @@
 package org.kobjects.asde.lang.statement;
 
-import org.kobjects.asde.lang.ResolvedSymbol;
-import org.kobjects.asde.lang.StaticSymbol;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
+import org.kobjects.asde.lang.symbol.ResolvedSymbol;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.typesystem.Type;
 
 public abstract class AbstractDeclarationStatement extends Statement {
 
@@ -14,7 +16,6 @@ public abstract class AbstractDeclarationStatement extends Statement {
     this.varName = varName;
   }
 
-
   @Override
   public void rename(StaticSymbol symbol, String oldName, String newName) {
     if (symbol == resolved && oldName.equals(varName)) {
@@ -22,7 +23,17 @@ public abstract class AbstractDeclarationStatement extends Statement {
     }
   }
 
+  @Override
+  public Object eval(EvaluationContext evaluationContext) {
+    resolved.set(evaluationContext, evalValue(evaluationContext));
+    return null;
+  }
+
+  public abstract Object evalValue(EvaluationContext evaluationContext);
+
   public String getVarName() {
     return varName;
   }
+
+  public abstract Type getValueType();
 }

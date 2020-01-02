@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.parser;
 
-import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.expressionparser.ExpressionParser;
 

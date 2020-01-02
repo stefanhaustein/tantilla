@@ -1,9 +1,5 @@
 package org.kobjects.asde.android.ide;
 
-import androidx.core.content.ContextCompat;
-
-import org.kobjects.asde.lang.Program;
-
 public class Colors {
 
  //   final int primaryMedium;

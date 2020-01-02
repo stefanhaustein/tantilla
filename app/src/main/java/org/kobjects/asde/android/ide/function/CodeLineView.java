@@ -18,7 +18,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.lang.type.CodeLine;
+import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.node.Node;
 
 import java.util.Map;

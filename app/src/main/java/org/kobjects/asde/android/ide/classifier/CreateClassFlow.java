@@ -3,8 +3,8 @@ package org.kobjects.asde.android.ide.classifier;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.android.ide.symbol.SymbolNameValidator;
-import org.kobjects.asde.lang.ClassImplementation;
-import org.kobjects.asde.lang.GlobalSymbol;
+import org.kobjects.asde.lang.classifier.ClassImplementation;
+import org.kobjects.asde.lang.program.GlobalSymbol;
 
 public class CreateClassFlow {
 

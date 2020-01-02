@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.io;
 
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.type.CodeLine;
+import org.kobjects.asde.lang.function.CodeLine;
 
 import java.util.HashMap;
 

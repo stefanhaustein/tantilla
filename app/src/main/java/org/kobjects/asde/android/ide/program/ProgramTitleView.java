@@ -9,7 +9,7 @@ import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.MainMenu;
 import org.kobjects.asde.android.ide.widget.IconButton;
-import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.program.Program;
 
 public class ProgramTitleView extends Toolbar {
   private final MainActivity mainActivity;

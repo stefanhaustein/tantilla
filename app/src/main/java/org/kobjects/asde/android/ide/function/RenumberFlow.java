@@ -3,8 +3,8 @@ package org.kobjects.asde.android.ide.function;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.android.ide.text.TextValidator;
-import org.kobjects.asde.lang.FunctionImplementation;
-import org.kobjects.asde.lang.StaticSymbol;
+import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
 
 public class RenumberFlow {
 

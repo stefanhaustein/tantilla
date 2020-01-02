@@ -9,13 +9,12 @@ import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.symbol.ExpandListener;
 import org.kobjects.asde.android.ide.symbol.SymbolListView;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
-import org.kobjects.asde.lang.ClassImplementation;
-import org.kobjects.asde.lang.StaticSymbol;
-import org.kobjects.asde.lang.event.SymbolChangeListener;
+import org.kobjects.asde.lang.classifier.ClassImplementation;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.lang.FunctionImplementation;
-import org.kobjects.asde.lang.Program;
-import org.kobjects.asde.lang.event.StartStopListener;
+import org.kobjects.asde.lang.classifier.ClassPropertyDescriptor;
+import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.runtime.StartStopListener;
 
 import java.util.Collections;
 
@@ -195,7 +194,7 @@ public class ProgramView extends SymbolListView {
           ClassView classView = (ClassView) childView;
           ClassImplementation classImplementation = (ClassImplementation) classView.symbol.getValue();
           StaticSymbol symbolFound = null;
-          for (ClassImplementation.ClassPropertyDescriptor descriptor : classImplementation.propertyMap.values()) {
+          for (ClassPropertyDescriptor descriptor : classImplementation.propertyMap.values()) {
             if (descriptor == symbol) {
               symbolFound = descriptor;
               break;

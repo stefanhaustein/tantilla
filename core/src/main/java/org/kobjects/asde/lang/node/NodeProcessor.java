@@ -1,12 +1,13 @@
 package org.kobjects.asde.lang.node;
 
-import org.kobjects.asde.lang.ClassImplementation;
+import org.kobjects.asde.lang.classifier.ClassImplementation;
 import org.kobjects.asde.lang.Consumer;
-import org.kobjects.asde.lang.FunctionImplementation;
-import org.kobjects.asde.lang.GlobalSymbol;
-import org.kobjects.asde.lang.Program;
-import org.kobjects.asde.lang.StaticSymbol;
-import org.kobjects.asde.lang.type.CodeLine;
+import org.kobjects.asde.lang.classifier.ClassPropertyDescriptor;
+import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.program.GlobalSymbol;
+import org.kobjects.asde.lang.program.Program;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
+import org.kobjects.asde.lang.function.CodeLine;
 
 public class NodeProcessor {
 
@@ -36,7 +37,7 @@ public class NodeProcessor {
   }
 
   public void processClass(ClassImplementation classImplementation) {
-    for (ClassImplementation.ClassPropertyDescriptor symbol : classImplementation.propertyMap.values()) {
+    for (ClassPropertyDescriptor symbol : classImplementation.propertyMap.values()) {
       processSymbol(symbol);
     }
   }

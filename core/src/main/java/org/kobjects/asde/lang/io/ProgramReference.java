@@ -1,7 +1,5 @@
 package org.kobjects.asde.lang.io;
 
-import org.kobjects.asde.lang.Program;
-
 public class ProgramReference {
   public final String name;
   public final String url;

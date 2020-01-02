@@ -3,7 +3,7 @@ package org.kobjects.asde.android.library.ui;
 import android.view.MotionEvent;
 import android.view.View;
 
-import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.function.Types;
 import org.kobjects.graphics.Dpad;
 import org.kobjects.typesystem.Instance;
 import org.kobjects.typesystem.InstanceTypeImpl;

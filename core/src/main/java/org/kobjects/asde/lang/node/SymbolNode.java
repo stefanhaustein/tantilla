@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 
-import org.kobjects.asde.lang.StaticSymbol;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
 
 /**
  * Used for signature changes. Not needed for rename!

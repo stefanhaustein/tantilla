@@ -1,11 +1,10 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.Program;
-import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.FunctionValidationContext;
-import org.kobjects.asde.lang.GlobalSymbol;
-import org.kobjects.asde.lang.type.InstantiableType;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
+import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.program.GlobalSymbol;
+import org.kobjects.asde.lang.classifier.InstantiableType;
 
 import java.util.Map;
 
@@ -13,22 +12,23 @@ public class New extends Node {
     final String name;
     InstantiableType instantiableType;
 
-    public New(Program program, String name) throws Exception {
+    public New(String name) {
         this.name = name;
-        GlobalSymbol symbol = program.getSymbol(name);
-        if (symbol == null) {
-            throw new Exception("'" + name + "' is not defined");
-        }
-        Object value = symbol.getValue();
-        if (!(value instanceof InstantiableType)) {
-            throw new Exception("'" + name + "' is not an instantiable type.");
-        }
-        instantiableType = (InstantiableType) value;
+
     }
 
     @Override
     protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
-        // TODO
+        GlobalSymbol symbol = resolutionContext.program.getSymbol(name);
+        if (symbol == null) {
+            throw new RuntimeException("'" + name + "' is not defined");
+        }
+        symbol.validate(resolutionContext.programValidationContext);
+        Object value = symbol.getValue();
+        if (!(value instanceof InstantiableType)) {
+            throw new RuntimeException("'" + name + "' is not an instantiable type.");
+        }
+        instantiableType = (InstantiableType) value;
     }
 
     @Override

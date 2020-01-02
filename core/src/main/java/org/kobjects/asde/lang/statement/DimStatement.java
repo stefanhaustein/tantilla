@@ -2,12 +2,12 @@ package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.node.Literal;
-import org.kobjects.asde.lang.type.Array;
-import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.type.ArrayType;
-import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.array.Array;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
+import org.kobjects.asde.lang.array.ArrayType;
+import org.kobjects.asde.lang.function.Types;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.FunctionValidationContext;
+import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -38,7 +38,7 @@ public class DimStatement extends AbstractDeclarationStatement {
   }
 
   @Override
-  public Object eval(EvaluationContext evaluationContext) {
+  public Object evalValue(EvaluationContext evaluationContext) {
     int[] dims = new int[children.length];
     for (int i = 0; i < children.length; i++) {
       dims[i] = children[i].evalInt(evaluationContext);
@@ -46,8 +46,12 @@ public class DimStatement extends AbstractDeclarationStatement {
         dims[i]++;
       }
     }
-    resolved.set(evaluationContext, new Array(elementType, dims));
-    return null;
+    return new Array(elementType, dims);
+  }
+
+  @Override
+  public Type getValueType() {
+    return new ArrayType(elementType, children.length);
   }
 
   @Override

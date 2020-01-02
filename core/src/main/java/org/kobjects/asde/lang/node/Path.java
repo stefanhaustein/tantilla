@@ -1,10 +1,10 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.FunctionValidationContext;
-import org.kobjects.asde.lang.StaticSymbol;
-import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
+import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
+import org.kobjects.asde.lang.function.Types;
 import org.kobjects.typesystem.*;
 
 import java.util.Map;
@@ -42,6 +42,9 @@ public class Path extends SymbolNode {
       resolvedPropertyDescriptor = ((InstanceType) children[0].returnType()).getPropertyDescriptor(pathName);
       if (resolvedPropertyDescriptor == null) {
         throw new RuntimeException("Property '" + pathName + "' not found in " + children[0].returnType());
+      }
+      if (resolvedPropertyDescriptor.type() == null) {
+        throw new RuntimeException("Type of property '" + resolvedPropertyDescriptor + "' is null.");
       }
       return;
     }

@@ -11,13 +11,7 @@ import org.kobjects.annotatedtext.Span;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.help.HelpDialog;
-import org.kobjects.asde.lang.Format;
-import org.kobjects.asde.lang.StaticSymbol;
-import org.kobjects.asde.lang.node.SymbolNode;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.kobjects.asde.lang.io.Format;
 
 public class AnnotatedStringConverter {
 

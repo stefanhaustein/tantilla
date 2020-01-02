@@ -5,7 +5,7 @@ import android.widget.LinearLayout;
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
-import org.kobjects.asde.lang.StaticSymbol;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
 
 import java.util.ArrayList;
 import java.util.List;

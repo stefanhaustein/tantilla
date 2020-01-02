@@ -1,13 +1,13 @@
 package org.kobjects.asde.lang.parser;
 
 
-import org.kobjects.asde.lang.ClassImplementation;
-import org.kobjects.asde.lang.FunctionImplementation;
-import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.classifier.ClassImplementation;
+import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.UnparseableStatement;
-import org.kobjects.asde.lang.type.CodeLine;
-import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.function.CodeLine;
+import org.kobjects.asde.lang.function.Types;
 import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;

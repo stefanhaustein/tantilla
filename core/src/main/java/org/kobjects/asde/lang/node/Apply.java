@@ -1,13 +1,13 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.StaticSymbol;
-import org.kobjects.asde.lang.type.Array;
-import org.kobjects.asde.lang.type.ArrayType;
-import org.kobjects.asde.lang.type.Function;
-import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.type.Types;
-import org.kobjects.asde.lang.FunctionValidationContext;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
+import org.kobjects.asde.lang.array.Array;
+import org.kobjects.asde.lang.array.ArrayType;
+import org.kobjects.asde.lang.function.Function;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
+import org.kobjects.asde.lang.function.Types;
+import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
 
@@ -160,7 +160,8 @@ public class Apply extends AssignableNode {
         throw new IllegalStateException("Unresolved call: " + this);
     }
   }
-  
+
+  // Shouldn't throw, as it's used outside validation!
   public Type returnType() {
     switch (resolvedKind) {
       case ARRAY_ACCESS:
@@ -168,7 +169,7 @@ public class Apply extends AssignableNode {
       case FUNCTION_EVALUATION:
         return ((FunctionType) children[0].returnType()).getReturnType();
       default:
-        throw new RuntimeException("Can't apply parameters to " + children[0].returnType());
+        return null;
 
     }
   }

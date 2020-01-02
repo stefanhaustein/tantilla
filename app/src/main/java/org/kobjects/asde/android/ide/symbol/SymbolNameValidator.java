@@ -1,9 +1,9 @@
 package org.kobjects.asde.android.ide.symbol;
 
 import org.kobjects.asde.android.ide.text.TextValidator;
-import org.kobjects.asde.lang.GlobalSymbol;
-import org.kobjects.asde.lang.StaticSymbol;
-import org.kobjects.asde.lang.SymbolOwner;
+import org.kobjects.asde.lang.program.GlobalSymbol;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
+import org.kobjects.asde.lang.symbol.SymbolOwner;
 
 public class SymbolNameValidator extends TextValidator {
     private SymbolOwner symbolOwner;

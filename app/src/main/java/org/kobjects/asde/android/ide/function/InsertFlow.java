@@ -2,12 +2,12 @@ package org.kobjects.asde.android.ide.function;
 
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
-import org.kobjects.asde.lang.FunctionImplementation;
-import org.kobjects.asde.lang.StaticSymbol;
+import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.parser.StatementParser;
 import org.kobjects.asde.lang.statement.UnparseableStatement;
-import org.kobjects.asde.lang.type.CodeLine;
+import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.expressionparser.ExpressionParser;
 
 import java.util.Collections;

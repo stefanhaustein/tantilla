@@ -1,11 +1,11 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.Program;
-import org.kobjects.asde.lang.StaticSymbol;
-import org.kobjects.asde.lang.type.Types;
-import org.kobjects.asde.lang.FunctionValidationContext;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
+import org.kobjects.asde.lang.program.Program;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
+import org.kobjects.asde.lang.function.Types;
+import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.typesystem.PropertyChangeListener;
 import org.kobjects.typesystem.Type;
 
@@ -31,6 +31,9 @@ public abstract class Node {
   public void resolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     for (Node child: children) {
       child.resolve(resolutionContext, this, line, index);
+   /*   if (child.returnType() == null) {
+        resolutionContext.addError(child, new RuntimeException("return type null: " + child));
+      }*/
     }
     try {
       onResolve(resolutionContext, parent, line, index);

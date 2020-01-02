@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.io;
 
-import org.kobjects.asde.lang.FunctionImplementation;
-import org.kobjects.asde.lang.StaticSymbol;
+import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.typesystem.Type;
 
 import java.io.InputStream;

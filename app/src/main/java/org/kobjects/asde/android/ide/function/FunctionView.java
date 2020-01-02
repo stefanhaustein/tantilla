@@ -16,10 +16,10 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.symbol.DeleteFlow;
 import org.kobjects.asde.android.ide.symbol.RenameFlow;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
-import org.kobjects.asde.lang.FunctionImplementation;
-import org.kobjects.asde.lang.StaticSymbol;
-import org.kobjects.asde.lang.type.CodeLine;
-import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
+import org.kobjects.asde.lang.function.CodeLine;
+import org.kobjects.asde.lang.function.Types;
 
 import java.util.ArrayList;
 

@@ -1,10 +1,11 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.FunctionImplementation;
-import org.kobjects.asde.lang.FunctionValidationContext;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
+import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
@@ -25,9 +26,13 @@ public class DefStatement extends AbstractDeclarationStatement {
   }
 
   @Override
-  public Object eval(EvaluationContext evaluationContext) {
-    resolved.set(evaluationContext, implementation);
-    return null;
+  public Object evalValue(EvaluationContext evaluationContext) {
+    return implementation;
+  }
+
+  @Override
+  public Type getValueType() {
+    return implementation.getType();
   }
 
 

@@ -1,9 +1,9 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.EvaluationContext;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.FunctionValidationContext;
+import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;

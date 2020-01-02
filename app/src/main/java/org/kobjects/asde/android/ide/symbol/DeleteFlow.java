@@ -2,7 +2,7 @@ package org.kobjects.asde.android.ide.symbol;
 
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
-import org.kobjects.asde.lang.StaticSymbol;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
 
 public class DeleteFlow {
 

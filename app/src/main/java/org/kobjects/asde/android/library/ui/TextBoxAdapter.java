@@ -1,6 +1,6 @@
 package org.kobjects.asde.android.library.ui;
 
-import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.function.Types;
 import org.kobjects.graphics.TextBox;
 import org.kobjects.graphics.XAlign;
 import org.kobjects.graphics.YAlign;

@@ -6,7 +6,7 @@ import org.kobjects.asde.lang.node.ArrayLiteral;
 import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.NegOperator;
 import org.kobjects.asde.lang.node.New;
-import org.kobjects.asde.lang.Program;
+import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.MathOperator;
@@ -120,7 +120,7 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
       case "NEW":
         String className = tokenizer.currentValue;
         try {
-          Node result = new New(program, className);
+          Node result = new New(className);
           tokenizer.consumeIdentifier();
           return result;
         } catch (Exception e) {

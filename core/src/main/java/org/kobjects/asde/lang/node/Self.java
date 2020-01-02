@@ -1,9 +1,10 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.ClassImplementation;
-import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.FunctionValidationContext;
+import org.kobjects.asde.lang.classifier.ClassImplementation;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
+import org.kobjects.asde.lang.classifier.ClassPropertyDescriptor;
+import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -17,7 +18,7 @@ public class Self extends Node {
     if (!resolutionContext.functionImplementation.isMethod()) {
       throw new RuntimeException("'self' is only valid inside methods.");
     }
-    ClassImplementation.ClassPropertyDescriptor propertyDescriptor = (ClassImplementation.ClassPropertyDescriptor) resolutionContext.functionImplementation.getDeclaringSymbol();
+    ClassPropertyDescriptor propertyDescriptor = (ClassPropertyDescriptor) resolutionContext.functionImplementation.getDeclaringSymbol();
     resolvedType = propertyDescriptor.getOwner();
   }
 

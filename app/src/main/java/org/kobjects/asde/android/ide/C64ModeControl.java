@@ -1,9 +1,9 @@
 package org.kobjects.asde.android.ide;
 
 import org.kobjects.android64.Android64;
-import org.kobjects.asde.lang.event.ProgramListener;
+import org.kobjects.asde.lang.program.ProgramListener;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.function.Types;
 
 public class C64ModeControl implements ProgramListener {
 

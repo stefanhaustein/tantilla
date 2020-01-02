@@ -1,10 +1,10 @@
 package org.kobjects.asde.android.library.ui;
 
-import org.kobjects.asde.lang.EvaluationContext;
-import org.kobjects.asde.lang.type.Array;
-import org.kobjects.asde.lang.type.ArrayType;
-import org.kobjects.asde.lang.type.Method;
-import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
+import org.kobjects.asde.lang.array.Array;
+import org.kobjects.asde.lang.array.ArrayType;
+import org.kobjects.asde.lang.classifier.Method;
+import org.kobjects.asde.lang.function.Types;
 import org.kobjects.graphics.Animated;
 import org.kobjects.graphics.EdgeMode;
 import org.kobjects.graphics.Sprite;
