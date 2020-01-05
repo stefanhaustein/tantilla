@@ -15,24 +15,24 @@ import java.util.Collections;
 import java.util.Map;
 
 public class ClassPropertyDescriptor implements PropertyDescriptor, ResolvedSymbol, StaticSymbol {
+  private ClassImplementation owner;
   String name;
   AbstractDeclarationStatement initializer;
   FunctionImplementation methodImplementation;
   int index = -1;
   private Map<Node, Exception> errors = Collections.emptyMap();
-  private ClassImplementation classImplementation;
 
   ClassPropertyDescriptor(ClassImplementation classImplementation, String name, AbstractDeclarationStatement initializer) {
     this.name = name;
     this.initializer = initializer;
-    this.classImplementation = classImplementation;
+    this.owner = classImplementation;
   }
 
   ClassPropertyDescriptor(ClassImplementation classImplementation, String name, FunctionImplementation methodImplementation) {
     this.name = name;
     this.methodImplementation = methodImplementation;
     methodImplementation.setDeclaringSymbol(this);
-    this.classImplementation = classImplementation;
+    this.owner = classImplementation;
   }
 
   // May also be called from ClassValidationContext.
@@ -49,8 +49,8 @@ public class ClassPropertyDescriptor implements PropertyDescriptor, ResolvedSymb
     } else {
       initializer.resolve(context, null, 0, 0);
 
-      index = classImplementation.resolvedInitializers.size();
-      classImplementation.resolvedInitializers.add(initializer);
+      index = owner.resolvedInitializers.size();
+      owner.resolvedInitializers.add(initializer);
     }
 
     if (context.errors.size() > 0) {
@@ -90,7 +90,7 @@ public class ClassPropertyDescriptor implements PropertyDescriptor, ResolvedSymb
 
   @Override
   public ClassImplementation getOwner() {
-    return classImplementation;
+    return owner;
   }
 
   @Override
@@ -120,8 +120,8 @@ public class ClassPropertyDescriptor implements PropertyDescriptor, ResolvedSymb
 
   @Override
   public void validate() {
-    if (classImplementation.declaringSymbol != null) {
-      classImplementation.declaringSymbol.validate();
+    if (owner.declaringSymbol != null) {
+      owner.declaringSymbol.validate();
     }
   }
 

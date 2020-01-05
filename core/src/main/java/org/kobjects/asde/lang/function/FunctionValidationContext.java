@@ -91,7 +91,8 @@ public class FunctionValidationContext {
     // resolveVariableDeclaration handling the initial assignment, so that part is checked in
     // AssignStatement.
 
-    if (!Types.match(type, resolved.getType())) {
+
+    if (resolved.getType() != null && !resolved.getType().isAssignableFrom(type)) {
       throw new RuntimeException("Cannot assign value of type " + type + " to " + name + " of type " + resolved.getType());
     }
 

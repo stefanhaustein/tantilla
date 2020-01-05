@@ -56,13 +56,6 @@ public class Types {
     return result;
   }
 
-  /**
-   * Interprets null as wildcard.
-   */
-  // TODO: Remove when validate works for the declaration block.
-  public static boolean match(Type type1, Type type2) {
-    return type1 == null || type2 == null || type1.equals(type2);
-  }
 
   public static EnumType wrapEnum(String name, Object[] values) {
     EnumType type = new EnumType(name, values);

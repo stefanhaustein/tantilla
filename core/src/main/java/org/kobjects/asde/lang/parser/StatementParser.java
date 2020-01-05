@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.parser;
 
+import org.kobjects.asde.lang.array.ArrayType;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.Program;
@@ -8,6 +9,7 @@ import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.NegOperator;
 import org.kobjects.asde.lang.node.Path;
 import org.kobjects.asde.lang.node.RelationalOperator;
+import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
 import org.kobjects.asde.lang.statement.AssignStatement;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.statement.Command;
@@ -32,6 +34,7 @@ import org.kobjects.asde.lang.statement.RemStatement;
 import org.kobjects.asde.lang.statement.FunctionReturnStatement;
 import org.kobjects.asde.lang.statement.LegacyStatement;
 import org.kobjects.asde.lang.node.Identifier;
+import org.kobjects.asde.lang.statement.UninitializedField;
 import org.kobjects.asde.lang.statement.VoidStatement;
 import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.function.Types;
@@ -433,6 +436,28 @@ public class StatementParser {
     return new FunctionReturnStatement();
   }
 
+
+  public AbstractDeclarationStatement parseDeclaration(ExpressionParser.Tokenizer tokenizer, boolean permitUninitialized) {
+    AbstractDeclarationStatement result;
+    if (tokenizer.currentValue.equalsIgnoreCase("let")
+        || tokenizer.currentValue.equalsIgnoreCase("dim")
+        || tokenizer.currentValue.equalsIgnoreCase("const")) {
+      ArrayList<Node> statements = new ArrayList<>();
+      parseStatement(tokenizer, statements, null);
+      result = (AbstractDeclarationStatement) statements.get(0);
+    } else if (!permitUninitialized) {
+      throw tokenizer.exception("LET, DIM or CONST expected.", null);
+    } else {
+      Type type = parseType(tokenizer); // consumeType
+      String fieldName = tokenizer.consumeIdentifier();
+      result = new UninitializedField(type, fieldName);
+    }
+    if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF) {
+      throw tokenizer.exception("Leftover input", null);
+    }
+    return result;
+  }
+
   public List<? extends Node> parseStatementList(ExpressionParser.Tokenizer tokenizer, FunctionImplementation parsingContext) {
     ArrayList<Node> result = new ArrayList<>();
     Node statement;
@@ -472,19 +497,26 @@ public class StatementParser {
 
   public Type parseType(ExpressionParser.Tokenizer tokenizer) {
      String typeName = tokenizer.consumeIdentifier();
+     Type result;
      if (typeName.equalsIgnoreCase("Number")) {
-         return Types.NUMBER;
-     }
-     if (typeName.equalsIgnoreCase("String")) {
-         return Types.STRING;
-     }
-     GlobalSymbol symbol = program.getSymbol(typeName);
-     if (symbol == null) {
-        throw new RuntimeException("Unrecognized type: " + typeName);
-     }
-     if (!(symbol.getValue() instanceof Type)) {
+         result = Types.NUMBER;
+     } else if (typeName.equalsIgnoreCase("String")) {
+         result = Types.STRING;
+     } else {
+       GlobalSymbol symbol = program.getSymbol(typeName);
+       if (symbol == null) {
+         throw new RuntimeException("Unrecognized type: " + typeName);
+       }
+       if (!(symbol.getValue() instanceof Type)) {
          throw new RuntimeException("'" + typeName + "' is not a type!");
+       }
+       result = (Type) symbol.getValue();
      }
-     return  (Type) symbol.getValue();
+     while (tokenizer.tryConsume("[")) {
+       tokenizer.consume("]");
+       result = new ArrayType(result);
+     }
+
+     return  result;
  }
 }

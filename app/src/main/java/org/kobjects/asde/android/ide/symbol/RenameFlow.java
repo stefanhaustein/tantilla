@@ -9,7 +9,7 @@ public class RenameFlow {
 
   public static void start(MainActivity mainActivity, StaticSymbol symbol) {
     new InputFlowBuilder(mainActivity, "Rename '" + symbol.getName() + "'" )
-        .addInput("New Name", symbol.getName(), new SymbolNameValidator(symbol.getOwner()))
+        .addInput("Constructor Name", symbol.getName(), new SymbolNameValidator(symbol.getOwner()))
         .start(result -> {
           String newName = result[0].trim();
           SymbolOwner owner = symbol.getOwner();

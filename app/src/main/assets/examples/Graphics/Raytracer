@@ -1,0 +1,326 @@
+ASDE
+
+CONST WHITE = newColor(1,1,1)
+CONST BLACK = newColor(0,0,0)
+CONST GREY = newColor(0.5, 0.5, 0.5)
+
+CLASS Vector
+LET x = 0
+LET y = 0
+LET z = 0
+
+FUNCTION times(Number k) -> Vector
+10 RETURN newVector(k * x, k * y, k * z)
+END FUNCTION
+
+FUNCTION minus(Vector v2) -> Vector
+10 RETURN newVector(x - v2.x, y - v2.y, z - v2.z)
+END FUNCTION
+
+FUNCTION plus(Vector v2) -> Vector
+10 RETURN newVector(x + v2.x, y + v2.y, z + v2.z)
+END FUNCTION
+
+FUNCTION dot(Vector v2) -> Number
+10 RETURN x * v2.x + y * v2.y + z * v2.z
+END FUNCTION
+
+FUNCTION mag() -> Number
+10 RETURN sqr(x * x + y * y + z * z)
+END FUNCTION
+
+FUNCTION norm() -> Vector
+10 RETURN times(1/mag())
+END FUNCTION
+
+FUNCTION cross(Vector v2) -> Vector
+10 RETURN newVector(y * v2.z - z * v2.y, z * v2.x - x * v2.z, x * v2.y - y * v2.x)
+END FUNCTION 
+
+END CLASS
+
+FUNCTION newVector(Number x, Number y, Number z) -> Vector
+10 RETURN Vector{x = x, y = y, z = z}
+END FUNCTION
+
+
+CLASS Color
+LET r = 0
+LET g = 0
+LET b = 0
+
+FUNCTION scale(Number k) -> Color
+10 RETURN newColor(k * r, k * g, k * b)
+END FUNCTION
+
+FUNCTION plus(Color c2) -> Color
+10 RETURN newColor(r + c2.r, g + c2.g, b + c2.b)
+END FUNCTION
+
+FUNCTION times(Color c2) -> Color
+10 RETURN newColor(r * c2.r, g * c2.g, b * c2.b)
+END FUNCTION
+
+FUNCTION toDrawingColor() -> Number
+20 RETURN INT(r * 255) * 65536 + INT(g * 255) * 256 + INT(b * 255)
+END FUNCTION
+
+END CLASS
+
+
+FUNCTION newColor(Number r, Number g, Number b) -> Color
+10 RETURN Color{r = r, g = g, b = b}
+END FUNCTION
+
+CLASS Camera
+Vector forward
+Vector right
+Vector up
+END CLASS
+
+FUNCTION newCamera(Vector pos, Vector lookAt) -> Camera
+10 LET down = newVector(0, -1, 0)
+20 LET forward = lookAt.minus(pos).norm()
+30 LET right = forward.cross(down).norm().times(1.5)
+40 LET up = forward.cross(right).norm().times(1.5)
+50 return Camera{forward = forward, right = right, up = up}
+END FUNCTION
+
+CLASS Ray
+Vector start
+Vector dir
+END CLASS
+
+FUNCTION newRay(Vector start, Vector dir) -> Ray
+10 RETURN Ray{start = start, dir = dir}
+END FUNCTION
+
+CLASS Intersection
+Thing thing
+Ray ray
+NUMBER dist
+END CLASS
+
+FUNCTION newIntersection(Thing t, Ray r, Number dist) -> Intersection
+10 RETURN Intersection{thing = t, ray = r, dist = dist}
+END FUNCTION
+
+INTERFACE Surface
+FUNCTION diffuse(Vector pos) -> Color
+FUNCTION specular(Vector pos) ->  Color
+FUNCTION reflect(Vector pos) -> Number
+Number roughness
+END INTERFACE
+
+INTERFACE Thing
+FUNCTION normal(Vector pos) -> Vector
+FUNCTION intersect(Ray ray) -> Intersection
+Surface surface
+END INTERFACE
+
+CLASS Light
+Vector pos
+Color color
+END CLASS
+
+CLASS Scene
+Thing[] things
+Light[] lights
+Camera camera
+Color background
+END CLASS
+
+CLASS Sphere
+Vector center
+Number radius2
+Surface surface
+
+FUNCTION normal(Vector pos) -> Vector
+10 return pos.minus(center).norm()
+END FUNCTION
+
+FUNCTION intersect(Ray r) -> Intersection
+10 LET eo = center.minus(r.start)
+20 LET v = eo.dot(r.dir)
+30 LET dist = 0
+40 if v >= 0 THEN
+50   LET disc = radius2 - eo.dot(eo) - v * v
+60   IF disc >= 0 THEN
+70     dist = v - sqr(disc)
+80   ENDIF
+90 ENDIF
+95 REM if dist === 0 return null
+100 return newIntersection(self, ray, dist)
+END FUNCTION
+
+END CLASS
+
+FUNCTION newSphere(Vector center, Number radius, Surface s) -> Sphere
+10 return Sphere{center = center, radius2 = radius * radius, surface = surface}
+END FUNCTION
+
+CLASS Plane
+Vector norm
+Number offset
+Surface surface
+
+FUNCTION normal(Vector pos) -> Vector
+10 return norm
+END FUNCTION
+
+FUNCTION intersect(Ray r) -> Intersection
+10 LET denom = norm.dot(r.dir)
+20 REM if denom > 0 return null
+30 LET dist = (norm.dot(r.start) + offset) / (-denom)
+40 return newIntersection(this, r, dist)
+END FUNCTION
+
+END CLASS
+
+FUNCTION newPlane(Vector normal, Number offset, Surface s) -> Plane
+10 return Plane{norm = normal, offset = offset, surface = s}
+END FUNCTION
+
+CLASS Shiny
+LET roughness = 250
+
+FUNCTION diffuse(Vector pos) -> Color
+10 return WHITE
+END FUNCTION
+
+FUNCTION specular(Vector pos) -> Color
+10 return GREY
+END FUNCTION
+
+FUNCTION reflect(Vector pos) -> Number
+10 return 0.7
+END FUNCTION
+
+END CLASS
+
+CLASS Checkerboard
+LET roughness = 150
+
+FUNCTION diffuse(Vector pos) -> Color
+10 IF (int(pos.z) + int(pos.x)) MOD 2 <> 0 THEN
+20   RETURN WHITE
+30 ELSE
+40   RETURN BLACK
+50 END IF
+END FUNCTION
+
+FUNCTION specular(Vector pos) -> Color
+10 RETURN WHITE
+END FUNCTION
+
+
+FUNCTION reflect(Vector pos) -> Number
+10 IF (int(pos.z) + int(pos.x)) MOD 2 <> 0 THEN
+20   RETURN 0.1
+30 ELSE
+40   RETURN 0.7
+50 END IF
+END FUNCTION
+
+
+END CLASS
+
+
+CLASS RayTracer
+LET maxDepth = 5
+LET defaultColor = WHITE
+
+FUNCTION intersections(Ray r, Scene s) -> Intersection
+10 Let closest = s.things[0].intersect(r)
+20 for i = 1 to s.things.length - 1
+30   LET inter = s.things[i].intersect(r)
+40   if inter.dist < closest.dist THEN
+50     closest = inter
+60   END IF
+70 NEXT I
+80 RETURN closest
+END FUNCTION
+
+FUNCTION testRay(Ray r, Scene s) -> Number
+10 RETURN intersections(r, s).dist
+END FUNCTION
+
+FUNCTION traceRay(Ray r, Scene s, Number depth) -> Color
+10 LET isect = intersections(r, s)
+20 IF isect.dist == 1/0 THEN
+30   return s.background
+40 END IF
+50 return shade(isect, s, depth)
+END FUNCTION
+
+FUNCTION shade(Intersection isect, Scene s, Number deptn -> Color
+10 LET d = isect.ray.dir
+20 LET pos = d.times(isect.dist).plus(isect.ray.start)
+30 LET normal = isect.thing.normal(pos)
+40 LET reflectDir = d.minus(normal.times(normal.dot(d)).times(2))
+50 LET naturalColor = s.background.plus(getNaturalColor(isect.thing, pos, normal, reflectDir, s))
+60 LET reflectedColor = GREY
+70 IF depth < maxDepth THEN
+80   reflectedColor = getReflectionColor(isect.thing, pos, normal, reflectDir, s, depth)
+90 ENDIF
+100 RETURN naturalColor.plus(reflectedColor)
+
+FUNCTION getReflectionColor(Thing t, Vector pos, Vector normal, Vector rd, Scene s, Number depth)
+10 RETURN t.surface.reflect(pos).scale(traceRay(newRay(pos, rd), s, depth + 1))
+END FUNCTION
+
+FUNCTION addLight(Thing t, Vector pos, Vector norm, Vector rd, Scene s, Color col, Light l) -> Color
+10 LET ldis = l.pos.minus(pos)
+20 LET livec = ldis.norm()
+30 LET nearIsect = testRay(newRay(pos, livec), s)
+40 LET isInShadow = nearIsect <= ldis.mag()
+50 IF isInShadow THEN
+60   RETURN col
+70 ENDIF
+80 LET illum = livec.dot(norm)
+90 LET lcolor = defaultColor
+100 IF illum > 0 THEN
+110   lcolor = l.color.scale(illum)
+120 ENDIF
+130 LET specular = livec.dot(rd.norm())
+140 LET scolor = defaultColor
+150 IF specular > 0 THEN
+160   scolor = light.color.scale(specular ^ t.surface.roughness)
+170 END IF
+180 RETURN col.plus(lcolor.times(t.surface.diffuse(pos)).plus(scolor.times(t.surface.specular(pos)))
+
+
+FUNCTION getNaturalColor(Thing t, Vector pos, Vector norm, Vector rd, Scene s) -> Color
+10 LET col = defaultColor
+20 for i = 0 to s.lights.length - 1
+30   col = addLight(t, pos, norm, rd, s, col, s.lights[i])
+40 NEXT i
+50 RETURN col
+END FUNCTION
+
+FUNCTION getPoint(Number x, Number y, Camera cam, Number screenWidth, Number screenHeight)
+10 return camera.forward.plus(camera.right.times(x / screenWidth).plus(camera.up.times(y / screenHeight).norm()
+END FUNCTION
+
+SUB render(Scene s, Pen p, Number screenWidth, Number screenHeight)
+10 FOR y = -screenHeight / 2 to screenHeight / 2
+20   FOR x = -screenWidth / 2 to screenWidth / 2
+30     LET color = traceRay(newRay(s.camera.pos, getPoint(x, y, s.camera), s, 0)
+40     p.fillColor = color.toDrawingColor()
+50     p.drawRect(x, y, 1, 1)
+60   NEXT x
+70 NEXT y
+END SUB
+
+END CLASS
+
+CONST defaultThings = {newPlane(newVector(0,1,0), 0, Checkerboard{}, newSphere(newVector(0,1,-0.25), 1, Shiny{}, newSphere(newVector(-1,0.5,1.5),0.5, Shiny{}}
+CONST defaultLights = {newLight(newVector(-2,2.5,0), newColor(0.49,0.07,0.07)), newLight(newVector(1.5,2.5,1.5), newColor(0.07,0.07,0.49)), newLight(newVector(1.5,2.5,-1,5), newColor(0.07,0.49,0.071)), newLight(newVecore(0,3.5,0), newColor(0.21,0.21,0.35))}
+CONST defaultCamera = newCamera(newVector(3,2,4), newVector(-1,0.5,0))
+CONST defaultScene = Scene{things: defaultThings, lights: defaultLights, camera: defaultCamera}
+
+
+10 LET p = screen.newPen()
+20 LET rayTracer = RayTracer{}
+30 rayTracer.render(defaultScene, p, 400, 400)
+

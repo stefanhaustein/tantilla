@@ -15,6 +15,11 @@ public class InstanceImpl extends Instance {
   }
 
   @Override
+  public ClassImplementation getType() {
+    return (ClassImplementation) super.getType();
+  }
+
+  @Override
   public Property getProperty(PropertyDescriptor rawDescriptor) {
     ClassPropertyDescriptor descriptor = ((ClassPropertyDescriptor) rawDescriptor);
     int index = descriptor.getIndex();
@@ -31,10 +36,6 @@ public class InstanceImpl extends Instance {
       public int getLocalVariableCount() {
         return methodImplementation.getLocalVariableCount();
       }
-
-
     };
-
   }
-
 }

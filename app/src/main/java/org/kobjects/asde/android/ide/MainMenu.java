@@ -206,8 +206,8 @@ public class MainMenu {
 
     ProgramReference programReference = mainActivity.program.reference;
 
-    projectMenu.add("New" + (mainActivity.isUnsaved() ? "…" : "")).setOnMenuItemClickListener(item -> {
-      confirmLosingUnsavedChanges(mainActivity, "New Project", () -> {
+    projectMenu.add("Constructor" + (mainActivity.isUnsaved() ? "…" : "")).setOnMenuItemClickListener(item -> {
+      confirmLosingUnsavedChanges(mainActivity, "Constructor Project", () -> {
         mainActivity.eraseProgram();
         try {
           mainActivity.program.save(mainActivity.program.reference);

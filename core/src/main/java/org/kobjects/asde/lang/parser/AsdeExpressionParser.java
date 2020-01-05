@@ -20,12 +20,13 @@ public class AsdeExpressionParser extends ExpressionParser<Node> {
     super(new ExpressionBuilder(program));
     addApplyBrackets(9,"(", ",", ")");
     addApplyBrackets(9,"[", ",", "]");  // HP
+    addApplyBrackets(9,"{", ",", "}");  // HP
     addGroupBrackets("(", null, ")");
     addGroupBrackets("{", ",", "}");
     addOperators(ExpressionParser.OperatorType.INFIX, 10, ".");
     addOperators(ExpressionParser.OperatorType.INFIX, 8, "^");
     addOperators(ExpressionParser.OperatorType.PREFIX, 7, "-");
-    addOperators(ExpressionParser.OperatorType.INFIX, 6, "*", "/", "×", "⋅", "÷");
+    addOperators(ExpressionParser.OperatorType.INFIX, 6, "*", "/", "×", "⋅", "÷", "mod", "Mod", "MOD");
     addOperators(ExpressionParser.OperatorType.INFIX, 5, "+", "-", "−");
     addOperators(ExpressionParser.OperatorType.INFIX, 4, ">=", "<=", "<>", ">", "<", "=", "≠", "!=", "≥", "≤");
     addOperators(ExpressionParser.OperatorType.PREFIX, 3, "not", "NOT", "Not");

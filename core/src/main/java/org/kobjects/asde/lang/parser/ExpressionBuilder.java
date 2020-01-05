@@ -5,7 +5,7 @@ import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.ArrayLiteral;
 import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.NegOperator;
-import org.kobjects.asde.lang.node.New;
+import org.kobjects.asde.lang.node.Constructor;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
@@ -34,6 +34,10 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
 
   @Override
   public Node apply(ExpressionParser.Tokenizer tokenizer, Node base, String bracket, List<Node> arguments) {
+    if (bracket.equals("{")) {
+      return Constructor.create(base, arguments);
+    }
+
     Node[] children = new Node[arguments.size() + 1];
     children[0] = base;
     for (int i = 0; i < arguments.size(); i++) {
@@ -90,6 +94,8 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
       case "÷":
       case "/":
         return new MathOperator(MathOperator.Kind.DIV, left, right);
+      case "MOD":
+        return new MathOperator(MathOperator.Kind.MOD, left, right);
       case "^":
         return new MathOperator(MathOperator.Kind.POW, left, right);
       case "AND":
@@ -117,15 +123,6 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
   public Node identifier(ExpressionParser.Tokenizer tokenizer, String name) {
 
     switch(name.toUpperCase()) {
-      case "NEW":
-        String className = tokenizer.currentValue;
-        try {
-          Node result = new New(className);
-          tokenizer.consumeIdentifier();
-          return result;
-        } catch (Exception e) {
-          throw tokenizer.exception(e.getMessage(), e);
-        }
       case "TRUE":
         return new Literal(Boolean.TRUE);
       case "FALSE":

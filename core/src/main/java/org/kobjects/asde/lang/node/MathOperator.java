@@ -11,7 +11,7 @@ import java.util.Map;
 public class MathOperator extends Node {
 
   public enum Kind {
-    ADD, SUB, MUL, DIV, POW
+    ADD, SUB, MUL, DIV, MOD, POW;
   }
 
   public final Kind kind;
@@ -35,8 +35,10 @@ public class MathOperator extends Node {
         return "/";
       case POW:
         return "^";
-        default:
-          throw new IllegalStateException();
+      case MOD:
+        return "MOD";
+      default:
+        throw new IllegalStateException();
     }
   }
 
@@ -88,6 +90,8 @@ public class MathOperator extends Node {
         return l / r;
       case MUL:
         return l * r;
+      case MOD:
+        return l % r;
       default:
         throw new IllegalStateException("Unsupported binary operator " + kind);
     }

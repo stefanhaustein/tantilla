@@ -10,5 +10,5 @@ public abstract class InstantiableTypeImpl extends InstanceTypeImpl implements I
   }
 
   @Override
-  public abstract Instance createInstance(EvaluationContext evaluationContext);
+  public abstract Instance createInstance(EvaluationContext evaluationContext, Object... params);
 }

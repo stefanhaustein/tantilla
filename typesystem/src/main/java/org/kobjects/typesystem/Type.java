@@ -6,4 +6,8 @@ public interface Type extends Typed {
    boolean hasDefaultValue();
 
    Object getDefaultValue();
+
+   default boolean isAssignableFrom(Type other) {
+      return this.equals(other);
+   }
 }

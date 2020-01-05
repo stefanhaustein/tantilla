@@ -70,7 +70,7 @@ public class Apply extends AssignableNode {
       throw new RuntimeException("Array expected");
     }
 
-    if (!Types.match(returnType(), type)) {
+    if (!type.isAssignableFrom(returnType())) {
       throw new RuntimeException("Expected type for assignment: " + type + " actual type: " + returnType());
     }
   }
@@ -115,7 +115,7 @@ public class Apply extends AssignableNode {
             + resolved.getParameterCount() + " but got " + (children.length - 1) + " for " + this);
       }
       for (int i = 0; i < children.length - 1; i++) {
-        if (!Types.match(resolved.getParameterType(i), children[i+1].returnType())) {
+        if (!resolved.getParameterType(i).isAssignableFrom(children[i+1].returnType())) {
           throw new RuntimeException("Type mismatch for parameter " + i + ": expected: "
               + resolved.getParameterType(i) + " actual: " + children[i+1].returnType() + " base type: " + resolved);
         }

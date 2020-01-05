@@ -21,6 +21,7 @@ import org.kobjects.typesystem.Type;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.TreeMap;
 
 public class ClassImplementation implements InstanceType, InstantiableType, Declaration, SymbolOwner {
@@ -63,16 +64,8 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
     propertyMap.put(propertyName, new ClassPropertyDescriptor(this, propertyName, initializer));
   }
 
-  public void processDeclarations(CodeLine codeLine) {
-    for (int i = 0; i < codeLine.length(); i++) {
-      Node node = codeLine.get(i);
-      if (node instanceof DeclarationStatement) {
-        DeclarationStatement declaration = (DeclarationStatement) node;
-        propertyMap.put(declaration.getVarName(), new ClassPropertyDescriptor(this, declaration.getVarName(), declaration));
-      } else {
-        throw new RuntimeException("Unsupported declaration in class: " + node);
-      }
-    }
+  public void processDeclaration(AbstractDeclarationStatement declaration) {
+    propertyMap.put(declaration.getVarName(), new ClassPropertyDescriptor(this, declaration.getVarName(), declaration));
   }
 
   public void validate(ClassValidationContext classValidationContext) {
@@ -83,14 +76,15 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
   }
 
   @Override
-  public Instance createInstance(EvaluationContext evaluationContext) {
+  public Instance createInstance(EvaluationContext evaluationContext, Object... ctorValues) {
     int fieldCount = resolvedInitializers.size();
     Property[] properties = new Property[fieldCount];
     for (int i = 0; i < fieldCount; i++) {
-      properties[i] = new PhysicalProperty(resolvedInitializers.get(i).evalValue(evaluationContext));
+      properties[i] = new PhysicalProperty(ctorValues !=null && ctorValues.length > i && ctorValues[i] != null ? ctorValues[i] : resolvedInitializers.get(i).evalValue(evaluationContext));
     }
     return new InstanceImpl(this, properties);
   }
+
 
   @Override
   public void setDeclaringSymbol(StaticSymbol declaringSymbol) {

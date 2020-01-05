@@ -2,9 +2,12 @@ package org.kobjects.asde.lang.parser;
 
 
 import org.kobjects.asde.lang.classifier.ClassImplementation;
+import org.kobjects.asde.lang.classifier.InterfaceImplementation;
+import org.kobjects.asde.lang.classifier.InterfacePropertyDescriptor;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
 import org.kobjects.asde.lang.statement.UnparseableStatement;
 import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.function.Types;
@@ -79,18 +82,37 @@ public class ProgramParser {
   public void parseProgram(BufferedReader reader) throws IOException {
     FunctionImplementation currentFunction = program.main;
     ClassImplementation currentClass = null;
-    String line = reader.readLine();
-    program.setLegacyMode(line != null && !(line + ' ').startsWith("ASDE "));
-    if (!program.isLegacyMode()) {
-      line = reader.readLine();
-    }
-    ArrayList<Exception> exceptions = new ArrayList<>();
-    while (line != null) {
-      System.out.println("Parsing: '" + line + "'");
-      if (program.isLegacyMode()) {
+    ArrayList<String> lines = new ArrayList<>();
+
+    {
+      String line = reader.readLine();
+      program.setLegacyMode(line != null && !(line + ' ').startsWith("ASDE "));
+      if (!program.isLegacyMode()) {
+        line = reader.readLine();
+      }
+      while (line != null) {
+        line = line.trim();
+        if (program.isLegacyMode()) {
           line = preprocessLegacyIdentifiers(line);
           System.out.println("Preprocessed: '" + line + "'");
+        }
+        lines.add(line);
+        String upper = line.toUpperCase();
+        if (upper.startsWith("CLASS ")) {
+          String className = line.substring(6).trim();
+          program.setDeclaration(className, new ClassImplementation(program));
+        } else if (upper.startsWith("INTERFACE ")) {
+          String interfaceName = line.substring(10).trim();
+          program.setDeclaration(interfaceName, new InterfaceImplementation(program));
+        }
+        line = reader.readLine();
       }
+    }
+    ArrayList<Exception> exceptions = new ArrayList<>();
+
+    for (int i = 0; i < lines.size(); i++) {
+      String line = lines.get(i);
+      System.out.println("Parsing: '" + line + "'");
       try {
         ExpressionParser.Tokenizer tokenizer = statementParser.createTokenizer(line);
         tokenizer.nextToken();
@@ -123,27 +145,53 @@ public class ProgramParser {
           }
         } else if (tokenizer.tryConsume("CLASS")) {
           String className = tokenizer.consumeIdentifier();
-          currentClass = new ClassImplementation(program);
-          program.setDeclaration(className, currentClass);
+          currentClass = (ClassImplementation) program.getSymbol(className).getValue();
+        } else if (tokenizer.tryConsume("INTERFACE")) {
+          String interfaceName = tokenizer.consumeIdentifier();
+          InterfaceImplementation currentInterface = (InterfaceImplementation) (program.getSymbol(interfaceName)).getValue();
+
+          i = parseInterface(currentInterface, lines, i);
+
         } else if (!tokenizer.tryConsume("")) {
-          List<? extends Node> statements = statementParser.parseStatementList(tokenizer, null);
-          CodeLine codeLine = new CodeLine(-2, statements);
+          AbstractDeclarationStatement declaration = statementParser.parseDeclaration(tokenizer, currentClass != null);
           if (currentClass != null) {
-            currentClass.processDeclarations(codeLine);
+            currentClass.processDeclaration(declaration);
           } else {
-            program.processStandaloneDeclarations(codeLine);
+            program.setPersistentInitializer(declaration.getVarName(), declaration);
+            ;
           }
         }
       } catch (Exception e) {
-        throw new RuntimeException("Error while parsing lime: " + line, e);
+        throw new RuntimeException("Error while parsing line: " + line, e);
       }
-      line = reader.readLine();
     }
 
     if (exceptions.size() > 0) {
       throw new RuntimeException("Loading errors (see console): " + exceptions);
     }
+  }
 
+
+  private int parseInterface(InterfaceImplementation interfaceImplementation, List<String> lines, int index) {
+    while (true) {
+      String line = lines.get(++index);
+      ExpressionParser.Tokenizer tokenizer = statementParser.createTokenizer(line);
+      tokenizer.nextToken();
+      if (tokenizer.tryConsume("END")) {
+        break;
+      }
+      if (tokenizer.tryConsume("FUNCTION") || tokenizer.tryConsume("SUB")) {
+        String functionName = tokenizer.consumeIdentifier();
+        ArrayList<String> parameterNames = new ArrayList();
+        FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames);
+        interfaceImplementation.addProperty(functionName, functionType);
+      } else {
+        Type type = statementParser.parseType(tokenizer);
+        String name = tokenizer.consumeIdentifier();
+        interfaceImplementation.addProperty(name, type);
+      }
+    }
+    return index;
   }
 
 
