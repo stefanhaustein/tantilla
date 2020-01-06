@@ -19,10 +19,6 @@ public class FunctionTypeImpl implements FunctionType {
     return returnType;
   }
 
-  public Type getReturnType(int parameterCount) {
-    return returnType;
-  }
-
   public Type getParameterType(int index) {
     return parameterTypes[index];
   }
@@ -61,4 +57,35 @@ public class FunctionTypeImpl implements FunctionType {
   public Object getDefaultValue() {
     throw new UnsupportedOperationException();
   }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof FunctionType)) {
+      System.out.println(this + " does not match " + o+ ": not a function type");
+      return false;
+    }
+    FunctionType other = (FunctionType) o;
+
+    if (!returnType.equals(other.getReturnType())) {
+      System.out.println(this + " does not match " + other+ ": return type mismatch");
+      return false;
+    }
+    if (getParameterCount() != other.getParameterCount()) {
+      System.out.println(this + " does not match " + other+ ": parameter count mismatch");
+      return false;
+    }
+    if (getMinParameterCount() != other.getMinParameterCount()) {
+      System.out.println(this + " does not match " + other+ ": min parameter count mismatch");
+      return false;
+    }
+    for (int i = 0; i < getParameterCount(); i++) {
+      if (!getParameterType(i).equals(other.getParameterType(i))) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
 }

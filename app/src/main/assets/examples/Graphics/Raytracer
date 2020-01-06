@@ -142,21 +142,20 @@ END FUNCTION
 FUNCTION intersect(Ray r) -> Intersection
 10 LET eo = center.minus(r.start)
 20 LET v = eo.dot(r.dir)
-30 LET dist = 0
+30 LET dist = 1/0
 40 if v >= 0 THEN
 50   LET disc = radius2 - eo.dot(eo) - v * v
 60   IF disc >= 0 THEN
 70     dist = v - sqr(disc)
 80   ENDIF
 90 ENDIF
-95 REM if dist === 0 return null
-100 return newIntersection(self, ray, dist)
+100 return newIntersection(self, r, dist)
 END FUNCTION
 
 END CLASS
 
 FUNCTION newSphere(Vector center, Number radius, Surface s) -> Sphere
-10 return Sphere{center = center, radius2 = radius * radius, surface = surface}
+10 return Sphere{center = center, radius2 = radius * radius, surface = s}
 END FUNCTION
 
 CLASS Plane
@@ -170,9 +169,9 @@ END FUNCTION
 
 FUNCTION intersect(Ray r) -> Intersection
 10 LET denom = norm.dot(r.dir)
-20 REM if denom > 0 return null
-30 LET dist = (norm.dot(r.start) + offset) / (-denom)
-40 return newIntersection(this, r, dist)
+20 LET dist = 1/0
+30 IF denom < 0 THEN dist = (norm.dot(r.start) + offset) / (-denom)
+40 return newIntersection(self, r, dist)
 END FUNCTION
 
 END CLASS
@@ -231,13 +230,13 @@ LET maxDepth = 5
 LET defaultColor = WHITE
 
 FUNCTION intersections(Ray r, Scene s) -> Intersection
-10 Let closest = s.things[0].intersect(r)
-20 for i = 1 to s.things.length - 1
+10 LET closest = s.things[0].intersect(r)
+20 FOR i = 1 to s.things.length - 1
 30   LET inter = s.things[i].intersect(r)
 40   if inter.dist < closest.dist THEN
 50     closest = inter
 60   END IF
-70 NEXT I
+70 NEXT i
 80 RETURN closest
 END FUNCTION
 
@@ -247,13 +246,13 @@ END FUNCTION
 
 FUNCTION traceRay(Ray r, Scene s, Number depth) -> Color
 10 LET isect = intersections(r, s)
-20 IF isect.dist == 1/0 THEN
+20 IF isect.dist = 1/0 THEN
 30   return s.background
 40 END IF
 50 return shade(isect, s, depth)
 END FUNCTION
 
-FUNCTION shade(Intersection isect, Scene s, Number deptn -> Color
+FUNCTION shade(Intersection isect, Scene s, Number depth) -> Color
 10 LET d = isect.ray.dir
 20 LET pos = d.times(isect.dist).plus(isect.ray.start)
 30 LET normal = isect.thing.normal(pos)
@@ -264,16 +263,17 @@ FUNCTION shade(Intersection isect, Scene s, Number deptn -> Color
 80   reflectedColor = getReflectionColor(isect.thing, pos, normal, reflectDir, s, depth)
 90 ENDIF
 100 RETURN naturalColor.plus(reflectedColor)
+END FUNCTION
 
-FUNCTION getReflectionColor(Thing t, Vector pos, Vector normal, Vector rd, Scene s, Number depth)
-10 RETURN t.surface.reflect(pos).scale(traceRay(newRay(pos, rd), s, depth + 1))
+FUNCTION getReflectionColor(Thing t, Vector pos, Vector normal, Vector rd, Scene s, Number depth) -> Color
+10 RETURN traceRay(newRay(pos, rd), s, depth + 1).scale(t.surface.reflect(pos))
 END FUNCTION
 
 FUNCTION addLight(Thing t, Vector pos, Vector norm, Vector rd, Scene s, Color col, Light l) -> Color
 10 LET ldis = l.pos.minus(pos)
 20 LET livec = ldis.norm()
 30 LET nearIsect = testRay(newRay(pos, livec), s)
-40 LET isInShadow = nearIsect <= ldis.mag()
+40 LET isInShadow = (nearIsect <= ldis.mag())
 50 IF isInShadow THEN
 60   RETURN col
 70 ENDIF
@@ -285,10 +285,10 @@ FUNCTION addLight(Thing t, Vector pos, Vector norm, Vector rd, Scene s, Color co
 130 LET specular = livec.dot(rd.norm())
 140 LET scolor = defaultColor
 150 IF specular > 0 THEN
-160   scolor = light.color.scale(specular ^ t.surface.roughness)
+160   scolor = l.color.scale(specular ^ t.surface.roughness)
 170 END IF
-180 RETURN col.plus(lcolor.times(t.surface.diffuse(pos)).plus(scolor.times(t.surface.specular(pos)))
-
+180 RETURN col.plus(lcolor.times(t.surface.diffuse(pos))).plus(scolor.times(t.surface.specular(pos)))
+END FUNCTION
 
 FUNCTION getNaturalColor(Thing t, Vector pos, Vector norm, Vector rd, Scene s) -> Color
 10 LET col = defaultColor
@@ -298,8 +298,8 @@ FUNCTION getNaturalColor(Thing t, Vector pos, Vector norm, Vector rd, Scene s) -
 50 RETURN col
 END FUNCTION
 
-FUNCTION getPoint(Number x, Number y, Camera cam, Number screenWidth, Number screenHeight)
-10 return camera.forward.plus(camera.right.times(x / screenWidth).plus(camera.up.times(y / screenHeight).norm()
+FUNCTION getPoint(Number x, Number y, Camera cam, Number screenWidth, Number screenHeight) -> Vector
+10 return cam.forward.plus(cam.right.times(x / screenWidth)).plus(cam.up.times(y / screenHeight)).norm()
 END FUNCTION
 
 SUB render(Scene s, Pen p, Number screenWidth, Number screenHeight)

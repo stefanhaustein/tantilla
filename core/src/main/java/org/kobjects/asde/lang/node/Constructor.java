@@ -72,7 +72,7 @@ public class Constructor extends Node {
       if (descriptor.getInitializer() != null) {
         Integer childIndex = nameIndexMap.get(descriptor.getName());
         if (childIndex != null) {
-          if (propertyDescriptor.type() != children[childIndex].returnType()) {
+          if (!propertyDescriptor.type().isAssignableFrom(children[childIndex].returnType())) {
             throw new RuntimeException("Expected type for property " + descriptor.getName() + ": " + propertyDescriptor.type() + "; got: " + children[childIndex].returnType());
           }
           indexMap[childIndex] = descriptor.getIndex();

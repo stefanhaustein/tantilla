@@ -107,6 +107,8 @@ public class FunctionValidationContext {
 
     // Block level
 
+    System.out.println("resolveVariableAccess " + (classValidationContext == null ? "" : (classValidationContext.classImplementation + ".")) + name);
+
     ResolvedSymbol resolved = currentBlock.get(name);
     if (resolved != null) {
       return resolved;

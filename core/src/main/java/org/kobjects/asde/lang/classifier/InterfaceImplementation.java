@@ -4,6 +4,7 @@ import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.symbol.SymbolOwner;
+import org.kobjects.typesystem.Instance;
 import org.kobjects.typesystem.InstanceType;
 import org.kobjects.typesystem.MetaType;
 import org.kobjects.typesystem.PropertyDescriptor;
@@ -74,4 +75,35 @@ public class InterfaceImplementation implements InstanceType, Declaration, Symbo
   public void addProperty(String name, Type type) {
     propertyMap.put(name, new InterfacePropertyDescriptor(this, name, type));
   }
+
+  @Override
+  public boolean isAssignableFrom(Type other) {
+    if (other == this) {
+      return true;
+    }
+    if (!(other instanceof InstanceType)) {
+      return false;
+    }
+    InstanceType otherInterface = (InstanceType) other;
+
+    for (InterfacePropertyDescriptor propertyDescriptor : propertyMap.values()) {
+      PropertyDescriptor otherDescriptor = otherInterface.getPropertyDescriptor(propertyDescriptor.name());
+      if (otherDescriptor == null) {
+        System.out.println(toString() + " is not assignable from " + other + ": property '" + propertyDescriptor.name() + " is missing");
+        return false;
+      }
+      if (!propertyDescriptor.type().equals(otherDescriptor.type())) {
+        System.out.println(toString() + " is not assignable from " + other + ": expected type for property '" + propertyDescriptor.name() + "': " + propertyDescriptor.type() + " does not match " + otherDescriptor.type());
+        return false;
+      }
+    }
+    return true;
+
+  }
+
+  @Override
+  public String toString() {
+    return declaringSymbol != null ? declaringSymbol.getName() : super.toString();
+  }
+
 }
