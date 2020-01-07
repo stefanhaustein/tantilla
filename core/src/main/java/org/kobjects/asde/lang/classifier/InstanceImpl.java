@@ -21,7 +21,9 @@ public class InstanceImpl extends Instance {
 
   @Override
   public Property getProperty(PropertyDescriptor rawDescriptor) {
-    ClassPropertyDescriptor descriptor = ((ClassPropertyDescriptor) rawDescriptor);
+    ClassPropertyDescriptor descriptor = (rawDescriptor instanceof ClassPropertyDescriptor)
+        ? ((ClassPropertyDescriptor) rawDescriptor)
+        : getType().getPropertyDescriptor(rawDescriptor.name());
     int index = descriptor.getIndex();
     if (index != -1) {
       return properties[index];

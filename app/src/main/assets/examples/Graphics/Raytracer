@@ -73,6 +73,7 @@ FUNCTION newColor(Number r, Number g, Number b) -> Color
 END FUNCTION
 
 CLASS Camera
+Vector pos
 Vector forward
 Vector right
 Vector up
@@ -83,7 +84,7 @@ FUNCTION newCamera(Vector pos, Vector lookAt) -> Camera
 20 LET forward = lookAt.minus(pos).norm()
 30 LET right = forward.cross(down).norm().times(1.5)
 40 LET up = forward.cross(right).norm().times(1.5)
-50 return Camera{forward = forward, right = right, up = up}
+50 return Camera{pos = pos, forward = forward, right = right, up = up}
 END FUNCTION
 
 CLASS Ray
@@ -122,6 +123,10 @@ CLASS Light
 Vector pos
 Color color
 END CLASS
+
+FUNCTION newLight(Vector pos, Color color) -> Light
+10 RETURN Light{pos = pos, color = color}
+END FUNCTION
 
 CLASS Scene
 Thing[] things
@@ -305,20 +310,19 @@ END FUNCTION
 SUB render(Scene s, Pen p, Number screenWidth, Number screenHeight)
 10 FOR y = -screenHeight / 2 to screenHeight / 2
 20   FOR x = -screenWidth / 2 to screenWidth / 2
-30     LET color = traceRay(newRay(s.camera.pos, getPoint(x, y, s.camera), s, 0)
+30     LET color = traceRay(newRay(s.camera.pos, getPoint(x, y, s.camera, screenWidth, screenHeight)), s, 0)
 40     p.fillColor = color.toDrawingColor()
-50     p.drawRect(x, y, 1, 1)
+50     p.rect(x, y, 1, 1)
 60   NEXT x
 70 NEXT y
 END SUB
 
 END CLASS
 
-CONST defaultThings = {newPlane(newVector(0,1,0), 0, Checkerboard{}, newSphere(newVector(0,1,-0.25), 1, Shiny{}, newSphere(newVector(-1,0.5,1.5),0.5, Shiny{}}
-CONST defaultLights = {newLight(newVector(-2,2.5,0), newColor(0.49,0.07,0.07)), newLight(newVector(1.5,2.5,1.5), newColor(0.07,0.07,0.49)), newLight(newVector(1.5,2.5,-1,5), newColor(0.07,0.49,0.071)), newLight(newVecore(0,3.5,0), newColor(0.21,0.21,0.35))}
+CONST defaultThings = Thing[]{newPlane(newVector(0,1,0), 0, Checkerboard{}), newSphere(newVector(0,1,-0.25), 1, Shiny{}), newSphere(newVector(-1,0.5,1.5),0.5, Shiny{})}
+CONST defaultLights = {newLight(newVector(-2,2.5,0), newColor(0.49,0.07,0.07)), newLight(newVector(1.5,2.5,1.5), newColor(0.07,0.07,0.49)), newLight(newVector(1.5,2.5,-1.5), newColor(0.07,0.49,0.071)), newLight(newVector(0,3.5,0), newColor(0.21,0.21,0.35))}
 CONST defaultCamera = newCamera(newVector(3,2,4), newVector(-1,0.5,0))
-CONST defaultScene = Scene{things: defaultThings, lights: defaultLights, camera: defaultCamera}
-
+CONST defaultScene = Scene{background = BLACK, things = defaultThings, lights = defaultLights, camera = defaultCamera}
 
 10 LET p = screen.newPen()
 20 LET rayTracer = RayTracer{}
