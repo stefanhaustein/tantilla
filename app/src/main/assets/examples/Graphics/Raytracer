@@ -43,6 +43,11 @@ FUNCTION newVector(Number x, Number y, Number z) -> Vector
 10 RETURN Vector{x = x, y = y, z = z}
 END FUNCTION
 
+FUNCTION toByte(Number n) -> Number
+10 if n <= 0 then return 0
+20 if n >= 1 then return 255
+30 return INT(n * 255)
+END FUNCTION
 
 CLASS Color
 LET r = 0
@@ -62,7 +67,7 @@ FUNCTION times(Color c2) -> Color
 END FUNCTION
 
 FUNCTION toDrawingColor() -> Number
-20 RETURN INT(r * 255) * 65536 + INT(g * 255) * 256 + INT(b * 255)
+20 RETURN  255*256*65536 + toByte(r) * 65536 + toByte(g) * 256 + toByte(b)
 END FUNCTION
 
 END CLASS
@@ -149,7 +154,7 @@ FUNCTION intersect(Ray r) -> Intersection
 20 LET v = eo.dot(r.dir)
 30 LET dist = 1/0
 40 if v >= 0 THEN
-50   LET disc = radius2 - eo.dot(eo) - v * v
+50   LET disc = radius2 - (eo.dot(eo) - v * v)
 60   IF disc >= 0 THEN
 70     dist = v - sqr(disc)
 80   ENDIF
@@ -175,7 +180,7 @@ END FUNCTION
 FUNCTION intersect(Ray r) -> Intersection
 10 LET denom = norm.dot(r.dir)
 20 LET dist = 1/0
-30 IF denom < 0 THEN dist = (norm.dot(r.start) + offset) / (-denom)
+30 IF denom <= 0 THEN dist = (norm.dot(r.start) + offset) / (-denom)
 40 return newIntersection(self, r, dist)
 END FUNCTION
 
@@ -206,7 +211,7 @@ CLASS Checkerboard
 LET roughness = 150
 
 FUNCTION diffuse(Vector pos) -> Color
-10 IF (int(pos.z) + int(pos.x)) MOD 2 <> 0 THEN
+10 IF (1000 + int(pos.z) + int(pos.x)) MOD 2 <> 0 THEN
 20   RETURN WHITE
 30 ELSE
 40   RETURN BLACK
@@ -219,7 +224,7 @@ END FUNCTION
 
 
 FUNCTION reflect(Vector pos) -> Number
-10 IF (int(pos.z) + int(pos.x)) MOD 2 <> 0 THEN
+10 IF (1000 + int(pos.z) + int(pos.x)) MOD 2 <> 0 THEN
 20   RETURN 0.1
 30 ELSE
 40   RETURN 0.7
@@ -232,7 +237,7 @@ END CLASS
 
 CLASS RayTracer
 LET maxDepth = 5
-LET defaultColor = WHITE
+LET defaultColor = BLACK
 
 FUNCTION intersections(Ray r, Scene s) -> Intersection
 10 LET closest = s.things[0].intersect(r)
@@ -261,7 +266,7 @@ FUNCTION shade(Intersection isect, Scene s, Number depth) -> Color
 10 LET d = isect.ray.dir
 20 LET pos = d.times(isect.dist).plus(isect.ray.start)
 30 LET normal = isect.thing.normal(pos)
-40 LET reflectDir = d.minus(normal.times(normal.dot(d)).times(2))
+40 LET reflectDir = d.minus(normal.times(2 * normal.dot(d)))
 50 LET naturalColor = s.background.plus(getNaturalColor(isect.thing, pos, normal, reflectDir, s))
 60 LET reflectedColor = GREY
 70 IF depth < maxDepth THEN
@@ -308,11 +313,12 @@ FUNCTION getPoint(Number x, Number y, Camera cam, Number screenWidth, Number scr
 END FUNCTION
 
 SUB render(Scene s, Pen p, Number screenWidth, Number screenHeight)
+5 p.strokeColor = 0
 10 FOR y = -screenHeight / 2 to screenHeight / 2
 20   FOR x = -screenWidth / 2 to screenWidth / 2
 30     LET color = traceRay(newRay(s.camera.pos, getPoint(x, y, s.camera, screenWidth, screenHeight)), s, 0)
 40     p.fillColor = color.toDrawingColor()
-50     p.rect(x, y, 1, 1)
+50     p.rect(x, y, 1.5, 1.5)
 60   NEXT x
 70 NEXT y
 END SUB
