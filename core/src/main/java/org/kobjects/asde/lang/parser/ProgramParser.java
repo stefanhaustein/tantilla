@@ -158,12 +158,15 @@ public class ProgramParser {
             currentClass.processDeclaration(declaration);
           } else {
             program.setPersistentInitializer(declaration.getVarName(), declaration);
-            ;
           }
         }
       } catch (Exception e) {
         throw new RuntimeException("Error while parsing line: " + line, e);
       }
+    }
+
+    if (program.isLegacyMode()) {
+      new LegacyCodeConverter(program).run();
     }
 
     if (exceptions.size() > 0) {

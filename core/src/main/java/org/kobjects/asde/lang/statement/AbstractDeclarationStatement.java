@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.statement;
 
+import org.kobjects.asde.lang.array.ArrayType;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
@@ -36,4 +37,8 @@ public abstract class AbstractDeclarationStatement extends Statement {
   }
 
   public abstract Type getValueType();
+
+  public void setVarName(String newName) {
+    this.varName = varName;
+  }
 }

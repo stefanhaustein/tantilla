@@ -93,7 +93,7 @@ public class ArrayType implements InstanceType {
   }
 
   public Type getRootElementType() {
-    return getElementType(getDimension() - 1);
+    return getElementType(getDimension());
   }
 
   public Type getElementType(int dim) {

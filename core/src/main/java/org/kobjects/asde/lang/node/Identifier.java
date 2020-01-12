@@ -92,4 +92,7 @@ public class Identifier extends SymbolNode {
     return resolved instanceof StaticSymbol && this.name.equals(name);
   }
 
+  public void setName(String s) {
+    name = s;
+  }
 }
