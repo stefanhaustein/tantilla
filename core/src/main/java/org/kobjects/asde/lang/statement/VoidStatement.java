@@ -11,7 +11,7 @@ import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
-public class VoidStatement extends Node {
+public class VoidStatement extends Statement {
   public VoidStatement(Node expression) {
     super(expression);
   }
@@ -36,11 +36,6 @@ public class VoidStatement extends Node {
       function.call(evaluationContext, 0);
     }
     return result;
-  }
-
-  @Override
-  public Type returnType() {
-    return null;
   }
 
   @Override

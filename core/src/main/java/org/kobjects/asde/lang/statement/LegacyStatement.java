@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 
-public class LegacyStatement extends Node {
+public class LegacyStatement extends Statement {
 
   public enum Kind {
     DATA, DUMP,
@@ -110,10 +110,6 @@ public class LegacyStatement extends Node {
     return null;
   }
 
-  @Override
-  public Type returnType() {
-    return Types.VOID;
-  }
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {

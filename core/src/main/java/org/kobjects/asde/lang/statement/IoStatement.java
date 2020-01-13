@@ -11,7 +11,7 @@ import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
-public class IoStatement extends Node {
+public class IoStatement extends Statement {
 
   public enum Kind {
     INPUT, PRINT
@@ -51,11 +51,6 @@ public class IoStatement extends Node {
         break;
     }
     return null;
-  }
-
-  @Override
-  public Type returnType() {
-    return Types.VOID;
   }
 
   void input(EvaluationContext evaluationContext) {

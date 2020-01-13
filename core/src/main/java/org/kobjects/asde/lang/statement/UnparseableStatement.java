@@ -9,7 +9,7 @@ import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
-public class UnparseableStatement extends Node {
+public class UnparseableStatement extends Statement {
 
   private final String text;
   private final RuntimeException error;
@@ -27,11 +27,6 @@ public class UnparseableStatement extends Node {
   @Override
   public Object eval(EvaluationContext evaluationContext) {
     return null;
-  }
-
-  @Override
-  public Type returnType() {
-    return Types.VOID;
   }
 
   @Override

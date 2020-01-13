@@ -10,7 +10,7 @@ import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
-public class ElseStatement extends Node {
+public class ElseStatement extends Statement {
 
   public final boolean multiline;
 
@@ -44,10 +44,6 @@ public class ElseStatement extends Node {
     return null;
   }
 
-  @Override
-  public Type returnType() {
-    return null;
-  }
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {

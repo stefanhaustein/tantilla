@@ -9,7 +9,7 @@ import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
-public class RemStatement extends Node {
+public class RemStatement extends Statement {
 
   private final String comment;
 
@@ -25,11 +25,6 @@ public class RemStatement extends Node {
   @Override
   public Object eval(EvaluationContext evaluationContext) {
     return null;
-  }
-
-  @Override
-  public Type returnType() {
-    return Types.VOID;
   }
 
   @Override

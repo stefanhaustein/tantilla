@@ -13,7 +13,7 @@ import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
-public class ForStatement extends Node {
+public class ForStatement extends Statement {
   private final String variableName;
   ResolvedSymbol resolvedVariable;
   int resolvedNextLine;
@@ -62,10 +62,6 @@ public class ForStatement extends Node {
     return children.length > 2 ? children[2].evalDouble(evaluationContext) : 1.0;
   }
 
-  @Override
-  public Type returnType() {
-        return Types.VOID;
-    }
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {

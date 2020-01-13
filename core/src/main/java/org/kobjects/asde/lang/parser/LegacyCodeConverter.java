@@ -2,6 +2,7 @@ package org.kobjects.asde.lang.parser;
 
 import org.kobjects.asde.lang.array.Array;
 import org.kobjects.asde.lang.array.ArrayType;
+import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.function.Types;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Identifier;
@@ -12,8 +13,11 @@ import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.statement.DefStatement;
 import org.kobjects.asde.lang.statement.DimStatement;
+import org.kobjects.asde.lang.statement.GotoStatement;
+import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.typesystem.Type;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +31,19 @@ class LegacyCodeConverter {
     this.program = program;
   }
 
+
+  private Statement processStatement(Statement statement, boolean beforeMinGoto) {
+    if (statement instanceof DimStatement) {
+      return processDimStatement((DimStatement) statement, beforeMinGoto);
+    }
+    if (statement instanceof DefStatement) {
+      return processDefStatement((DefStatement) statement);
+    }
+
+    return (Statement) processNode(statement);
+  }
+
+
   private Node processNode(Node node) {
     if (node instanceof Apply) {
       return processApply((Apply) node);
@@ -34,21 +51,14 @@ class LegacyCodeConverter {
     if (node instanceof Identifier) {
       return processIdentifier((Identifier) node);
     }
-    if (node instanceof DimStatement) {
-      return processDimStatement((DimStatement) node);
-    }
-    if (node instanceof DefStatement) {
-      return processDefStatement((DefStatement) node);
-    }
     processChildren(node, 0);
     return node;
   }
 
-  private Node processDefStatement(DefStatement defStatement) {
+  private DefStatement processDefStatement(DefStatement defStatement) {
     processChildren(defStatement, 0);
     program.setPersistentInitializer(defStatement.getVarName(), defStatement);
-    // TODO: Erase?
-    return defStatement;
+    return null;
   }
 
   private Identifier processIdentifier(Identifier identifier) {
@@ -81,10 +91,33 @@ class LegacyCodeConverter {
     identifier.setName(resolveNameForType(identifier.getName(), impliedType));
   }
 
-  private DimStatement processDimStatement(DimStatement dimStatement) {
+  private DimStatement processDimStatement(DimStatement dimStatement, boolean beforeMinGoto) {
     ArrayType type = new ArrayType(dimStatement.elementType, dimStatement.children.length);
     dimStatement.setVarName(resolveNameForType(dimStatement.getVarName(), type));
     processChildren(dimStatement, 0);
+
+    String name = dimStatement.getVarName();
+
+    if (beforeMinGoto) {
+      boolean allLiterals = true;
+      for (Node child : dimStatement.children) {
+        if (!(child instanceof Literal)) {
+          allLiterals = false;
+          break;
+        }
+      }
+      if (allLiterals) {
+        program.setPersistentInitializer(name, dimStatement);
+        return null;
+      }
+    }
+
+    Node[] init = new Node[type.getDimension()];
+    for (int i = 0; i < init.length; i++) {
+      init[i] = new Literal(11.0);
+    }
+    program.setPersistentInitializer(name, new DimStatement(dimStatement.elementType, name, init));
+
     return dimStatement;
   }
 
@@ -109,11 +142,36 @@ class LegacyCodeConverter {
     return apply;
   }
 
-  public void run() {
+  int findMinGotoLine() {
+    int minGoto = Integer.MAX_VALUE;
     for (Node statement : program.main.allStatements()) {
-      System.out.println("Processing statement: " + statement);
-      if (processNode(statement) != statement) {
-        throw new IllegalStateException("Can't replace statement.");
+      if (statement instanceof GotoStatement) {
+        minGoto = Math.min(((GotoStatement) statement).target, minGoto);
+      }
+    }
+    return minGoto;
+  }
+
+
+  public void run() {
+    int minGoto = findMinGotoLine();
+
+    System.out.println("*************** MinGoto: " + minGoto);
+
+    for (CodeLine codeLine : program.main.allLines()) {
+      System.out.println("Processing line: " + codeLine);
+      int lineNumber = codeLine.getNumber();
+      ArrayList<Node> newStatements = new ArrayList<>();
+      for (Node node : codeLine) {
+        Node replacement = processStatement((Statement) node, lineNumber < minGoto);
+        if (replacement != null) {
+          newStatements.add(replacement);
+        }
+      }
+      if (newStatements.size() > 0) {
+        program.main.setLine(new CodeLine(lineNumber, newStatements.toArray(new Node[0])));
+      } else {
+        program.main.deleteLine(lineNumber);
       }
     }
 
@@ -122,20 +180,11 @@ class LegacyCodeConverter {
     for (Map.Entry<String, Type> entry : symbols.entrySet()) {
       String name = entry.getKey();
       Type type = entry.getValue();
-      AbstractDeclarationStatement declaration;
       if (type == Types.NUMBER) {
-        declaration = new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(0.0));
+        program.setPersistentInitializer(name, new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(0.0)));
       } else if (type == Types.STRING) {
-        declaration = new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(""));
-      } else {
-        ArrayType arrayType = (ArrayType) type;
-        Node[] init = new Node[arrayType.getDimension()];
-        for (int i = 0; i < init.length; i++) {
-          init[i] = new Literal(11.0);
-        }
-        declaration = new DimStatement(arrayType.getRootElementType(), name, init);
+        program.setPersistentInitializer(name, new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal("")));
       }
-      program.setPersistentInitializer(name, declaration);
     }
   }
 }

@@ -11,7 +11,7 @@ import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
-public class IfStatement extends Node {
+public class IfStatement extends Statement {
     public final boolean multiline;
     public final boolean elseIf;
 
@@ -59,11 +59,6 @@ public class IfStatement extends Node {
             evaluationContext.currentIndex = resolvedIndex;
         }
         return null;
-    }
-
-    @Override
-    public Type returnType() {
-        return Types.VOID;
     }
 
     @Override

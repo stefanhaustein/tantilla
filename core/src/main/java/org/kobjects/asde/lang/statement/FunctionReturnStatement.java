@@ -9,7 +9,7 @@ import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
-public class FunctionReturnStatement extends Node {
+public class FunctionReturnStatement extends Statement {
 
   public FunctionReturnStatement(Node... children) {
     super(children);
@@ -39,11 +39,6 @@ public class FunctionReturnStatement extends Node {
     evaluationContext.currentLine = Integer.MAX_VALUE;
     evaluationContext.currentIndex = 0;
     return null;
-  }
-
-  @Override
-  public Type returnType() {
-    return Types.VOID;
   }
 
   @Override

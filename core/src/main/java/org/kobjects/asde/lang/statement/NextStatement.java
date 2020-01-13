@@ -9,7 +9,7 @@ import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
-public class NextStatement extends Node {
+public class NextStatement extends Statement {
 
   String varName;
 
@@ -31,11 +31,6 @@ public class NextStatement extends Node {
             evaluationContext.currentIndex = resolvedForIndex + 1;
         }
         return null;
-    }
-
-    @Override
-    public Type returnType() {
-        return Types.VOID;
     }
 
     public void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {

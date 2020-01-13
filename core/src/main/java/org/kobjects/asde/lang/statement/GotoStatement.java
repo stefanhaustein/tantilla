@@ -11,8 +11,8 @@ import org.kobjects.typesystem.Type;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class GotoStatement extends Node {
-  int target;
+public class GotoStatement extends Statement {
+  public int target;
 
   public GotoStatement(Node node) {
     super();
@@ -82,11 +82,6 @@ public class GotoStatement extends Node {
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     appendLinked(asb, "GOTO " + target, errors);
   }
-
-  @Override
-  public Type returnType() {
-        return null;
-    }
 
   @Override
   public void renumber(TreeMap<Integer, Integer> renumbered) {
