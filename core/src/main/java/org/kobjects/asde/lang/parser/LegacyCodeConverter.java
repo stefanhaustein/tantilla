@@ -10,6 +10,7 @@ import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
+import org.kobjects.asde.lang.statement.AssignStatement;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.statement.DefStatement;
 import org.kobjects.asde.lang.statement.DimStatement;
@@ -39,6 +40,12 @@ class LegacyCodeConverter {
     if (statement instanceof DefStatement) {
       return processDefStatement((DefStatement) statement);
     }
+    if (statement instanceof DeclarationStatement) {
+      return processDeclarationStatement((DeclarationStatement) statement, beforeMinGoto);
+    }
+    if (statement instanceof AssignStatement) {
+      return processAssignStatement((AssignStatement) statement, beforeMinGoto);
+    }
 
     return (Statement) processNode(statement);
   }
@@ -53,6 +60,30 @@ class LegacyCodeConverter {
     }
     processChildren(node, 0);
     return node;
+  }
+
+  private Statement processAssignStatement(AssignStatement statement, boolean beforeMinGoto) {
+    processChildren(statement, 0);
+    if (beforeMinGoto && statement.children[0] instanceof Identifier && program.getSymbol(((Identifier) statement.children[0]).getName()) == null && statement.children[1] instanceof Literal) {
+      String name = ((Identifier) statement.children[0]).getName();
+      program.setPersistentInitializer(name, new DeclarationStatement(DeclarationStatement.Kind.LET, name, statement.children[1]));
+      return null;
+    }
+    return statement;
+  }
+
+
+  private Statement processDeclarationStatement(DeclarationStatement declarationStatement, boolean beforeMinGoto) {
+    processChildren(declarationStatement, 0);
+    if (program.getSymbol(declarationStatement.getVarName()) == null && declarationStatement.children[0] instanceof Literal) {
+      program.setPersistentInitializer(declarationStatement.getVarName(), declarationStatement);
+      return null;
+    }
+    try {
+      return new AssignStatement(new Identifier(declarationStatement.getVarName()), declarationStatement.children[0]);
+    } catch (Exception e) {
+      return declarationStatement;
+    }
   }
 
   private DefStatement processDefStatement(DefStatement defStatement) {
@@ -179,12 +210,17 @@ class LegacyCodeConverter {
 
     for (Map.Entry<String, Type> entry : symbols.entrySet()) {
       String name = entry.getKey();
-      Type type = entry.getValue();
-      if (type == Types.NUMBER) {
-        program.setPersistentInitializer(name, new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(0.0)));
-      } else if (type == Types.STRING) {
-        program.setPersistentInitializer(name, new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal("")));
+      if (program.getSymbol(name) == null) {
+        Type type = entry.getValue();
+        if (type == Types.NUMBER) {
+          program.setPersistentInitializer(name, new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(0.0)));
+        } else if (type == Types.STRING) {
+          program.setPersistentInitializer(name, new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal("")));
+        } else {
+          System.err.println("No declaration for '" + name + "'!");
+        }
       }
+
     }
   }
 }
