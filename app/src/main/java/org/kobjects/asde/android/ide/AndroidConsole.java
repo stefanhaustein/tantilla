@@ -75,7 +75,6 @@ public class AndroidConsole implements Console {
         mainActivity.screen.cls();
         break;
     }
-    mainActivity.c64ModeControl.cls();
   }
 
 
@@ -91,7 +90,6 @@ public class AndroidConsole implements Console {
       inputEditText[0].setInputType(
           InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
               | InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE
-              | (mainActivity.program.isLegacyMode() ? InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS : 0)
               | (typeHint == Types.NUMBER ? InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL|InputType.TYPE_NUMBER_FLAG_SIGNED : 0));
       inputEditText[0].setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI|EditorInfo.IME_FLAG_NO_FULLSCREEN);
       inputEditText[0].setOnEditorActionListener((view, actionId, event) -> {

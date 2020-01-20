@@ -9,6 +9,7 @@ import org.kobjects.asde.lang.parser.StatementParser;
 import org.kobjects.asde.lang.statement.UnparseableStatement;
 import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.expressionparser.ExpressionParser;
+import org.kobjects.expressionparser.Tokenizer;
 
 import java.util.Collections;
 import java.util.List;
@@ -47,7 +48,7 @@ public class InsertFlow {
     for (Map.Entry<Integer, String> entry : mainActivity.copyBuffer.entrySet()) {
       renumberMap.put(entry.getKey(), lineNumber);
       String line = entry.getValue();
-      ExpressionParser.Tokenizer tokenizer = statementParser.createTokenizer(line);
+      Tokenizer tokenizer = statementParser.createTokenizer(line);
       tokenizer.nextToken();
       int pos = tokenizer.currentPosition;
       try {

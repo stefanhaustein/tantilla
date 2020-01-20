@@ -3,6 +3,8 @@ package org.kobjects.asde.lang.parser;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.expressionparser.ExpressionParser;
+import org.kobjects.expressionparser.OperatorType;
+import org.kobjects.expressionparser.Tokenizer;
 
 import java.util.Scanner;
 import java.util.regex.Pattern;
@@ -23,20 +25,20 @@ public class AsdeExpressionParser extends ExpressionParser<Node> {
     addApplyBrackets(9,"{", ",", "}");  // HP
     addGroupBrackets("(", null, ")");
     addGroupBrackets("{", ",", "}");
-    addOperators(ExpressionParser.OperatorType.INFIX, 10, ".");
-    addOperators(ExpressionParser.OperatorType.INFIX, 8, "^");
-    addOperators(ExpressionParser.OperatorType.PREFIX, 7, "-");
-    addOperators(ExpressionParser.OperatorType.INFIX, 6, "*", "/", "×", "⋅", "÷", "mod", "Mod", "MOD");
-    addOperators(ExpressionParser.OperatorType.INFIX, 5, "+", "-", "−");
-    addOperators(ExpressionParser.OperatorType.INFIX, 4, ">=", "<=", "<>", ">", "<", "=", "≠", "!=", "≥", "≤");
-    addOperators(ExpressionParser.OperatorType.PREFIX, 3, "not", "NOT", "Not");
-    addOperators(ExpressionParser.OperatorType.INFIX, 2, "and", "AND", "And");
-    addOperators(ExpressionParser.OperatorType.INFIX, 1, "or", "OR", "Or");
+    addOperators(OperatorType.INFIX, 10, ".");
+    addOperators(OperatorType.INFIX, 8, "^");
+    addOperators(OperatorType.PREFIX, 7, "-");
+    addOperators(OperatorType.INFIX, 6, "*", "/", "×", "⋅", "÷", "mod", "Mod", "MOD");
+    addOperators(OperatorType.INFIX, 5, "+", "-", "−");
+    addOperators(OperatorType.INFIX, 4, ">=", "<=", "<>", ">", "<", "=", "≠", "!=", "≥", "≤");
+    addOperators(OperatorType.PREFIX, 3, "not", "NOT", "Not");
+    addOperators(OperatorType.INFIX, 2, "and", "AND", "And");
+    addOperators(OperatorType.INFIX, 1, "or", "OR", "Or");
   }
 
 
-  public ExpressionParser.Tokenizer createTokenizer(String line) {
-    ExpressionParser.Tokenizer tokenizer = new ExpressionParser.Tokenizer(new Scanner(line), getSymbols(), "->", ";", ":", "AND", "FOR", "IF", "NEXT", "OR", "THEN" );
+  public Tokenizer createTokenizer(String line) {
+    Tokenizer tokenizer = new Tokenizer(new Scanner(line), getSymbols(), "->", ";", ":", "AND", "FOR", "IF", "NEXT", "OR", "THEN" );
     tokenizer.numberPattern = NUMBER_PATTERN;
     tokenizer.lineCommentPattern = LINE_COMMENT_PATTERN;
     tokenizer.stringPattern = STRING_PATTERN;

@@ -24,10 +24,6 @@ public class GotoStatement extends Statement {
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
-    if (resolutionContext.mode == FunctionValidationContext.ResolutionMode.LEGACY) {
-      return;
-    }
-
     int depth = 0;
     if (target > line) {
       // going forward, we can't skip new variables except inside blocks.

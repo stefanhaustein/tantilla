@@ -42,7 +42,7 @@ public class LegacyStatement extends Statement {
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
-    if (resolutionContext.mode == FunctionValidationContext.ResolutionMode.PROGRAM) {
+    if (resolutionContext.mode == FunctionValidationContext.ResolutionMode.PROGRAM && resolutionContext.functionImplementation != resolutionContext.program.main) {
       throw new RuntimeException("Legacy statement " + kind + " not permitted in functions and subroutines.");
     }
   }

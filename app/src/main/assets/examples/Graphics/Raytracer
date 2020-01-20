@@ -314,11 +314,13 @@ END FUNCTION
 
 SUB render(Scene s, Pen p, Number screenWidth, Number screenHeight)
 5 p.strokeColor = 0
-10 FOR y = -screenHeight / 2 to screenHeight / 2
+10 FOR y = 0 to screenHeight
 20   FOR x = -screenWidth / 2 to screenWidth / 2
-30     LET color = traceRay(newRay(s.camera.pos, getPoint(x, y, s.camera, screenWidth, screenHeight)), s, 0)
+25     let yy = int(y / 2)
+27     if y mod 2 = 0 then yy = -yy
+30     LET color = traceRay(newRay(s.camera.pos, getPoint(x, yy, s.camera, screenWidth, screenHeight)), s, 0)
 40     p.fillColor = color.toDrawingColor()
-50     p.rect(x, y, 1.5, 1.5)
+50     p.rect(x, yy, 1.5, 1.5)
 60   NEXT x
 70 NEXT y
 END SUB
@@ -332,5 +334,5 @@ CONST defaultScene = Scene{background = BLACK, things = defaultThings, lights = 
 
 10 LET p = screen.newPen()
 20 LET rayTracer = RayTracer{}
-30 rayTracer.render(defaultScene, p, 400, 400)
+30 rayTracer.render(defaultScene, p, screen.width, screen.height)
 

@@ -74,13 +74,12 @@ public class Program implements SymbolOwner {
   public Exception lastException;
   public int tabPos;
   public final Console console;
-  private boolean legacyMode;
   private boolean loading;
   public int currentStamp;
   public boolean hasUnsavedChanges;
 
   private boolean notificationPending;
-  private StaticSymbol notificaitonPendingForSymbol;
+  private StaticSymbol notificationPendingForSymbol;
   private Timer notificationTimer = new Timer();
 
   public Program(Console console) {
@@ -186,9 +185,7 @@ public class Program implements SymbolOwner {
   }
 
   public synchronized void toString(AnnotatedStringBuilder sb) {
-    if (!legacyMode) {
-      sb.append("ASDE\n");
-    }
+    sb.append("ASDE\n");
     for (GlobalSymbol symbol : symbolMap.values()) {
       if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
         if (!(symbol.value instanceof FunctionImplementation)) {
@@ -399,12 +396,12 @@ public class Program implements SymbolOwner {
     }
     hasUnsavedChanges = true;
     if (notificationPending) {
-      if (symbol != notificaitonPendingForSymbol) {
-        notificaitonPendingForSymbol = null;
+      if (symbol != notificationPendingForSymbol) {
+        notificationPendingForSymbol = null;
       }
     } else {
       notificationPending = true;
-      notificaitonPendingForSymbol = symbol;
+      notificationPendingForSymbol = symbol;
       notificationTimer.schedule(new TimerTask() {
         @Override
         public void run() {
@@ -413,12 +410,12 @@ public class Program implements SymbolOwner {
             if (loading) {
               return;
             }
-            if (notificaitonPendingForSymbol != null) {
-              notificaitonPendingForSymbol.validate();
+            if (notificationPendingForSymbol != null) {
+              notificationPendingForSymbol.validate();
               for (SymbolChangeListener changeListener : programChangeListeners) {
-                changeListener.symbolChangedByUser(notificaitonPendingForSymbol);
+                changeListener.symbolChangedByUser(notificationPendingForSymbol);
               }
-              notificaitonPendingForSymbol = null;
+              notificationPendingForSymbol = null;
             } else {
               validate();
               for (ProgramListener programListener : programListeners) {
@@ -460,14 +457,5 @@ public class Program implements SymbolOwner {
       }
     }
     return true;
-  }
-
-  public boolean isLegacyMode() {
-    return legacyMode;
-  }
-
-  public void setLegacyMode(boolean legacyMode) {
-    this.legacyMode = legacyMode;
-    sendProgramEvent(ProgramListener.Event.MODE_CHANGED);
   }
 }

@@ -38,7 +38,7 @@ import org.kobjects.asde.lang.statement.UninitializedField;
 import org.kobjects.asde.lang.statement.VoidStatement;
 import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.function.Types;
-import org.kobjects.expressionparser.ExpressionParser;
+import org.kobjects.expressionparser.Tokenizer;
 import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
 
@@ -55,17 +55,17 @@ public class StatementParser {
     expressionParser = new AsdeExpressionParser(program);
   }
 
-  public ExpressionParser.Tokenizer createTokenizer(String line) {
+  public Tokenizer createTokenizer(String line) {
     return expressionParser.createTokenizer(line);
   }
 
   public Node parseExpression(String unparsed) {
-    ExpressionParser.Tokenizer tokenizer = expressionParser.createTokenizer(unparsed);
+    Tokenizer tokenizer = expressionParser.createTokenizer(unparsed);
     tokenizer.nextToken();
     return expressionParser.parse(tokenizer);
   }
 
-  void parseStatement(ExpressionParser.Tokenizer tokenizer, List<Node> result, FunctionImplementation parsingContext) {
+  void parseStatement(Tokenizer tokenizer, List<Node> result, FunctionImplementation parsingContext) {
     String name = tokenizer.currentValue;
 
     switch (name.toUpperCase()) {
@@ -203,11 +203,11 @@ public class StatementParser {
     }
   }
 
-  LegacyStatement parseLegacyStatement(ExpressionParser.Tokenizer tokenizer, LegacyStatement.Kind kind) {
+  LegacyStatement parseLegacyStatement(Tokenizer tokenizer, LegacyStatement.Kind kind) {
     tokenizer.nextToken();
     switch (kind) {
       case RESTORE: // 0 or 1 param; Default is 0
-        if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF &&
+        if (tokenizer.currentType != Tokenizer.TokenType.EOF &&
             !tokenizer.currentValue.equals(":")) {
           return new LegacyStatement(kind, expressionParser.parse(tokenizer));
         }
@@ -229,13 +229,13 @@ public class StatementParser {
     }
   }
 
-  Command parseCommand(ExpressionParser.Tokenizer tokenizer, Command.Kind kind) {
+  Command parseCommand(Tokenizer tokenizer, Command.Kind kind) {
     tokenizer.nextToken();
     switch (kind) {
       case EDIT:
       case RUN:  // 0 or 1 param; Default is 0
       case SAVE:
-        if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF &&
+        if (tokenizer.currentType != Tokenizer.TokenType.EOF &&
                 !tokenizer.currentValue.equals(":")) {
           return new Command(kind, expressionParser.parse(tokenizer));
         }
@@ -250,7 +250,7 @@ public class StatementParser {
     }
   }
 
-  private void parseDim(ExpressionParser.Tokenizer tokenizer, List<Node> result) {
+  private void parseDim(Tokenizer tokenizer, List<Node> result) {
     tokenizer.nextToken();
     do {
       Node dimExpr = expressionParser.parse(tokenizer);
@@ -277,7 +277,7 @@ public class StatementParser {
     } while (tokenizer.tryConsume(","));
   }
 
-  private void parseIf(ExpressionParser.Tokenizer tokenizer, List<Node> result) {
+  private void parseIf(Tokenizer tokenizer, List<Node> result) {
     boolean elseIf = (result.size() > 0 && result.get(result.size() - 1) instanceof ElseStatement);
 
     tokenizer.nextToken();
@@ -286,14 +286,14 @@ public class StatementParser {
       throw tokenizer.exception("'THEN expected after IF-condition.'", null);
     }
     result.add(new IfStatement(condition, tokenizer.currentValue.isEmpty(), elseIf));
-    if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.NUMBER) {
+    if (tokenizer.currentType == Tokenizer.TokenType.NUMBER) {
       double target = (int) Double.parseDouble(tokenizer.currentValue);
       tokenizer.nextToken();
       result.add(new GotoStatement(new Literal(target)));
     }
   }
 
-  private Node parseOn(ExpressionParser.Tokenizer tokenizer) {
+  private Node parseOn(Tokenizer tokenizer) {
     tokenizer.nextToken();
     Node expr = expressionParser.parse(tokenizer);
     String[] suffix = new String[1];
@@ -314,11 +314,11 @@ public class StatementParser {
   }
 
 
-  private IoStatement parseIo(IoStatement.Kind kind, ExpressionParser.Tokenizer tokenizer) {
+  private IoStatement parseIo(IoStatement.Kind kind, Tokenizer tokenizer) {
     tokenizer.nextToken();
     List<Node> args = new ArrayList<>();
     List<String> delimiter = new ArrayList<>();
-    while (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF
+    while (tokenizer.currentType != Tokenizer.TokenType.EOF
             && !tokenizer.currentValue.equals(":")) {
       if (tokenizer.currentValue.equals(",") || tokenizer.currentValue.equals(";")) {
         delimiter.add(tokenizer.currentValue + " ");
@@ -334,7 +334,7 @@ public class StatementParser {
             args.toArray(new Node[args.size()]));
   }
 
-  private Node parseFor(ExpressionParser.Tokenizer tokenizer) {
+  private Node parseFor(Tokenizer tokenizer) {
     tokenizer.nextToken();
     Node assignment = expressionParser.parse(tokenizer);
     if (!(assignment instanceof RelationalOperator) || !(assignment.children[0] instanceof Identifier)
@@ -352,7 +352,7 @@ public class StatementParser {
     return new ForStatement(varName, assignment.children[1], end);
   }
 
-  private DefStatement parseDef(ExpressionParser.Tokenizer tokenizer) {
+  private DefStatement parseDef(Tokenizer tokenizer) {
     tokenizer.consumeIdentifier();  // def
 
     String name = tokenizer.consumeIdentifier();
@@ -379,7 +379,7 @@ public class StatementParser {
     return new DefStatement(name, fn);
   }
 
-  private Node parseDeclaration(ExpressionParser.Tokenizer tokenizer, DeclarationStatement.Kind kind) {
+  private Node parseDeclaration(Tokenizer tokenizer, DeclarationStatement.Kind kind) {
     tokenizer.nextToken();
     Node assignment = expressionParser.parse(tokenizer);
     if (!(assignment instanceof RelationalOperator) || !(assignment.children[0] instanceof AssignableNode)
@@ -401,23 +401,21 @@ public class StatementParser {
     }
   }
 
-  private void parseNext(ExpressionParser.Tokenizer tokenizer, List<Node> result) {
+  private void parseNext(Tokenizer tokenizer, List<Node> result) {
     tokenizer.nextToken();
-    if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER) {
+    if (tokenizer.currentType == Tokenizer.TokenType.IDENTIFIER) {
       do {
         result.add(new NextStatement(tokenizer.consumeIdentifier()));
       } while (tokenizer.tryConsume(","));
-    } else if (program.isLegacyMode()){
-      result.add(new NextStatement(null));
     } else {
       tokenizer.exception("Variable name expected after NEXT.", null);
     }
   }
 
-  private RemStatement parseRem(ExpressionParser.Tokenizer tokenizer) {
+  private RemStatement parseRem(Tokenizer tokenizer) {
     tokenizer.nextToken();
     StringBuilder sb = new StringBuilder();
-    while (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF) {
+    while (tokenizer.currentType != Tokenizer.TokenType.EOF) {
       sb.append(tokenizer.leadingWhitespace).append(tokenizer.currentValue);
       tokenizer.nextToken();
     }
@@ -427,9 +425,9 @@ public class StatementParser {
     return new RemStatement(sb.toString());
   }
 
-  private FunctionReturnStatement parseFunctionReturn(ExpressionParser.Tokenizer tokenizer) {
+  private FunctionReturnStatement parseFunctionReturn(Tokenizer tokenizer) {
     tokenizer.nextToken();
-    if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF &&
+    if (tokenizer.currentType != Tokenizer.TokenType.EOF &&
             !tokenizer.currentValue.equals(":")) {
       return new FunctionReturnStatement(expressionParser.parse(tokenizer));
     }
@@ -437,7 +435,7 @@ public class StatementParser {
   }
 
 
-  public AbstractDeclarationStatement parseDeclaration(ExpressionParser.Tokenizer tokenizer, boolean permitUninitialized) {
+  public AbstractDeclarationStatement parseDeclaration(Tokenizer tokenizer, boolean permitUninitialized) {
     AbstractDeclarationStatement result;
     if (tokenizer.currentValue.equalsIgnoreCase("let")
         || tokenizer.currentValue.equalsIgnoreCase("dim")
@@ -452,20 +450,20 @@ public class StatementParser {
       String fieldName = tokenizer.consumeIdentifier();
       result = new UninitializedField(type, fieldName);
     }
-    if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF) {
+    if (tokenizer.currentType != Tokenizer.TokenType.EOF) {
       throw tokenizer.exception("Leftover input", null);
     }
     return result;
   }
 
-  public List<? extends Node> parseStatementList(ExpressionParser.Tokenizer tokenizer, FunctionImplementation parsingContext) {
+  public List<? extends Node> parseStatementList(Tokenizer tokenizer, FunctionImplementation parsingContext) {
     ArrayList<Node> result = new ArrayList<>();
     Node statement;
     do {
       while (tokenizer.tryConsume(":")) {
         result.add(new LegacyStatement(null));
       }
-      if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.EOF) {
+      if (tokenizer.currentType == Tokenizer.TokenType.EOF) {
         break;
       }
       parseStatement(tokenizer, result, parsingContext);
@@ -474,19 +472,19 @@ public class StatementParser {
             || statement instanceof ElseStatement
             || tokenizer.currentValue.equalsIgnoreCase("else")
             || tokenizer.tryConsume(":"));
-    if (tokenizer.currentType != ExpressionParser.Tokenizer.TokenType.EOF) {
+    if (tokenizer.currentType != Tokenizer.TokenType.EOF) {
       throw tokenizer.exception("Leftover input.", null);
     }
     return result;
   }
 
-  void require(ExpressionParser.Tokenizer tokenizer, String s) {
+  void require(Tokenizer tokenizer, String s) {
     if (!tryConsume(tokenizer, s)) {
       throw tokenizer.exception("Expected: '" + s + "'.", null);
     }
   }
 
-  boolean tryConsume(ExpressionParser.Tokenizer tokenizer, String s) {
+  boolean tryConsume(Tokenizer tokenizer, String s) {
     if (tokenizer.currentValue.equalsIgnoreCase(s)) {
       tokenizer.nextToken();
       return true;
@@ -495,7 +493,7 @@ public class StatementParser {
   }
 
 
-  public Type parseType(ExpressionParser.Tokenizer tokenizer) {
+  public Type parseType(Tokenizer tokenizer) {
      String typeName = tokenizer.consumeIdentifier();
      Type result;
      if (typeName.equalsIgnoreCase("Number")) {

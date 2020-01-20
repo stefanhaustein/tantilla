@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
       "Try the classic:\n\n  10 PRINT \"Hello\"\n  20 GOTO 10",
       "ASDE is a simple programming environment for mobile devices.",
   };
-  public C64ModeControl c64ModeControl;
 
   public static void removeFromParent(View view) {
     if (view != null && view.getParent() instanceof ViewGroup) {
@@ -204,7 +203,6 @@ public class MainActivity extends AppCompatActivity {
     runControlView = new RunControlView(this, runButton);
     controlView = new ControlView(this);
     screen = new Screen(this);
-    c64ModeControl = new C64ModeControl(this);
 
     new Thread(() -> {
       long callTime = System.currentTimeMillis();
@@ -435,7 +433,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   int getBackgroundColor() {
-    return c64ModeControl.isEnabled() ? Colors.C64_BLUE : Colors.BACKGROUND;
+    return Colors.BACKGROUND;
   }
 
   void arrangeUi() {

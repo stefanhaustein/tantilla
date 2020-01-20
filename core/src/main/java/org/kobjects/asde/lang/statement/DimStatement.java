@@ -42,9 +42,6 @@ public class DimStatement extends AbstractDeclarationStatement {
     int[] dims = new int[children.length];
     for (int i = 0; i < children.length; i++) {
       dims[i] = children[i].evalInt(evaluationContext);
-      if (evaluationContext.control.program.isLegacyMode() && dims[i] != 0) {
-        dims[i]++;
-      }
     }
     return new Array(elementType, dims);
   }

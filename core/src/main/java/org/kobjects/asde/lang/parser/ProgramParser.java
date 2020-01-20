@@ -12,6 +12,7 @@ import org.kobjects.asde.lang.statement.UnparseableStatement;
 import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.function.Types;
 import org.kobjects.expressionparser.ExpressionParser;
+import org.kobjects.expressionparser.Tokenizer;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
@@ -83,16 +84,17 @@ public class ProgramParser {
     FunctionImplementation currentFunction = program.main;
     ClassImplementation currentClass = null;
     ArrayList<String> lines = new ArrayList<>();
+    boolean legacyMode;
 
     {
       String line = reader.readLine();
-      program.setLegacyMode(line != null && !(line + ' ').startsWith("ASDE "));
-      if (!program.isLegacyMode()) {
+      legacyMode = (line != null && !(line + ' ').startsWith("ASDE "));
+      if (!legacyMode) {
         line = reader.readLine();
       }
       while (line != null) {
         line = line.trim();
-        if (program.isLegacyMode()) {
+        if (legacyMode) {
           line = preprocessLegacyIdentifiers(line);
           System.out.println("Preprocessed: '" + line + "'");
         }
@@ -114,9 +116,9 @@ public class ProgramParser {
       String line = lines.get(i);
       System.out.println("Parsing: '" + line + "'");
       try {
-        ExpressionParser.Tokenizer tokenizer = statementParser.createTokenizer(line);
+        Tokenizer tokenizer = statementParser.createTokenizer(line);
         tokenizer.nextToken();
-        if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.NUMBER) {
+        if (tokenizer.currentType == Tokenizer.TokenType.NUMBER) {
           int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
           tokenizer.nextToken();
           int pos = tokenizer.currentPosition;
@@ -165,9 +167,6 @@ public class ProgramParser {
       }
     }
 
-    if (program.isLegacyMode()) {
-      new LegacyCodeConverter(program).run();
-    }
 
     if (exceptions.size() > 0) {
       throw new RuntimeException("Loading errors (see console): " + exceptions);
@@ -178,7 +177,7 @@ public class ProgramParser {
   private int parseInterface(InterfaceImplementation interfaceImplementation, List<String> lines, int index) {
     while (true) {
       String line = lines.get(++index);
-      ExpressionParser.Tokenizer tokenizer = statementParser.createTokenizer(line);
+      Tokenizer tokenizer = statementParser.createTokenizer(line);
       tokenizer.nextToken();
       if (tokenizer.tryConsume("END")) {
         break;
@@ -198,7 +197,7 @@ public class ProgramParser {
   }
 
 
-  private Type[] parseParameterList(ExpressionParser.Tokenizer tokenizer, ArrayList<String> parameterNames) {
+  private Type[] parseParameterList(Tokenizer tokenizer, ArrayList<String> parameterNames) {
     tokenizer.consume("(");
     ArrayList<Type> parameterTypes = new ArrayList<>();
     while (!tokenizer.tryConsume(")")) {
@@ -217,7 +216,7 @@ public class ProgramParser {
     return parameterTypes.toArray(Type.EMPTY_ARRAY);
   }
 
-  private FunctionType parseFunctionSignature(ExpressionParser.Tokenizer tokenizer, ArrayList<String> parameterNames) {
+  private FunctionType parseFunctionSignature(Tokenizer tokenizer, ArrayList<String> parameterNames) {
     Type[] parameterTypes = parseParameterList(tokenizer, parameterNames);
 
     Type returnType = tokenizer.tryConsume("->") ? statementParser.parseType(tokenizer) : Types.VOID;

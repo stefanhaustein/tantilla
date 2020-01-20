@@ -8,6 +8,7 @@ import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.io.Shell;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.expressionparser.ExpressionParser;
+import org.kobjects.expressionparser.ParsingException;
 import org.kobjects.typesystem.Type;
 
 import java.io.BufferedReader;
@@ -44,7 +45,7 @@ public class AsdeShell {
         shell.enter(line, program.mainSymbol, result -> {
           console.print(result == null ? "Ok" : String.valueOf(result));
         });
-      } catch (ExpressionParser.ParsingException e) {
+      } catch (ParsingException e) {
         char[] fill = new char[e.start + 1];
         Arrays.fill(fill, ' ');
         System.out.println(new String(fill) + '^');

@@ -14,6 +14,7 @@ import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.function.Types;
 import org.kobjects.expressionparser.ExpressionParser;
+import org.kobjects.expressionparser.Tokenizer;
 import org.kobjects.typesystem.FunctionTypeImpl;
 
 import java.util.List;
@@ -59,7 +60,7 @@ public class Shell {
             return;
         }
 
-        ExpressionParser.Tokenizer tokenizer = program.parser.createTokenizer(line);
+        Tokenizer tokenizer = program.parser.createTokenizer(line);
         tokenizer.nextToken();
         switch (tokenizer.currentType) {
             case EOF:
@@ -68,7 +69,7 @@ public class Shell {
                 if (!tokenizer.currentValue.startsWith("#")) {
                     int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
                     tokenizer.nextToken();
-                    if (tokenizer.currentType == ExpressionParser.Tokenizer.TokenType.IDENTIFIER
+                    if (tokenizer.currentType == Tokenizer.TokenType.IDENTIFIER
                             || "?".equals(tokenizer.currentValue)) {
                         program.setLine(currentFunction, new CodeLine(lineNumber, program.parser.parseStatementList(tokenizer, (FunctionImplementation) currentFunction.getValue())));
                         // Line added, done here.

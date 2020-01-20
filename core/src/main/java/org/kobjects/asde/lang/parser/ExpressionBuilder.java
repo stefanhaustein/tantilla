@@ -17,6 +17,8 @@ import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.RelationalOperator;
 import org.kobjects.asde.lang.node.Self;
 import org.kobjects.expressionparser.ExpressionParser;
+import org.kobjects.expressionparser.Processor;
+import org.kobjects.expressionparser.Tokenizer;
 
 import java.util.List;
 
@@ -24,7 +26,7 @@ import java.util.List;
  * This class configures and manages the parser and is able to turn the expression parser
  * callbacks into an expression node tree.
  */
-class ExpressionBuilder extends ExpressionParser.Processor<Node> {
+class ExpressionBuilder extends Processor<Node> {
 
   private final Program program;
 
@@ -33,7 +35,7 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
   }
 
   @Override
-  public Node apply(ExpressionParser.Tokenizer tokenizer, Node base, String bracket, List<Node> arguments) {
+  public Node apply(Tokenizer tokenizer, Node base, String bracket, List<Node> arguments) {
     if (bracket.equals("{")) {
       return Constructor.create(base, arguments);
     }
@@ -47,7 +49,7 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
   }
 
   @Override
-  public Node prefixOperator(ExpressionParser.Tokenizer tokenizer, String name, Node param) {
+  public Node prefixOperator(Tokenizer tokenizer, String name, Node param) {
     switch (name.toUpperCase()) {
       case "NOT":
         return new NotOperator(param);
@@ -62,7 +64,7 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
   }
 
   @Override
-  public Node infixOperator(ExpressionParser.Tokenizer tokenizer, String name, Node left, Node right) {
+  public Node infixOperator(Tokenizer tokenizer, String name, Node left, Node right) {
     switch (name.toUpperCase()) {
       case ".":
         return new Path(left, right);
@@ -108,7 +110,7 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
   }
 
   @Override
-  public Node group(ExpressionParser.Tokenizer tokenizer, String bracket, List<Node> args) {
+  public Node group(Tokenizer tokenizer, String bracket, List<Node> args) {
     switch (bracket) {
       case "(":
         return new Group(args.get(0));
@@ -120,7 +122,7 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
   }
 
   @Override
-  public Node identifier(ExpressionParser.Tokenizer tokenizer, String name) {
+  public Node identifier(Tokenizer tokenizer, String name) {
 
     switch(name.toUpperCase()) {
       case "TRUE":
@@ -134,7 +136,7 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
   }
 
   @Override
-  public Node numberLiteral(ExpressionParser.Tokenizer tokenizer, String value) {
+  public Node numberLiteral(Tokenizer tokenizer, String value) {
     if (value.startsWith("#")) {
       return new Literal((double) Long.parseLong(value.substring(1), 16), Literal.Format.HEX);
     }
@@ -142,7 +144,7 @@ class ExpressionBuilder extends ExpressionParser.Processor<Node> {
   }
 
   @Override
-  public Node stringLiteral(ExpressionParser.Tokenizer tokenizer, String value) {
+  public Node stringLiteral(Tokenizer tokenizer, String value) {
     return new Literal(value.substring(1, value.length()-1).replace("\"\"", "\""));
   }
 }

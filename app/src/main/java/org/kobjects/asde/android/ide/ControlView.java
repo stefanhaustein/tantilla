@@ -20,6 +20,7 @@ import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.lang.io.Format;
 import org.kobjects.asde.lang.io.MultiValidationException;
 import org.kobjects.expressionparser.ExpressionParser;
+import org.kobjects.expressionparser.ParsingException;
 
 
 public class ControlView extends LinearLayout  {
@@ -124,9 +125,6 @@ public class ControlView extends LinearLayout  {
 
     String line = codeEditText.getText().toString();
 
-    if (line.equalsIgnoreCase("go 64") || line.equalsIgnoreCase("go 64!")) {
-      mainActivity.c64ModeControl.enable();
-    }
     try {
       mainActivity.shell.enter(line, mainActivity.programView.currentFunctionView.symbol, result -> {
         mainActivity.runOnUiThread(() -> {
@@ -138,7 +136,7 @@ public class ControlView extends LinearLayout  {
         });
       });
       codeEditText.setText("");
-    } catch (ExpressionParser.ParsingException e) {
+    } catch (ParsingException e) {
       e.printStackTrace();
       codeEditText.setText("");
       resultView.setText(Format.exceptionToString(e));
@@ -155,7 +153,7 @@ public class ControlView extends LinearLayout  {
       codeEditText.setText("");
       resultView.setText(Format.exceptionToString(e.getErrors().values().iterator().next()));
       AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-      e.getCodeLine().toString(asb, e.getErrors(), true, mainActivity.program.isLegacyMode());
+      e.getCodeLine().toString(asb, e.getErrors(), true, false);
       codeEditText.append(AnnotatedStringConverter.toSpanned(mainActivity, asb.build(), -1));
     } catch (Throwable e) {
       e.printStackTrace();

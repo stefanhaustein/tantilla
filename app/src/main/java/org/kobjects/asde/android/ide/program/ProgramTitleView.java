@@ -53,7 +53,6 @@ public class ProgramTitleView extends Toolbar {
     boolean isDefaultSaveLocation = program.reference.name.isEmpty();
     setTitle(
         (isDefaultSaveLocation ? "ASDE" : program.reference.name)
-            + (program.isLegacyMode() ? " (legacy mode)️" : "")
         + (mainActivity.isUnsaved() ? "*" : ""));
 
   }

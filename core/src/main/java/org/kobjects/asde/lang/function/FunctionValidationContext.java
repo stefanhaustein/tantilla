@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class FunctionValidationContext {
-  public enum ResolutionMode {PROGRAM, INTERACTIVE, LEGACY};
+  public enum ResolutionMode {PROGRAM, INTERACTIVE};
   public enum BlockType {
     ROOT, FOR, IF
   }
@@ -36,7 +36,7 @@ public class FunctionValidationContext {
     this.programValidationContext = programValidationContext;
     this.classValidationContext = classValidationContext;
     this.program = programValidationContext.program;
-    this.mode = (program.isLegacyMode() && functionImplementation == program.main) ? ResolutionMode.LEGACY : mode;
+    this.mode = mode;
     this.functionImplementation = functionImplementation;
     startBlock(BlockType.ROOT);
     if (functionImplementation != null) {
@@ -125,28 +125,12 @@ public class FunctionValidationContext {
 
     // Globals
 
-    if (mode == ResolutionMode.LEGACY
-        && impliedType instanceof ArrayType
-        && (program.getSymbol(name) == null
-          || program.getSymbol(name).scope == GlobalSymbol.Scope.TRANSIENT)) {
-      name += "[" + ((ArrayType) impliedType).getDimension() + "]";
-    }
-
     GlobalSymbol symbol = addDependency
         ? programValidationContext.resolve(name)  // Checks for cyclic dependencies.
         : program.getSymbol(name);
 
-    // Refresh or invalidate transient symbols from previous runs.
-    if (symbol != null && mode == ResolutionMode.LEGACY && symbol.scope == GlobalSymbol.Scope.TRANSIENT && symbol.stamp < program.currentStamp) {
-      if (symbol.getType() == impliedType) {
-        symbol.stamp = program.currentStamp;
-      } else {
-        symbol = null;
-      }
-    }
-
     if (symbol == null) {
-      if (mode != ResolutionMode.PROGRAM && (forAssignment || mode == ResolutionMode.LEGACY)) {
+      if (mode != ResolutionMode.PROGRAM && (forAssignment)) {
         symbol = program.addTransientSymbol(name, impliedType, programValidationContext);
       } else {
         throw new RuntimeException("Variable not found: \"" + name + "\"");

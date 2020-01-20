@@ -26,150 +26,8 @@ public class MainMenu {
   private static final Node GENERAL_STORAGE_NODE = new SimpleLeaf("Shared and Cloud Storage…", null);
   private static final Node IMPORT_NODE = new SimpleLeaf("Import…", null);
 
-  private static String[] REFURBISHED = {
-      "hangman.bas", "Hangman",
-      "poker.bas", "Poker",
-      "tiny text adventure.bas", "Tiny Text Adventure"
-  };
-
-  private static String[] VINTAGE_BASIC = {
-      "3dplot.bas", "3D-Plot curves",
-      "23matches.bas", "23 Matches",
-
-      "animal.bas", "Animal Guessing",
-      "awari.bas", "Awari Game",
-      "amazing.bas", "A Maze Generator",
-
-      "bagels.bas", "Bagles (Number Guessing)",
-      "banner.bas", "Banner Printer",
-      "basketball.bas", "Basketball Strategy",
-      "batnum.bas", "Battle of Numbers",
-      "battle.bas", "Battle Ships",
-      "bombardment.bas", "Bombardment",
-      "bombsaway.bas", "Bombs Away (WWII Bombing Sim)",
-      "blackjack.bas", "Blackjack (Las Vegas Rules)",
-      "bowling.bas", "Bowling",
-      "boxing.bas", "3-round boxing match",
-      "bounce.bas", "Bouncing ball plot",
-      "bunny.bas", "Bunny: Computer drawing",
-      "buzzword.bas", "Buzzword Generator",
-      "bug.bas", "Bug: Roll dice vs. computer",
-      "bullseye.bas", "Bullseye: Throw darts",
-      "bullfight.bas", "Bullfight matador",
-
-      "checkers.bas", "Game of checkers",
-      "civilwar.bas", "Civil War",
-      "combat.bas", "Combat: small war vs. computer",
-      "calendar.bas", "Calendar for any year",
-      "change.bas", "Change: Computer cashier",
-      "chemist.bas", "Chemist: Dilute kryptocyanic acid",
-      "chief.bas", "Chief: Silly arithmetic drill",
-      "chomp.bas", "Chomp: Avoid poison (multiplayer)",
-      "craps.bas", "Craps (dice), Las Vegas style",
-      "cube.bas", "Cube: Negotiate a 3-D cube",
-
-      "depthcharge.bas", "Depth Charge: destroy a submarine",
-      "dice.bas", "Dice: Summarizes dice rolls",
-      "digits.bas", "Digits: Computer guesses digits",
-      "diamond.bas", "Diamond: Prints diamond patterns",
-
-      "evenwins.bas", "Even Wins Game",
-
-      "ftball.bas", "American football vs. computer",
-      "football.bas", "American football 2 players",
-      "furtrader.bas", "Trade furs",
-      "flipflop.bas", "Solitaire logic game",
-
-      "gameofevenwins.bas", "Even Wins; computer improves",
-      "guess.bas", "Guess a number with clues",
-      "gomoko.bas", "Gomoko: Ancient strategy board game",
-      "golf.bas", "Golf game",
-      "gunner.bas", "Gunner: Fire a cannon",
-
-      "hangman.bas", "Hangman word guessing game",
-      "hammurabi.bas", "Hammurabi: Govern an ancient city-state",
-      "hello.bas", "Hello: computer psychiatrist",
-      "hockey.bas", "Hockey: 2 player Ice hockey",
-      "horserace.bas", "Horserace: Off-track betting",
-      "hexapawn.bas", "Hexapawn game",
-      "hi-lo.bas", "Hi-Lo: Hit the mystery jackpot",
-      "highiq.bas", "High IQ: Remove all the pegs",
-      "hurkle.bas", "Hurkle: Find the Hurkle in a 10x10 grid",
-
-      "kinema.bas", "Kinema: Drill in simple kinematics",
-      "king.bas", "King: Govern an island kingdom",
-
-      "letter.bas", "Letter: Guess a letter with clues",
-      "lunar.bas", "Lunar: Land an Apollo capsule on the moon",
-      "lem.bas", "LEM: Very comprehensive lunar landing",
-      "life.bas", "Life: John Conway's Game of Life",
-      "lifefortwo.bas", "LifeFor2: 2+ players",
-      "litquiz.bas", "LitQuiz: Children's literature quiz",
-      "love.bas", "Love: Robert Indiana's artwork, your message",
-
-      "mathdice.bas", "Math Dice: Children's math drill",
-      "mugwump.bas", "Mugwump: Locate 4 mugwumps hiding on a 10x10 grid",
-      "mastermind.bas", "Master Mind color guessing",
-
-      "nicomachus.bas", "Nicomachus: Computer guesses your number ",
-      "name.bas", "Name: An ice-breaker with the computer",
-      "nim.bas", "NIM: Chinese game of Nim",
-      "number.bas", "Number: Silly number matching game",
-
-      "orbit.bas", "Orbit: Destroy an orbiting germ-laden enemy spaceship",
-      "onecheck.bas", "One Check: Remove checkers",
-
-      "poker.bas", "Poker game",
-      "pizza.bas", "Pizza: Deliver pizzas successfully",
-      "poetry.bas", "Poetry: Computer composes random poetry",
-
-      "queen.bas", "Queen: Single queen vs. computer",
-      "qubit.bas", "Quobit: TicTacToe in 3D",
-
-      "reverse.bas", "Order a series of numbers by reversing",
-      "rockscissors.bas", "Rock, Scissors, Paper",
-      "roulette.bas", "Roulette (European)",
-      "russianroulette.bas", "Russian Roulette",
-      "rocket.bas", "Rocket: Lunar landing from 500 feet (with plot)",
-
-      "salvo.bas", "Salvo: Destroy an enemy fleet of ships",
-      "superstartrek.bas", "Super Star Trek Game",
-      "superstartrekins.bas", "Super Star Trek Instructions",
-      "sinewave.bas", "Sine Wave Drawing",
-      "slalom.bas", "Slalom Simulation",
-      "slots.bas", "Slot machine (one-armed bandit)",
-      "splat.bas", "Splat: Open a parachute at the last possible moment",
-      "stars.bas", "Stars: Guess a mystery number—stars give you clues",
-      "stockmarket.bas", "Stock market simulation",
-      "synonym.bas", "Word synonym drill",
-
-      "target.bas", "Destroy a target in 3-D space—very tricky",
-      "tictactoe1.bas", "TicTacToe (Simple version)",
-      "tictactoe2.bas", "TicTacToe (With board)",
-      "tower.bas", "Towers of Hanoi puzzle",
-      "train.bas", "Time-speed-distance quiz",
-      "trap.bas", "Trap a mystery number—computer gives you clues",
-
-      "war.bas", "Card game of war",
-      "weekday.bas", "Facts about your birthday",
-      "word.bas", "Word guessing game"
-  };
-
   public static Node getExamplesNode(MainActivity mainActivity) {
-    ArrayList<Node> exampleDirs = new ArrayList<>();
-    exampleDirs.add(new SimpleNode("Refurbished classics",
-            addRemoteExamples(
-                "https://raw.githubusercontent.com/stefanhaustein/basic-classics/master/src/main/assets/classics/",
-                REFURBISHED)));
-    exampleDirs.add(new SimpleNode("vintage-basic.net",
-        addRemoteExamples(
-            "http://vintage-basic.net/bcg/",
-            VINTAGE_BASIC)));
-    if (mainActivity.c64ModeControl.isEnabled()) {
-      exampleDirs.add(new AssetNode(mainActivity.getAssets(), "C64", "c64"));
-    }
-
-    return new AssetNode(mainActivity.getAssets(), "Examples", "examples", exampleDirs.toArray(new Node[0]));
+    return new AssetNode(mainActivity.getAssets(), "Examples", "examples");
   }
 
 
@@ -269,6 +127,7 @@ public class MainMenu {
     }
      */
 
+    /*
     projectMenu
         .add("Legacy Mode")
         .setCheckable(true)
@@ -278,6 +137,7 @@ public class MainMenu {
           return true;
         }
     );
+    */
 
     projectMenu.add("Save as…").setOnMenuItemClickListener(item -> {
       new FilePicker(mainActivity, node -> {
