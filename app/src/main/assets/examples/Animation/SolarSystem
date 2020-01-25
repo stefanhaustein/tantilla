@@ -7,21 +7,21 @@ const SCALE = 0.5e-9
 const bodies = {newBody(1.99e30, 0, 0, "🟡", 12), newBody( 3.3e23, 58e9, 47.36e3, "🌕", 3), newBody( 4.87e24, 108e9, 35e3, "🟤", 6), newBody( 5.97e24, 150e9, 29.8e3, "🌍", 6)}
 
 CLASS Body
-LET mass = 0
-LET x = 0
-LET y = 0
-LET vx = 0
-LET vy = 0
-LET fx = 0
-LET fy = 0
-LET sprite = screen.newSprite()
+var mass = 0
+var x = 0
+var y = 0
+var vx = 0
+var vy = 0
+var fx = 0
+var fy = 0
+var sprite = screen.newSprite()
 
 SUB addAttraction(Body other)
-10 LET dx = other.x - x
-20 LET dy = other.y - y
-30 LET r2 = dx * dx + dy * dy
-40 LET f = G * mass * other.mass / r2
-50 LET th = atan2(dy, dx)
+10 var dx = other.x - x
+20 var dy = other.y - y
+30 var r2 = dx * dx + dy * dy
+40 var f = G * mass * other.mass / r2
+50 var th = atan2(dy, dx)
 60 fx = fx + f * cos(th)
 70 fy = fy + f * sin(th)
 END SUB
@@ -41,7 +41,7 @@ END CLASS
 
 
 FUNCTION newBody(Number mass, Number distance, Number velocity, String face, Number size) -> Body
-10 let planet = Body{}
+10 var planet = Body{}
 20 planet.mass = mass
 30 planet.x = distance
 40 planet.vy = velocity
@@ -49,14 +49,15 @@ FUNCTION newBody(Number mass, Number distance, Number velocity, String face, Num
 60 planet.sprite.face = face
 70 return planet
 END FUNCTION
-
-100 for i = 0 to bodies.length - 1
+100 while true:
+110  for i = 0 to bodies.length - 1
 120   for j = 0 to bodies.length - 1
-130     if i <> j then
+130     if i <> j:
 140       bodies[i].addAttraction(bodies[j])
-150     end if
-160   next j
+150     end
+160   end
 170   bodies[i].update(TIMESCALE/60)
-180 next i
-190 sleep 16
-200 goto 100
+180  end
+190  sleep 16
+200 end
+

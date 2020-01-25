@@ -12,7 +12,7 @@ import java.util.Map;
 public class DeclarationStatement extends AbstractDeclarationStatement {
 
   public enum Kind {
-    LET, CONST
+    VAR, CONST
   }
 
   public final Kind kind;
@@ -38,7 +38,7 @@ public class DeclarationStatement extends AbstractDeclarationStatement {
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
-    appendLinked(asb, kind + " " + varName + " = ", errors);
+    appendLinked(asb, kind.name().toLowerCase() + " " + varName + " = ", errors);
     children[0].toString(asb, errors, preferAscii);
   }
 }

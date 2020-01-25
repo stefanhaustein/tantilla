@@ -13,11 +13,13 @@ import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
-public class ForStatement extends Statement {
+public class ForStatement extends BlockStatement {
   private final String variableName;
   ResolvedSymbol resolvedVariable;
   int resolvedNextLine;
   int resolvedNextIndex;
+  int resolvedForLine;
+  int resolvedForIndex;
 
   public ForStatement(String varName, Node... children) {
     super(children);
@@ -25,25 +27,11 @@ public class ForStatement extends Statement {
   }
 
   public void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
-    resolutionContext.startBlock(FunctionValidationContext.BlockType.FOR);
+    resolutionContext.startBlock(this, line, index);
+    resolvedForLine = line;
+    resolvedForIndex = index;
     // TODO: Check types?
     resolvedVariable = resolutionContext.resolveVariableDeclaration(variableName, Types.NUMBER, false);
-
-    NextSearch search = new NextSearch(resolutionContext.functionImplementation);
-    NextStatement nextStatement = (NextStatement) search.find(line, index);
-    if (nextStatement == null) {
-      throw new RuntimeException("FOR without NEXT");
-    }
-
-    resolvedNextLine = search.lineNumber;
-    resolvedNextIndex = search.index;
-
-    nextStatement.resolvedForStatement = this;
-    nextStatement.resolvedForLine = line;
-    nextStatement.resolvedForIndex = index;
-    if (nextStatement.varName == null) {
-      nextStatement.varName = variableName;
-    }
   }
 
   @Override
@@ -65,27 +53,32 @@ public class ForStatement extends Statement {
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
-    appendLinked(asb, "FOR " + variableName + " = ", errors);
+    appendLinked(asb, "for " + variableName + " = ", errors);
     children[0].toString(asb, errors, preferAscii);
-    asb.append(" TO ");
+    asb.append(" to ");
     children[1].toString(asb, errors, preferAscii);
     if (children.length > 2) {
-      asb.append(" STEP ");
+      asb.append(" step ");
       children[2].toString(asb, errors, preferAscii);
     }
   }
 
+  @Override
+  public void onResolveEnd(FunctionValidationContext resolutionContext, Node endStatement, int line, int index) {
+    this.resolvedNextLine = line;
+    this.resolvedNextIndex = index;
+  }
 
-  class NextSearch extends StatementSearch {
-
-    NextSearch(FunctionImplementation functionImplementation) {
-      super(functionImplementation);
-    }
-
-    @Override
-    public boolean statementMatches(CodeLine line, int index, Node statement) {
-      return statement instanceof NextStatement
-          && (variableName.equals(((NextStatement) statement).varName) || ((NextStatement) statement).varName == null);
+  @Override
+  void evalEnd(EvaluationContext evaluationContext) {
+    double step = evalStep(evaluationContext);
+    double current = ((Double) resolvedVariable.get(evaluationContext)) + step;
+    resolvedVariable.set(evaluationContext, current);
+    if (Math.signum(step) != Math.signum(Double.compare(current, children[1].evalDouble(evaluationContext)))) {
+      evaluationContext.currentLine = resolvedForLine;
+      evaluationContext.currentIndex = resolvedForIndex + 1;
     }
   }
+
+
 }

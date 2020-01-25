@@ -1,5 +1,6 @@
 ASDE
-10 LET pen = screen.newPen()
-20 pen.strokeColor = #ff000000+(rnd()*#ffffff)
-30 pen.line(rnd()*400-200,rnd()*400-200,rnd()*400-200,rnd()*400-200)
-40 GOTO 20
+10 let p = screen.newPen()
+15 while true:
+20  p.strokeColor = #ff000000+(rnd()*#ffffff)
+30  p.line(rnd()*400-200,rnd()*400-200,rnd()*400-200,rnd()*400-200)
+40 end

@@ -25,52 +25,6 @@ import java.util.List;
 
 public class ProgramParser {
 
-  private static final String[] KEYWORDS = {
-    "AND", "DATA", "DIM", "ELSE", "FOR", "GOTO", "GOSUB", "IF", "LET", "NEXT", "ON", "OR", "PRINT", "REM", "RESTORE", "STEP", "STOP", "THEN", "TO"
-  };
-
-
-  private static String preprocessLegacyIdentifiers(String line) {
-    StringBuilder sb = new StringBuilder();
-    boolean inQuote = false;
-    int len = line.length();
-    for (int i = 0; i < len; i++) {
-      char c = line.charAt(i);
-      if (c == '"' || inQuote) {
-        inQuote = c == '"' ? !inQuote : true;
-        sb.append(c);
-      } else if (c == '\'') {
-        sb.append(line.substring(i));
-        break;
-      } else if (c >= 'A' && c <= 'T') {
-        int originalI = i;
-        for (String keyword: KEYWORDS) {
-          if (line.startsWith(keyword, i)) {
-            if (i > 0 && line.charAt(i - 1) != ' ') {
-              sb.append(' ');
-            }
-            sb.append(keyword);
-            if (i + keyword.length() < len && line.charAt(i + keyword.length()) != ' ') {
-              sb.append(' ');
-            }
-            i += keyword.length() - 1;
-            if (keyword.equals("REM")) {
-              sb.append(line.substring(i + 1));
-              return sb.toString();
-            }
-            break;
-          }
-        }
-        if (i == originalI) {
-          sb.append(c);
-        }
-      } else {
-        sb.append(c);
-      }
-    }
-    return sb.toString();
-  }
-
 
   final StatementParser statementParser;
   final Program program;
@@ -94,10 +48,6 @@ public class ProgramParser {
       }
       while (line != null) {
         line = line.trim();
-        if (legacyMode) {
-          line = preprocessLegacyIdentifiers(line);
-          System.out.println("Preprocessed: '" + line + "'");
-        }
         lines.add(line);
         String upper = line.toUpperCase();
         if (upper.startsWith("CLASS ")) {

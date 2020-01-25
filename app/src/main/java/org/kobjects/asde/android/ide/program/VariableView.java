@@ -127,7 +127,7 @@ public class VariableView extends SymbolView {
 
         codeView.removeAllViews();
         if (symbol.getInitializer() instanceof DeclarationStatement && isMultiDim(symbol.getType())) {
-                addLine(codeView, 1, "LET " + symbol.getName() + " = {");
+                addLine(codeView, 1, "VAR " + symbol.getName() + " = {");
                 addChildList(codeView, 2, symbol.getInitializer().children[0]);
                 addLine(codeView, 1, "}");
         } else {

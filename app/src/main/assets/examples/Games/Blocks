@@ -16,7 +16,7 @@ LET gameOver = false
 
 FUNCTION checkPosition(Number x, Number y) -> Number
 100 FOR i = 0 TO 3
-110   IF grid(x + pieceX(i), y + pieceY(i)) <> 0 THEN
+110   IF grid(x + pieceX(i), y + pieceY(i)) <> 0 :
 112     RETURN 0
 114   ENDIF
 120 NEXT i
@@ -24,7 +24,7 @@ FUNCTION checkPosition(Number x, Number y) -> Number
 END FUNCTION
 
 SUB drawScore()
-100 pen.fillColor = #ff888888
+100 pen.fillColor = 0xff888888
 110 pen.clear 40, -10, 60, 60
 120 pen.write 40, 40, "Rows:"
 130 pen.write 40, 30, "" + rows + "  "
@@ -34,31 +34,31 @@ SUB drawScore()
 END SUB
 
 SUB setColor(Number c)
-5 REM Store in array?
-10 if c = 1 then
-15   pen.fillColor = #ff0000ff : REM blue J
-20 else if c = 2 then
-25   pen.fillColor = #ff00ff00 : REM green S
-30 else if c = 3 then
-35   pen.fillColor = #ffff8800 : REM orange L
-40 else if c = 4 then
-45   pen.fillColor = #ffff0000 : REM red Z
-50 else if c = 5 then
-55   pen.fillColor = #ffff00ff : REM violet T
-60 else if c = 6 then
-65   pen.fillColor = #ffeeee00 : REM yellow O
-70 else if c = 7 then
-75   pen.fillColor = #ff00ffff : REM cyan I
-80 else if c = 8 then
-85    pen.fillColor = #ff888888 : REM border
+5 # Store in array?
+10 if c = 1 :
+15   pen.fillColor = 0xff0000ff # blue J
+20 else if c = 2 :
+25   pen.fillColor = 0xff00ff00 # green S
+30 else if c = 3 :
+35   pen.fillColor = 0xffff8800 # orange L
+40 else if c = 4 :
+45   pen.fillColor = 0xffff0000 # red Z
+50 else if c = 5 :
+55   pen.fillColor = 0xffff00ff # violet T
+60 else if c = 6 :
+65   pen.fillColor = 0xffeeee00 # yellow O
+70 else if c = 7 :
+75   pen.fillColor = 0xff00ffff # cyan I
+80 else if c = 8 :
+85    pen.fillColor = 0xff888888 # border
 90 endif
 END SUB
 
 SUB drawPiece()
 100 setColor pc
 110 FOR i = 0 TO 3
-120  LET x = px0 + pieceX(i)
-130  LET y = py0 + pieceY(i)
+120  let x = px0 + pieceX(i)
+130  let y = py0 + pieceY(i)
 140  grid(x, y) = pc
 150  pen.rect x * 8 - 69, 91 - y * 8, 7, 7
 160 NEXT i
@@ -66,8 +66,8 @@ END SUB
 
 SUB erasePiece()
 100 FOR i = 0 TO 3
-110   LET x = px0 + pieceX(i)
-120   LET y = py0 + pieceY(i)
+110   let x = px0 + pieceX(i)
+120   let y = py0 + pieceY(i)
 130   grid(x, y) = 0
 140   pen.clear x * 8 - 70, 90 - y * 8, 8, 8
 150 NEXT i
@@ -83,8 +83,8 @@ END SUB
 SUB drawAll()
 100 FOR y = 0 to 20
 120  FOR x = 1 to 12
-130    LET c = grid(x, y)
-140    IF c <> 0 THEN
+130    let c = grid(x, y)
+140    if c <> 0 :
 141      setColor c
 142      pen.rect x * 8 - 69, 91 - y * 8, 7, 7
 143    ELSE
@@ -104,15 +104,15 @@ SUB dropGrid(Number cy)
 END SUB
 
 SUB checkGrid()
-100 LET dropCount = 0
+100 let dropCount = 0
 110 FOR cy = 0 to 19
-120   LET row = 0
+120   let row = 0
 130   FOR x = 2 to 11
-140     IF grid(x,cy) <> 0 then
+140     if grid(x,cy) <> 0 :
 141       row = row + 1
 142     END IF
 150   NEXT x
-160   IF row = 10 then
+160   if row = 10 :
 162     dropGrid cy
 164     dropCount = dropCount + 1
 166   ENDIF
@@ -124,13 +124,13 @@ END SUB
 SUB newPiece()
 10 checkGrid
 20 drawScore
-90 rem preview stuff
+90 # preview stuff
 100 px0 = 14
 110 py0 = 1
 120 pc = pp
 125 definePiece
 130 erasePiece
-140 LET savePc = pc
+140 let savePc = pc
 200 pp = int(rnd() * 7) + 1
 210 pc = pp
 220 definePiece
@@ -139,22 +139,22 @@ SUB newPiece()
 250 definePiece
 260 px0 = 5
 270 py0 = 0
-280 if checkPosition(px0, py0) = 0 then
+280 if checkPosition(px0, py0) = 0 :
 290   gameOver = true
-320 endif
+320 end
 END SUB
 
 SUB moveRight()
 110 erasePiece
-120 if checkPosition(px0 + 1, py0) then
+120 if checkPosition(px0 + 1, py0) :
 122   px0 = px0 + 1
-124 END IF
+124 end
 130 drawPiece
 END SUB
 
 SUB moveLeft()
 110 erasePiece
-120 if checkPosition(px0 - 1, py0) then
+120 if checkPosition(px0 - 1, py0) :
 122   px0 = px0 - 1
 124 end if
 130 drawPiece
@@ -162,41 +162,42 @@ END SUB
 
 SUB moveDown()
 110 erasePiece
-120 LET ok = checkPosition(px0, py0 + 1)
-125 IF ok THEN
+120 let ok = checkPosition(px0, py0 + 1)
+125 if ok :
 127   py0 = py0 + 1
-128 ENDIF
+128 end
 130 drawPiece
-140 IF ok = 0 THEN
+140 if ok = 0 :
 150   newPiece()
 160   drawPiece()
-170 ENDIF
+170 end
 END SUB
 
 SUB rotate()
 100 erasePiece
-105 LET mx = 2
-107 IF pc > 5 THEN mx = 3
+105 let mx = 2
+107 if pc > 5 : mx = 3
 110 FOR i = 0 to 3
-120  LET x = pieceX(i)
+120  let x = pieceX(i)
 130  pieceX(i) = mx - pieceY(i)
 140  pieceY(i) = x
 150 NEXT i
-160 if checkPosition(px0, py0) then
+160 if checkPosition(px0, py0) :
 170   drawPiece
 180   RETURN
-190 end if
+190 end
 200 FOR i = 0 to 3
-210   LET x = pieceX(i)
+210   let x = pieceX(i)
 220   pieceX(i) = pieceY(i)
 230   pieceY(i) = mx - x
 240 NEXT i
 250 drawPiece
 END SUB
 
-100 cls
-110 REM Based on David Murray's code, see
-120 REM http://www.the8bitguy.com/download-davids-software/
+100 while True:
+101 cls
+110 # Based on David Murray's code, see
+120 # http://www.the8bitguy.com/download-davids-software/
 125 gameOver = false
 130 dpad.visible = true
 140 pen.strokeColor = 0
@@ -220,18 +221,21 @@ END SUB
 530 drawPiece
 540 let timer = 0
 
-600 if dpad.left then moveLeft
-610 if dpad.right then moveRight
-620 if dpad.down or timer = 10 then moveDown : timer = 0
-630 if dpad.up then rotate
+550 while not gameover:
+
+600 if dpad.left : moveLeft; end
+610 if dpad.right : moveRight; end
+620 if dpad.down or timer = 10 : moveDown ; timer = 0; end
+630 if dpad.up : rotate; end
 640 timer = timer + 1
 
 680 sleep 100
-690 if not gameOver then goto 600
+690 end
 700 pen.fillColor = #ff888888
 710 pen.write -40, 40, "GAME OVER"
 720 sleep 4000
 730 pen.write -40, 20, "Press any key"
-800 if dpad.fire or dpad.left or dpad.right or dpad.up or dpad.down then goto 100
+800 while not (dpad.fire or dpad.left or dpad.right or dpad.up or dpad.down):
 810 sleep 100
-820 goto 800
+820 end
+830 end

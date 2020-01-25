@@ -13,30 +13,19 @@ import org.kobjects.typesystem.PropertyChangeListener;
 
 import java.util.Map;
 
-public class OnStatement extends Statement  {
+public class OnStatement extends BlockStatement  {
 
-  int lineBeyondEnd;
+  int resolvedEndLine;
+  int resolvedEndIndex;
 
   public OnStatement(Node condition) {
     super(condition);
   }
 
+
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
-    CodeLine codeLine = resolutionContext.functionImplementation.findNextLine(line);
-    if (codeLine.length() > index + 1) {
-      lineBeyondEnd = line + 1;
-      if (!(codeLine.get(codeLine.length() - 1) instanceof EndStatement)) {
-        codeLine.append(new EndStatement(true));
-      }
-
-    } else {
-      int[] pos = {line + 1, 0};
-      if (resolutionContext.functionImplementation.find(new EndMatcher(), pos) == null) {
-        throw new RuntimeException("END not found for multiline ON.");
-      }
-      lineBeyondEnd = pos[0] + 1;
-    }
+    resolutionContext.startBlock(this, line, index);
   }
 
   @Override
@@ -47,14 +36,27 @@ public class OnStatement extends Statement  {
     new NodeProcessor(node -> node.addPropertyChangeListener(evaluationContext, new Trigger(newContectBase)))
         .processNode(children[0]);
 
-    evaluationContext.currentLine = lineBeyondEnd;
+    evaluationContext.currentLine = resolvedEndLine;
+    evaluationContext.currentIndex = resolvedEndIndex + 1;
     return null;
   }
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
-    appendLinked(asb, "ON ", errors);
+    appendLinked(asb, "on ", errors);
     children[0].toString(asb, errors, preferAscii);
+    asb.append(": ");
+  }
+
+  @Override
+  public void onResolveEnd(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+    resolvedEndLine = line;
+    resolvedEndIndex = index;
+  }
+
+  @Override
+  void evalEnd(EvaluationContext context) {
+    context.currentLine = Integer.MAX_VALUE;
   }
 
   class Trigger implements PropertyChangeListener {
@@ -83,28 +85,6 @@ public class OnStatement extends Statement  {
         }).start();
       }
     }
-
-
   }
 
-
-  static class EndMatcher implements StatementMatcher {
-    int skip;
-
-    @Override
-    public boolean statementMatches(CodeLine line, int index, Node statement) {
-      if (statement instanceof OnStatement) {
-        // Multiline?
-        if (index == line.length() - 1) {
-          skip++;
-        }
-      } else if (statement instanceof EndStatement) {
-        if (skip == 0) {
-          return true;
-        }
-        skip--;
-      }
-      return false;
-    }
-  }
 }

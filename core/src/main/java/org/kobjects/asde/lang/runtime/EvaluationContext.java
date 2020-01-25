@@ -4,7 +4,6 @@ import org.kobjects.asde.lang.classifier.InstanceImpl;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.ProgramControl;
-import org.kobjects.asde.lang.statement.LegacyStatement;
 
 import java.util.ArrayList;
 
@@ -21,11 +20,6 @@ public class EvaluationContext {
 
     public int currentLine;
     public int currentIndex;
-
-    private ArrayList<JumpStackEntry> jumpStack;
-
-    private int[] dataPosition;
-    public LegacyStatement dataStatement;
 
 
     /**
@@ -72,21 +66,6 @@ public class EvaluationContext {
 
         control.lastCreatedContext = this;
     }
-
-    public int[] getDataPosition() {
-        if (dataPosition == null) {
-            dataPosition = new int[3];
-        }
-        return dataPosition;
-    }
-
-    public ArrayList<JumpStackEntry> getJumpStack() {
-        if (jumpStack == null) {
-            jumpStack = new ArrayList<>();
-        }
-        return jumpStack;
-    }
-
 
     public Object getLocal(int index) {
         return dataStack.data[stackBase + index];

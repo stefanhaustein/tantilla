@@ -1,6 +1,9 @@
 package org.kobjects.asde.lang.function;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.statement.BlockStatement;
+import org.kobjects.asde.lang.statement.ConditionalStatement;
+import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.runtime.ForcedStopException;
@@ -9,12 +12,8 @@ import org.kobjects.asde.lang.program.ProgramControl;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.runtime.WrappedExecutionException;
 import org.kobjects.asde.lang.runtime.StartStopListener;
-import org.kobjects.asde.lang.statement.ElseStatement;
-import org.kobjects.asde.lang.statement.EndIfStatement;
 import org.kobjects.asde.lang.statement.EndStatement;
 import org.kobjects.asde.lang.statement.ForStatement;
-import org.kobjects.asde.lang.statement.IfStatement;
-import org.kobjects.asde.lang.statement.NextStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.OnStatement;
 import org.kobjects.typesystem.FunctionType;
@@ -49,32 +48,24 @@ public class FunctionImplementation implements Function, Declaration {
   public void validate(FunctionValidationContext functionValidationContext) {
     int indent = 0;
     for (Map.Entry<Integer, CodeLine> entry : code.entrySet()) {
-      int addLater = 0;
+      int add = 0;
       CodeLine line = entry.getValue();
       for (int i = 0; i < line.length(); i++) {
         Node statement = line.get(i);
-        boolean isLast = i == line.length() - 1;
-
-        if (statement instanceof ElseStatement && ((ElseStatement) statement).multiline && indent > 0) {
-          addLater++;
-          indent--;
-        } else if (statement instanceof ForStatement
-            || (statement instanceof OnStatement && isLast)
-            || (statement instanceof IfStatement
-            && ((IfStatement) statement).multiline
-            && !((IfStatement) statement).elseIf)) {
-          addLater++;
-        } else if (statement instanceof NextStatement || statement instanceof EndIfStatement || statement instanceof EndStatement) {
-          if (addLater > 0) {
-            addLater--;
-          } else if (indent > 0) {
+        statement.resolve(functionValidationContext, null, entry.getKey(), i);
+        if (statement instanceof BlockStatement) {
+          add++;
+        } else if (statement instanceof EndStatement
+            || (statement instanceof ConditionalStatement && ((ConditionalStatement) statement).kind != ConditionalStatement.Kind.IF)) {
+          if (add > 0) {
+            add--;
+          } else {
             indent--;
           }
         }
-        statement.resolve(functionValidationContext, null, entry.getKey(), i);
       }
       line.setIndent(indent);
-      indent += addLater;
+      indent += add;
     }
     localVariableCount = functionValidationContext.getLocalVariableCount();
   }

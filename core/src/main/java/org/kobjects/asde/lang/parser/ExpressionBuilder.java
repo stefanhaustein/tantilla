@@ -73,6 +73,7 @@ class ExpressionBuilder extends Processor<Node> {
       case "<=":
       case "≤":
         return new RelationalOperator(-1, 0, left, right);
+      case "==":
       case "=":
         return new RelationalOperator(0, 0, left, right);
       case "<>":

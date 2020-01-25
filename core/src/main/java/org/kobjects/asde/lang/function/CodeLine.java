@@ -2,9 +2,7 @@ package org.kobjects.asde.lang.function;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.statement.ElseStatement;
-import org.kobjects.asde.lang.statement.EndStatement;
-import org.kobjects.asde.lang.statement.IfStatement;
+import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.statement.OnStatement;
 
 import java.util.Arrays;
@@ -35,15 +33,10 @@ public class CodeLine implements Iterable<Node> {
     }
     for (int i = 0; i < statements.length; i++) {
       if (i > 0) {
-        sb.append((statements[i - 1] instanceof IfStatement
-            || statements[i - 1] instanceof ElseStatement
-            || (statements[i] instanceof EndStatement && ((EndStatement) statements[i]).invisible))
-            ? " " : " : ");
+        sb.append((statements[i - 1] instanceof BlockStatement)
+            ? " " : "; ");
       }
       statements[i].toString(sb, errors, preferAscii);
-    }
-    if (statements.length > 0 && statements[statements.length - 1] instanceof OnStatement) {
-      sb.append(" :");
     }
   }
 

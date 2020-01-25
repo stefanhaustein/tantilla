@@ -29,7 +29,7 @@ public class RelationalOperator extends Node {
         case -1:
           return val2 == 0 ? "<=" : val2 == 1 ? "<>" : "<";
         case 0:
-          return val2 == 0 ? "=" : val2 == -1 ? "<=" : ">=";
+          return val2 == 0 ? "==" : val2 == -1 ? "<=" : ">=";
         case 1:
           return val2 == 0 ? ">=" : val2 == -1 ? "<>" : ">";
       }
@@ -38,7 +38,7 @@ public class RelationalOperator extends Node {
         case -1:
           return val2 == 0 ? "≤" : val2 == 1 ? "≠" : "<";
         case 0:
-          return val2 == 0 ? "=" : val2 == -1 ? "≤" : "≥";
+          return val2 == 0 ? "==" : val2 == -1 ? "≤" : "≥";
         case 1:
           return val2 == 0 ? "≥" : val2 == -1 ? "≠" : ">";
       }

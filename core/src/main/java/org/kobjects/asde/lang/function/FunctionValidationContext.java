@@ -4,10 +4,10 @@ package org.kobjects.asde.lang.function;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramValidationContext;
+import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.classifier.ClassValidationContext;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.array.ArrayType;
 import org.kobjects.typesystem.Type;
 
 import java.util.HashMap;
@@ -15,9 +15,6 @@ import java.util.HashSet;
 
 public class FunctionValidationContext {
   public enum ResolutionMode {PROGRAM, INTERACTIVE};
-  public enum BlockType {
-    ROOT, FOR, IF
-  }
 
   public final Program program;
   public HashMap<Node, Exception> errors = new HashMap<>();
@@ -38,7 +35,7 @@ public class FunctionValidationContext {
     this.program = programValidationContext.program;
     this.mode = mode;
     this.functionImplementation = functionImplementation;
-    startBlock(BlockType.ROOT);
+    startBlock(null, 0, 0);
     if (functionImplementation != null) {
       for (int i = 0; i < functionImplementation.parameterNames.length; i++) {
         currentBlock.localSymbols.put(functionImplementation.parameterNames[i], new LocalSymbol(localSymbolCount++, functionImplementation.getType().getParameterType(i), false));
@@ -55,16 +52,15 @@ public class FunctionValidationContext {
   }
 
 
-  public void startBlock(BlockType type) {
-    currentBlock = new Block(currentBlock, type);
+  public void startBlock(BlockStatement startStatement, int line, int index) {
+    currentBlock = new Block(currentBlock, startStatement, line, index);
   }
 
-  public void endBlock(BlockType type) {
-    if (type != currentBlock.type) {
-      throw new RuntimeException((currentBlock.type == BlockType.FOR ? "NEXT" : ("END " + currentBlock.type))
-          + " expected.");
-    }
+  public BlockStatement endBlock(Node endStatement, int endLine, int endIndex) {
+    BlockStatement startStatement = currentBlock.startStatement;
+    startStatement.onResolveEnd(this, endStatement, endLine, endIndex);
     currentBlock = currentBlock.parent;
+    return startStatement;
   }
 
 
@@ -155,20 +151,8 @@ public class FunctionValidationContext {
     return localSymbolCount;
   }
 
-
-  private class Block {
-    final Block parent;
-    final BlockType type;
-    private final HashMap<String, LocalSymbol> localSymbols = new HashMap<>();
-
-    Block(Block parent, BlockType blockType) {
-      this.parent = parent;
-      this.type = blockType;
-    }
-
-    LocalSymbol get(String name) {
-      LocalSymbol result = localSymbols.get(name);
-      return (result == null && parent != null) ? parent.get(name) : result;
-    }
+  public Block getCurrentBlock() {
+    return currentBlock;
   }
+
 }

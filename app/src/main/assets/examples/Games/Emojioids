@@ -1,14 +1,14 @@
 ASDE
-LET ship = screen.newSprite()
-LET gameOver = false
-LET score = 0
-LET scoreDisplay = screen.newTextBox()
-LET gameOverDisplay = screen.newTextBox()
-LET continueDisplay = screen.newTextBox()
+var  ship = screen.newSprite()
+var  gameOver = false
+var score = 0
+var scoreDisplay = screen.newTextBox()
+var gameOverDisplay = screen.newTextBox()
+var continueDisplay = screen.newTextBox()
 DIM asteroids(0) as Sprite
 
 SUB newAsteroid(Number x, Number y, Number size, Number direction, Number speed)
-10 LET asteroid = screen.newSprite()
+10 var asteroid = screen.newSprite()
 15 asteroids.append(asteroid)
 20 asteroid.face = "🥔"
 30 asteroid.x = x
@@ -19,18 +19,18 @@ SUB newAsteroid(Number x, Number y, Number size, Number direction, Number speed)
 60 asteroid.rotation = rnd() * 30
 70 asteroid.edgeMode = EdgeMode.WRAP
 100 on asteroid.collisions.length > 0 :
-103   if asteroid.face = "🥔" then
-107     let collisions = asteroid.collisions
+103   if asteroid.face == "🥔" :
+107     var collisions = asteroid.collisions
 110     for i = 0 to collisions.length - 1
-120       let other = collisions(i)
-130       if other.face = "🚀" then
+120       var other = collisions(i)
+130       if other.face == "🚀" :
 135         gameOver = true
-140       else if other.face = "🔴" and other.opacity > 0 then
+140       elif other.face == "🔴" and other.opacity > 0:
 150         other.opacity = 0
 155         breakAsteroid asteroid
-160       end if
-170     next i
-180   end if
+160       end
+170     end
+180   end
 200 end
 END SUB
 
@@ -42,15 +42,15 @@ SUB breakAsteroid(Sprite asteroid)
 20 play "💥"
 25 asteroids.remove(asteroid)
 27 score = score + 50 - asteroid.size
-30 if asteroid.size > 30 then
-35   LET angle = 60 * rnd()
+30 if asteroid.size > 30 :
+35   var angle = 60 * rnd()
 40   newAsteroid asteroid.x, asteroid.y, asteroid.size - 10, asteroid.direction + angle, asteroid.speed * 1.5
 50   newAsteroid asteroid.x, asteroid.y, asteroid.size - 10, asteroid.direction - angle, asteroid.speed * 1.5
-60 end if
+60 end
 END SUB
 
 SUB shoot()
-10 Let shot = screen.newSprite()
+10 var shot = screen.newSprite()
 15 shot.size = 5
 20 shot.face = "🔴"
 30 shot.direction = ship.angle + 45
@@ -76,29 +76,32 @@ END SUB
 263   ship.rotation = 0
 266 end
 270 on dpad.fire :
-280   if not gameOver then shoot
+280   if not gameOver : shoot; end
 290 end
 
-1000 if asteroids.length = 0 then
-1010   newAsteroid screen.width / 2, screen.height / 2, 50, rnd() * 360, rnd() * 10 + 5
-1020 endif
-1030 sleep 100
-1040 scoreDisplay.text = "Score: " + score + " #: " + asteroids.length
-1050 if not gameOver goto 1000
+1000 while True:
+1002 while not gameOver:
+1005   if asteroids.length == 0 :
+1010     newAsteroid screen.width / 2, screen.height / 2, 50, rnd() * 360, rnd() * 10 + 5
+1020   end
+1030   sleep 100
+1040   scoreDisplay.text = "Score: " + score + " #: " + asteroids.length
+1050 end
 1060 gameOverDisplay.text = "GAME OVER"
 1100 sleep 1000
 1105 continueDisplay.y = -20
 1110 continueDisplay.text = "Press fire to restart."
-1200 sleep 100
-1230 if not dpad.fire then goto 1200
+1230 while not dpad.fire:
+1235  sleep 100
+1237 end
 1240 gameOverDisplay.text = ""
 1250 continueDisplay.text = ""
 1255 score = 0
 1257 gameOver = false
 1300 for i = asteroids.length - 1 to 0 step -1
-1310   LET asteroid = asteroids(i)
+1310   var asteroid = asteroids(i)
 1320   asteroid.opacity = 0
 1330   asteroid.face = "💥"
 1330   asteroids.remove(asteroid)
-1340 next i
-1500 goto 1000
+1340 end
+1500 end

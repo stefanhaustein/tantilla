@@ -132,7 +132,6 @@ public class Program implements SymbolOwner {
     for (GlobalSymbol symbol : symbolMap.values()) {
       symbol.init(evaluationContext, initialized);
     }
-    Arrays.fill(evaluationContext.getDataPosition(), 0);
   }
 
 
@@ -315,7 +314,7 @@ public class Program implements SymbolOwner {
     } else if (type instanceof FunctionType) {
       // no init available, should error on access...
     } else {
-      symbol.initializer = new DeclarationStatement(DeclarationStatement.Kind.LET, name, new Literal(type.getDefaultValue()));
+      symbol.initializer = new DeclarationStatement(DeclarationStatement.Kind.VAR, name, new Literal(type.getDefaultValue()));
     }
     symbolMap.put(name.toLowerCase(), symbol);
 
