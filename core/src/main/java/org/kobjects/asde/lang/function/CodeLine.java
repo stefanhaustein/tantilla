@@ -4,6 +4,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.statement.OnStatement;
+import org.kobjects.asde.lang.statement.Statement;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,18 +12,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class CodeLine implements Iterable<Node> {
+public class CodeLine implements Iterable<Statement> {
   private int lineNumber;
-  private Node[] statements;
+  private Statement[] statements;
   public int indent;
 
-  public CodeLine(int lineNumber, Node... statements) {
+  public CodeLine(int lineNumber, Statement... statements) {
     this.lineNumber = lineNumber;
     this.statements = statements;
   }
 
   public CodeLine(int lineNumber, List<? extends Node> statements) {
-    this(lineNumber, statements.toArray(new Node[0]));
+    this(lineNumber, statements.toArray(new Statement[0]));
   }
 
   public void toString(AnnotatedStringBuilder sb, Map<Node, Exception> errors, boolean indent, boolean preferAscii) {
@@ -51,13 +52,13 @@ public class CodeLine implements Iterable<Node> {
     return statements.length;
   }
 
-  public Node get(int index) {
+  public Statement get(int index) {
     return statements[index];
   }
 
 
   @Override
-  public Iterator<Node> iterator() {
+  public Iterator<Statement> iterator() {
     return Arrays.asList(statements).iterator();
   }
 
@@ -73,14 +74,14 @@ public class CodeLine implements Iterable<Node> {
     lineNumber = newNumber;
   }
 
-  public void append(Node node) {
-    Node[] newStatements = new Node[statements.length + 1];
+  public void append(Statement node) {
+    Statement[] newStatements = new Statement[statements.length + 1];
     System.arraycopy(statements, 0, newStatements, 0, statements.length);
     newStatements[statements.length] = node;
     statements = newStatements;
   }
 
-  public void set(int i, Node statement) {
+  public void set(int i, Statement statement) {
     statements[i] = statement;
   }
 }

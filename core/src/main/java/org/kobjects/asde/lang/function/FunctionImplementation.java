@@ -49,13 +49,12 @@ public class FunctionImplementation implements Function, Declaration {
       int add = 0;
       CodeLine line = entry.getValue();
       for (int i = 0; i < line.length(); i++) {
-        Node statement = line.get(i);
+        Statement statement = line.get(i);
         statement.resolve(functionValidationContext, null, entry.getKey(), i);
         if (statement instanceof BlockStatement) {
           add++;
         }
-        if (statement instanceof Statement
-            && ((Statement) statement).closesBlock()) {
+        if (statement.closesBlock()) {
           indent--;
         }
       }

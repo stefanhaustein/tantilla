@@ -29,6 +29,7 @@ import org.kobjects.asde.lang.statement.OnStatement;
 import org.kobjects.asde.lang.statement.RemStatement;
 import org.kobjects.asde.lang.statement.FunctionReturnStatement;
 import org.kobjects.asde.lang.node.Identifier;
+import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.statement.UninitializedField;
 import org.kobjects.asde.lang.statement.VoidStatement;
 import org.kobjects.asde.lang.function.CodeLine;
@@ -61,7 +62,7 @@ public class StatementParser {
     return expressionParser.parse(tokenizer);
   }
 
-  void parseStatement(Tokenizer tokenizer, List<Node> result, FunctionImplementation parsingContext) {
+  void parseStatement(Tokenizer tokenizer, List<Statement> result, FunctionImplementation parsingContext) {
     String name = tokenizer.currentValue;
 
     switch (name.toLowerCase()) {
@@ -165,12 +166,12 @@ public class StatementParser {
         params.add(expressionParser.parse(tokenizer));
       } while (tokenizer.tryConsume(","));
 
-      result.add(new Apply(false, params.toArray(Node.EMPTY_ARRAY)));
-    } else if (expression instanceof Path || expression instanceof Identifier){
+      result.add(new VoidStatement(new Apply(false, params.toArray(Node.EMPTY_ARRAY))));
+    } else {//if (expression instanceof Path || expression instanceof Identifier){
       result.add(new VoidStatement(expression));
-    } else {
+    } /*else {
       result.add(expression);
-    }
+    }*/
   }
 
 
@@ -195,7 +196,7 @@ public class StatementParser {
     }
   }
 
-  private void parseDim(Tokenizer tokenizer, List<Node> result) {
+  private void parseDim(Tokenizer tokenizer, List<Statement> result) {
     tokenizer.nextToken();
     do {
       Node dimExpr = expressionParser.parse(tokenizer);
@@ -222,7 +223,7 @@ public class StatementParser {
     } while (tokenizer.tryConsume(","));
   }
 
-  private void parseConditional(Tokenizer tokenizer, ConditionStatement.Kind kind, List<Node> result) {
+  private void parseConditional(Tokenizer tokenizer, ConditionStatement.Kind kind, List<Statement> result) {
     tokenizer.nextToken();
     Node condition = expressionParser.parse(tokenizer);
     if (!tryConsume(tokenizer, ":")) {
@@ -231,7 +232,7 @@ public class StatementParser {
     result.add(new ConditionStatement(kind, condition));
   }
 
-  private Node parseOn(Tokenizer tokenizer) {
+  private OnStatement parseOn(Tokenizer tokenizer) {
     tokenizer.nextToken();
     Node expr = expressionParser.parse(tokenizer);
     if (!tryConsume(tokenizer, ":")) {
@@ -261,7 +262,7 @@ public class StatementParser {
             args.toArray(new Node[args.size()]));
   }
 
-  private Node parseFor(Tokenizer tokenizer) {
+  private ForStatement parseFor(Tokenizer tokenizer) {
     tokenizer.nextToken();
     Node assignment = expressionParser.parse(tokenizer);
     if (!(assignment instanceof RelationalOperator) || !(assignment.children[0] instanceof Identifier)
@@ -306,7 +307,7 @@ public class StatementParser {
     return new DefStatement(name, fn);
   }
 
-  private Node parseDeclaration(Tokenizer tokenizer, DeclarationStatement.Kind kind) {
+  private Statement parseDeclaration(Tokenizer tokenizer, DeclarationStatement.Kind kind) {
     tokenizer.nextToken();
     Node assignment = expressionParser.parse(tokenizer);
     if (!(assignment instanceof RelationalOperator) || !(assignment.children[0] instanceof AssignableNode)
@@ -357,7 +358,7 @@ public class StatementParser {
     if (tokenizer.currentValue.equalsIgnoreCase("var")
         || tokenizer.currentValue.equalsIgnoreCase("dim")
         || tokenizer.currentValue.equalsIgnoreCase("const")) {
-      ArrayList<Node> statements = new ArrayList<>();
+      ArrayList<Statement> statements = new ArrayList<>();
       parseStatement(tokenizer, statements, null);
       result = (AbstractDeclarationStatement) statements.get(0);
     } else if (!permitUninitialized) {
@@ -374,7 +375,7 @@ public class StatementParser {
   }
 
   public List<? extends Node> parseStatementList(Tokenizer tokenizer, FunctionImplementation parsingContext) {
-    ArrayList<Node> result = new ArrayList<>();
+    ArrayList<Statement> result = new ArrayList<>();
     Node statement;
     do {
       while (tokenizer.tryConsume(";")) {

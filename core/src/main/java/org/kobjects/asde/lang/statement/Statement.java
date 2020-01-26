@@ -20,6 +20,13 @@ public abstract class Statement extends Node {
     return Types.VOID;
   }
 
+  public int getIndent() {
+    if (block == null) {
+      return 0;
+    }
+    return block.getDepth() - (closesBlock() ? 1 : 0);
+  }
+
 
   public boolean closesBlock() {
     return false;
