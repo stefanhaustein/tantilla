@@ -37,11 +37,12 @@ public class ProgramParser {
   }
 
   public void parseProgram(BufferedReader reader) throws IOException {
-    FunctionImplementation currentFunction = program.main;
+    FunctionImplementation currentFunction = null;
     ClassImplementation currentClass = null;
     ArrayList<String> lines = new ArrayList<>();
     boolean legacyMode;
     int depth = 0;
+    int lineNumber = 0;
 
     {
       String line = reader.readLine();
@@ -70,19 +71,22 @@ public class ProgramParser {
 
     for (int i = 0; i < lines.size(); i++) {
       String line = lines.get(i);
-      System.out.println("Parsing: '" + line + "'");
+      System.out.println("Parsing: '" + line + "'; depth: " + depth);
       try {
         Tokenizer tokenizer = statementParser.createTokenizer(line);
         tokenizer.nextToken();
-        if (tokenizer.currentType == Tokenizer.TokenType.NUMBER) {
-          int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
-          tokenizer.nextToken();
+        if (currentFunction != null) {
+          if (tokenizer.currentType == Tokenizer.TokenType.NUMBER) {
+            lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
+            tokenizer.nextToken();
+          } else {
+            lineNumber+=2;
+          }
           int pos = tokenizer.currentPosition;
           try {
             List<? extends Node> statements = statementParser.parseStatementList(tokenizer, currentFunction);
-            currentFunction.setLine(new CodeLine(lineNumber, statements));
-
-            for (Node statement: statements) {
+            for (int j = 0; j < statements.size(); j++) {
+              Node statement = statements.get(j);
               if (statement instanceof BlockStatement) {
                 depth++;
               }
@@ -90,18 +94,31 @@ public class ProgramParser {
               if (statement instanceof Statement) {
                 if (((Statement) statement).closesBlock()) {
                   depth--;
+                  if (depth < 0) {
+                    if (j != statements.size() -1) {
+                      throw new RuntimeException("Unexpected end");
+                    }
+                    statements.remove(j);
+                  }
                 }
               }
             }
-
+            if (statements.size() > 0) {
+              currentFunction.setLine(new CodeLine(lineNumber, statements));
+            }
           } catch (Exception e) {
             currentFunction.setLine(new CodeLine(lineNumber, Collections.singletonList(new UnparseableStatement(line.substring(pos), e))));
           }
+          if (depth < 0) {
+            depth = 0;
+            lineNumber = 0;
+            currentFunction = null;
+          }
         } else if (tokenizer.tryConsume("end")) {
-          if (currentFunction != program.main) {
-            currentFunction = program.main;
-          } else if (currentClass != null) {
+          if (currentClass != null) {
             currentClass = null;
+          } else {
+            throw new RuntimeException("Unexpected end");
           }
         } else if (tokenizer.tryConsume("def")) {
           String functionName = tokenizer.consumeIdentifier();
