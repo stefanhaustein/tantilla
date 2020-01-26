@@ -1,4 +1,5 @@
 ASDE
+def main():
 10 var bob = screen.newSprite()
 20 bob.size = 50
 30 var dx = 0.5
@@ -19,3 +20,4 @@ ASDE
 160 dy = dy - 0.1
 170 sleep 15
 180 end
+end

@@ -14,7 +14,7 @@ import org.kobjects.asde.lang.statement.AssignStatement;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.statement.Command;
-import org.kobjects.asde.lang.statement.ConditionalStatement;
+import org.kobjects.asde.lang.statement.ConditionStatement;
 import org.kobjects.asde.lang.statement.DebuggerStatement;
 import org.kobjects.asde.lang.statement.DefStatement;
 import org.kobjects.asde.lang.statement.DimStatement;
@@ -80,20 +80,20 @@ public class StatementParser {
         return;
       case "else":
         tokenizer.nextToken();
-        result.add(new ConditionalStatement(ConditionalStatement.Kind.ELSE, new Literal(Boolean.TRUE)));
+        result.add(new ConditionStatement(ConditionStatement.Kind.ELSE, new Literal(Boolean.TRUE)));
         return;
       case "end":
         tokenizer.consumeIdentifier();
         result.add(new EndStatement());
         return;
       case "elif":
-        parseConditional(tokenizer, ConditionalStatement.Kind.ELIF, result);
+        parseConditional(tokenizer, ConditionStatement.Kind.ELIF, result);
         return;
       case "for":
         result.add(parseFor(tokenizer));
         return;
       case "if":
-        parseConditional(tokenizer, ConditionalStatement.Kind.IF, result);
+        parseConditional(tokenizer, ConditionStatement.Kind.IF, result);
         return;
       case "input":
         result.add(parseIo(IoStatement.Kind.INPUT, tokenizer));
@@ -222,13 +222,13 @@ public class StatementParser {
     } while (tokenizer.tryConsume(","));
   }
 
-  private void parseConditional(Tokenizer tokenizer, ConditionalStatement.Kind kind, List<Node> result) {
+  private void parseConditional(Tokenizer tokenizer, ConditionStatement.Kind kind, List<Node> result) {
     tokenizer.nextToken();
     Node condition = expressionParser.parse(tokenizer);
     if (!tryConsume(tokenizer, ":")) {
       throw tokenizer.exception("':' expected after '" + kind.name().toLowerCase() + "'-condition.'", null);
     }
-    result.add(new ConditionalStatement(kind, condition));
+    result.add(new ConditionStatement(kind, condition));
   }
 
   private Node parseOn(Tokenizer tokenizer) {
@@ -361,7 +361,7 @@ public class StatementParser {
       parseStatement(tokenizer, statements, null);
       result = (AbstractDeclarationStatement) statements.get(0);
     } else if (!permitUninitialized) {
-      throw tokenizer.exception("VAR, DIM or CONST expected.", null);
+      throw tokenizer.exception("var, dim or const expected.", null);
     } else {
       Type type = parseType(tokenizer); // consumeType
       String fieldName = tokenizer.consumeIdentifier();

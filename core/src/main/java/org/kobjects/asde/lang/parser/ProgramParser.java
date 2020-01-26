@@ -8,6 +8,8 @@ import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
+import org.kobjects.asde.lang.statement.BlockStatement;
+import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.statement.UnparseableStatement;
 import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.function.Types;
@@ -39,6 +41,7 @@ public class ProgramParser {
     ClassImplementation currentClass = null;
     ArrayList<String> lines = new ArrayList<>();
     boolean legacyMode;
+    int depth = 0;
 
     {
       String line = reader.readLine();
@@ -49,12 +52,15 @@ public class ProgramParser {
       while (line != null) {
         line = line.trim();
         lines.add(line);
-        String upper = line.toUpperCase();
-        if (upper.startsWith("CLASS ")) {
-          String className = line.substring(6).trim();
+        if (line.startsWith("class ")) {
+          int cut = line.lastIndexOf(':');
+          String className = line.substring(6, cut).trim();
+          System.out.println("class forward declaration: '" + className + "'");
           program.setDeclaration(className, new ClassImplementation(program));
-        } else if (upper.startsWith("INTERFACE ")) {
-          String interfaceName = line.substring(10).trim();
+        } else if (line.startsWith("interface ")) {
+          int cut = line.lastIndexOf(':');
+          String interfaceName = line.substring(10, cut).trim();
+          System.out.println("interface forward declaration: '" + interfaceName + "'");
           program.setDeclaration(interfaceName, new InterfaceImplementation(program));
         }
         line = reader.readLine();
@@ -75,10 +81,29 @@ public class ProgramParser {
           try {
             List<? extends Node> statements = statementParser.parseStatementList(tokenizer, currentFunction);
             currentFunction.setLine(new CodeLine(lineNumber, statements));
+
+            for (Node statement: statements) {
+              if (statement instanceof BlockStatement) {
+                depth++;
+              }
+              // might be both!
+              if (statement instanceof Statement) {
+                if (((Statement) statement).closesBlock()) {
+                  depth--;
+                }
+              }
+            }
+
           } catch (Exception e) {
             currentFunction.setLine(new CodeLine(lineNumber, Collections.singletonList(new UnparseableStatement(line.substring(pos), e))));
           }
-        } else if (tokenizer.tryConsume("FUNCTION") || tokenizer.tryConsume("SUB")) {
+        } else if (tokenizer.tryConsume("end")) {
+          if (currentFunction != program.main) {
+            currentFunction = program.main;
+          } else if (currentClass != null) {
+            currentClass = null;
+          }
+        } else if (tokenizer.tryConsume("def")) {
           String functionName = tokenizer.consumeIdentifier();
           program.console.updateProgress("Parsing function " + functionName);
           ArrayList<String> parameterNames = new ArrayList();
@@ -86,21 +111,24 @@ public class ProgramParser {
           currentFunction = new FunctionImplementation(program, functionType, parameterNames.toArray(new String[0]));
           if (currentClass != null) {
             currentClass.setMethod(functionName, currentFunction);
+          } else if (functionName.equals("main")) {
+            // Implicitly discarding what we have just created...
+            currentFunction = program.main;
           } else {
             program.setDeclaration(functionName, currentFunction);
           }
-        } else if (tokenizer.tryConsume("END")) {
-          if (currentFunction != program.main) {
-            currentFunction = program.main;
-          } else if (currentClass != null) {
-            currentClass = null;
-          }
-        } else if (tokenizer.tryConsume("CLASS")) {
+        } else if (tokenizer.tryConsume("class")) {
           String className = tokenizer.consumeIdentifier();
           currentClass = (ClassImplementation) program.getSymbol(className).getValue();
-        } else if (tokenizer.tryConsume("INTERFACE")) {
+          if (!tokenizer.tryConsume(":")) {
+            throw new RuntimeException("':' expected.");
+          }
+        } else if (tokenizer.tryConsume("interface")) {
           String interfaceName = tokenizer.consumeIdentifier();
           InterfaceImplementation currentInterface = (InterfaceImplementation) (program.getSymbol(interfaceName)).getValue();
+          if (!tokenizer.tryConsume(":")) {
+            throw new RuntimeException("':' expected.");
+          }
 
           i = parseInterface(currentInterface, lines, i);
 
@@ -129,10 +157,10 @@ public class ProgramParser {
       String line = lines.get(++index);
       Tokenizer tokenizer = statementParser.createTokenizer(line);
       tokenizer.nextToken();
-      if (tokenizer.tryConsume("END")) {
+      if (tokenizer.tryConsume("end")) {
         break;
       }
-      if (tokenizer.tryConsume("FUNCTION") || tokenizer.tryConsume("SUB")) {
+      if (tokenizer.tryConsume("def")) {
         String functionName = tokenizer.consumeIdentifier();
         ArrayList<String> parameterNames = new ArrayList();
         FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames);
@@ -170,6 +198,10 @@ public class ProgramParser {
     Type[] parameterTypes = parseParameterList(tokenizer, parameterNames);
 
     Type returnType = tokenizer.tryConsume("->") ? statementParser.parseType(tokenizer) : Types.VOID;
+
+    if (!tokenizer.tryConsume(":")) {
+      throw new RuntimeException("':' expected.");
+    }
 
     return new FunctionTypeImpl(returnType, parameterTypes);
   }

@@ -7,7 +7,7 @@ var gameOverDisplay = screen.newTextBox()
 var continueDisplay = screen.newTextBox()
 DIM asteroids(0) as Sprite
 
-SUB newAsteroid(Number x, Number y, Number size, Number direction, Number speed)
+def newAsteroid(Number x, Number y, Number size, Number direction, Number speed):
 10 var asteroid = screen.newSprite()
 15 asteroids.append(asteroid)
 20 asteroid.face = "🥔"
@@ -32,9 +32,9 @@ SUB newAsteroid(Number x, Number y, Number size, Number direction, Number speed)
 170     end
 180   end
 200 end
-END SUB
+end
 
-SUB breakAsteroid(Sprite asteroid)
+def breakAsteroid(Sprite asteroid):
 10 asteroid.face = "💥"
 12 asteroid.grow = 10
 14 asteroid.fade = -1
@@ -47,17 +47,18 @@ SUB breakAsteroid(Sprite asteroid)
 40   newAsteroid asteroid.x, asteroid.y, asteroid.size - 10, asteroid.direction + angle, asteroid.speed * 1.5
 50   newAsteroid asteroid.x, asteroid.y, asteroid.size - 10, asteroid.direction - angle, asteroid.speed * 1.5
 60 end
-END SUB
+end
 
-SUB shoot()
+def shoot():
 10 var shot = screen.newSprite()
 15 shot.size = 5
 20 shot.face = "🔴"
 30 shot.direction = ship.angle + 45
 40 shot.speed = 200
 50 play "🔫"
-END SUB
+end
 
+def main():
 10 scoreDisplay.yAlign = YAlign.TOP
 20 scoreDisplay.xAlign = XAlign.LEFT
 30 scoreDisplay.x = 5
@@ -105,3 +106,4 @@ END SUB
 1330   asteroids.remove(asteroid)
 1340 end
 1500 end
+end

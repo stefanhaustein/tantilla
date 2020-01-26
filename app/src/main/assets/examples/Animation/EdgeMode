@@ -1,4 +1,5 @@
 ASDE
+def main():
 100 var ball = screen.newSprite()
 110 ball.face = "🎱"
 115 ball.size = 30
@@ -15,3 +16,4 @@ ASDE
 230 ghost.dx = 13
 240 ghost.dy = 7
 250 ghost.say "EdgeMode.WRAP"
+end

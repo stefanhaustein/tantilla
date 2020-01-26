@@ -21,6 +21,10 @@ public abstract class Statement extends Node {
   }
 
 
+  public boolean closesBlock() {
+    return false;
+  }
+
   @Override
   public void resolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
     block = resolutionContext.getCurrentBlock();

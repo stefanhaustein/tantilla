@@ -6,7 +6,7 @@ const SCALE = 0.5e-9
 
 const bodies = {newBody(1.99e30, 0, 0, "🟡", 12), newBody( 3.3e23, 58e9, 47.36e3, "🌕", 3), newBody( 4.87e24, 108e9, 35e3, "🟤", 6), newBody( 5.97e24, 150e9, 29.8e3, "🌍", 6)}
 
-CLASS Body
+class Body:
 var mass = 0
 var x = 0
 var y = 0
@@ -16,7 +16,7 @@ var fx = 0
 var fy = 0
 var sprite = screen.newSprite()
 
-SUB addAttraction(Body other)
+def addAttraction(Body other):
 10 var dx = other.x - x
 20 var dy = other.y - y
 30 var r2 = dx * dx + dy * dy
@@ -24,9 +24,9 @@ SUB addAttraction(Body other)
 50 var th = atan2(dy, dx)
 60 fx = fx + f * cos(th)
 70 fy = fy + f * sin(th)
-END SUB
+end
 
-SUB update(Number dt)
+def update(Number dt):
 10 vx = vx + dt * fx / mass
 20 vy = vy + dt * fy / mass
 30 x = x + vx * dt
@@ -35,12 +35,11 @@ SUB update(Number dt)
 60 sprite.y = y * SCALE
 70 fx = 0
 80 fy = 0
-END SUB
+end
 
-END CLASS
+end
 
-
-FUNCTION newBody(Number mass, Number distance, Number velocity, String face, Number size) -> Body
+def newBody(Number mass, Number distance, Number velocity, String face, Number size) -> Body:
 10 var planet = Body{}
 20 planet.mass = mass
 30 planet.x = distance
@@ -48,7 +47,9 @@ FUNCTION newBody(Number mass, Number distance, Number velocity, String face, Num
 50 planet.sprite.size = size
 60 planet.sprite.face = face
 70 return planet
-END FUNCTION
+end
+
+def main():
 100 while true:
 110  for i = 0 to bodies.length - 1
 120   for j = 0 to bodies.length - 1
@@ -60,4 +61,4 @@ END FUNCTION
 180  end
 190  sleep 16
 200 end
-
+end

@@ -28,4 +28,9 @@ public class EndStatement extends Statement {
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     appendLinked(asb, "end", errors);
   }
+
+  @Override
+  public boolean closesBlock() {
+    return true;
+  }
 }

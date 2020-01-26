@@ -14,16 +14,16 @@ LET score = 0
 LET rows = 0
 LET gameOver = false
 
-FUNCTION checkPosition(Number x, Number y) -> Number
+def checkPosition(Number x, Number y) -> Number:
 100 FOR i = 0 TO 3
 110   IF grid(x + pieceX(i), y + pieceY(i)) <> 0 :
 112     RETURN 0
 114   ENDIF
 120 NEXT i
 130 RETURN 1
-END FUNCTION
+end
 
-SUB drawScore()
+def drawScore():
 100 pen.fillColor = 0xff888888
 110 pen.clear 40, -10, 60, 60
 120 pen.write 40, 40, "Rows:"
@@ -31,30 +31,30 @@ SUB drawScore()
 140 pen.write 40, 10, "Score:"
 150 pen.write 40, 0, "" + score + "  "
 160 pen.strokeColor = 0
-END SUB
+end
 
-SUB setColor(Number c)
+def setColor(Number c):
 5 # Store in array?
 10 if c = 1 :
 15   pen.fillColor = 0xff0000ff # blue J
-20 else if c = 2 :
+20 elif c = 2 :
 25   pen.fillColor = 0xff00ff00 # green S
-30 else if c = 3 :
+30 elif c = 3 :
 35   pen.fillColor = 0xffff8800 # orange L
-40 else if c = 4 :
+40 elif c = 4 :
 45   pen.fillColor = 0xffff0000 # red Z
-50 else if c = 5 :
+50 elif c = 5 :
 55   pen.fillColor = 0xffff00ff # violet T
-60 else if c = 6 :
+60 elif c = 6 :
 65   pen.fillColor = 0xffeeee00 # yellow O
-70 else if c = 7 :
+70 elif c = 7 :
 75   pen.fillColor = 0xff00ffff # cyan I
-80 else if c = 8 :
+80 elif c = 8 :
 85    pen.fillColor = 0xff888888 # border
-90 endif
-END SUB
+90 end
+end
 
-SUB drawPiece()
+def drawPiece():
 100 setColor pc
 110 FOR i = 0 TO 3
 120  let x = px0 + pieceX(i)
@@ -62,66 +62,66 @@ SUB drawPiece()
 140  grid(x, y) = pc
 150  pen.rect x * 8 - 69, 91 - y * 8, 7, 7
 160 NEXT i
-END SUB
+end
 
-SUB erasePiece()
-100 FOR i = 0 TO 3
+def erasePiece():
+100 for i = 0 TO 3
 110   let x = px0 + pieceX(i)
 120   let y = py0 + pieceY(i)
 130   grid(x, y) = 0
 140   pen.clear x * 8 - 70, 90 - y * 8, 8, 8
-150 NEXT i
-END SUB
+150 end
+end
 
-SUB definePiece()
+def definePiece():
 210 FOR i = 0 TO 3
 220   pieceX(i) = allPieces(pc - 1, i * 2)
 230   pieceY(i) = allPieces(pc - 1, i * 2 + 1)
-240 NEXT i
-END SUB
+240 end
+end
 
-SUB drawAll()
+def drawAll():
 100 FOR y = 0 to 20
 120  FOR x = 1 to 12
 130    let c = grid(x, y)
 140    if c <> 0 :
 141      setColor c
 142      pen.rect x * 8 - 69, 91 - y * 8, 7, 7
-143    ELSE
+143    else:
 147      pen.clear x * 8 - 70, 90 - y * 8, 8, 8
-148    endif
-150  NEXT x
-160 NEXT y
-END SUB
+148    end
+150  end
+160 end
+end
 
-SUB dropGrid(Number cy)
+def dropGrid(Number cy):
 100 for x = 2 to 11
 110   for y = cy to 2 step -1
 120     grid(x, y) = grid(x, y -1)
 130   next y
 140 next x
 150 drawAll
-END SUB
+end
 
-SUB checkGrid()
+def checkGrid():
 100 let dropCount = 0
-110 FOR cy = 0 to 19
+110 for cy = 0 to 19
 120   let row = 0
-130   FOR x = 2 to 11
+130   for x = 2 to 11
 140     if grid(x,cy) <> 0 :
 141       row = row + 1
-142     END IF
-150   NEXT x
+142     end
+150   end
 160   if row = 10 :
 162     dropGrid cy
 164     dropCount = dropCount + 1
-166   ENDIF
-170 next cy
+166   end
+170 end
 180 score = score + dropCount * dropCount * 10
 190 rows = rows + dropCount
-END SUB
+end
 
-SUB newPiece()
+def newPiece():
 10 checkGrid
 20 drawScore
 90 # preview stuff
@@ -142,25 +142,25 @@ SUB newPiece()
 280 if checkPosition(px0, py0) = 0 :
 290   gameOver = true
 320 end
-END SUB
+end
 
-SUB moveRight()
+def moveRight()
 110 erasePiece
 120 if checkPosition(px0 + 1, py0) :
 122   px0 = px0 + 1
 124 end
 130 drawPiece
-END SUB
+end
 
-SUB moveLeft()
+def moveLeft()
 110 erasePiece
 120 if checkPosition(px0 - 1, py0) :
 122   px0 = px0 - 1
 124 end if
 130 drawPiece
-END SUB
+end
 
-SUB moveDown()
+def moveDown()
 110 erasePiece
 120 let ok = checkPosition(px0, py0 + 1)
 125 if ok :
@@ -171,9 +171,9 @@ SUB moveDown()
 150   newPiece()
 160   drawPiece()
 170 end
-END SUB
+end
 
-SUB rotate()
+def rotate()
 100 erasePiece
 105 let mx = 2
 107 if pc > 5 : mx = 3
@@ -192,8 +192,9 @@ SUB rotate()
 230   pieceY(i) = mx - x
 240 NEXT i
 250 drawPiece
-END SUB
+end
 
+def main():
 100 while True:
 101 cls
 110 # Based on David Murray's code, see
@@ -239,3 +240,4 @@ END SUB
 810 sleep 100
 820 end
 830 end
+end

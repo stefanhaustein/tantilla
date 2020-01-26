@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.function;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.statement.BlockStatement;
-import org.kobjects.asde.lang.statement.ConditionalStatement;
+import org.kobjects.asde.lang.statement.ConditionStatement;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -13,9 +13,7 @@ import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.runtime.WrappedExecutionException;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 import org.kobjects.asde.lang.statement.EndStatement;
-import org.kobjects.asde.lang.statement.ForStatement;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.statement.OnStatement;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.PropertyDescriptor;
 
@@ -55,13 +53,10 @@ public class FunctionImplementation implements Function, Declaration {
         statement.resolve(functionValidationContext, null, entry.getKey(), i);
         if (statement instanceof BlockStatement) {
           add++;
-        } else if (statement instanceof EndStatement
-            || (statement instanceof ConditionalStatement && ((ConditionalStatement) statement).kind != ConditionalStatement.Kind.IF)) {
-          if (add > 0) {
-            add--;
-          } else {
-            indent--;
-          }
+        }
+        if (statement instanceof Statement
+            && ((Statement) statement).closesBlock()) {
+          indent--;
         }
       }
       line.setIndent(indent);
@@ -128,10 +123,8 @@ public class FunctionImplementation implements Function, Declaration {
 
   public synchronized void toString(AnnotatedStringBuilder sb, String name, Map<Node, Exception> errors) {
     boolean sub = type.getReturnType() == Types.VOID;
-    String kind = sub ? "SUB" : "FUNCTION";
     if (name != null) {
-      sb.append(kind);
-      sb.append(' ');
+      sb.append("def ");
       sb.append(name);
       sb.append("(");
       for (int i = 0; i < parameterNames.length; i++) {
@@ -147,7 +140,7 @@ public class FunctionImplementation implements Function, Declaration {
         sb.append(" -> ");
         sb.append(type.getReturnType().toString());
       }
-      sb.append('\n');
+      sb.append(":\n");
     }
 
     for (Map.Entry<Integer, CodeLine> entry : code.entrySet()) {
@@ -158,7 +151,7 @@ public class FunctionImplementation implements Function, Declaration {
     }
 
     if (name != null) {
-      sb.append("END ").append(kind).append("\n\n");
+      sb.append("end\n\n");
     }
   }
 

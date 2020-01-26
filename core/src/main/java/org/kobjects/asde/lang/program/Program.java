@@ -42,12 +42,6 @@ import java.util.TimerTask;
 import java.util.TreeMap;
 
 
-/**
- * Full implementation of <a href="http://goo.gl/kIIPc0">ECMA-55</a> with
- * some common additions.
- * <p>
- * Example for mixing the expresion parser with "outer" parsing.
- */
 public class Program implements SymbolOwner {
 
   public static final String INVISIBLE_STRING = new String();
@@ -165,12 +159,12 @@ public class Program implements SymbolOwner {
   }
 
   public synchronized Iterable<GlobalSymbol> getSymbols() {
-      return new ArrayList<>(symbolMap.values());
+    return new ArrayList<>(symbolMap.values());
   }
 
   @Override
   public synchronized GlobalSymbol getSymbol(String name) {
-      return symbolMap.get(name.toLowerCase());
+    return symbolMap.get(name.toLowerCase());
   }
 
   /**
@@ -206,24 +200,24 @@ public class Program implements SymbolOwner {
 
   @Override
   public String toString() {
-      AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-      toString(asb);
-      return asb.toString();
+    AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
+    toString(asb);
+    return asb.toString();
   }
 
-    public void save(ProgramReference programReference) throws IOException {
-      if (!programReference.urlWritable) {
-          throw new IOException("Can't write to URL: " + programReference.url);
-      }
-      if (!programReference.equals(reference)) {
-        reference = programReference;
-        sendProgramEvent(ProgramListener.Event.RENAMED);
-      }
-      OutputStreamWriter writer = new OutputStreamWriter(console.openOutputStream(programReference.url), "utf8");
-      writer.write(toString());
-      writer.close();
-      hasUnsavedChanges = false;
-   }
+  public void save(ProgramReference programReference) throws IOException {
+    if (!programReference.urlWritable) {
+      throw new IOException("Can't write to URL: " + programReference.url);
+    }
+    if (!programReference.equals(reference)) {
+      reference = programReference;
+      sendProgramEvent(ProgramListener.Event.RENAMED);
+    }
+    OutputStreamWriter writer = new OutputStreamWriter(console.openOutputStream(programReference.url), "utf8");
+    writer.write(toString());
+    writer.close();
+    hasUnsavedChanges = false;
+  }
 
 
   /**
@@ -265,9 +259,9 @@ public class Program implements SymbolOwner {
 
 
     } finally {
-       console.endProgress();
-        System.out.println("########  lading set to false");
-       loading = false;
+      console.endProgress();
+      System.out.println("########  lading set to false");
+      loading = false;
 
       // change notification triggers validation
       sendProgramEvent(ProgramListener.Event.LOADED);
@@ -277,12 +271,12 @@ public class Program implements SymbolOwner {
   }
 
   public synchronized void validate() {
-        ProgramValidationContext context = new ProgramValidationContext(this);
-        for (Map.Entry<String,GlobalSymbol> entry : new TreeMap<>(symbolMap).entrySet()) {
-            context.startChain(entry.getKey());
-            entry.getValue().validate(context);
-        }
-        mainSymbol.validate(context);
+    ProgramValidationContext context = new ProgramValidationContext(this);
+    for (Map.Entry<String, GlobalSymbol> entry : new TreeMap<>(symbolMap).entrySet()) {
+      context.startChain(entry.getKey());
+      entry.getValue().validate(context);
+    }
+    mainSymbol.validate(context);
   }
 
   public synchronized GlobalSymbol addBuiltin(String name, Object value) {
@@ -326,48 +320,48 @@ public class Program implements SymbolOwner {
 
 
   public synchronized void setDeclaration(String name, Declaration declaration) {
-        GlobalSymbol symbol = getSymbol(name);
-        if (symbol == null) {
-            symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, declaration);
-            symbolMap.put(name.toLowerCase(), symbol);
-        } else {
-            if (symbol.getScope() == GlobalSymbol.Scope.BUILTIN) {
-                throw new RuntimeException("Can't overwrite builtin '" + name + "'");
-            }
-            symbol.value = declaration;
-        }
-        symbol.setConstant(true);
-        declaration.setDeclaringSymbol(symbol);
+    GlobalSymbol symbol = getSymbol(name);
+    if (symbol == null) {
+      symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, declaration);
+      symbolMap.put(name.toLowerCase(), symbol);
+    } else {
+      if (symbol.getScope() == GlobalSymbol.Scope.BUILTIN) {
+        throw new RuntimeException("Can't overwrite builtin '" + name + "'");
+      }
+      symbol.value = declaration;
+    }
+    symbol.setConstant(true);
+    declaration.setDeclaringSymbol(symbol);
 
-        notifySymbolChanged(symbol);
+    notifySymbolChanged(symbol);
   }
 
   public synchronized void setPersistentInitializer(String name, AbstractDeclarationStatement expr) {
-      GlobalSymbol symbol = getSymbol(name);
-      if (symbol == null || symbol.scope == GlobalSymbol.Scope.TRANSIENT) {
-          symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, null);
-          symbolMap.put(name.toLowerCase(), symbol);
-      } else if (symbol.getScope() == GlobalSymbol.Scope.BUILTIN) {
-          throw new RuntimeException("Can't overwrite builtin '" + name + "'");
-      }
-      symbol.initializer = expr;
-      symbol.setConstant(expr instanceof DeclarationStatement && ((DeclarationStatement) expr).kind == DeclarationStatement.Kind.CONST);
-      notifyProgramChanged();
+    GlobalSymbol symbol = getSymbol(name);
+    if (symbol == null || symbol.scope == GlobalSymbol.Scope.TRANSIENT) {
+      symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, null);
+      symbolMap.put(name.toLowerCase(), symbol);
+    } else if (symbol.getScope() == GlobalSymbol.Scope.BUILTIN) {
+      throw new RuntimeException("Can't overwrite builtin '" + name + "'");
+    }
+    symbol.initializer = expr;
+    symbol.setConstant(expr instanceof DeclarationStatement && ((DeclarationStatement) expr).kind == DeclarationStatement.Kind.CONST);
+    notifyProgramChanged();
   }
 
   public void setLine(StaticSymbol symbol, CodeLine codeLine) {
-        if (symbol.getValue() instanceof FunctionImplementation) {
-            FunctionImplementation functionImplementation = (FunctionImplementation) symbol.getValue();
-            functionImplementation.setLine(codeLine);
-            notifySymbolChanged(symbol);
-        }
+    if (symbol.getValue() instanceof FunctionImplementation) {
+      FunctionImplementation functionImplementation = (FunctionImplementation) symbol.getValue();
+      functionImplementation.setLine(codeLine);
+      notifySymbolChanged(symbol);
+    }
   }
 
   public void deleteLine(StaticSymbol symbol, int line) {
-        if (symbol.getValue() instanceof FunctionImplementation) {
-            FunctionImplementation functionImplementation = (FunctionImplementation) symbol.getValue();
-            functionImplementation.deleteLine(line);
-        }
+    if (symbol.getValue() instanceof FunctionImplementation) {
+      FunctionImplementation functionImplementation = (FunctionImplementation) symbol.getValue();
+      functionImplementation.deleteLine(line);
+    }
   }
 
 
