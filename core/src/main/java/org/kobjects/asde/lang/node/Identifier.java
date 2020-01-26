@@ -5,9 +5,6 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
-import org.kobjects.asde.lang.array.ArrayType;
-import org.kobjects.asde.lang.function.Types;
-import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -21,12 +18,12 @@ public class Identifier extends SymbolNode {
     this.name = name;
   }
 
-  public void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+  public void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     resolved = resolutionContext.resolveVariableAccess(name, null);
   }
 
   @Override
-  public void resolveForAssignment(FunctionValidationContext resolutionContext, Node parent, Type type, int line, int index) {
+  public void resolveForAssignment(FunctionValidationContext resolutionContext, Node parent, Type type, int line) {
     resolved = resolutionContext.resolveVariableAssignment(name, type);
   }
 

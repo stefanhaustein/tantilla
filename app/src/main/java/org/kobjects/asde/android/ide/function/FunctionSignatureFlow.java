@@ -364,7 +364,7 @@ public class FunctionSignatureFlow {
 
     RemStatement remStatement = new RemStatement("This comment should document this function.");
 
-    functionImplementation.setLine(new CodeLine(10, remStatement));
+    functionImplementation.appendStatement(remStatement);
 
     if (mode == Mode.CREATE_MEMBER) {
       classImplementation.setMethod(name, functionImplementation);

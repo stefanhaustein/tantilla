@@ -26,17 +26,17 @@ public abstract class Node {
   public void addPropertyChangeListener(EvaluationContext evaluationContext, PropertyChangeListener listener) {
   }
 
-  protected abstract void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index);
+  protected abstract void onResolve(FunctionValidationContext resolutionContext, Node parent, int line);
 
-  public void resolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+  public void resolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     for (Node child: children) {
-      child.resolve(resolutionContext, this, line, index);
+      child.resolve(resolutionContext, this, line);
    /*   if (child.returnType() == null) {
         resolutionContext.addError(child, new RuntimeException("return type null: " + child));
       }*/
     }
     try {
-      onResolve(resolutionContext, parent, line, index);
+      onResolve(resolutionContext, parent, line);
     } catch (Exception e) {
       resolutionContext.addError(this, e);
     }

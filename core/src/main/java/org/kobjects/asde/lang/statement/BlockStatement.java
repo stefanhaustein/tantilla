@@ -15,6 +15,6 @@ public abstract class BlockStatement extends Statement {
     super(children);
   }
 
-  public abstract void onResolveEnd(FunctionValidationContext resolutionContext, Node parent, int line, int index);
+  public abstract void onResolveEnd(FunctionValidationContext resolutionContext, Node parent, int line);
   abstract void evalEnd(EvaluationContext context);
 }

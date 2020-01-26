@@ -49,13 +49,13 @@ public class Apply extends AssignableNode {
 
 
   // Resolves "base" node last, which allows identifiers to access parameter types
-  public void resolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+  public void resolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     for (int i = 1; i < children.length; i++) {
-      children[i].resolve(resolutionContext, this, line, index);
+      children[i].resolve(resolutionContext, this, line);
     }
-    children[0].resolve(resolutionContext, this, line, index);
+    children[0].resolve(resolutionContext, this, line);
     try {
-      onResolve(resolutionContext, parent, line, index);
+      onResolve(resolutionContext, parent, line);
     } catch (Exception e) {
       resolutionContext.addError(this, e);
     }
@@ -63,8 +63,8 @@ public class Apply extends AssignableNode {
 
 
   @Override
-  public void resolveForAssignment(FunctionValidationContext resolutionContext, Node parent, Type type, int line, int index) {
-    resolve(resolutionContext, parent, line, index);
+  public void resolveForAssignment(FunctionValidationContext resolutionContext, Node parent, Type type, int line) {
+    resolve(resolutionContext, parent, line);
 
     if (!(children[0].returnType() instanceof ArrayType)) {
       throw new RuntimeException("Array expected");
@@ -97,7 +97,7 @@ public class Apply extends AssignableNode {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     if (children[0].returnType() instanceof ArrayType) {
       resolvedKind = Kind.ARRAY_ACCESS;
       for (int i = 1; i < children.length; i++) {

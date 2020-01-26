@@ -7,6 +7,7 @@ import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramControl;
 import org.kobjects.asde.lang.program.ProgramValidationContext;
+import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 import org.kobjects.asde.lang.node.Node;
@@ -71,9 +72,22 @@ public class Shell {
                     tokenizer.nextToken();
                     if (tokenizer.currentType == Tokenizer.TokenType.IDENTIFIER
                             || "?".equals(tokenizer.currentValue)) {
-                        program.setLine(currentFunction, new CodeLine(lineNumber, program.parser.parseStatementList(tokenizer, (FunctionImplementation) currentFunction.getValue())));
+
+                        List<Statement> parsed = program.parser.parseStatementList(tokenizer, (FunctionImplementation) currentFunction.getValue());
+                        boolean replace = (lineNumber & 1) == 0;
+                        lineNumber = (lineNumber - 1) / 2;
+                        for (Statement statement : parsed) {
+                            if (replace) {
+                                ((FunctionImplementation) currentFunction.getValue()).setLine(lineNumber, statement);
+                                replace = false;
+                            } else {
+                                ((FunctionImplementation) currentFunction.getValue()).insertLine(lineNumber, statement);
+                            }
+                            lineNumber++;
+                        }
+
                         // Line added, done here.
-                        break;
+                       break;
                     }
                     // Not
                     tokenizer = program.parser.createTokenizer(line);
@@ -81,13 +95,17 @@ public class Shell {
                 }
                 // Fall-through intended
             default:
-                List<? extends Node> statements = program.parser.parseStatementList(tokenizer, null);
+                List<Statement> statements = program.parser.parseStatementList(tokenizer, null);
 
                 CodeLine codeLine = new CodeLine(-2, statements);
                 program.processStandaloneDeclarations(codeLine);
 
                 FunctionImplementation wrapper = new FunctionImplementation(program, new FunctionTypeImpl(Types.VOID));
-                wrapper.setLine(codeLine);
+
+                for (Statement statement : statements) {
+                    wrapper.appendStatement(statement);
+                }
+
                 ProgramValidationContext programValidationContext = new ProgramValidationContext(program);
                 FunctionValidationContext functionValidationContext = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.INTERACTIVE, wrapper);
                 wrapper.validate(functionValidationContext);

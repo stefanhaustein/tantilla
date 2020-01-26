@@ -22,7 +22,7 @@ public class DimStatement extends AbstractDeclarationStatement {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     for (Node node : children) {
       if (node.returnType() != Types.NUMBER) {
         resolutionContext.addError(node, new RuntimeException("Numerical type required for DIM"));

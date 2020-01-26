@@ -25,6 +25,7 @@ import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.lang.runtime.ForcedStopException;
 import org.kobjects.asde.lang.io.Format;
 import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.runtime.WrappedExecutionException;
 import org.kobjects.asde.lang.io.Console;
@@ -237,7 +238,7 @@ public class AndroidConsole implements Console {
       mainActivity.controlView.codeEditText.setText("");
       if (functionView != null) {
         FunctionImplementation functionImplementation = functionView.functionImplementation;
-        CodeLine codeLine = functionImplementation.getExactLine(line);
+        Statement codeLine = functionImplementation.getLine((line-2)/2);
         if (codeLine != null) {
           mainActivity.controlView.codeEditText.append(line + " " + codeLine);
           return;

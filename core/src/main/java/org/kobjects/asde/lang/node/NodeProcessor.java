@@ -6,6 +6,7 @@ import org.kobjects.asde.lang.classifier.ClassPropertyDescriptor;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.Program;
+import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.function.CodeLine;
 
@@ -25,14 +26,8 @@ public class NodeProcessor {
   }
 
   public void processCallableUnit(FunctionImplementation functionImplementation) {
-    for (CodeLine codeLine : functionImplementation.allLines()) {
-      processCodeLine(codeLine);
-    }
-  }
-
-  public void processCodeLine(CodeLine codeLine) {
-    for (Node node : codeLine) {
-      processNode(node);
+    for (Statement statement : functionImplementation.allLines()) {
+      processNode(statement);
     }
   }
 

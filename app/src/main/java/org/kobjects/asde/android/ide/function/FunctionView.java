@@ -17,6 +17,7 @@ import org.kobjects.asde.android.ide.symbol.DeleteFlow;
 import org.kobjects.asde.android.ide.symbol.RenameFlow;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.function.Types;
@@ -52,16 +53,6 @@ public class FunctionView extends SymbolView {
         });
         menu.add("Change Signature").setOnMenuItemClickListener(item -> {
           FunctionSignatureFlow.changeSignature(mainActivity, symbol, functionImplementation);
-          return true;
-        });
-      }
-      MenuItem renumberMenuItem = menu.add("Renumber");
-      int[] lineNumberRange = functionImplementation.getLineNumberRange();
-      if (functionImplementation.getLineNumberRange() == null) {
-        renumberMenuItem.setEnabled(false);
-      } else {
-        renumberMenuItem.setOnMenuItemClickListener(item -> {
-          RenumberFlow.start(mainActivity, symbol, lineNumberRange[0], lineNumberRange[1]);
           return true;
         });
       }
@@ -108,7 +99,7 @@ public class FunctionView extends SymbolView {
 
     int updated = 0;
 
-    for (CodeLine codeLine : functionImplementation.allLines()) {
+    for (Statement statement: functionImplementation.allLines()) {
       if (index >= syncedTo) {
         updated++;
         CodeLineView codeLineView;
@@ -118,7 +109,7 @@ public class FunctionView extends SymbolView {
           codeLineView = new CodeLineView(mainActivity, index % 2 == 1);
           codeView.addView(codeLineView);
         }
-        codeLineView.setCodeLine(codeLine, symbol.getErrors());
+        codeLineView.setCodeLine(index, statement, symbol.getErrors());
       }
       index++;
       if (updated > 8) {
@@ -233,6 +224,7 @@ public class FunctionView extends SymbolView {
     if (mainActivity.copyBuffer.size() == 0) {
       menu.add("Paste").setEnabled(false);
     } else {
+      /*
       Menu insertMenu = menu.addSubMenu("Paste");
       insertMenu.add("Before").setOnMenuItemClickListener(item -> {
         int targetLine = selection.getStartIndex() == 0 ? 1 : getCodeLineView(selection.getStartIndex() - 1).lineNumber + 1;
@@ -244,13 +236,10 @@ public class FunctionView extends SymbolView {
         InsertFlow.start(mainActivity, symbol, targetLine);
         return true;
       }));
+
+       */
     }
 
-
-    menu.add("Renumber").setOnMenuItemClickListener(item -> {
-      RenumberFlow.start(mainActivity, symbol, getCodeLineView(selection.getStartIndex()).lineNumber, getCodeLineView(selection.getEndIndex() - 1).lineNumber);
-      return true;
-    });
     menu.add("Delete").setOnMenuItemClickListener(item -> {
       selection.startDeleteFlow();
       return true;
@@ -288,10 +277,10 @@ public class FunctionView extends SymbolView {
       AlertDialog.Builder alertBuilder = new AlertDialog.Builder(mainActivity);
       alertBuilder.setTitle("Confirm Delete");
       if (firstSelectedIndex == lastSelectedIndex) {
-        alertBuilder.setMessage("Delete line " + getCodeLineView(firstSelectedIndex).lineNumber + "'?");
+        alertBuilder.setMessage("Delete line " + getCodeLineView(firstSelectedIndex).displayedLineNumer + "'?");
       } else {
-        alertBuilder.setMessage("Delete lines " + getCodeLineView(getStartIndex()).lineNumber + " - " +
-            getCodeLineView(getEndIndex() - 1).lineNumber + "?");
+        alertBuilder.setMessage("Delete lines " + getCodeLineView(getStartIndex()).displayedLineNumer + " - " +
+            getCodeLineView(getEndIndex() - 1).displayedLineNumer + "?");
       }
       alertBuilder.setNegativeButton("Cancel", null);
       alertBuilder.setPositiveButton("Delete", (a, b) -> {

@@ -20,6 +20,7 @@ import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.statement.Statement;
 
 import java.util.Map;
 
@@ -29,6 +30,7 @@ public class CodeLineView extends LinearLayout {
   boolean odd;
   boolean highlighted;
   int lineNumber;
+  int displayedLineNumer;
   MainActivity context;
 
   public CodeLineView(MainActivity context, boolean odd) {
@@ -39,6 +41,7 @@ public class CodeLineView extends LinearLayout {
     lineNumberView = new AppCompatTextView(context);
     lineNumberView.setGravity(Gravity.TOP | Gravity.RIGHT);
     lineNumberView.setTypeface(Typeface.MONOSPACE);
+    lineNumberView.setAlpha(0.5f);
 
     statementView = new EmojiTextView(context);
     statementView.setTypeface(Typeface.MONOSPACE);
@@ -67,17 +70,19 @@ public class CodeLineView extends LinearLayout {
     updateColor();
   }
 
-  void setCodeLine(CodeLine codeLine, Map<Node, Exception> errors) {
-    this.lineNumber = codeLine.getNumber();
-    lineNumberView.setText(lineNumber + " ");
+  void setCodeLine(int index, Statement statement, Map<Node, Exception> errors) {
+    this.lineNumber = index;
+    this.displayedLineNumer = 2 + index * 2;
+    lineNumberView.setText(displayedLineNumer + " ");
 
     AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-    codeLine.toString(asb, errors, false, false);
+    int indent = statement.getIndent();
+    statement.toString(asb, errors, false);
     SpannableString spannable = AnnotatedStringConverter.toSpanned(context, asb.build(), lineNumber);
 
     int factor = Math.round(statementView.getTextSize() / 2);
 
-    spannable.setSpan(new LeadingMarginSpan.Standard(codeLine.indent * factor, (codeLine.indent + 2) * factor),0,spannable.length(),0);
+    spannable.setSpan(new LeadingMarginSpan.Standard(indent * factor, (indent + 2) * factor),0,spannable.length(),0);
 
     statementView.setTextScaleX(0.9f);
     statementView.setText(spannable);

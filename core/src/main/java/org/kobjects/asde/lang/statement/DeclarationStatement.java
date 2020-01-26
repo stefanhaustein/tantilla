@@ -22,7 +22,7 @@ public class DeclarationStatement extends AbstractDeclarationStatement {
     this.kind = kind;
   }
 
-  public void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+  public void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     resolved = resolutionContext.resolveVariableDeclaration(varName, children[0].returnType(), kind == Kind.CONST);
   }
 

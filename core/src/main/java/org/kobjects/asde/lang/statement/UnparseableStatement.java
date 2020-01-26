@@ -4,8 +4,6 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.function.Types;
-import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
@@ -20,7 +18,7 @@ public class UnparseableStatement extends Statement {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     throw error;
   }
 

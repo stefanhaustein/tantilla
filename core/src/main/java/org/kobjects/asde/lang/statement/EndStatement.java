@@ -4,7 +4,6 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.function.CodeLine;
 
 import java.util.Map;
 
@@ -13,8 +12,8 @@ public class EndStatement extends Statement {
   BlockStatement resolvedStartStatement;
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
-    resolvedStartStatement = resolutionContext.endBlock(parent, line, index);
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+    resolvedStartStatement = resolutionContext.endBlock(parent, line);
   }
 
   @Override

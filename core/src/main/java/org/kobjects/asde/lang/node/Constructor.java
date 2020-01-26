@@ -60,7 +60,7 @@ public class Constructor extends Node {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     GlobalSymbol symbol = resolutionContext.program.getSymbol(name);
     if (symbol == null) {
       throw new RuntimeException("'" + name + "' is not defined");

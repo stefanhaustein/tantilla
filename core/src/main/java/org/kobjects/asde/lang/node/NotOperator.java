@@ -17,7 +17,7 @@ public class NotOperator extends Node {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     boolean boolMode = Types.BOOLEAN == children[0].returnType();
     if (!boolMode && Types.NUMBER != children[0].returnType()) {
       throw new RuntimeException("Boolean or Number parameter expected.");

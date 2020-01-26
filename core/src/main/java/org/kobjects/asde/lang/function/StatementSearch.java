@@ -4,6 +4,7 @@ import org.kobjects.asde.lang.node.Node;
 
 public abstract class StatementSearch implements StatementMatcher {
 
+  /*
   final FunctionImplementation function;
 
   public int lineNumber;
@@ -30,5 +31,5 @@ public abstract class StatementSearch implements StatementMatcher {
       index = 0;
     }
     return null;
-  }
+  }*/
 }

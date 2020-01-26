@@ -17,9 +17,7 @@ public class ConditionStatement extends BlockStatement {
     }
 
     int resolvedEndLine;
-    int resolvedEndIndex;
     int resolvedLine;
-    int resolvedIndex;
     ConditionStatement resolvedPrevious;
     ConditionStatement resolvedNext;
 
@@ -35,12 +33,10 @@ public class ConditionStatement extends BlockStatement {
 
 
     @Override
-    protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+    protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
         resolvedLine = line;
-        resolvedIndex = index;
         resolvedPrevious = null;
         resolvedNext = null;
-        resolvedEndIndex = Integer.MAX_VALUE;
         resolvedEndLine = Integer.MAX_VALUE;
 
         if (kind == Kind.IF) {
@@ -53,12 +49,12 @@ public class ConditionStatement extends BlockStatement {
             if (resolvedPrevious.kind == Kind.ELSE) {
                 throw new RuntimeException("The block start must be 'if' or 'elif' for '" + kind.name().toLowerCase() + "' + but was 'else'.");
             }
-            resolutionContext.endBlock(this, line, index);
+            resolutionContext.endBlock(this, line);
         }
         if (children[0].returnType()!= Types.BOOLEAN) {
             throw new RuntimeException("Boolean condition value expected.");
         }
-        resolutionContext.startBlock(this, line, index);
+        resolutionContext.startBlock(this, line);
     }
 
 
@@ -70,15 +66,12 @@ public class ConditionStatement extends BlockStatement {
                 current = current.resolvedNext;
                 if (current == null) {
                     evaluationContext.currentLine = resolvedEndLine;
-                    evaluationContext.currentIndex = resolvedEndIndex;
                     return null;
                 }
             }
-            evaluationContext.currentLine = current.resolvedLine;
-            evaluationContext.currentIndex = current.resolvedIndex + 1;
+            evaluationContext.currentLine = current.resolvedLine + 1;
         } else {
             evaluationContext.currentLine = resolvedEndLine;
-            evaluationContext.currentIndex = resolvedEndIndex;
         }
         return null;
     }
@@ -94,14 +87,13 @@ public class ConditionStatement extends BlockStatement {
     }
 
     @Override
-    public void onResolveEnd(FunctionValidationContext resolutionContext, Node endStatement, int endLine, int endIndex) {
+    public void onResolveEnd(FunctionValidationContext resolutionContext, Node endStatement, int endLine) {
         if (endStatement instanceof ConditionStatement) {
             resolvedNext = (ConditionStatement) endStatement;
         } else {
             ConditionStatement current = this;
             do {
                 resolvedEndLine = endLine;
-                resolvedEndIndex = endIndex;
                 current = current.resolvedPrevious;
             } while (current != null);
         }

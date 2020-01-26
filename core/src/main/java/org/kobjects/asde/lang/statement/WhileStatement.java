@@ -10,8 +10,6 @@ import java.util.Map;
 
 public class WhileStatement extends BlockStatement {
   int resolvedStartLine;
-  int resolvedStartIndex;
-  int resolvedEndIndex;
   int resolvedEndLine;
 
   public WhileStatement(Node condition) {
@@ -19,9 +17,8 @@ public class WhileStatement extends BlockStatement {
   }
 
   @Override
-  public void onResolveEnd(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+  public void onResolveEnd(FunctionValidationContext resolutionContext, Node parent, int line) {
     resolvedEndLine = line;
-    resolvedEndIndex = index;
   }
 
   @Override
@@ -30,23 +27,20 @@ public class WhileStatement extends BlockStatement {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     resolvedStartLine = line;
-    resolvedStartIndex = index;
     if (children[0].returnType() != Types.BOOLEAN) {
       throw new RuntimeException("Boolean condition expected.");
     }
-    resolutionContext.startBlock(this, line, index);
+    resolutionContext.startBlock(this, line);
   }
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
     if (children[0].evalBoolean(evaluationContext)) {
-      evaluationContext.currentLine = resolvedStartLine;
-      evaluationContext.currentIndex = resolvedStartIndex + 1;
+      evaluationContext.currentLine = resolvedStartLine + 1;
     } else {
-      evaluationContext.currentLine = resolvedEndLine;
-      evaluationContext.currentIndex = resolvedEndIndex + 1;
+      evaluationContext.currentLine = resolvedEndLine + 1;
     }
     return null;
   }

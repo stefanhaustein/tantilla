@@ -17,7 +17,7 @@ public class AndOperator extends Node {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     Type t0 = children[0].returnType();
     if (t0 != Types.BOOLEAN && t0 != Types.NUMBER) {
       throw new IllegalArgumentException("First argument must be number or boolean instead of " + t0);

@@ -17,7 +17,7 @@ public class ArrayLiteral extends Node {
     }
 
     @Override
-    protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+    protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
         if (children.length == 0) {
             resolvedType = new ArrayType(null, 0);
         } else {

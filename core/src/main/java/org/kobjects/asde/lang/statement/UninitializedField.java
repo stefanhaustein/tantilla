@@ -26,7 +26,7 @@ public class UninitializedField extends AbstractDeclarationStatement {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
 
   }
 }

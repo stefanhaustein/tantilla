@@ -7,7 +7,6 @@ import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.NegOperator;
-import org.kobjects.asde.lang.node.Path;
 import org.kobjects.asde.lang.node.RelationalOperator;
 import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
 import org.kobjects.asde.lang.statement.AssignStatement;
@@ -16,7 +15,6 @@ import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.statement.Command;
 import org.kobjects.asde.lang.statement.ConditionStatement;
 import org.kobjects.asde.lang.statement.DebuggerStatement;
-import org.kobjects.asde.lang.statement.DefStatement;
 import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.EndStatement;
 import org.kobjects.asde.lang.statement.ForStatement;
@@ -32,11 +30,9 @@ import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.statement.UninitializedField;
 import org.kobjects.asde.lang.statement.VoidStatement;
-import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.function.Types;
 import org.kobjects.asde.lang.statement.WhileStatement;
 import org.kobjects.expressionparser.Tokenizer;
-import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
 
 import java.util.ArrayList;
@@ -72,9 +68,6 @@ public class StatementParser {
       case "debugger":
         tokenizer.consumeIdentifier();
         result.add(new DebuggerStatement());
-        return;
-      case "def":
-        result.add(parseDef(tokenizer));
         return;
       case "dim":
         parseDim(tokenizer, result);
@@ -280,33 +273,6 @@ public class StatementParser {
     return new ForStatement(varName, assignment.children[1], end);
   }
 
-  private DefStatement parseDef(Tokenizer tokenizer) {
-    tokenizer.consumeIdentifier();  // def
-
-    String name = tokenizer.consumeIdentifier();
-
-    tokenizer.consume("(");
-    ArrayList<String> parameterNames = new ArrayList<>();
-    if (!tokenizer.tryConsume(")")) {
-      do {
-        parameterNames.add(tokenizer.consumeIdentifier());
-      }while (tokenizer.tryConsume(","));
-      tokenizer.consume(")");
-    }
-
-    tokenizer.consume("=");
-    Node body = expressionParser.parse(tokenizer);
-
-    Type[] parameterTypes = new Type[parameterNames.size()];
-    for (int i = 0; i < parameterTypes.length; i++) {
-      parameterTypes[i] = parameterNames.get(i).endsWith("$") ? Types.STRING : Types.NUMBER;
-    }
-    FunctionImplementation fn = new FunctionImplementation(program, new FunctionTypeImpl(name.endsWith("$") ? Types.STRING : Types.NUMBER, parameterTypes), parameterNames.toArray(new String[0]));
-    fn.setLine(new CodeLine(10, new FunctionReturnStatement(body)));
-
-    return new DefStatement(name, fn);
-  }
-
   private Statement parseDeclaration(Tokenizer tokenizer, DeclarationStatement.Kind kind) {
     tokenizer.nextToken();
     Node assignment = expressionParser.parse(tokenizer);
@@ -374,7 +340,7 @@ public class StatementParser {
     return result;
   }
 
-  public List<? extends Node> parseStatementList(Tokenizer tokenizer, FunctionImplementation parsingContext) {
+  public List<Statement> parseStatementList(Tokenizer tokenizer, FunctionImplementation parsingContext) {
     ArrayList<Statement> result = new ArrayList<>();
     Node statement;
     do {

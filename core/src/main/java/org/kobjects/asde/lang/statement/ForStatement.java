@@ -1,15 +1,11 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.function.CodeLine;
-import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
-import org.kobjects.asde.lang.function.StatementSearch;
 import org.kobjects.asde.lang.function.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
-import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
@@ -17,19 +13,16 @@ public class ForStatement extends BlockStatement {
   private final String variableName;
   ResolvedSymbol resolvedVariable;
   int resolvedNextLine;
-  int resolvedNextIndex;
   int resolvedForLine;
-  int resolvedForIndex;
 
   public ForStatement(String varName, Node... children) {
     super(children);
     this.variableName = varName;
   }
 
-  public void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
-    resolutionContext.startBlock(this, line, index);
+  public void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+    resolutionContext.startBlock(this, line);
     resolvedForLine = line;
-    resolvedForIndex = index;
     // TODO: Check types?
     resolvedVariable = resolutionContext.resolveVariableDeclaration(variableName, Types.NUMBER, false);
   }
@@ -40,8 +33,7 @@ public class ForStatement extends BlockStatement {
     resolvedVariable.set(evaluationContext, current);
     double end = children[1].evalDouble(evaluationContext);
     if (Math.signum(evalStep(evaluationContext)) == Math.signum(Double.compare(current, end))) {
-      evaluationContext.currentLine = resolvedNextLine;
-      evaluationContext.currentIndex = resolvedNextIndex + 1;
+      evaluationContext.currentLine = resolvedNextLine + 1;
     }
     return null;
   }
@@ -64,9 +56,8 @@ public class ForStatement extends BlockStatement {
   }
 
   @Override
-  public void onResolveEnd(FunctionValidationContext resolutionContext, Node endStatement, int line, int index) {
+  public void onResolveEnd(FunctionValidationContext resolutionContext, Node endStatement, int line) {
     this.resolvedNextLine = line;
-    this.resolvedNextIndex = index;
   }
 
   @Override
@@ -75,8 +66,7 @@ public class ForStatement extends BlockStatement {
     double current = ((Double) resolvedVariable.get(evaluationContext)) + step;
     resolvedVariable.set(evaluationContext, current);
     if (Math.signum(step) != Math.signum(Double.compare(current, children[1].evalDouble(evaluationContext)))) {
-      evaluationContext.currentLine = resolvedForLine;
-      evaluationContext.currentIndex = resolvedForIndex + 1;
+      evaluationContext.currentLine = resolvedForLine + 1;
     }
   }
 

@@ -5,7 +5,6 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
-import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
@@ -16,7 +15,7 @@ public class FunctionReturnStatement extends Statement {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     if (resolutionContext.functionImplementation.getType().getReturnType() == Types.VOID) {
       if (children.length != 0) {
         throw new RuntimeException("Unexpected return value for subroutine.");
@@ -37,7 +36,6 @@ public class FunctionReturnStatement extends Statement {
       evaluationContext.returnValue = children[0].eval(evaluationContext);
     }
     evaluationContext.currentLine = Integer.MAX_VALUE;
-    evaluationContext.currentIndex = 0;
     return null;
   }
 

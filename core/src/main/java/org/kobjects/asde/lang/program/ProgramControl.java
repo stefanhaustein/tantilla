@@ -5,6 +5,7 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.statement.Statement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,20 +90,12 @@ public class ProgramControl {
     }
 
 
-    public static Object runCodeLineImpl(CodeLine codeLine, EvaluationContext evaluationContext) {
+    public static Object runCodeLineImpl(Statement statement, EvaluationContext evaluationContext) {
         int line = evaluationContext.currentLine;
-        Object result = null;
-        while (evaluationContext.currentIndex < codeLine.length() && evaluationContext.control.state != State.ABORTING) {
-            int index = evaluationContext.currentIndex;
-            result = codeLine.get(index).eval(evaluationContext);
-            if (evaluationContext.currentLine != line) {
-                return result;  // Goto or similar out of the current line
-            }
-            if (evaluationContext.currentIndex == index) {
-                evaluationContext.currentIndex++;
-            }
+        Object result = statement.eval(evaluationContext);
+        if (evaluationContext.currentLine != line) {
+          return result;  // Goto or similar out of the current line
         }
-        evaluationContext.currentIndex = 0;
         evaluationContext.currentLine++;
         return result;
     }

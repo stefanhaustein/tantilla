@@ -17,12 +17,13 @@ public class AssignStatement extends Statement {
   }
 
   @Override
-  public void resolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
-    children[1].resolve(resolutionContext, this, line, index);
+  public void resolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+    block = resolutionContext.getCurrentBlock();
+    children[1].resolve(resolutionContext, this, line);
     try {
       // May fail if resolve above has failed.
-      ((AssignableNode) children[0]).resolveForAssignment(resolutionContext, this, children[1].returnType(), line, index);
-      onResolve(resolutionContext, parent, line, index);
+      ((AssignableNode) children[0]).resolveForAssignment(resolutionContext, this, children[1].returnType(), line);
+      onResolve(resolutionContext, parent, line);
     } catch (Exception e) {
 
     }
@@ -30,7 +31,7 @@ public class AssignStatement extends Statement {
 
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     if (((AssignableNode) children[0]).isConstant()) {
       throw new RuntimeException("Cannot assign to a constant.");
     }

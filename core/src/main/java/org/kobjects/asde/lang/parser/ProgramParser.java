@@ -84,30 +84,26 @@ public class ProgramParser {
           }
           int pos = tokenizer.currentPosition;
           try {
-            List<? extends Node> statements = statementParser.parseStatementList(tokenizer, currentFunction);
+            List<Statement> statements = statementParser.parseStatementList(tokenizer, currentFunction);
             for (int j = 0; j < statements.size(); j++) {
-              Node statement = statements.get(j);
+              Statement statement = statements.get(j);
               if (statement instanceof BlockStatement) {
                 depth++;
               }
               // might be both!
-              if (statement instanceof Statement) {
-                if (((Statement) statement).closesBlock()) {
-                  depth--;
-                  if (depth < 0) {
-                    if (j != statements.size() -1) {
-                      throw new RuntimeException("Unexpected end");
-                    }
-                    statements.remove(j);
+              if (statement.closesBlock()) {
+                depth--;
+                if (depth < 0) {
+                  if (j != statements.size() -1) {
+                    throw new RuntimeException("Unexpected end");
                   }
+                  continue;
                 }
               }
-            }
-            if (statements.size() > 0) {
-              currentFunction.setLine(new CodeLine(lineNumber, statements));
+              currentFunction.appendStatement(statement);
             }
           } catch (Exception e) {
-            currentFunction.setLine(new CodeLine(lineNumber, Collections.singletonList(new UnparseableStatement(line.substring(pos), e))));
+            currentFunction.appendStatement(new UnparseableStatement(line.substring(pos), e));
           }
           if (depth < 0) {
             depth = 0;

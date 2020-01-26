@@ -15,7 +15,6 @@ import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.NodeProcessor;
 import org.kobjects.asde.lang.parser.ProgramParser;
 import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
-import org.kobjects.asde.lang.statement.DefStatement;
 import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.node.Node;
@@ -228,10 +227,7 @@ public class Program implements SymbolOwner {
   public void processStandaloneDeclarations(CodeLine codeLine) {
     for (int i = 0; i < codeLine.length(); i++) {
       Node node = codeLine.get(i);
-      if (node instanceof DefStatement) {
-        DefStatement def = (DefStatement) node;
-        setDeclaration(def.getVarName(), def.implementation);
-      } else if (node instanceof AbstractDeclarationStatement) {
+      if (node instanceof AbstractDeclarationStatement) {
         AbstractDeclarationStatement declaration = (AbstractDeclarationStatement) node;
         setPersistentInitializer(declaration.getVarName(), declaration);
       }
@@ -349,18 +345,19 @@ public class Program implements SymbolOwner {
     notifyProgramChanged();
   }
 
+  /*
   public void setLine(StaticSymbol symbol, CodeLine codeLine) {
     if (symbol.getValue() instanceof FunctionImplementation) {
       FunctionImplementation functionImplementation = (FunctionImplementation) symbol.getValue();
       functionImplementation.setLine(codeLine);
       notifySymbolChanged(symbol);
     }
-  }
+  }*/
 
   public void deleteLine(StaticSymbol symbol, int line) {
-    if (symbol.getValue() instanceof FunctionImplementation) {
+    if (symbol.getValue() instanceof FunctionImplementation && (line & 1) == 0) {
       FunctionImplementation functionImplementation = (FunctionImplementation) symbol.getValue();
-      functionImplementation.deleteLine(line);
+      functionImplementation.deleteLine(line / 2 - 2);
     }
   }
 
@@ -441,7 +438,7 @@ public class Program implements SymbolOwner {
 
 
   public boolean isEmpty() {
-    if (main.countLines(0, Integer.MAX_VALUE) > 0) {
+    if (main.getLineCount() > 0) {
       return false;
     }
     for (StaticSymbol symbol : symbolMap.values()) {

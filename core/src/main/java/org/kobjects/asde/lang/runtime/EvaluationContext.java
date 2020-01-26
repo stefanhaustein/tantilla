@@ -19,7 +19,6 @@ public class EvaluationContext {
     public Object returnValue;
 
     public int currentLine;
-    public int currentIndex;
 
 
     /**
@@ -46,7 +45,6 @@ public class EvaluationContext {
         stackTop = parentContext.stackTop - parentContext.stackBase;
         dataStack = new DataStack(stackTop);
         currentLine = parentContext.currentLine;
-        currentIndex = parentContext.currentIndex;
         self = parentContext.self;
         System.arraycopy(parentContext.dataStack.data, parentContext.stackBase, dataStack.data, stackBase, stackTop);
 

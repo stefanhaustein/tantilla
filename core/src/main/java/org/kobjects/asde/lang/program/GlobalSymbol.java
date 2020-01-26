@@ -152,7 +152,7 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
       this.dependencies = classValidationContext.dependencies;
     } else if (initializer != null) {
       FunctionValidationContext context = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.INTERACTIVE, null);
-      initializer.resolve(context, null, 0, 0);
+      initializer.resolve(context, null, 0);
       this.errors = context.errors;
       this.dependencies = context.dependencies;
       type = initializer.getValueType();

@@ -28,7 +28,7 @@ public class Command extends Statement {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     // Commands can't be in programs.
   }
 
@@ -91,7 +91,6 @@ public class Command extends Statement {
         program.clear(evaluationContext);
 
         evaluationContext.currentLine = children.length == 0 ? 0 : (int) children[0].evalDouble(evaluationContext);
-        evaluationContext.currentIndex = 0;
         break;
 
       case SAVE:

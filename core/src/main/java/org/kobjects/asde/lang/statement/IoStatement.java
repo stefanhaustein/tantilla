@@ -7,7 +7,6 @@ import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.function.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
-import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
@@ -27,13 +26,13 @@ public class IoStatement extends Statement {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line, int index) {
+  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     if (kind == Kind.INPUT) {
       for (Node child : children) {
         if (child instanceof AssignableNode) {
           AssignableNode assignable = (AssignableNode) child;
           if (assignable.isAssignable()) {
-            assignable.resolveForAssignment(resolutionContext, parent, child.returnType(), line, index);
+            assignable.resolveForAssignment(resolutionContext, parent, child.returnType(), line);
           }
         }
       }
