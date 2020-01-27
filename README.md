@@ -1,9 +1,12 @@
-# ASDE
+# Tantilla
 
-Aka "CodeChat 2.0". Less smalltalk, more basic...
+Goal: Provide a reasonable way to code on a mobile phone.
 
-Design doc skeleton: https://docs.google.com/document/d/1l5kaPhDSK1Ni1YMpIkUPgHTNaxoLxAwIRc4tkk-FanI/edit?usp=sharing
+Language: Roughly based on a Python subset (hence the name).
 
-Demo Video: https://www.youtube.com/watch?v=0pQ5PU91Ils
+Notable differences:
 
-Play Store link: https://play.google.com/store/apps/details?id=org.kobjects.asde
+ - Strict type system
+ - Explicit variable declarations required (var / const)
+ - Blocks terminated by an explict "end" statement 
+ - Lots of stuff missing
