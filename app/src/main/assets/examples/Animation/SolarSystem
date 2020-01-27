@@ -15,48 +15,48 @@ var fy = 0
 var sprite = screen.newSprite()
 
 def addAttraction(other: Body):
-10 var dx = other.x - x
-20 var dy = other.y - y
-30 var r2 = dx * dx + dy * dy
-40 var f = G * mass * other.mass / r2
-50 var th = atan2(dy, dx)
-60 fx = fx + f * cos(th)
-70 fy = fy + f * sin(th)
+ var dx = other.x - x
+ var dy = other.y - y
+ var r2 = dx * dx + dy * dy
+ var f = G * mass * other.mass / r2
+ var th = atan2(dy, dx)
+ fx = fx + f * cos(th)
+ fy = fy + f * sin(th)
 end
 
 def update(dt: float):
-10 vx = vx + dt * fx / mass
-20 vy = vy + dt * fy / mass
-30 x = x + vx * dt
-40 y = y + vy * dt
-50 sprite.x = x * SCALE
-60 sprite.y = y * SCALE
-70 fx = 0
-80 fy = 0
+ vx = vx + dt * fx / mass
+ vy = vy + dt * fy / mass
+ x = x + vx * dt
+ y = y + vy * dt
+ sprite.x = x * SCALE
+ sprite.y = y * SCALE
+ fx = 0
+ fy = 0
 end
 
 end
 
 def newBody(mass: float, distance: float, velocity: float, face: str, size: float) -> Body:
-10 var planet = Body{}
-20 planet.mass = mass
-30 planet.x = distance
-40 planet.vy = velocity
-50 planet.sprite.size = size
-60 planet.sprite.face = face
-70 return planet
+ var planet = Body{}
+ planet.mass = mass
+ planet.x = distance
+ planet.vy = velocity
+ planet.sprite.size = size
+ planet.sprite.face = face
+ return planet
 end
 
 def main():
-100 while true:
-110  for i = 0 to bodies.length - 1
-120   for j = 0 to bodies.length - 1
-130     if i <> j:
-140       bodies[i].addAttraction(bodies[j])
-150     end
-160   end
-170   bodies[i].update(TIMESCALE/60)
-180  end
-190  sleep 16
-200 end
+ while true:
+  for i = 0 to bodies.length - 1
+   for j = 0 to bodies.length - 1
+     if i <> j:
+       bodies[i].addAttraction(bodies[j])
+     end
+   end
+   bodies[i].update(TIMESCALE/60)
+  end
+  sleep 16
+ end
 end
