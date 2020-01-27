@@ -9,23 +9,23 @@ var x = 0
 var y = 0
 var z = 0
 
-def times(Number k) -> Vector:
+def times(k: float) -> Vector:
 10 return newVector(k * x, k * y, k * z)
 end
 
-def minus(Vector v2) -> Vector:
+def minus(v2: Vector) -> Vector:
 10 return newVector(x - v2.x, y - v2.y, z - v2.z)
 end
 
-def plus(Vector v2) -> Vector:
+def plus(v2: Vector) -> Vector:
 10 return newVector(x + v2.x, y + v2.y, z + v2.z)
 end
 
-def dot(Vector v2) -> Number:
+def dot(v2: Vector) -> float:
 10 return x * v2.x + y * v2.y + z * v2.z
 end
 
-def mag() -> Number:
+def mag() -> float:
 10 return sqr(x * x + y * y + z * z)
 end
 
@@ -33,17 +33,17 @@ def norm() -> Vector:
 10 return times(1/mag())
 end
 
-def cross(Vector v2) -> Vector:
+def cross(v2: Vector) -> Vector:
 10 return newVector(y * v2.z - z * v2.y, z * v2.x - x * v2.z, x * v2.y - y * v2.x)
 END def
 
 end
 
-def newVector(Number x, Number y, Number z) -> Vector:
+def newVector(x: float, y: float, z: float) -> Vector:
 10 return Vector{x = x, y = y, z = z}
 end
 
-def toByte(Number n) -> Number:
+def toByte(n: float) -> float:
 10 if n <= 0 : return 0
 20 if n >= 1 : return 255
 30 return INT(n * 255)
@@ -54,26 +54,26 @@ var r = 0
 var g = 0
 var b = 0
 
-def scale(Number k) -> Color:
+def scale(k: float) -> Color:
 10 return newColor(k * r, k * g, k * b)
 end
 
-def plus(Color c2) -> Color:
+def plus(c2: Color) -> Color:
 10 return newColor(r + c2.r, g + c2.g, b + c2.b)
 end
 
-def times(Color c2) -> Color:
+def times(c2: Color) -> Color:
 10 return newColor(r * c2.r, g * c2.g, b * c2.b)
 end
 
-def toDrawingColor() -> Number:
+def toDrawingColor() -> float:
 20 return  255*256*65536 + toByte(r) * 65536 + toByte(g) * 256 + toByte(b)
 end
 
 end
 
 
-def newColor(Number r, Number g, Number b) -> Color:
+def newColor(r: float, g: float, b: float) -> Color:
 10 return Color{r = r, g = g, b = b}
 end
 
@@ -84,7 +84,7 @@ Vector right
 Vector up
 end
 
-def newCamera(Vector pos, Vector lookAt) -> Camera:
+def newCamera(pos: Vector, lookAt: Vector) -> Camera:
 10 var down = newVector(0, -1, 0)
 20 var forward = lookAt.minus(pos).norm()
 30 var right = forward.cross(down).norm().times(1.5)
@@ -97,26 +97,26 @@ Vector start
 Vector dir
 end
 
-def newRay(Vector start, Vector dir) -> Ray:
+def newRay(start: Vector, dir: Vector) -> Ray:
 10 return Ray{start = start, dir = dir}
 end
 
 class Intersection:
 Thing thing
 Ray ray
-NUMBER dist
+float dist
 end
 
-def newIntersection(Thing t, Ray r, Number dist) -> Intersection:
+def newIntersection(t: Thing, r: Ray, dist: float) -> Intersection:
 10 return Intersection{thing = t, ray = r, dist = dist}
 end
 
 INTERFACE Surface:
 def diffuse(Vector pos) -> Color
 def specular(Vector pos) ->  Color
-def reflect(Vector pos) -> Number
-Number roughness
-END INTERFACE
+def reflect(Vector pos) -> float
+float roughness
+END
 
 INTERFACE Thing:
 def normal(Vector pos) -> Vector
@@ -129,7 +129,7 @@ Vector pos
 Color color
 end
 
-def newLight(Vector pos, Color color) -> Light:
+def newLight(pos: Vector, color: Color) -> Light:
 10 return Light{pos = pos, color = color}
 end
 
@@ -142,14 +142,14 @@ end
 
 class Sphere:
 Vector center
-Number radius2
+float radius2
 Surface surface
 
-def normal(Vector pos) -> Vector:
+def normal(pos: Vector) -> Vector:
 10 return pos.minus(center).norm()
 end
 
-def intersect(Ray r) -> Intersection:
+def intersect(r: Ray) -> Intersection:
 10 var eo = center.minus(r.start)
 20 var v = eo.dot(r.dir)
 30 var dist = 1/0
@@ -164,20 +164,20 @@ end
 
 end
 
-def newSphere(Vector center, Number radius, Surface s) -> Sphere:
+def newSphere(center: Vector, radius: float, s: Surface) -> Sphere:
 10 return Sphere{center = center, radius2 = radius * radius, surface = s}
 end
 
 class Plane:
 Vector norm
-Number offset
+float offset
 Surface surface
 
-def normal(Vector pos) -> Vector:
+def normal(pos: Vector) -> Vector:
 10 return norm
 end
 
-def intersect(Ray r) -> Intersection:
+def intersect(r: Ray) -> Intersection:
 10 var denom = norm.dot(r.dir)
 20 var dist = 1/0
 30 if denom <= 0 : dist = (norm.dot(r.start) + offset) / (-denom)
@@ -186,22 +186,22 @@ end
 
 end
 
-def newPlane(Vector normal, Number offset, Surface s) -> Plane:
+def newPlane(normal: Vector, offset: float, s: Surface) -> Plane:
 10 return Plane{norm = normal, offset = offset, surface = s}
 end
 
 class Shiny:
 var roughness = 250
 
-def diffuse(Vector pos) -> Color:
+def diffuse(pos: Vector) -> Color:
 10 return WHITE
 end
 
-def specular(Vector pos) -> Color:
+def specular(pos: Vector) -> Color:
 10 return GREY
 end
 
-def reflect(Vector pos) -> Number:
+def reflect(pos: Vector) -> float:
 10 return 0.7
 end
 
@@ -210,7 +210,7 @@ end
 class Checkerboard:
 var roughness = 150
 
-def diffuse(Vector pos) -> Color:
+def diffuse(pos: Vector) -> Color:
 10 if (1000 + int(pos.z) + int(pos.x)) MOD 2 <> 0 :
 20   return WHITE
 30 else
@@ -218,12 +218,12 @@ def diffuse(Vector pos) -> Color:
 50 end
 end
 
-def specular(Vector pos) -> Color:
+def specular(pos: Vector) -> Color:
 10 return WHITE
 end
 
 
-def reflect(Vector pos) -> Number:
+def reflect(pos Vector) -> float:
 10 if (1000 + int(pos.z) + int(pos.x)) MOD 2 <> 0 :
 20   return 0.1
 30 else
@@ -239,7 +239,7 @@ class RayTracer:
 var maxDepth = 5
 var defaultColor = BLACK
 
-def intersections(Ray r, Scene s) -> Intersection:
+def intersections(r: Ray, s: Scene) -> Intersection:
 10 var closest = s.things[0].intersect(r)
 20 for i = 1 to s.things.length - 1
 30   var inter = s.things[i].intersect(r)
@@ -250,11 +250,11 @@ def intersections(Ray r, Scene s) -> Intersection:
 80 return closest
 end
 
-def testRay(Ray r, Scene s) -> Number:
+def testRay(r: Ray, s: Scene) -> float:
 10 return intersections(r, s).dist
 end
 
-def traceRay(Ray r, Scene s, Number depth) -> Color:
+def traceRay(r: Ray, s: Scene, depth: float) -> Color:
 10 var isect = intersections(r, s)
 20 if isect.dist == 1/0 :
 30   return s.background
@@ -262,7 +262,7 @@ def traceRay(Ray r, Scene s, Number depth) -> Color:
 50 return shade(isect, s, depth)
 end
 
-def shade(Intersection isect, Scene s, Number depth) -> Color:
+def shade(isect: Intersection, s: Scene, depth: float) -> Color:
 10 var d = isect.ray.dir
 20 var pos = d.times(isect.dist).plus(isect.ray.start)
 30 var normal = isect.thing.normal(pos)
@@ -275,11 +275,11 @@ def shade(Intersection isect, Scene s, Number depth) -> Color:
 100 return naturalColor.plus(reflectedColor)
 end
 
-def getReflectionColor(Thing t, Vector pos, Vector normal, Vector rd, Scene s, Number depth) -> Color:
+def getReflectionColor(t: Thing, pos: Vector, normal: Vector, rd: Vector, s: Scene, depth: float) -> Color:
 10 return traceRay(newRay(pos, rd), s, depth + 1).scale(t.surface.reflect(pos))
 end
 
-def addLight(Thing t, Vector pos, Vector norm, Vector rd, Scene s, Color col, Light l) -> Color:
+def addLight(t: Thing, pos: Vector, norm: Vector, rd: Vector, s: Scene, col: Color, l: Light) -> Color:
 10 var ldis = l.pos.minus(pos)
 20 var livec = ldis.norm()
 30 var nearIsect = testRay(newRay(pos, livec), s)
@@ -300,7 +300,7 @@ def addLight(Thing t, Vector pos, Vector norm, Vector rd, Scene s, Color col, Li
 180 return col.plus(lcolor.times(t.surface.diffuse(pos))).plus(scolor.times(t.surface.specular(pos)))
 end
 
-def getNaturalColor(Thing t, Vector pos, Vector norm, Vector rd, Scene s) -> Color
+def getNaturalColor(t: Thing, pos: Vector, norm: Vector, rd: Vector, s: Scene) -> Color
 10 var col = defaultColor
 20 for i = 0 to s.lights.length - 1
 30   col = addLight(t, pos, norm, rd, s, col, s.lights[i])
@@ -308,11 +308,11 @@ def getNaturalColor(Thing t, Vector pos, Vector norm, Vector rd, Scene s) -> Col
 50 return col
 end
 
-def getPoint(Number x, Number y, Camera cam, Number screenWidth, Number screenHeight) -> Vector:
+def getPoint(x: float, y: float, cam: Camera, screenWidth: float, screenHeight: float) -> Vector:
 10 return cam.forward.plus(cam.right.times(x / screenWidth)).plus(cam.up.times(y / screenHeight)).norm()
 end
 
-SUB render(Scene s, Pen p, Number screenWidth, Number screenHeight)
+SUB render(s: Scene, p: Pen, screenWidth: float, screenHeight: float)
 5 p.strokeColor = 0
 10 for y = 0 to screenHeight
 20   for x = -screenWidth / 2 to screenWidth / 2

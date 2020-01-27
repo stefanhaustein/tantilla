@@ -101,7 +101,7 @@ public class Apply extends AssignableNode {
     if (children[0].returnType() instanceof ArrayType) {
       resolvedKind = Kind.ARRAY_ACCESS;
       for (int i = 1; i < children.length; i++) {
-        if (children[i].returnType() != Types.NUMBER) {
+        if (children[i].returnType() != Types.FLOAT) {
           throw new RuntimeException("Number expected for paramter " + i + "; got: " + children[i].returnType());
         }
       }

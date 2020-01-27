@@ -47,7 +47,7 @@ public class Literal extends Node {
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     if (value != Program.INVISIBLE_STRING && value instanceof String) {
       appendLinked(asb, "\"" + ((String) value).replace("\"", "\"\"") + '"', errors);
-    } else if (format == Format.HEX && returnType() == Types.NUMBER && ((Number) value).longValue() == ((Number) value).doubleValue()) {
+    } else if (format == Format.HEX && returnType() == Types.FLOAT && ((Number) value).longValue() == ((Number) value).doubleValue()) {
       appendLinked(asb, "#" + Long.toHexString(((Number) value).longValue()), errors);
     } else {
       appendLinked(asb, Program.toString(value), errors);

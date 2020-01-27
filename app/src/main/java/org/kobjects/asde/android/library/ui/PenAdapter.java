@@ -126,13 +126,13 @@ public class PenAdapter extends Instance {
 
 
     enum PenPropertyDescriptor implements PropertyDescriptor {
-        fillColor(Types.NUMBER),
-        strokeColor(Types.NUMBER),
-        textSize(Types.NUMBER),
-        clear(new FunctionTypeImpl(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER)),
-        rect(new FunctionTypeImpl(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER)),
-        write(new FunctionTypeImpl(Types.VOID, Types.NUMBER, Types.NUMBER, Types.STRING)),
-        line(new FunctionTypeImpl(Types.VOID, Types.NUMBER, Types.NUMBER, Types.NUMBER, Types.NUMBER));
+        fillColor(Types.FLOAT),
+        strokeColor(Types.FLOAT),
+        textSize(Types.FLOAT),
+        clear(new FunctionTypeImpl(Types.VOID, Types.FLOAT, Types.FLOAT, Types.FLOAT, Types.FLOAT)),
+        rect(new FunctionTypeImpl(Types.VOID, Types.FLOAT, Types.FLOAT, Types.FLOAT, Types.FLOAT)),
+        write(new FunctionTypeImpl(Types.VOID, Types.FLOAT, Types.FLOAT, Types.STR)),
+        line(new FunctionTypeImpl(Types.VOID, Types.FLOAT, Types.FLOAT, Types.FLOAT, Types.FLOAT));
 
         private final Type type;
 

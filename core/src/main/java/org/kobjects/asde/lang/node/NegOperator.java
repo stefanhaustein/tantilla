@@ -16,7 +16,7 @@ public class NegOperator extends Node {
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
-    if (children[0].returnType() != Types.NUMBER && children[0].returnType() != Types.BOOLEAN) {
+    if (children[0].returnType() != Types.FLOAT && children[0].returnType() != Types.BOOL) {
       throw new RuntimeException("Number argument expected for negation.");
     }
   }
@@ -33,7 +33,7 @@ public class NegOperator extends Node {
 
   @Override
   public Type returnType() {
-    return Types.NUMBER;
+    return Types.FLOAT;
   }
 
   @Override

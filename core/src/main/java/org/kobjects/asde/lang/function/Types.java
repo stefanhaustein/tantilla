@@ -28,10 +28,10 @@ public class Types {
 
   private static HashMap<Object, Type> typeMap = new HashMap<>();
 
-  public static final Type BOOLEAN = new TypeImpl("Boolean", Boolean.FALSE);
-  public static final Type NUMBER = new TypeImpl("Number", 0.0);
-  public static final Type STRING = new TypeImpl("String", "");
-  public static final Type VOID = new TypeImpl("Void", null);
+  public static final Type BOOL = new TypeImpl("bool", Boolean.FALSE);
+  public static final Type FLOAT = new TypeImpl("float", 0.0);
+  public static final Type STR = new TypeImpl("str", "");
+  public static final Type VOID = new TypeImpl("void", null);
 
   public static Type of(Object o) {
     if (o == null) {
@@ -41,13 +41,13 @@ public class Types {
       return ((Typed) o).getType();
     }
     if (o instanceof Boolean) {
-      return BOOLEAN;
+      return BOOL;
     }
     if (o instanceof Double) {
-      return NUMBER;
+      return FLOAT;
     }
     if (o instanceof String) {
-      return STRING;
+      return STR;
     }
     Type result = typeMap.get(o);
     if (result == null) {

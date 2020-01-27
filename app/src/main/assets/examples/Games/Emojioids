@@ -7,7 +7,7 @@ var gameOverDisplay = screen.newTextBox()
 var continueDisplay = screen.newTextBox()
 DIM asteroids(0) as Sprite
 
-def newAsteroid(Number x, Number y, Number size, Number direction, Number speed):
+def newAsteroid(x: float, y: float, size: float, direction: float, speed: float):
 10 var asteroid = screen.newSprite()
 15 asteroids.append(asteroid)
 20 asteroid.face = "🥔"
@@ -34,7 +34,7 @@ def newAsteroid(Number x, Number y, Number size, Number direction, Number speed)
 200 end
 end
 
-def breakAsteroid(Sprite asteroid):
+def breakAsteroid(asteroid: Sprite):
 10 asteroid.face = "💥"
 12 asteroid.grow = 10
 14 asteroid.fade = -1

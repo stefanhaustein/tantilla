@@ -180,12 +180,12 @@ public class TextBoxAdapter extends Instance {
 
 
     enum TextMetaProperty implements PropertyDescriptor {
-        x(Types.NUMBER), y(Types.NUMBER), z(Types.NUMBER),
+        x(Types.FLOAT), y(Types.FLOAT), z(Types.FLOAT),
         xAlign(ScreenAdapter.X_ALIGN), yAlign(ScreenAdapter.Y_ALIGN),
-        size(Types.NUMBER),
-        lineWidth(Types.NUMBER), lineColor(Types.NUMBER), fillColor(Types.NUMBER),
-        textColor(Types.NUMBER), cornerRadius(Types.NUMBER),
-        text(Types.STRING), anchor(SpriteAdapter.TYPE);
+        size(Types.FLOAT),
+        lineWidth(Types.FLOAT), lineColor(Types.FLOAT), fillColor(Types.FLOAT),
+        textColor(Types.FLOAT), cornerRadius(Types.FLOAT),
+        text(Types.STR), anchor(SpriteAdapter.TYPE);
 
         private final Type type;
 

@@ -66,12 +66,12 @@ public class DpadAdapter extends Instance {
     }
 
     enum DpadMetaProperty implements PropertyDescriptor {
-        left(Types.BOOLEAN),
-        right(Types.BOOLEAN),
-        up(Types.BOOLEAN),
-        down(Types.BOOLEAN),
-        fire(Types.BOOLEAN),
-        visible(Types.BOOLEAN);
+        left(Types.BOOL),
+        right(Types.BOOL),
+        up(Types.BOOL),
+        down(Types.BOOL),
+        fire(Types.BOOL),
+        visible(Types.BOOL);
 
         private final Type type;
 

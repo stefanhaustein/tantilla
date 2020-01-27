@@ -210,7 +210,7 @@ public class StatementParser {
       if (tokenizer.tryConsume("as") || tokenizer.tryConsume("AS") || tokenizer.tryConsume("As")) {
         elementType = parseType(tokenizer);
       } else {
-        elementType = varName.endsWith("$") ? Types.STRING : Types.NUMBER;
+        elementType = varName.endsWith("$") ? Types.STR : Types.FLOAT;
       }
       result.add(new DimStatement(elementType, varName, dimensions));
     } while (tokenizer.tryConsume(","));
@@ -378,10 +378,12 @@ public class StatementParser {
   public Type parseType(Tokenizer tokenizer) {
      String typeName = tokenizer.consumeIdentifier();
      Type result;
-     if (typeName.equalsIgnoreCase("Number")) {
-         result = Types.NUMBER;
-     } else if (typeName.equalsIgnoreCase("String")) {
-         result = Types.STRING;
+     if (typeName.equals("float")) {
+         result = Types.FLOAT;
+     } else if (typeName.equals("str")) {
+         result = Types.STR;
+     } else if (typeName.equals("bool")) {
+       result = Types.BOOL;
      } else {
        GlobalSymbol symbol = program.getSymbol(typeName);
        if (symbol == null) {

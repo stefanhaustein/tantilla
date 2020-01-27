@@ -11,45 +11,45 @@ import org.kobjects.typesystem.Type;
 public enum Builtin implements Function {
 
     ABS("Calculates the absolute value of the input.\n\nExamples:\n\n * abs(3.4) = 3.4\n * abs(-4) = 4\n * abs(0) = 0",
-        1, Types.NUMBER),
+        1, Types.FLOAT),
     ASC("Returns the ascii value of the first character of the string\n\nExample:\n\n * asc(\"A\") = 65.",
-        1, Types.STRING),
-    ATAN2("Converts the given cartesian coordinates into the angle of the corresponding polar coordinates", 2, Types.NUMBER, Types.NUMBER),
+        1, Types.STR),
+    ATAN2("Converts the given cartesian coordinates into the angle of the corresponding polar coordinates", 2, Types.FLOAT, Types.FLOAT),
     CHR$("Returns a single-character string representing the given ASCII value.\n\nExample:\n\n * chr$(65) = \"A\"",
-        1, Types.NUMBER),
+        1, Types.FLOAT),
     COS("Calculates the cosine of the parameter value.",
-        1, Types.NUMBER),
+        1, Types.FLOAT),
     EXP("Returns e raised to the power of the parameter value.",
-        1, Types.NUMBER),
+        1, Types.FLOAT),
     INT("Rounds down to the next lower integer",
-        1, Types.NUMBER),
+        1, Types.FLOAT),
     LEFT$("Returns the prefix of the string consisting of the given number of characters.\n\n"
         + "Example:\n\nleft$(\"abcdefg\", 3) = \"abc\"",
-        2, Types.STRING, Types.NUMBER),
+        2, Types.STR, Types.FLOAT),
     LEN("Returns the length of the given string.\n\nExample:\n\n * len(\"ABC\") = 3",
-        1, Types.STRING),
+        1, Types.STR),
     LOG("Calculates the logarithm to the base e.",
-        1, Types.NUMBER),
+        1, Types.FLOAT),
     MID$("Returns the substring starting at the given position (1-based) with the given length. "
         + "If the length is omitted, the whole remainder is returned.\n\n"
         + "Examples:\n\n"
         + " * mid$(\"abcdefg\", 3, 2) = \"cd\"\n"
         + " * mid$(\"abcdefg\", 3) = \"cdefg\"",
-        2, Types.STRING, Types.NUMBER, Types.NUMBER),
+        2, Types.STR, Types.FLOAT, Types.FLOAT),
     RIGHT$("Returns the suffix of the string with the given number of characters.\n\n"
         + "Example:\n\n * right$(\"abc\", 2) = \"bc\"",
-        2, Types.STRING, Types.NUMBER),
+        2, Types.STR, Types.FLOAT),
     RND("Returns a (pseudo-)random number in the range from 0 (inclusive) to 1 (exclusive)",
-        0, Types.NUMBER, Types.NUMBER),
+        0, Types.FLOAT, Types.FLOAT),
     SGN("Returns the sign of the given number: 1 for positive numbers, 0 for zero and -1 for negative numbers.",
-        1, Types.NUMBER),
+        1, Types.FLOAT),
     STR$("Converts the given number to a string (simiar to PRINT, but without any leading spaces.",
-        1, Types.NUMBER),
-    SQR("Calculates the square root of the argument\n\nExample:\n\n * sqr(9) = 3", 1, Types.NUMBER),
-    SIN("Calculates the sine of the parameter value.", 1, Types.NUMBER),
-    TAB("Returns a string with the given number of spaces, relative to the start of the current line, taking the current cursor position into account. The string will be empty if the cursor is at or beyond the given position", 1, Types.NUMBER),
-    TAN("Calculates the tangent of the argument", 1, Types.NUMBER),
-    VAL("Parses the argument as a floating point number. If this fails, the return value is 0.", 1, Types.STRING);
+        1, Types.FLOAT),
+    SQR("Calculates the square root of the argument\n\nExample:\n\n * sqr(9) = 3", 1, Types.FLOAT),
+    SIN("Calculates the sine of the parameter value.", 1, Types.FLOAT),
+    TAB("Returns a string with the given number of spaces, relative to the start of the current line, taking the current cursor position into account. The string will be empty if the cursor is at or beyond the given position", 1, Types.FLOAT),
+    TAN("Calculates the tangent of the argument", 1, Types.FLOAT),
+    VAL("Parses the argument as a floating point number. If this fails, the return value is 0.", 1, Types.STR);
 
   public static int asInt(Object o) {
     return Math.round(((Double) o).floatValue());
@@ -117,7 +117,7 @@ public enum Builtin implements Function {
       for (int i = 0; i < parameters.length; i++) {
         parameters[i] = new Parameter(String.valueOf((char) ('a' + i)), parameterTypes[i]);
       }
-      this.signature = new FunctionTypeImpl((name().endsWith("$") || name().equalsIgnoreCase("TAB")) ? Types.STRING : Types.NUMBER, minParams, parameterTypes);
+      this.signature = new FunctionTypeImpl((name().endsWith("$") || name().equalsIgnoreCase("TAB")) ? Types.STR : Types.FLOAT, minParams, parameterTypes);
     }
 
   Builtin(int minParams, Type... parameterTypes) {

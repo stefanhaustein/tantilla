@@ -243,12 +243,12 @@ public class MainActivity extends AppCompatActivity {
       }
       return null;
     }, "Pause the execution for the given number of seconds.",
-        Types.VOID, Types.NUMBER);
+        Types.VOID, Types.FLOAT);
 
     program.addBuiltin("play", new Function() {
       @Override
       public FunctionType getType() {
-        return new FunctionTypeImpl(Types.VOID, Types.STRING);
+        return new FunctionTypeImpl(Types.VOID, Types.STR);
       }
 
       @Override

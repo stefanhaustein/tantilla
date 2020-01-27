@@ -295,15 +295,15 @@ public class SpriteAdapter extends Instance implements Animated {
   }
 
   enum SpriteMetaProperty implements PropertyDescriptor {
-    x(Types.NUMBER), y(Types.NUMBER), z(Types.NUMBER),
+    x(Types.FLOAT), y(Types.FLOAT), z(Types.FLOAT),
     xAlign(ScreenAdapter.X_ALIGN), yAlign(ScreenAdapter.Y_ALIGN),
-    size(Types.NUMBER), opacity(Types.NUMBER),
-    speed(Types.NUMBER), direction(Types.NUMBER), dx(Types.NUMBER), dy(Types.NUMBER), grow(Types.NUMBER), fade(Types.NUMBER),
-    angle(Types.NUMBER),
-    label(TextBoxAdapter.TYPE), bubble(TextBoxAdapter.TYPE), face(Types.STRING),
-    rotation(Types.NUMBER), collisions(new ArrayType(SpriteAdapter.TYPE)),
+    size(Types.FLOAT), opacity(Types.FLOAT),
+    speed(Types.FLOAT), direction(Types.FLOAT), dx(Types.FLOAT), dy(Types.FLOAT), grow(Types.FLOAT), fade(Types.FLOAT),
+    angle(Types.FLOAT),
+    label(TextBoxAdapter.TYPE), bubble(TextBoxAdapter.TYPE), face(Types.STR),
+    rotation(Types.FLOAT), collisions(new ArrayType(SpriteAdapter.TYPE)),
     anchor(SpriteAdapter.TYPE), edgeMode(EDGE_MODE),
-    say(new FunctionTypeImpl(Types.VOID, Types.STRING));
+    say(new FunctionTypeImpl(Types.VOID, Types.STR));
 
     final Type type;
 

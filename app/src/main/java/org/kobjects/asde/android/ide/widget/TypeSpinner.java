@@ -31,9 +31,9 @@ public class TypeSpinner extends AppCompatSpinner {
             labelList.add(voidLabel);
         }
 
-        addType(Types.BOOLEAN);
-        addType(Types.NUMBER);
-        addType(Types.STRING);
+        addType(Types.BOOL);
+        addType(Types.FLOAT);
+        addType(Types.STR);
 
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(mainActivity, android.R.layout.simple_spinner_item, labelList);

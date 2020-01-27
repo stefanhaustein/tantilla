@@ -24,7 +24,7 @@ public class DimStatement extends AbstractDeclarationStatement {
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     for (Node node : children) {
-      if (node.returnType() != Types.NUMBER) {
+      if (node.returnType() != Types.FLOAT) {
         resolutionContext.addError(node, new RuntimeException("Numerical type required for DIM"));
       }
     }
@@ -62,7 +62,7 @@ public class DimStatement extends AbstractDeclarationStatement {
       }
     }
     asb.append(')');
-    if (elementType != (varName.endsWith("$") ? Types.STRING : Types.NUMBER)) {
+    if (elementType != (varName.endsWith("$") ? Types.STR : Types.FLOAT)) {
       asb.append(" AS ");
       asb.append(elementType.toString());
     }

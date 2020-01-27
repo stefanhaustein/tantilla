@@ -24,7 +24,7 @@ public class ForStatement extends BlockStatement {
     resolutionContext.startBlock(this, line);
     resolvedForLine = line;
     // TODO: Check types?
-    resolvedVariable = resolutionContext.resolveVariableDeclaration(variableName, Types.NUMBER, false);
+    resolvedVariable = resolutionContext.resolveVariableDeclaration(variableName, Types.FLOAT, false);
   }
 
   @Override

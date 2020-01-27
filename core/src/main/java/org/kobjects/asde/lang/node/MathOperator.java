@@ -46,9 +46,9 @@ public class MathOperator extends Node {
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     stringAdd = false;
     Type t0 = children[0].returnType();
-    if (t0 != Types.BOOLEAN && t0 != Types.NUMBER) {
+    if (t0 != Types.BOOL && t0 != Types.FLOAT) {
       if (kind == Kind.ADD) {
-        if (t0 == Types.STRING) {
+        if (t0 == Types.STR) {
           stringAdd = true;
           return;
         }
@@ -57,7 +57,7 @@ public class MathOperator extends Node {
       throw new RuntimeException("Left parameter expected to be a Number but is " + t0);
     }
     Type t1 = children[0].returnType();
-    if (t1 != Types.BOOLEAN && t0 != Types.NUMBER) {
+    if (t1 != Types.BOOL && t0 != Types.FLOAT) {
       throw new RuntimeException("Right parameter expected to be a Number but is " + t1);
     }
   }
@@ -99,7 +99,7 @@ public class MathOperator extends Node {
 
   @Override
   public Type returnType() {
-    return stringAdd ? Types.STRING : Types.NUMBER;
+    return stringAdd ? Types.STR : Types.FLOAT;
   }
 
   @Override

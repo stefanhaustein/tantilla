@@ -52,7 +52,7 @@ public class ArrayType implements InstanceType {
       case "remove":
         return new ArrayPropertyDescriptor(ArrayPropertyEnum.remove, new FunctionTypeImpl(Types.VOID, elementType));
       case "length":
-        return new ArrayPropertyDescriptor(ArrayPropertyEnum.length, Types.NUMBER);
+        return new ArrayPropertyDescriptor(ArrayPropertyEnum.length, Types.FLOAT);
       default:
         throw new IllegalArgumentException("Unrecognized array property: '" + name + "'");
     }

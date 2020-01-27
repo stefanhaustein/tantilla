@@ -1,4 +1,3 @@
-ASDE
 DIM grid(21, 21)
 LET allPieces = {{1, 0, 1, 1, 1, 2, 0, 2}, {1, 0, 1, 1, 2, 1, 2, 2}, {1, 0, 1, 1, 1, 2, 2, 2}, {2, 0, 2, 1, 1, 1, 1, 2}, {1, 0, 0, 1, 1, 1, 2, 1}, {1, 0, 2, 0, 1, 1, 2, 1}, {2, 0, 2, 1, 2, 2, 2, 3}}
 LET pc = 0
@@ -14,7 +13,7 @@ LET score = 0
 LET rows = 0
 LET gameOver = false
 
-def checkPosition(Number x, Number y) -> Number:
+def checkPosition(x: float, y: float) -> float:
 100 FOR i = 0 TO 3
 110   IF grid(x + pieceX(i), y + pieceY(i)) <> 0 :
 112     RETURN 0
@@ -33,7 +32,7 @@ def drawScore():
 160 pen.strokeColor = 0
 end
 
-def setColor(Number c):
+def setColor(c: float):
 5 # Store in array?
 10 if c = 1 :
 15   pen.fillColor = 0xff0000ff # blue J
@@ -94,7 +93,7 @@ def drawAll():
 160 end
 end
 
-def dropGrid(Number cy):
+def dropGrid(cy: float):
 100 for x = 2 to 11
 110   for y = cy to 2 step -1
 120     grid(x, y) = grid(x, y -1)

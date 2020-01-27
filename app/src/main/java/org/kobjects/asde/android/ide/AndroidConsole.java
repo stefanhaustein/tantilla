@@ -30,7 +30,6 @@ import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.runtime.WrappedExecutionException;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
-import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.function.Types;
 import org.kobjects.typesystem.Type;
 
@@ -91,7 +90,7 @@ public class AndroidConsole implements Console {
       inputEditText[0].setInputType(
           InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
               | InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE
-              | (typeHint == Types.NUMBER ? InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL|InputType.TYPE_NUMBER_FLAG_SIGNED : 0));
+              | (typeHint == Types.FLOAT ? InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL|InputType.TYPE_NUMBER_FLAG_SIGNED : 0));
       inputEditText[0].setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI|EditorInfo.IME_FLAG_NO_FULLSCREEN);
       inputEditText[0].setOnEditorActionListener((view, actionId, event) -> {
         if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED

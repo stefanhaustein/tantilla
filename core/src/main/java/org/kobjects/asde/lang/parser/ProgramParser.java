@@ -121,6 +121,9 @@ public class ProgramParser {
           program.console.updateProgress("Parsing function " + functionName);
           ArrayList<String> parameterNames = new ArrayList();
           FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames);
+          if (!tokenizer.tryConsume(":")) {
+            throw new RuntimeException("':' expected.");
+          }
           currentFunction = new FunctionImplementation(program, functionType, parameterNames.toArray(new String[0]));
           if (currentClass != null) {
             currentClass.setMethod(functionName, currentFunction);
@@ -192,10 +195,11 @@ public class ProgramParser {
     tokenizer.consume("(");
     ArrayList<Type> parameterTypes = new ArrayList<>();
     while (!tokenizer.tryConsume(")")) {
-      Type parameterType = statementParser.parseType(tokenizer);
-      parameterTypes.add(parameterType);
       String parameterName = tokenizer.consumeIdentifier();
       parameterNames.add(parameterName);
+      tokenizer.consume(":");
+      Type parameterType = statementParser.parseType(tokenizer);
+      parameterTypes.add(parameterType);
 
       if (!tokenizer.tryConsume(",")) {
         if (tokenizer.tryConsume(")")) {
@@ -211,10 +215,6 @@ public class ProgramParser {
     Type[] parameterTypes = parseParameterList(tokenizer, parameterNames);
 
     Type returnType = tokenizer.tryConsume("->") ? statementParser.parseType(tokenizer) : Types.VOID;
-
-    if (!tokenizer.tryConsume(":")) {
-      throw new RuntimeException("':' expected.");
-    }
 
     return new FunctionTypeImpl(returnType, parameterTypes);
   }

@@ -51,7 +51,7 @@ public class ConditionStatement extends BlockStatement {
             }
             resolutionContext.endBlock(this, line);
         }
-        if (children[0].returnType()!= Types.BOOLEAN) {
+        if (children[0].returnType()!= Types.BOOL) {
             throw new RuntimeException("Boolean condition value expected.");
         }
         resolutionContext.startBlock(this, line);

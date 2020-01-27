@@ -63,7 +63,7 @@ public class IoStatement extends Statement {
         Object value;
         while(true) {
           value = program.console.input(child.returnType());
-          if (child.returnType() == Types.STRING) {
+          if (child.returnType() == Types.STR) {
             break;
           }
           try {

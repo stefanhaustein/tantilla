@@ -67,7 +67,7 @@ public class RelationalOperator extends Node {
 
   @Override
   public Type returnType() {
-    return Types.BOOLEAN;
+    return Types.BOOL;
   }
 
   @Override

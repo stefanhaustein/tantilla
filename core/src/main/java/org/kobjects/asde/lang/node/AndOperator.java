@@ -19,14 +19,14 @@ public class AndOperator extends Node {
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     Type t0 = children[0].returnType();
-    if (t0 != Types.BOOLEAN && t0 != Types.NUMBER) {
+    if (t0 != Types.BOOL && t0 != Types.FLOAT) {
       throw new IllegalArgumentException("First argument must be number or boolean instead of " + t0);
     }
     Type t1 = children[1].returnType();
-    if (t1 != Types.BOOLEAN && t1 != Types.NUMBER) {
+    if (t1 != Types.BOOL && t1 != Types.FLOAT) {
       throw new IllegalArgumentException("Second argument must be number or boolean instead of " + t1);
     }
-    boolMode = children[0].returnType() == Types.BOOLEAN || children[1].returnType() == Types.BOOLEAN;
+    boolMode = children[0].returnType() == Types.BOOL || children[1].returnType() == Types.BOOL;
   }
 
   @Override
@@ -55,7 +55,7 @@ public class AndOperator extends Node {
 
   @Override
   public Type returnType() {
-    return boolMode ? Types.BOOLEAN : Types.NUMBER;
+    return boolMode ? Types.BOOL : Types.FLOAT;
   }
 
   @Override

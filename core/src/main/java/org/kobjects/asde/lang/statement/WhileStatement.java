@@ -29,7 +29,7 @@ public class WhileStatement extends BlockStatement {
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
     resolvedStartLine = line;
-    if (children[0].returnType() != Types.BOOLEAN) {
+    if (children[0].returnType() != Types.BOOL) {
       throw new RuntimeException("Boolean condition expected.");
     }
     resolutionContext.startBlock(this, line);
