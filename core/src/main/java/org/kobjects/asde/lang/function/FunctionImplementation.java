@@ -2,6 +2,7 @@ package org.kobjects.asde.lang.function;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.statement.BlockStatement;
+import org.kobjects.asde.lang.statement.RemStatement;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -27,8 +28,6 @@ import java.util.TreeMap;
  */
 public class FunctionImplementation implements Function, Declaration {
 
-  public static final int MAX_LINE_NUMBER = 99999;
-
   public final Program program;
   FunctionType type;
   public String[] parameterNames;
@@ -45,7 +44,7 @@ public class FunctionImplementation implements Function, Declaration {
   public void validate(FunctionValidationContext functionValidationContext) {
     for (int i = 0; i < code.size(); i++) {
       Statement statement = code.get(i);
-      statement.resolve(functionValidationContext, null, i);
+      statement.resolve(functionValidationContext, null, i + 1);
     }
     localVariableCount = functionValidationContext.getLocalVariableCount();
   }
@@ -72,7 +71,7 @@ public class FunctionImplementation implements Function, Declaration {
     try {
       ProgramControl control = newContext.control;
       //      if (newContext.currentLine > -1) {
-      while (newContext.currentLine < code.size() && !Thread.currentThread().isInterrupted()) {
+      while (newContext.currentLine <= code.size() && !Thread.currentThread().isInterrupted()) {
         if (control.getState() != ProgramControl.State.RUNNING) {
           if (control.state == ProgramControl.State.STEP) {
             control.state = ProgramControl.State.PAUSED;
@@ -92,7 +91,7 @@ public class FunctionImplementation implements Function, Declaration {
             throw new ForcedStopException(null);
           }
         }
-        ProgramControl.runCodeLineImpl(code.get(newContext.currentLine), newContext);
+        ProgramControl.runCodeLineImpl(code.get(newContext.currentLine - 1), newContext);
       }
       //    }
       return newContext.returnValue;
@@ -146,35 +145,18 @@ public class FunctionImplementation implements Function, Declaration {
   }
 
   public synchronized void deleteLine(int lineNumber) {
-    code.remove(lineNumber);
+    int index = lineNumber - 1;
+    code.remove(index);
     if (declaringSymbol != null) {
       program.notifySymbolChanged(declaringSymbol);
     }
   }
 
-/*
-  public synchronized void setLine(CodeLine line) {
-    code.put(line.getNumber(), line);
-  }
-
-  public Map.Entry<Integer, CodeLine> ceilingEntry(int i) {
-    return code.ceilingEntry(i);
-  }*/
-
   public synchronized Statement getLine(int lineNumber) {
-    return code.get(lineNumber);
-  }
-/*
-  public synchronized CodeLine findNextLine(int i) {
-    Map.Entry<Integer, CodeLine> entry = code.ceilingEntry(i);
-    return entry == null ? null : entry.getValue();
+    int index = lineNumber - 1;
+    return code.get(index);
   }
 
-  public synchronized CodeLine findLineBefore(int i) {
-    Map.Entry<Integer, CodeLine> entry = code.floorEntry(i - 1);
-    return entry == null ? null : entry.getValue();
-  }
-*/
   public void clear() {
     code = new ArrayList<>();
   }
@@ -183,20 +165,6 @@ public class FunctionImplementation implements Function, Declaration {
     return code.size();
   }
 
-/*
-  public Node find(StatementMatcher matcher, int... position) {
-    StatementSearch search = new StatementSearch(this) {
-      @Override
-      public boolean statementMatches(CodeLine line, int index, Node statement) {
-        return matcher.statementMatches(line, index, statement);
-      }
-    };
-    Node result = search.find(position[0], position[1]);
-    position[0] = search.lineNumber;
-    position[1] = search.index;
-    return result;
-  }
-*/
   public void setType(FunctionType functionType) {
     this.type = functionType;
   }
@@ -233,8 +201,9 @@ public class FunctionImplementation implements Function, Declaration {
   }
 
   public synchronized void setLine(int lineNumber, Statement statement) {
-    if (lineNumber < code.size()) {
-      code.set(lineNumber, statement);
+    int index = lineNumber - 1;
+    if (index < code.size()) {
+      code.set(index, statement);
     } else {
       code.add(statement);
     }
@@ -244,8 +213,9 @@ public class FunctionImplementation implements Function, Declaration {
   }
 
   public synchronized void insertLine(int lineNumber, Statement statement) {
-    if (lineNumber < code.size()) {
-      code.add(lineNumber, statement);
+    int index = lineNumber - 1;
+    if (index < code.size()) {
+      code.add(index, statement);
     } else {
       code.add(statement);
     }

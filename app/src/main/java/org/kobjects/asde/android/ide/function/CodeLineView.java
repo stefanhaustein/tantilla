@@ -30,7 +30,6 @@ public class CodeLineView extends LinearLayout {
   boolean odd;
   boolean highlighted;
   int lineNumber;
-  int displayedLineNumer;
   MainActivity context;
 
   public CodeLineView(MainActivity context, boolean odd) {
@@ -72,8 +71,7 @@ public class CodeLineView extends LinearLayout {
 
   void setCodeLine(int index, Statement statement, Map<Node, Exception> errors) {
     this.lineNumber = index;
-    this.displayedLineNumer = 2 + index * 2;
-    lineNumberView.setText(displayedLineNumer + " ");
+    lineNumberView.setText(lineNumber + " ");
 
     AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
     int indent = statement.getIndent();

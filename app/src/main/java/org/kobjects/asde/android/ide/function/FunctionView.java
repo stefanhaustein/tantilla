@@ -109,7 +109,7 @@ public class FunctionView extends SymbolView {
           codeLineView = new CodeLineView(mainActivity, index % 2 == 1);
           codeView.addView(codeLineView);
         }
-        codeLineView.setCodeLine(index, statement, symbol.getErrors());
+        codeLineView.setCodeLine(index + 1, statement, symbol.getErrors());
       }
       index++;
       if (updated > 8) {
@@ -277,10 +277,10 @@ public class FunctionView extends SymbolView {
       AlertDialog.Builder alertBuilder = new AlertDialog.Builder(mainActivity);
       alertBuilder.setTitle("Confirm Delete");
       if (firstSelectedIndex == lastSelectedIndex) {
-        alertBuilder.setMessage("Delete line " + getCodeLineView(firstSelectedIndex).displayedLineNumer + "'?");
+        alertBuilder.setMessage("Delete line " + getCodeLineView(firstSelectedIndex).lineNumber + "'?");
       } else {
-        alertBuilder.setMessage("Delete lines " + getCodeLineView(getStartIndex()).displayedLineNumer + " - " +
-            getCodeLineView(getEndIndex() - 1).displayedLineNumer + "?");
+        alertBuilder.setMessage("Delete lines " + getCodeLineView(getStartIndex()).lineNumber + " - " +
+            getCodeLineView(getEndIndex() - 1).lineNumber + "?");
       }
       alertBuilder.setNegativeButton("Cancel", null);
       alertBuilder.setPositiveButton("Delete", (a, b) -> {

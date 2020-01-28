@@ -68,22 +68,22 @@ public class Shell {
                 break;
             case NUMBER:
                 if (!tokenizer.currentValue.startsWith("#")) {
-                    int lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
+                    double lineNumber = Double.parseDouble(tokenizer.currentValue);
                     tokenizer.nextToken();
                     if (tokenizer.currentType == Tokenizer.TokenType.IDENTIFIER
                             || "?".equals(tokenizer.currentValue)) {
 
                         List<Statement> parsed = program.parser.parseStatementList(tokenizer, (FunctionImplementation) currentFunction.getValue());
-                        boolean replace = (lineNumber & 1) == 0;
-                        lineNumber = (lineNumber - 1) / 2;
+                        int targetLine = (int) Math.ceil(lineNumber);
+                        boolean replace = lineNumber == targetLine;
                         for (Statement statement : parsed) {
                             if (replace) {
-                                ((FunctionImplementation) currentFunction.getValue()).setLine(lineNumber, statement);
+                                ((FunctionImplementation) currentFunction.getValue()).setLine(targetLine, statement);
                                 replace = false;
                             } else {
-                                ((FunctionImplementation) currentFunction.getValue()).insertLine(lineNumber, statement);
+                                ((FunctionImplementation) currentFunction.getValue()).insertLine(targetLine, statement);
                             }
-                            lineNumber++;
+                            targetLine++;
                         }
 
                         // Line added, done here.

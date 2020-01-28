@@ -18,7 +18,7 @@ public class EvaluationContext {
 
     public Object returnValue;
 
-    public int currentLine;
+    public int currentLine = 1;
 
 
     /**
