@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang.function;
 
 import org.kobjects.annotatedtext.AnnotatedString;
+import org.kobjects.asde.lang.array.Array;
+import org.kobjects.asde.lang.array.ArrayType;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.typesystem.FunctionType;
@@ -11,45 +13,42 @@ import org.kobjects.typesystem.Type;
 public enum Builtin implements Function {
 
     ABS("Calculates the absolute value of the input.\n\nExamples:\n\n * abs(3.4) = 3.4\n * abs(-4) = 4\n * abs(0) = 0",
-        1, Types.FLOAT),
-    ASC("Returns the ascii value of the first character of the string\n\nExample:\n\n * asc(\"A\") = 65.",
-        1, Types.STR),
-    ATAN2("Converts the given cartesian coordinates into the angle of the corresponding polar coordinates", 2, Types.FLOAT, Types.FLOAT),
-    CHR$("Returns a single-character string representing the given ASCII value.\n\nExample:\n\n * chr$(65) = \"A\"",
-        1, Types.FLOAT),
+        Types.FLOAT, Types.FLOAT),
+    ORD("Returns the code point value of the first character of the string\n\nExample:\n\n * ord(\"A\") = 65.",
+        Types.FLOAT, Types.STR),
+    ATAN2("Converts the given cartesian coordinates into the angle of the corresponding polar coordinates",
+        Types.FLOAT, Types.FLOAT, Types.FLOAT),
+    CHR("Returns a single-character string representing the given ASCII value.\n\nExample:\n\n * chr$(65) = \"A\"",
+        Types.STR, Types.FLOAT),
     COS("Calculates the cosine of the parameter value.",
-        1, Types.FLOAT),
+        Types.FLOAT, Types.FLOAT),
     EXP("Returns e raised to the power of the parameter value.",
-        1, Types.FLOAT),
+        Types.FLOAT, Types.FLOAT),
+    CEIL("Rounds up to the next higher integer",
+        Types.FLOAT, Types.FLOAT),
     INT("Rounds down to the next lower integer",
-        1, Types.FLOAT),
-    LEFT$("Returns the prefix of the string consisting of the given number of characters.\n\n"
+      Types.FLOAT, Types.FLOAT),
+    FLOOR("Rounds down to the next lower integer",
+        Types.FLOAT, 1, Types.FLOAT),
+    /*LEFT$("Returns the prefix of the string consisting of the given number of characters.\n\n"
         + "Example:\n\nleft$(\"abcdefg\", 3) = \"abc\"",
-        2, Types.STR, Types.FLOAT),
+        Types.STR, 2, Types.STR, Types.FLOAT), */
     LEN("Returns the length of the given string.\n\nExample:\n\n * len(\"ABC\") = 3",
-        1, Types.STR),
+        Types.FLOAT, 1, Types.STR),
     LOG("Calculates the logarithm to the base e.",
-        1, Types.FLOAT),
-    MID$("Returns the substring starting at the given position (1-based) with the given length. "
-        + "If the length is omitted, the whole remainder is returned.\n\n"
-        + "Examples:\n\n"
-        + " * mid$(\"abcdefg\", 3, 2) = \"cd\"\n"
-        + " * mid$(\"abcdefg\", 3) = \"cdefg\"",
-        2, Types.STR, Types.FLOAT, Types.FLOAT),
-    RIGHT$("Returns the suffix of the string with the given number of characters.\n\n"
-        + "Example:\n\n * right$(\"abc\", 2) = \"bc\"",
-        2, Types.STR, Types.FLOAT),
-    RND("Returns a (pseudo-)random number in the range from 0 (inclusive) to 1 (exclusive)",
-        0, Types.FLOAT, Types.FLOAT),
-    SGN("Returns the sign of the given number: 1 for positive numbers, 0 for zero and -1 for negative numbers.",
-        1, Types.FLOAT),
-    STR$("Converts the given number to a string (simiar to PRINT, but without any leading spaces.",
-        1, Types.FLOAT),
-    SQR("Calculates the square root of the argument\n\nExample:\n\n * sqr(9) = 3", 1, Types.FLOAT),
-    SIN("Calculates the sine of the parameter value.", 1, Types.FLOAT),
-    TAB("Returns a string with the given number of spaces, relative to the start of the current line, taking the current cursor position into account. The string will be empty if the cursor is at or beyond the given position", 1, Types.FLOAT),
-    TAN("Calculates the tangent of the argument", 1, Types.FLOAT),
-    VAL("Parses the argument as a floating point number. If this fails, the return value is 0.", 1, Types.STR);
+        Types.FLOAT, 1, Types.FLOAT),
+    RANGE("Returns a sequence of integers from the first parameter (inclusive) to the second parameter (exclusive)",
+        new ArrayType(Types.FLOAT), 1, Types.FLOAT, Types.FLOAT, Types.FLOAT),
+    RANDOM("Returns a (pseudo-)random number in the range from 0 (inclusive) to 1 (exclusive)",
+        Types.FLOAT),
+    STR("Converts the given number to a string (similar to print).",
+        Types.STR, 1, Types.FLOAT),
+    SQRT("Calculates the square root of the argument\n\nExample:\n\n * sqr(9) = 3",
+        Types.FLOAT ,1, Types.FLOAT),
+    SIN("Calculates the sine of the parameter value.", Types.FLOAT, Types.FLOAT),
+    TAN("Calculates the tangent of the argument", Types.FLOAT, Types.FLOAT),
+    FLOAT("Parses the argument as a floating point number. If this fails, the return value is 0.",
+        Types.FLOAT, Types.STR);
 
   public static int asInt(Object o) {
     return Math.round(((Double) o).floatValue());
@@ -110,18 +109,18 @@ public enum Builtin implements Function {
   public FunctionType signature;
   private final AnnotatedString documentation;
 
-    Builtin(String documentation, int minParams, Type... parameterTypes) {
+    Builtin(String documentation, Type returnType, int minParams, Type... parameterTypes) {
       this.documentation = AnnotatedString.of(documentation);
       this.minParams = minParams;
       Parameter[] parameters = new Parameter[parameterTypes.length];
       for (int i = 0; i < parameters.length; i++) {
         parameters[i] = new Parameter(String.valueOf((char) ('a' + i)), parameterTypes[i]);
       }
-      this.signature = new FunctionTypeImpl((name().endsWith("$") || name().equalsIgnoreCase("TAB")) ? Types.STR : Types.FLOAT, minParams, parameterTypes);
+      this.signature = new FunctionTypeImpl(returnType, minParams, parameterTypes);
     }
 
-  Builtin(int minParams, Type... parameterTypes) {
-    this(null, minParams, parameterTypes);
+  Builtin(String documentation, Type returnType, Type... parameterTypes) {
+    this(documentation, returnType, parameterTypes.length, parameterTypes);
   }
 
 
@@ -136,52 +135,48 @@ public enum Builtin implements Function {
         return Math.abs((Double) evaluationContext.getParameter(0));
       case ATAN2:
         return Math.atan2((Double) evaluationContext.getParameter(0), (Double) evaluationContext.getParameter(1));
-      case ASC: {
+      case ORD: {
         String s = (String) evaluationContext.getParameter(0);
         return s.length() == 0 ? 0.0 : (double) Character.codePointAt(s, 0);
       }
-      case CHR$:
+      case CEIL:
+        return Math.ceil((Double) evaluationContext.getParameter(0));
+      case CHR:
         return String.valueOf(Character.toChars(((Double) (evaluationContext.getParameter(0))).intValue()));
       case COS:
         return Math.cos((Double) evaluationContext.getParameter(0));
       case EXP:
         return Math.exp((Double) evaluationContext.getParameter(0));
-      case INT:
+      case FLOOR:
         return Math.floor((Double) evaluationContext.getParameter(0));
-      case LEFT$:
-        return left((String) evaluationContext.getParameter(0), asInt(evaluationContext.getParameter(1)));
+      case INT:
+        return Double.valueOf((int) evaluationContext.getParameter(0));
       case LEN:
         return Double.valueOf(len((String) evaluationContext.getParameter(0)));
       case LOG:
         return Math.log((Double) evaluationContext.getParameter(0));
-      case MID$: {
-        String s = (String) evaluationContext.getParameter(0);
-        int start = asInt(evaluationContext.getParameter(1));
-        if (paramCount == 2) {
-          return mid(s, start);
-        }
-        return mid(s, start, asInt(evaluationContext.getParameter(2)));
-      }
-      case SGN:
-        return Math.signum((Double) evaluationContext.getParameter(0));
-      case SIN:
+       case SIN:
         return Math.sin((Double) evaluationContext.getParameter(0));
-      case SQR:
+      case SQRT:
         return Math.sqrt((Double) evaluationContext.getParameter(0));
-      case STR$:
+      case STR:
         return Program.toString(evaluationContext.getParameter(0));
-      case RIGHT$: {
-        return right(
-            (String) evaluationContext.getParameter(0),
-            asInt(evaluationContext.getParameter(1)));
+      case RANGE: {
+        double end = (Double) evaluationContext.getParameter(paramCount == 1 ? 0 : 1);
+        double start = paramCount < 2 ? 0 : (Double) evaluationContext.getParameter(1);
+        double step = paramCount < 3 ? 1 : (Double) evaluationContext.getParameter(2);
+
+        Object[] values = new Object[(int) ((end - start) / step)];
+        for (int i = 0; i < values.length; i++) {
+          values[i] = Double.valueOf(start + i * step);
+        }
+        return new Array(Types.FLOAT, values);
       }
-      case RND:
+      case RANDOM:
         return Math.random();
-      case TAB:
-        return evaluationContext.control.program.tab(asInt(evaluationContext.getParameter(0)));
       case TAN:
         return Math.tan((Double) evaluationContext.getParameter(0));
-      case VAL:
+      case FLOAT:
         return Double.parseDouble((String) evaluationContext.getParameter(0));
       default:
         throw new IllegalArgumentException("NYI: " + name());

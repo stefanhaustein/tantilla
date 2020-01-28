@@ -1,6 +1,5 @@
-ASDE
-var  ship = screen.newSprite()
-var  gameOver = false
+var ship = screen.newSprite()
+var gameOver = false
 var score = 0
 var scoreDisplay = screen.newTextBox()
 var gameOverDisplay = screen.newTextBox()
@@ -8,102 +7,102 @@ var continueDisplay = screen.newTextBox()
 DIM asteroids(0) as Sprite
 
 def newAsteroid(x: float, y: float, size: float, direction: float, speed: float):
-10 var asteroid = screen.newSprite()
-15 asteroids.append(asteroid)
-20 asteroid.face = "🥔"
-30 asteroid.x = x
-40 asteroid.y = y
-45 asteroid.size = size
-50 asteroid.direction = direction
-55 asteroid.speed = speed
-60 asteroid.rotation = rnd() * 30
-70 asteroid.edgeMode = EdgeMode.WRAP
-100 on asteroid.collisions.length > 0 :
-103   if asteroid.face == "🥔" :
-107     var collisions = asteroid.collisions
-110     for i = 0 to collisions.length - 1
-120       var other = collisions(i)
-130       if other.face == "🚀" :
-135         gameOver = true
-140       elif other.face == "🔴" and other.opacity > 0:
-150         other.opacity = 0
-155         breakAsteroid asteroid
-160       end
-170     end
-180   end
-200 end
+ var asteroid = screen.newSprite()
+ asteroids.append(asteroid)
+ asteroid.face = "🥔"
+ asteroid.x = x
+ asteroid.y = y
+ asteroid.size = size
+ asteroid.direction = direction
+ asteroid.speed = speed
+ asteroid.rotation = random() * 30
+ asteroid.edgeMode = EdgeMode.WRAP
+ on asteroid.collisions.length > 0 :
+   if asteroid.face == "🥔" :
+     var collisions = asteroid.collisions
+     for i = 0 to collisions.length - 1
+       var other = collisions(i)
+       if other.face == "🚀" :
+         gameOver = true
+       elif other.face == "🔴" and other.opacity > 0:
+         other.opacity = 0
+         breakAsteroid asteroid
+       end
+     end
+   end
+ end
 end
 
 def breakAsteroid(asteroid: Sprite):
-10 asteroid.face = "💥"
-12 asteroid.grow = 10
-14 asteroid.fade = -1
-15 asteroid.edgeMode = EdgeMode.NONE
-20 play "💥"
-25 asteroids.remove(asteroid)
-27 score = score + 50 - asteroid.size
-30 if asteroid.size > 30 :
-35   var angle = 60 * rnd()
-40   newAsteroid asteroid.x, asteroid.y, asteroid.size - 10, asteroid.direction + angle, asteroid.speed * 1.5
-50   newAsteroid asteroid.x, asteroid.y, asteroid.size - 10, asteroid.direction - angle, asteroid.speed * 1.5
-60 end
+ asteroid.face = "💥"
+ asteroid.grow = 10
+ asteroid.fade = -1
+ asteroid.edgeMode = EdgeMode.NONE
+ play "💥"
+ asteroids.remove(asteroid)
+ score = score + 50 - asteroid.size
+ if asteroid.size > 30 :
+   var angle = 60 * random()
+   newAsteroid asteroid.x, asteroid.y, asteroid.size - 10, asteroid.direction + angle, asteroid.speed * 1.5
+   newAsteroid asteroid.x, asteroid.y, asteroid.size - 10, asteroid.direction - angle, asteroid.speed * 1.5
+ end
 end
 
 def shoot():
-10 var shot = screen.newSprite()
-15 shot.size = 5
-20 shot.face = "🔴"
-30 shot.direction = ship.angle + 45
-40 shot.speed = 200
-50 play "🔫"
+ var shot = screen.newSprite()
+ shot.size = 5
+ shot.face = "🔴"
+ shot.direction = ship.angle + 45
+ shot.speed = 200
+ play "🔫"
 end
 
 def main():
-10 scoreDisplay.yAlign = YAlign.TOP
-20 scoreDisplay.xAlign = XAlign.LEFT
-30 scoreDisplay.x = 5
-50 scoreDisplay.y = 5
+ scoreDisplay.yAlign = YAlign.TOP
+ scoreDisplay.xAlign = XAlign.LEFT
+ scoreDisplay.x = 5
+ scoreDisplay.y = 5
 
-210 ship.size = 30
-220 ship.face = "🚀"
-225 dpad.visible = TRUE
-230 on dpad.right :
-231   ship.rotation = 90
-232 end
-240 on dpad.left :
-243   ship.rotation = -90
-246 end
-260 on not dpad.right and not dpad.left :
-263   ship.rotation = 0
-266 end
-270 on dpad.fire :
-280   if not gameOver : shoot; end
-290 end
+ ship.size = 30
+ ship.face = "🚀"
+ dpad.visible = TRUE
+ on dpad.right :
+   ship.rotation = 90
+ end
+ on dpad.left :
+   ship.rotation = -90
+ end
+ on not dpad.right and not dpad.left :
+   ship.rotation = 0
+ end
+ on dpad.fire :
+   if not gameOver : shoot; end
+ end
 
-1000 while True:
-1002 while not gameOver:
-1005   if asteroids.length == 0 :
-1010     newAsteroid screen.width / 2, screen.height / 2, 50, rnd() * 360, rnd() * 10 + 5
-1020   end
-1030   sleep 100
-1040   scoreDisplay.text = "Score: " + score + " #: " + asteroids.length
-1050 end
-1060 gameOverDisplay.text = "GAME OVER"
-1100 sleep 1000
-1105 continueDisplay.y = -20
-1110 continueDisplay.text = "Press fire to restart."
-1230 while not dpad.fire:
-1235  sleep 100
-1237 end
-1240 gameOverDisplay.text = ""
-1250 continueDisplay.text = ""
-1255 score = 0
-1257 gameOver = false
-1300 for i = asteroids.length - 1 to 0 step -1
-1310   var asteroid = asteroids(i)
-1320   asteroid.opacity = 0
-1330   asteroid.face = "💥"
-1330   asteroids.remove(asteroid)
-1340 end
-1500 end
+ while True:
+  while not gameOver:
+   if asteroids.length == 0 :
+     newAsteroid screen.width / 2, screen.height / 2, 50, random() * 360, random() * 10 + 5
+   end
+   sleep 100
+   scoreDisplay.text = "Score: " + score + " #: " + asteroids.length
+ end
+ gameOverDisplay.text = "GAME OVER"
+ sleep 1000
+ continueDisplay.y = -20
+ continueDisplay.text = "Press fire to restart."
+ while not dpad.fire:
+  sleep 100
+ end
+ gameOverDisplay.text = ""
+ continueDisplay.text = ""
+ score = 0
+ gameOver = false
+ for i = asteroids.length - 1 to 0 step -1
+   var asteroid = asteroids(i)
+   asteroid.opacity = 0
+   asteroid.face = "💥"
+   asteroids.remove(asteroid)
+ end
+ end
 end
