@@ -257,20 +257,11 @@ public class StatementParser {
 
   private ForStatement parseFor(Tokenizer tokenizer) {
     tokenizer.nextToken();
-    Node assignment = expressionParser.parse(tokenizer);
-    if (!(assignment instanceof RelationalOperator) || !(assignment.children[0] instanceof Identifier)
-            || assignment.children[0].children.length != 0
-            || !((RelationalOperator) assignment).getName().equals("=")) {
-      tokenizer.exception("LocalVariable assignment expected after FOR", null);
-    }
-    String varName = ((Identifier) assignment.children[0]).getName();
-    require(tokenizer, "TO");
-    Node end = expressionParser.parse(tokenizer);
-    if (tryConsume(tokenizer, "STEP")) {
-      return new ForStatement(varName, assignment.children[1], end,
-              expressionParser.parse(tokenizer));
-    }
-    return new ForStatement(varName, assignment.children[1], end);
+    String varName = tokenizer.consumeIdentifier();
+    require(tokenizer, "in");
+    Node iterable = expressionParser.parse(tokenizer);
+    tokenizer.consume(":");
+    return new ForStatement(varName, iterable);
   }
 
   private Statement parseDeclaration(Tokenizer tokenizer, DeclarationStatement.Kind kind) {

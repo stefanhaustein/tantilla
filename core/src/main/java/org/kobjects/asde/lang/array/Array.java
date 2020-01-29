@@ -9,8 +9,9 @@ import org.kobjects.typesystem.PropertyDescriptor;
 import org.kobjects.typesystem.Type;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
-public class Array extends Instance {
+public class Array extends Instance implements Iterable<Object> {
 
     private final ArrayList<Object> data;
 
@@ -146,5 +147,9 @@ public class Array extends Instance {
 
     public synchronized boolean contains(Object object) {
         return data.contains(object);
+    }
+
+    public Iterator<Object> iterator() {
+        return data.iterator();
     }
 }

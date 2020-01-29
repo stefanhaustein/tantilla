@@ -20,8 +20,7 @@ def newAsteroid(x: float, y: float, size: float, direction: float, speed: float)
  on asteroid.collisions.length > 0 :
    if asteroid.face == "🥔" :
      var collisions = asteroid.collisions
-     for i = 0 to collisions.length - 1
-       var other = collisions(i)
+     for other in collisions:
        if other.face == "🚀" :
          gameOver = true
        elif other.face == "🔴" and other.opacity > 0:
@@ -98,8 +97,7 @@ def main():
  continueDisplay.text = ""
  score = 0
  gameOver = false
- for i = asteroids.length - 1 to 0 step -1
-   var asteroid = asteroids(i)
+ for asteroid in asteroids:
    asteroid.opacity = 0
    asteroid.face = "💥"
    asteroids.remove(asteroid)

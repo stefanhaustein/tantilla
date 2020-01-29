@@ -30,9 +30,6 @@ public enum Builtin implements Function {
       Types.FLOAT, Types.FLOAT),
     FLOOR("Rounds down to the next lower integer",
         Types.FLOAT, 1, Types.FLOAT),
-    /*LEFT$("Returns the prefix of the string consisting of the given number of characters.\n\n"
-        + "Example:\n\nleft$(\"abcdefg\", 3) = \"abc\"",
-        Types.STR, 2, Types.STR, Types.FLOAT), */
     LEN("Returns the length of the given string.\n\nExample:\n\n * len(\"ABC\") = 3",
         Types.FLOAT, 1, Types.STR),
     LOG("Calculates the logarithm to the base e.",
@@ -49,19 +46,6 @@ public enum Builtin implements Function {
     TAN("Calculates the tangent of the argument", Types.FLOAT, Types.FLOAT),
     FLOAT("Parses the argument as a floating point number. If this fails, the return value is 0.",
         Types.FLOAT, Types.STR);
-
-  public static int asInt(Object o) {
-    return Math.round(((Double) o).floatValue());
-  }
-
-  private static String left(String s, int count) {
-    int pos = 0;
-    for (int i = 0; i < count && pos < s.length(); i++) {
-      int cp = Character.codePointAt(s, pos);
-      pos += Character.charCount(cp);
-    }
-    return pos >= s.length() ? s : s.substring(0, pos);
-  }
 
   private static int len(String s) {
     int pos = 0;

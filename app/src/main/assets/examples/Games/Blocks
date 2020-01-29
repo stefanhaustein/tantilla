@@ -14,7 +14,7 @@ LET rows = 0
 LET gameOver = false
 
 def checkPosition(x: float, y: float) -> float:
-100 FOR i = 0 TO 3
+100 FOR i in range(4)
 110   IF grid(x + pieceX(i), y + pieceY(i)) <> 0 :
 112     RETURN 0
 114   ENDIF
@@ -55,7 +55,7 @@ end
 
 def drawPiece():
 100 setColor pc
-110 FOR i = 0 TO 3
+110 FOR i in range(4):
 120  let x = px0 + pieceX(i)
 130  let y = py0 + pieceY(i)
 140  grid(x, y) = pc
@@ -64,7 +64,7 @@ def drawPiece():
 end
 
 def erasePiece():
-100 for i = 0 TO 3
+100 for i in range(4):
 110   let x = px0 + pieceX(i)
 120   let y = py0 + pieceY(i)
 130   grid(x, y) = 0
@@ -73,15 +73,15 @@ def erasePiece():
 end
 
 def definePiece():
-210 FOR i = 0 TO 3
+210 FOR i in range(4):
 220   pieceX(i) = allPieces(pc - 1, i * 2)
 230   pieceY(i) = allPieces(pc - 1, i * 2 + 1)
 240 end
 end
 
 def drawAll():
-100 FOR y = 0 to 20
-120  FOR x = 1 to 12
+100 FOR y in range(21):
+120  FOR x in range(1, 13):
 130    let c = grid(x, y)
 140    if c <> 0 :
 141      setColor c
@@ -94,8 +94,8 @@ def drawAll():
 end
 
 def dropGrid(cy: float):
-100 for x = 2 to 11
-110   for y = cy to 2 step -1
+100 for x in range(2, 12)
+110   for y in range(2, cy + 1).reverse()
 120     grid(x, y) = grid(x, y -1)
 130   next y
 140 next x
@@ -104,9 +104,9 @@ end
 
 def checkGrid():
 100 let dropCount = 0
-110 for cy = 0 to 19
+110 for cy in range(20):
 120   let row = 0
-130   for x = 2 to 11
+130   for x in range(2, 12):
 140     if grid(x,cy) <> 0 :
 141       row = row + 1
 142     end
@@ -176,7 +176,7 @@ def rotate()
 100 erasePiece
 105 let mx = 2
 107 if pc > 5 : mx = 3
-110 FOR i = 0 to 3
+110 FOR i in range(4):
 120  let x = pieceX(i)
 130  pieceX(i) = mx - pieceY(i)
 140  pieceY(i) = x
@@ -185,7 +185,7 @@ def rotate()
 170   drawPiece
 180   RETURN
 190 end
-200 FOR i = 0 to 3
+200 FOR i in range(4)
 210   let x = pieceX(i)
 220   pieceX(i) = pieceY(i)
 230   pieceY(i) = mx - x
@@ -203,7 +203,7 @@ def main():
 140 pen.strokeColor = 0
 150 pp = 1
 
-400 for i = 0 to 20
+400 for i in range(21):
 410   grid(1, i) = 8
 420   grid(12, i) = 8
 421   for j = 2 to 11
@@ -211,7 +211,7 @@ def main():
 425   next j
 430 next i
 
-450 for i = 1 to 12
+450 for i = in range(1, 13):
 460   grid(i, 20) = 8
 470 next i
 
