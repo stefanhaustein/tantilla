@@ -1,5 +1,3 @@
-ASDE
-
 const WHITE = newColor(1,1,1)
 const BLACK = newColor(0,0,0)
 const GREY = newColor(0.5, 0.5, 0.5)
@@ -211,7 +209,7 @@ class Checkerboard:
 var roughness = 150
 
 def diffuse(pos: Vector) -> Color:
-10 if (1000 + int(pos.z) + int(pos.x)) MOD 2 <> 0 :
+10 if (1000 + int(pos.z) + int(pos.x)) % 2 != 0 :
 20   return WHITE
 30 else
 40   return BLACK
@@ -224,7 +222,7 @@ end
 
 
 def reflect(pos Vector) -> float:
-10 if (1000 + int(pos.z) + int(pos.x)) MOD 2 <> 0 :
+10 if (1000 + int(pos.z) + int(pos.x)) % 2 != 0 :
 20   return 0.1
 30 else
 40   return 0.7
@@ -241,7 +239,7 @@ var defaultColor = BLACK
 
 def intersections(r: Ray, s: Scene) -> Intersection:
 10 var closest = s.things[0].intersect(r)
-20 for i = 1 to s.things.length - 1
+20 for i = 1 to s.things.size - 1
 30   var inter = s.things[i].intersect(r)
 40   if inter.dist < closest.dist :
 50     closest = inter
@@ -302,8 +300,8 @@ end
 
 def getNaturalColor(t: Thing, pos: Vector, norm: Vector, rd: Vector, s: Scene) -> Color
 10 var col = defaultColor
-20 for i = 0 to s.lights.length - 1
-30   col = addLight(t, pos, norm, rd, s, col, s.lights[i])
+20 for l in s.lights:
+30   col = addLight(t, pos, norm, rd, s, col, l)
 40 end
 50 return col
 end
@@ -314,10 +312,10 @@ end
 
 SUB render(s: Scene, p: Pen, screenWidth: float, screenHeight: float)
 5 p.strokeColor = 0
-10 for y = 0 to screenHeight
-20   for x = -screenWidth / 2 to screenWidth / 2
+10 for y in range(screenHeight):
+20   for x in range(-screenWidth / 2, screenWidth / 2):
 25     var yy = int(y / 2)
-27     if y mod 2 == 0 : yy = -yy; end
+27     if y % 2 == 0 : yy = -yy; end
 30     var color = traceRay(newRay(s.camera.pos, getPoint(x, yy, s.camera, screenWidth, screenHeight)), s, 0)
 40     p.fillColor = color.toDrawingColor()
 50     p.rect(x, yy, 1.5, 1.5)

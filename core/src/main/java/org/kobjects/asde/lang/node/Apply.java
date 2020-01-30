@@ -2,8 +2,8 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
-import org.kobjects.asde.lang.array.Array;
-import org.kobjects.asde.lang.array.ArrayType;
+import org.kobjects.asde.lang.list.ListImpl;
+import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.Types;
@@ -66,7 +66,7 @@ public class Apply extends AssignableNode {
   public void resolveForAssignment(FunctionValidationContext resolutionContext, Node parent, Type type, int line) {
     resolve(resolutionContext, parent, line);
 
-    if (!(children[0].returnType() instanceof ArrayType)) {
+    if (!(children[0].returnType() instanceof ListType)) {
       throw new RuntimeException("Array expected");
     }
 
@@ -78,7 +78,7 @@ public class Apply extends AssignableNode {
 
   public void set(EvaluationContext evaluationContext, Object value) {
     Object base = children[0].eval(evaluationContext);
-    Array array = (Array) base;
+    ListImpl array = (ListImpl) base;
     int[] indices = new int[children.length - 1];
     for (int i = 1; i < children.length; i++) {
       indices[i - 1] = children[i].evalInt(evaluationContext);
@@ -93,12 +93,12 @@ public class Apply extends AssignableNode {
 
   @Override
   public boolean isAssignable() {
-    return children[0].returnType() instanceof ArrayType;
+    return children[0].returnType() instanceof ListType;
   }
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
-    if (children[0].returnType() instanceof ArrayType) {
+    if (children[0].returnType() instanceof ListType) {
       resolvedKind = Kind.ARRAY_ACCESS;
       for (int i = 1; i < children.length; i++) {
         if (children[i].returnType() != Types.FLOAT) {
@@ -129,9 +129,9 @@ public class Apply extends AssignableNode {
   public Object eval(EvaluationContext evaluationContext) {
     switch (resolvedKind) {
       case ARRAY_ACCESS:
-        Array array = (Array) children[0].eval(evaluationContext);
+        ListImpl array = (ListImpl) children[0].eval(evaluationContext);
         for (int i = 1; i < children.length - 1; i++) {
-          array = (Array) array.get(children[i].evalInt(evaluationContext));
+          array = (ListImpl) array.get(children[i].evalInt(evaluationContext));
         }
         return array.get(children[children.length-1].evalInt(evaluationContext));
 
@@ -165,7 +165,7 @@ public class Apply extends AssignableNode {
   public Type returnType() {
     switch (resolvedKind) {
       case ARRAY_ACCESS:
-        return ((ArrayType) children[0].returnType()).getElementType(children.length - 2);
+        return ((ListType) children[0].returnType()).getElementType(children.length - 2);
       case FUNCTION_EVALUATION:
         return ((FunctionType) children[0].returnType()).getReturnType();
       default:

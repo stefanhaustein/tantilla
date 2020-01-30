@@ -1,7 +1,7 @@
 def main():
  let p = screen.newPen()
  while true:
-  p.strokeColor = 0xff000000+(rnd()*0xffffff)
-  p.line(rnd()*400-200,rnd()*400-200,rnd()*400-200,rnd()*400-200)
+  p.strokeColor = 0xff000000+(random()*0xffffff)
+  p.line(random()*400-200,random()*400-200,random()*400-200,random()*400-200)
  end
 end

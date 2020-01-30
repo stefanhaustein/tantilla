@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.parser;
 
-import org.kobjects.asde.lang.array.ArrayType;
+import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.Program;
@@ -387,7 +387,7 @@ public class StatementParser {
      }
      while (tokenizer.tryConsume("[")) {
        tokenizer.consume("]");
-       result = new ArrayType(result);
+       result = new ListType(result);
      }
 
      return  result;

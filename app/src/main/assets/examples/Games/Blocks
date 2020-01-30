@@ -1,242 +1,250 @@
 DIM grid(21, 21)
-LET allPieces = {{1, 0, 1, 1, 1, 2, 0, 2}, {1, 0, 1, 1, 2, 1, 2, 2}, {1, 0, 1, 1, 1, 2, 2, 2}, {2, 0, 2, 1, 1, 1, 1, 2}, {1, 0, 0, 1, 1, 1, 2, 1}, {1, 0, 2, 0, 1, 1, 2, 1}, {2, 0, 2, 1, 2, 2, 2, 3}}
-LET pc = 0
-LET pp = 0
-LET pen = screen.newPen()
+var allPieces = [[1, 0, 1, 1, 1, 2, 0, 2], [1, 0, 1, 1, 2, 1, 2, 2], [1, 0, 1, 1, 1, 2, 2, 2], [2, 0, 2, 1, 1, 1, 1, 2], [1, 0, 0, 1, 1, 1, 2, 1], [1, 0, 2, 0, 1, 1, 2, 1], [2, 0, 2, 1, 2, 2, 2, 3]]
+var pc = 0
+var pp = 0
+var p = screen.newPen()
 DIM pieceX(4)
 DIM pieceY(4)
 DIM previewX(4)
 DIM previewY(4)
-LET px0 = 1
-LET py0 = 0
-LET score = 0
-LET rows = 0
-LET gameOver = false
+var px0 = 1
+var py0 = 0
+var score = 0
+var rows = 0
+var gameOver = false
 
-def checkPosition(x: float, y: float) -> float:
-100 FOR i in range(4)
-110   IF grid(x + pieceX(i), y + pieceY(i)) <> 0 :
-112     RETURN 0
-114   ENDIF
-120 NEXT i
-130 RETURN 1
+def checkPosition(x: float, y: float) -> bool:
+ for i in range(4):
+  if grid[x + pieceX(i)][y + pieceY(i)] != 0 :
+    return False
+  end
+ end
+ return True
 end
 
 def drawScore():
-100 pen.fillColor = 0xff888888
-110 pen.clear 40, -10, 60, 60
-120 pen.write 40, 40, "Rows:"
-130 pen.write 40, 30, "" + rows + "  "
-140 pen.write 40, 10, "Score:"
-150 pen.write 40, 0, "" + score + "  "
-160 pen.strokeColor = 0
+ p.fillColor = 0xff888888
+ p.clear 40, -10, 60, 60
+ p.write 40, 40, "Rows:"
+ p.write 40, 30, "" + rows + "  "
+ p.write 40, 10, "Score:"
+ p.write 40, 0, "" + score + "  "
+ p.strokeColor = 0
 end
 
 def setColor(c: float):
-5 # Store in array?
-10 if c = 1 :
-15   pen.fillColor = 0xff0000ff # blue J
-20 elif c = 2 :
-25   pen.fillColor = 0xff00ff00 # green S
-30 elif c = 3 :
-35   pen.fillColor = 0xffff8800 # orange L
-40 elif c = 4 :
-45   pen.fillColor = 0xffff0000 # red Z
-50 elif c = 5 :
-55   pen.fillColor = 0xffff00ff # violet T
-60 elif c = 6 :
-65   pen.fillColor = 0xffeeee00 # yellow O
-70 elif c = 7 :
-75   pen.fillColor = 0xff00ffff # cyan I
-80 elif c = 8 :
-85    pen.fillColor = 0xff888888 # border
-90 end
+ # Store in array?
+ if c = 1 :
+   p.fillColor = 0xff0000ff # blue J
+ elif c = 2 :
+   p.fillColor = 0xff00ff00 # green S
+ elif c = 3 :
+   p.fillColor = 0xffff8800 # orange L
+ elif c = 4 :
+   p.fillColor = 0xffff0000 # red Z
+ elif c = 5 :
+   p.fillColor = 0xffff00ff # violet T
+ elif c = 6 :
+   p.fillColor = 0xffeeee00 # yellow O
+ elif c = 7 :
+   p.fillColor = 0xff00ffff # cyan I
+ elif c = 8 :
+   p.fillColor = 0xff888888 # border
+ end
 end
 
 def drawPiece():
-100 setColor pc
-110 FOR i in range(4):
-120  let x = px0 + pieceX(i)
-130  let y = py0 + pieceY(i)
-140  grid(x, y) = pc
-150  pen.rect x * 8 - 69, 91 - y * 8, 7, 7
-160 NEXT i
+ setColor pc
+ for i in range(4):
+  let x = px0 + pieceX(i)
+  let y = py0 + pieceY(i)
+  grid(x, y) = pc
+  p.rect x * 8 - 69, 91 - y * 8, 7, 7
+ end
 end
 
 def erasePiece():
-100 for i in range(4):
-110   let x = px0 + pieceX(i)
-120   let y = py0 + pieceY(i)
-130   grid(x, y) = 0
-140   pen.clear x * 8 - 70, 90 - y * 8, 8, 8
-150 end
+ for i in range(4):
+   let x = px0 + pieceX(i)
+   let y = py0 + pieceY(i)
+   grid(x, y) = 0
+   p.clear x * 8 - 70, 90 - y * 8, 8, 8
+ end
 end
 
 def definePiece():
-210 FOR i in range(4):
-220   pieceX(i) = allPieces(pc - 1, i * 2)
-230   pieceY(i) = allPieces(pc - 1, i * 2 + 1)
-240 end
+ for i in range(4):
+   pieceX(i) = allPieces(pc - 1, i * 2)
+   pieceY(i) = allPieces(pc - 1, i * 2 + 1)
+ end
 end
 
 def drawAll():
-100 FOR y in range(21):
-120  FOR x in range(1, 13):
-130    let c = grid(x, y)
-140    if c <> 0 :
-141      setColor c
-142      pen.rect x * 8 - 69, 91 - y * 8, 7, 7
-143    else:
-147      pen.clear x * 8 - 70, 90 - y * 8, 8, 8
-148    end
-150  end
-160 end
+ for y in range(21):
+  for x in range(1, 13):
+    var c = grid[x][y]
+    if c != 0:
+      setColor c
+      p.rect x * 8 - 69, 91 - y * 8, 7, 7
+    elif c == 0:
+      p.clear x * 8 - 70, 90 - y * 8, 8, 8
+    end
+  end
+ end
 end
 
 def dropGrid(cy: float):
-100 for x in range(2, 12)
-110   for y in range(2, cy + 1).reverse()
-120     grid(x, y) = grid(x, y -1)
-130   next y
-140 next x
-150 drawAll
+ for x in range(2, 12):
+   for y in range(1, cy):
+     # used to be from cy down to 2
+     grid[x][cy-y] = grid[x][cy-y -1]
+   end
+ end
+ drawAll
 end
 
 def checkGrid():
-100 let dropCount = 0
-110 for cy in range(20):
-120   let row = 0
-130   for x in range(2, 12):
-140     if grid(x,cy) <> 0 :
-141       row = row + 1
-142     end
-150   end
-160   if row = 10 :
-162     dropGrid cy
-164     dropCount = dropCount + 1
-166   end
-170 end
-180 score = score + dropCount * dropCount * 10
-190 rows = rows + dropCount
+ var dropCount = 0
+ for cy in range(20):
+   var row = 0
+   for x in range(2, 12):
+     if grid[x][cy] != 0 :
+       row = row + 1
+     end
+   end
+   if row = 10 :
+     dropGrid cy
+     dropCount = dropCount + 1
+   end
+ end
+ score = score + dropCount * dropCount * 10
+ rows = rows + dropCount
 end
 
 def newPiece():
-10 checkGrid
-20 drawScore
-90 # preview stuff
-100 px0 = 14
-110 py0 = 1
-120 pc = pp
-125 definePiece
-130 erasePiece
-140 let savePc = pc
-200 pp = int(rnd() * 7) + 1
-210 pc = pp
-220 definePiece
-230 drawPiece
-240 pc = savePc
-250 definePiece
-260 px0 = 5
-270 py0 = 0
-280 if checkPosition(px0, py0) = 0 :
-290   gameOver = true
-320 end
+ checkGrid
+ drawScore
+ # preview stuff
+ px0 = 14
+ py0 = 1
+ pc = pp
+ definePiece
+ erasePiece
+ var savePc = pc
+ pp = int(random() * 7) + 1
+ pc = pp
+ definePiece
+ drawPiece
+ pc = savePc
+ definePiece
+ px0 = 5
+ py0 = 0
+ if not checkPosition(px0, py0):
+   gameOver = true
+ end
 end
 
-def moveRight()
-110 erasePiece
-120 if checkPosition(px0 + 1, py0) :
-122   px0 = px0 + 1
-124 end
-130 drawPiece
+def moveRight():
+ erasePiece
+ if checkPosition(px0 + 1, py0) :
+   px0 = px0 + 1
+ end
+ drawPiece
 end
 
-def moveLeft()
-110 erasePiece
-120 if checkPosition(px0 - 1, py0) :
-122   px0 = px0 - 1
-124 end if
-130 drawPiece
+def moveLeft():
+ erasePiece
+ if checkPosition(px0 - 1, py0) :
+   px0 = px0 - 1
+ end
+ drawPiece
 end
 
-def moveDown()
-110 erasePiece
-120 let ok = checkPosition(px0, py0 + 1)
-125 if ok :
-127   py0 = py0 + 1
-128 end
-130 drawPiece
-140 if ok = 0 :
-150   newPiece()
-160   drawPiece()
-170 end
+def moveDown():
+ erasePiece
+ var ok = checkPosition(px0, py0 + 1)
+ if ok :
+   py0 = py0 + 1
+ end
+ drawPiece
+ if not ok :
+   newPiece()
+   drawPiece()
+ end
 end
 
-def rotate()
-100 erasePiece
-105 let mx = 2
-107 if pc > 5 : mx = 3
-110 FOR i in range(4):
-120  let x = pieceX(i)
-130  pieceX(i) = mx - pieceY(i)
-140  pieceY(i) = x
-150 NEXT i
-160 if checkPosition(px0, py0) :
-170   drawPiece
-180   RETURN
-190 end
-200 FOR i in range(4)
-210   let x = pieceX(i)
-220   pieceX(i) = pieceY(i)
-230   pieceY(i) = mx - x
-240 NEXT i
-250 drawPiece
+def rotate():
+ erasePiece
+ var mx = 2
+ if pc > 5:
+   mx = 3
+ end
+ for i in range(4):
+  var x = pieceX(i)
+  pieceX(i) = mx - pieceY(i)
+  pieceY(i) = x
+ end
+ if checkPosition(px0, py0) :
+   drawPiece
+   return
+ end
+ for i in range(4):
+   var x = pieceX(i)
+   pieceX(i) = pieceY(i)
+   pieceY(i) = mx - x
+ end
+ drawPiece
 end
 
 def main():
-100 while True:
-101 cls
-110 # Based on David Murray's code, see
-120 # http://www.the8bitguy.com/download-davids-software/
-125 gameOver = false
-130 dpad.visible = true
-140 pen.strokeColor = 0
-150 pp = 1
+ while True:
+  cls
+  # Based on David Murray's code, see
+  # http://www.the8bitguy.com/download-davids-software/
+  gameOver = false
+  dpad.visible = true
+  p.strokeColor = 0
+  pp = 1
 
-400 for i in range(21):
-410   grid(1, i) = 8
-420   grid(12, i) = 8
-421   for j = 2 to 11
-423     grid(j, i) = 0
-425   next j
-430 next i
+  for i in range(21):
+   grid[1][i] = 8
+   grid[12][i] = 8
+   for j in range(2, 12):
+     grid[j][i] = 0
+   end
+  end
 
-450 for i = in range(1, 13):
-460   grid(i, 20) = 8
-470 next i
+  for i in  range(1, 13):
+   grid[i][20] = 8
+  end
 
-500 drawAll
-510 newPiece
-520 newPiece
-530 drawPiece
-540 let timer = 0
+  drawAll
+  newPiece
+  newPiece
+  drawPiece
+  var timer = 0
 
-550 while not gameover:
+  while not gameover:
 
-600 if dpad.left : moveLeft; end
-610 if dpad.right : moveRight; end
-620 if dpad.down or timer = 10 : moveDown ; timer = 0; end
-630 if dpad.up : rotate; end
-640 timer = timer + 1
+   if dpad.left : moveLeft; end
+   if dpad.right : moveRight; end
+   if dpad.down or timer == 10 :
+     moveDown
+     timer = 0
+   end
+   if dpad.up :
+     rotate
+   end
+   timer = timer + 1
 
-680 sleep 100
-690 end
-700 pen.fillColor = #ff888888
-710 pen.write -40, 40, "GAME OVER"
-720 sleep 4000
-730 pen.write -40, 20, "Press any key"
-800 while not (dpad.fire or dpad.left or dpad.right or dpad.up or dpad.down):
-810 sleep 100
-820 end
-830 end
+   sleep 100
+  end
+  p.fillColor = 0xff888888
+  p.write -40, 40, "GAME OVER"
+  sleep 4000
+  p.write -40, 20, "Press any key"
+  while not (dpad.fire or dpad.left or dpad.right or dpad.up or dpad.down):
+   sleep 100
+  end
+ end
 end

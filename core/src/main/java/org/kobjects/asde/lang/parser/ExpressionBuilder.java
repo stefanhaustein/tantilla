@@ -50,8 +50,8 @@ class ExpressionBuilder extends Processor<Node> {
 
   @Override
   public Node prefixOperator(Tokenizer tokenizer, String name, Node param) {
-    switch (name.toUpperCase()) {
-      case "NOT":
+    switch (name) {
+      case "not":
         return new NotOperator(param);
       case "−":
       case "-":
@@ -65,7 +65,7 @@ class ExpressionBuilder extends Processor<Node> {
 
   @Override
   public Node infixOperator(Tokenizer tokenizer, String name, Node left, Node right) {
-    switch (name.toUpperCase()) {
+    switch (name) {
       case ".":
         return new Path(left, right);
       case "<":
@@ -76,7 +76,6 @@ class ExpressionBuilder extends Processor<Node> {
       case "==":
       case "=":
         return new RelationalOperator(0, 0, left, right);
-      case "<>":
       case "≠":
       case "!=":
         return new RelationalOperator(-1, 1, left, right);
@@ -97,13 +96,13 @@ class ExpressionBuilder extends Processor<Node> {
       case "÷":
       case "/":
         return new MathOperator(MathOperator.Kind.DIV, left, right);
-      case "MOD":
+      case "%":
         return new MathOperator(MathOperator.Kind.MOD, left, right);
       case "^":
         return new MathOperator(MathOperator.Kind.POW, left, right);
-      case "AND":
+      case "and":
         return new AndOperator(left, right);
-      case "OR":
+      case "or":
         return new OrOperator(left, right);
       default:
         return super.infixOperator(tokenizer, name, left, right);
@@ -115,7 +114,7 @@ class ExpressionBuilder extends Processor<Node> {
     switch (bracket) {
       case "(":
         return new Group(args.get(0));
-      case "{":
+      case "[":
         return new ArrayLiteral(args.toArray(new Node[0]));
       default:
         return super.group(tokenizer, bracket, args);
@@ -125,12 +124,14 @@ class ExpressionBuilder extends Processor<Node> {
   @Override
   public Node identifier(Tokenizer tokenizer, String name) {
 
-    switch(name.toUpperCase()) {
-      case "TRUE":
+    switch(name) {
+      case "true":
+      case "True":
         return new Literal(Boolean.TRUE);
-      case "FALSE":
+      case "false":
+      case "False":
         return new Literal(Boolean.FALSE);
-      case "SELF":
+      case "self":
         return new Self();
     }
     return new Identifier(name);
@@ -138,8 +139,8 @@ class ExpressionBuilder extends Processor<Node> {
 
   @Override
   public Node numberLiteral(Tokenizer tokenizer, String value) {
-    if (value.startsWith("#")) {
-      return new Literal((double) Long.parseLong(value.substring(1), 16), Literal.Format.HEX);
+    if (value.startsWith("0x")) {
+      return new Literal((double) Long.parseLong(value.substring(2), 16), Literal.Format.HEX);
     }
     return new Literal(Double.parseDouble(value));
   }

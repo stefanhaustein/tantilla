@@ -14,7 +14,7 @@ import org.kobjects.asde.android.ide.classifier.PropertyFlow;
 import org.kobjects.asde.android.ide.symbol.RenameFlow;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
-import org.kobjects.asde.lang.array.ArrayType;
+import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.classifier.ClassPropertyDescriptor;
 import org.kobjects.asde.lang.node.ArrayLiteral;
 import org.kobjects.asde.lang.node.Literal;
@@ -90,7 +90,7 @@ public class VariableView extends SymbolView {
 
 
     public boolean isMultiDim(Type type) {
-        return (type instanceof ArrayType && ((ArrayType) type).elementType instanceof ArrayType);
+        return (type instanceof ListType && ((ListType) type).elementType instanceof ListType);
     }
 
     public void refresh() {

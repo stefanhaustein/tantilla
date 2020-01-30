@@ -18,7 +18,7 @@ import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
 import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.array.ArrayType;
+import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.Builtin;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.CodeLine;
@@ -293,8 +293,8 @@ public class Program implements SymbolOwner {
 
     symbol.type = type;
     symbol.stamp = currentStamp;
-    if (type instanceof ArrayType) {
-      ArrayType arrayType = (ArrayType) type;
+    if (type instanceof ListType) {
+      ListType arrayType = (ListType) type;
       int dimension = arrayType.getDimension();
       Node[] args = new Node[dimension];
       for (int i = 0; i < dimension; i++) {

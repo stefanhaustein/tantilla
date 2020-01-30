@@ -1,4 +1,4 @@
-package org.kobjects.asde.lang.array;
+package org.kobjects.asde.lang.list;
 
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.classifier.Method;
@@ -11,7 +11,7 @@ import org.kobjects.typesystem.Type;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Array extends Instance implements Iterable<Object> {
+public class ListImpl extends Instance implements Iterable<Object> {
 
     private final ArrayList<Object> data;
 
@@ -28,17 +28,17 @@ public class Array extends Instance implements Iterable<Object> {
     };
 
 
-    public Array(Array array) {
+    public ListImpl(ListImpl array) {
         super(array.getType());
         this.data = new ArrayList<>(array.length());
         for (int i = 0; i < data.size(); i++) {
             Object value = array.data.get(i);
-            data.add(value instanceof Array ? new Array((Array) value) : value);
+            data.add(value instanceof ListImpl ? new ListImpl((ListImpl) value) : value);
        }
     }
 
-    public Array(Type elementType, int... sizes) {
-        super(new ArrayType(elementType, sizes.length));
+    public ListImpl(Type elementType, int... sizes) {
+        super(new ListType(elementType, sizes.length));
         data = new ArrayList<>(sizes[0]);
         if (sizes.length == 1) {
             if (sizes[0] > 0) {
@@ -53,13 +53,13 @@ public class Array extends Instance implements Iterable<Object> {
             int[] subSizes = new int[sizes.length - 1];
             System.arraycopy(sizes, 1, subSizes, 0, subSizes.length);
             for (int i = 0; i < sizes[0]; i++) {
-                data.add(new Array(elementType, subSizes));
+                data.add(new ListImpl(elementType, subSizes));
             }
         }
     }
 
-    public Array(Type elementType, Object[] data) {
-        super(new ArrayType(elementType));
+    public ListImpl(Type elementType, Object[] data) {
+        super(new ListType(elementType));
         this.data = new ArrayList<>(data.length);
         for (Object value : data) {
             this.data.add(value);
@@ -68,8 +68,8 @@ public class Array extends Instance implements Iterable<Object> {
 
     @Override
     synchronized public Property getProperty(PropertyDescriptor property) {
-        switch (((ArrayType.ArrayPropertyDescriptor) property).propertyEnum) {
-            case length: return length;
+        switch (((ListType.ArrayPropertyDescriptor) property).propertyEnum) {
+            case size: return length;
             case append:  return new Method((FunctionType) property.type()) {
                 @Override
                 public Object call(EvaluationContext evaluationContext, int paramCount) {
@@ -110,9 +110,9 @@ public class Array extends Instance implements Iterable<Object> {
 
 
     synchronized public void setValueAt(Object value, int... indices) {
-        Array target = this;
+        ListImpl target = this;
         for (int i = 0; i < indices.length - 1; i++) {
-            target = (Array) target.data.get(indices[i]);
+            target = (ListImpl) target.data.get(indices[i]);
         }
         target.data.set(indices[indices.length - 1], value);
     }
@@ -133,10 +133,10 @@ public class Array extends Instance implements Iterable<Object> {
 
     @Override
     synchronized public boolean equals(Object o) {
-        if (!(o instanceof Array)) {
+        if (!(o instanceof ListImpl)) {
             return false;
         }
-        Array other = (Array) o;
+        ListImpl other = (ListImpl) o;
         return data.equals(other.data);
     }
 

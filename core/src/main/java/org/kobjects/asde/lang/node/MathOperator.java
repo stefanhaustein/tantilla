@@ -36,7 +36,7 @@ public class MathOperator extends Node {
       case POW:
         return "^";
       case MOD:
-        return "MOD";
+        return "%";
       default:
         throw new IllegalStateException();
     }

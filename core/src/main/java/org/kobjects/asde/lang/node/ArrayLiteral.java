@@ -1,8 +1,8 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.array.Array;
-import org.kobjects.asde.lang.array.ArrayType;
+import org.kobjects.asde.lang.list.ListImpl;
+import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.typesystem.Type;
@@ -10,7 +10,7 @@ import org.kobjects.typesystem.Type;
 import java.util.Map;
 
 public class ArrayLiteral extends Node {
-    ArrayType resolvedType;
+    ListType resolvedType;
 
     public ArrayLiteral(Node... children) {
         super(children);
@@ -19,7 +19,7 @@ public class ArrayLiteral extends Node {
     @Override
     protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
         if (children.length == 0) {
-            resolvedType = new ArrayType(null, 0);
+            resolvedType = new ListType(null, 0);
         } else {
             Type elementType = children[0].returnType();
             for (int i = 0; i < children.length; i++) {
@@ -27,7 +27,7 @@ public class ArrayLiteral extends Node {
                     throw new RuntimeException("Type mismatch. Expected: " + elementType + " but was " + children[i].returnType());
                 }
             }
-            resolvedType = new ArrayType(elementType);
+            resolvedType = new ListType(elementType);
         }
     }
 
@@ -37,7 +37,7 @@ public class ArrayLiteral extends Node {
         for (int i = 0; i < children.length; i++) {
             values[i] = children[i].eval(evaluationContext);
         }
-        return new Array(resolvedType.elementType, values);
+        return new ListImpl(resolvedType.elementType, values);
     }
 
     @Override

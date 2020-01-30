@@ -4,7 +4,7 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.statement.DimStatement;
-import org.kobjects.asde.lang.array.ArrayType;
+import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.typesystem.Type;
 
 public interface ResolvedSymbol {
@@ -13,7 +13,7 @@ public interface ResolvedSymbol {
     if (initializer instanceof DimStatement) {
       DimStatement dimStatement = (DimStatement) initializer;
       Type elementType = dimStatement.elementType;
-      return new ArrayType(elementType, dimStatement.children.length);
+      return new ListType(elementType, dimStatement.children.length);
     }
     if (initializer instanceof DeclarationStatement) {
       return initializer.children[0].returnType();

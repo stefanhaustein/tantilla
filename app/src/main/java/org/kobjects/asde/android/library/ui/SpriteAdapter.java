@@ -1,8 +1,8 @@
 package org.kobjects.asde.android.library.ui;
 
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.array.Array;
-import org.kobjects.asde.lang.array.ArrayType;
+import org.kobjects.asde.lang.list.ListImpl;
+import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.classifier.Method;
 import org.kobjects.asde.lang.function.Types;
 import org.kobjects.graphics.Animated;
@@ -66,7 +66,7 @@ public class SpriteAdapter extends Instance implements Animated {
   final ObjectProperty yAlign = new ObjectProperty(SpriteMetaProperty.yAlign);
 
   final ObjectProperty collisions = new ObjectProperty(SpriteMetaProperty.collisions);
-  Array collisionsArray = new Array(SpriteAdapter.TYPE, 0);
+  ListImpl collisionsArray = new ListImpl(SpriteAdapter.TYPE, 0);
 
   public SpriteAdapter(final ScreenAdapter screen) {
     super(TYPE);
@@ -301,7 +301,7 @@ public class SpriteAdapter extends Instance implements Animated {
     speed(Types.FLOAT), direction(Types.FLOAT), dx(Types.FLOAT), dy(Types.FLOAT), grow(Types.FLOAT), fade(Types.FLOAT),
     angle(Types.FLOAT),
     label(TextBoxAdapter.TYPE), bubble(TextBoxAdapter.TYPE), face(Types.STR),
-    rotation(Types.FLOAT), collisions(new ArrayType(SpriteAdapter.TYPE)),
+    rotation(Types.FLOAT), collisions(new ListType(SpriteAdapter.TYPE)),
     anchor(SpriteAdapter.TYPE), edgeMode(EDGE_MODE),
     say(new FunctionTypeImpl(Types.VOID, Types.STR));
 

@@ -1,4 +1,4 @@
-package org.kobjects.asde.lang.array;
+package org.kobjects.asde.lang.list;
 
 import org.kobjects.asde.lang.function.Types;
 import org.kobjects.typesystem.FunctionTypeImpl;
@@ -10,28 +10,28 @@ import org.kobjects.typesystem.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class ArrayType implements InstanceType {
+public class ListType implements InstanceType {
 
   public final Type elementType;
 
-  public ArrayType(Type elementType) {
+  public ListType(Type elementType) {
     if (elementType == null) {
       throw new RuntimeException("ElementType must not be null");
     }
     this.elementType = elementType;
   }
 
-  public ArrayType(Type elementType, int dimensionality) {
-    this.elementType = dimensionality == 1 ? elementType : new ArrayType(elementType, dimensionality - 1);
+  public ListType(Type elementType, int dimensionality) {
+    this.elementType = dimensionality == 1 ? elementType : new ListType(elementType, dimensionality - 1);
   }
 
 
   @Override
   public boolean equals(Object o) {
-    if (!(o instanceof ArrayType)) {
+    if (!(o instanceof ListType)) {
       return false;
     }
-    return elementType.equals(((ArrayType) o).elementType);
+    return elementType.equals(((ListType) o).elementType);
   }
 
   @Override
@@ -51,8 +51,8 @@ public class ArrayType implements InstanceType {
         return new ArrayPropertyDescriptor(ArrayPropertyEnum.append, new FunctionTypeImpl(Types.VOID, elementType));
       case "remove":
         return new ArrayPropertyDescriptor(ArrayPropertyEnum.remove, new FunctionTypeImpl(Types.VOID, elementType));
-      case "length":
-        return new ArrayPropertyDescriptor(ArrayPropertyEnum.length, Types.FLOAT);
+      case "size":
+        return new ArrayPropertyDescriptor(ArrayPropertyEnum.size, Types.FLOAT);
       default:
         throw new IllegalArgumentException("Unrecognized array property: '" + name + "'");
     }
@@ -63,7 +63,7 @@ public class ArrayType implements InstanceType {
     ArrayList<PropertyDescriptor> result = new ArrayList<>();
     result.add(getPropertyDescriptor("append"));
     result.add(getPropertyDescriptor("remove"));
-    result.add(getPropertyDescriptor("length"));
+    result.add(getPropertyDescriptor("size"));
     return result;
   }
 
@@ -85,8 +85,8 @@ public class ArrayType implements InstanceType {
   public int getDimension() {
     int dim = 1;
     Type type = elementType;
-    while (type instanceof ArrayType) {
-      type = ((ArrayType) type).elementType;
+    while (type instanceof ListType) {
+      type = ((ListType) type).elementType;
       dim++;
     }
     return dim;
@@ -99,7 +99,7 @@ public class ArrayType implements InstanceType {
   public Type getElementType(int dim) {
     Type type = elementType;
     for (int i = 1; i < dim; i++) {
-      type = ((ArrayType) type).elementType;
+      type = ((ListType) type).elementType;
     }
     return type;
   }
@@ -125,6 +125,6 @@ public class ArrayType implements InstanceType {
   }
 
   enum ArrayPropertyEnum {
-    append, length, remove
+    append, size, remove
   }
 }

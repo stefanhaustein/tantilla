@@ -1,8 +1,8 @@
 package org.kobjects.asde.lang.function;
 
 import org.kobjects.annotatedtext.AnnotatedString;
-import org.kobjects.asde.lang.array.Array;
-import org.kobjects.asde.lang.array.ArrayType;
+import org.kobjects.asde.lang.list.ListImpl;
+import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.typesystem.FunctionType;
@@ -35,7 +35,7 @@ public enum Builtin implements Function {
     LOG("Calculates the logarithm to the base e.",
         Types.FLOAT, 1, Types.FLOAT),
     RANGE("Returns a sequence of integers from the first parameter (inclusive) to the second parameter (exclusive)",
-        new ArrayType(Types.FLOAT), 1, Types.FLOAT, Types.FLOAT, Types.FLOAT),
+        new ListType(Types.FLOAT), 1, Types.FLOAT, Types.FLOAT, Types.FLOAT),
     RANDOM("Returns a (pseudo-)random number in the range from 0 (inclusive) to 1 (exclusive)",
         Types.FLOAT),
     STR("Converts the given number to a string (similar to print).",
@@ -134,7 +134,7 @@ public enum Builtin implements Function {
       case FLOOR:
         return Math.floor((Double) evaluationContext.getParameter(0));
       case INT:
-        return Double.valueOf((int) evaluationContext.getParameter(0));
+        return Double.valueOf(((Double) evaluationContext.getParameter(0)).longValue());
       case LEN:
         return Double.valueOf(len((String) evaluationContext.getParameter(0)));
       case LOG:
@@ -154,7 +154,7 @@ public enum Builtin implements Function {
         for (int i = 0; i < values.length; i++) {
           values[i] = Double.valueOf(start + i * step);
         }
-        return new Array(Types.FLOAT, values);
+        return new ListImpl(Types.FLOAT, values);
       }
       case RANDOM:
         return Math.random();

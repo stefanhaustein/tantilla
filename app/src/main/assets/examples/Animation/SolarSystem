@@ -2,7 +2,7 @@ const G = 6.67428e-11
 const TIMESCALE = 525600
 const SCALE = 0.5e-9
 
-const bodies = {newBody(1.99e30, 0, 0, "🟡", 12), newBody( 3.3e23, 58e9, 47.36e3, "🌕", 3), newBody( 4.87e24, 108e9, 35e3, "🟤", 6), newBody( 5.97e24, 150e9, 29.8e3, "🌍", 6)}
+const bodies = [newBody(1.99e30, 0, 0, "🟡", 12), newBody( 3.3e23, 58e9, 47.36e3, "🌕", 3), newBody( 4.87e24, 108e9, 35e3, "🟤", 6), newBody( 5.97e24, 150e9, 29.8e3, "🌍", 6)]
 
 class Body:
 var mass = 0
@@ -14,7 +14,7 @@ var fx = 0
 var fy = 0
 var sprite = screen.newSprite()
 
-def addAttraction(other: Body):
+def addAttraction(other: Body):
  var dx = other.x - x
  var dy = other.y - y
  var r2 = dx * dx + dy * dy
@@ -37,7 +37,7 @@ end
 
 end
 
-def newBody(mass: float, distance: float, velocity: float, face: str, size: float) -> Body:
+def newBody(mass: float, distance: float, velocity: float, face: str, size: float) -> Body:
  var planet = Body{}
  planet.mass = mass
  planet.x = distance
@@ -49,13 +49,13 @@ end
 
 def main():
  while true:
-  for i = 0 to bodies.length - 1
-   for j = 0 to bodies.length - 1
-     if i <> j:
-       bodies[i].addAttraction(bodies[j])
+  for i in bodies:
+   for j in bodies:
+     if i != j:
+       i.addAttraction(j)
      end
    end
-   bodies[i].update(TIMESCALE/60)
+   i.update(TIMESCALE/60)
   end
   sleep 16
  end

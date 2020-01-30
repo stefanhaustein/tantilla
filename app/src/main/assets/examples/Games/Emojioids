@@ -1,5 +1,5 @@
 var ship = screen.newSprite()
-var gameOver = false
+var gameOver = False
 var score = 0
 var scoreDisplay = screen.newTextBox()
 var gameOverDisplay = screen.newTextBox()
@@ -17,12 +17,12 @@ def newAsteroid(x: float, y: float, size: float, direction: float, speed: float)
  asteroid.speed = speed
  asteroid.rotation = random() * 30
  asteroid.edgeMode = EdgeMode.WRAP
- on asteroid.collisions.length > 0 :
+ on asteroid.collisions.size > 0 :
    if asteroid.face == "🥔" :
      var collisions = asteroid.collisions
      for other in collisions:
        if other.face == "🚀" :
-         gameOver = true
+         gameOver = True
        elif other.face == "🔴" and other.opacity > 0:
          other.opacity = 0
          breakAsteroid asteroid
@@ -64,7 +64,7 @@ def main():
 
  ship.size = 30
  ship.face = "🚀"
- dpad.visible = TRUE
+ dpad.visible = True
  on dpad.right :
    ship.rotation = 90
  end
@@ -80,11 +80,11 @@ def main():
 
  while True:
   while not gameOver:
-   if asteroids.length == 0 :
+   if asteroids.size == 0 :
      newAsteroid screen.width / 2, screen.height / 2, 50, random() * 360, random() * 10 + 5
    end
    sleep 100
-   scoreDisplay.text = "Score: " + score + " #: " + asteroids.length
+   scoreDisplay.text = "Score: " + score + " #: " + asteroids.size
  end
  gameOverDisplay.text = "GAME OVER"
  sleep 1000
@@ -96,7 +96,7 @@ def main():
  gameOverDisplay.text = ""
  continueDisplay.text = ""
  score = 0
- gameOver = false
+ gameOver = False
  for asteroid in asteroids:
    asteroid.opacity = 0
    asteroid.face = "💥"

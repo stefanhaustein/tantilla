@@ -1,8 +1,8 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.array.Array;
-import org.kobjects.asde.lang.array.ArrayType;
+import org.kobjects.asde.lang.list.ListImpl;
+import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.classifier.ClassPropertyDescriptor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
@@ -117,7 +117,7 @@ public class Constructor extends Node {
       for (int i = 0; i < children.length; i++) {
         values[i] = children[i].eval(evaluationContext);
       }
-      return new Array(elementType, values);
+      return new ListImpl(elementType, values);
     }
     if (arraySize == 0) {
       return instantiableType.createInstance(evaluationContext);
@@ -131,7 +131,7 @@ public class Constructor extends Node {
 
   @Override
   public Type returnType() {
-    return isArrayLiteral ? new ArrayType(elementType) : instantiableType;
+    return isArrayLiteral ? new ListType(elementType) : instantiableType;
   }
 
   @Override

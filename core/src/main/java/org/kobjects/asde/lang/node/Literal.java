@@ -48,7 +48,7 @@ public class Literal extends Node {
     if (value != Program.INVISIBLE_STRING && value instanceof String) {
       appendLinked(asb, "\"" + ((String) value).replace("\"", "\"\"") + '"', errors);
     } else if (format == Format.HEX && returnType() == Types.FLOAT && ((Number) value).longValue() == ((Number) value).doubleValue()) {
-      appendLinked(asb, "#" + Long.toHexString(((Number) value).longValue()), errors);
+      appendLinked(asb, "0x" + Long.toHexString(((Number) value).longValue()), errors);
     } else {
       appendLinked(asb, Program.toString(value), errors);
     }

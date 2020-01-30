@@ -1,10 +1,10 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.node.Literal;
-import org.kobjects.asde.lang.array.Array;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.array.ArrayType;
+import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
@@ -28,7 +28,7 @@ public class DimStatement extends AbstractDeclarationStatement {
         resolutionContext.addError(node, new RuntimeException("Numerical type required for DIM"));
       }
     }
-    resolved = resolutionContext.resolveVariableDeclaration(varName, new ArrayType(elementType, children.length), false);
+    resolved = resolutionContext.resolveVariableDeclaration(varName, new ListType(elementType, children.length), false);
     if (!elementType.hasDefaultValue()) {
       Node lastChild = children[children.length -1];
       if (!(lastChild instanceof Literal) || !((Literal) lastChild).value.equals(0.0)) {
@@ -43,12 +43,12 @@ public class DimStatement extends AbstractDeclarationStatement {
     for (int i = 0; i < children.length; i++) {
       dims[i] = children[i].evalInt(evaluationContext);
     }
-    return new Array(elementType, dims);
+    return new ListImpl(elementType, dims);
   }
 
   @Override
   public Type getValueType() {
-    return new ArrayType(elementType, children.length);
+    return new ListType(elementType, children.length);
   }
 
   @Override

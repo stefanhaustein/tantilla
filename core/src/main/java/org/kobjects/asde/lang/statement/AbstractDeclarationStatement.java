@@ -1,6 +1,5 @@
 package org.kobjects.asde.lang.statement;
 
-import org.kobjects.asde.lang.array.ArrayType;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.symbol.StaticSymbol;

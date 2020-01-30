@@ -1,10 +1,9 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.array.Array;
-import org.kobjects.asde.lang.array.ArrayType;
+import org.kobjects.asde.lang.list.ListImpl;
+import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
-import org.kobjects.asde.lang.function.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
@@ -32,17 +31,17 @@ public class ForStatement extends BlockStatement {
     resolutionContext.startBlock(this, line);
     resolvedForLine = line;
 
-    if (!(children[0].returnType() instanceof ArrayType)) {
+    if (!(children[0].returnType() instanceof ListType)) {
       throw new RuntimeException("in expression must result in a list");
     }
-    ArrayType arrayType = (ArrayType) children[0].returnType();
+    ListType arrayType = (ListType) children[0].returnType();
     resolvedIterator = resolutionContext.resolveVariableDeclaration(variableName + "-iterator", ITERATOR, false);
     resolvedVariable = resolutionContext.resolveVariableDeclaration(variableName, arrayType.elementType, false);
   }
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
-    Iterator<Object> iterator = ((Array) children[0].eval(evaluationContext)).iterator();
+    Iterator<Object> iterator = ((ListImpl) children[0].eval(evaluationContext)).iterator();
     if (!iterator.hasNext()) {
       evaluationContext.currentLine = resolvedNextLine + 1;
     } else {
@@ -70,7 +69,6 @@ public class ForStatement extends BlockStatement {
     Iterator<?> iterator = (Iterator<?>) resolvedIterator.get(evaluationContext);
     if (iterator.hasNext()) {
       resolvedVariable.set(evaluationContext, iterator.next());
-    } else {
       evaluationContext.currentLine = resolvedForLine + 1;
     }
   }

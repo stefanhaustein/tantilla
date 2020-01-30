@@ -15,7 +15,7 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
-import org.kobjects.asde.lang.array.ArrayType;
+import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.function.Types;
 import org.kobjects.typesystem.EnumType;
@@ -317,7 +317,7 @@ public class HelpDialog {
   }
 
   private static  boolean isMethod(PropertyDescriptor descriptor) {
-    return descriptor.type() instanceof FunctionType && !(descriptor.type() instanceof ArrayType);
+    return descriptor.type() instanceof FunctionType && !(descriptor.type() instanceof ListType);
   }
 
 
