@@ -47,11 +47,11 @@ public class Constructor extends Node {
         throw new RuntimeException("Assignment expected; got: '" + arguments.get(i) + "' (" + arguments.get(i).getClass().getSimpleName() + ")");
       }
       RelationalOperator relationalOperator = (RelationalOperator) arguments.get(i);
-      if (!relationalOperator.getName().equals("=")) {
+      if (!relationalOperator.getName().equals("==")) {
         throw new RuntimeException("Assignment expected; got: '" + relationalOperator.getName() + "'");
       }
       if (!(relationalOperator.children[0] instanceof Identifier)) {
-        throw new RuntimeException("Identifier expecte; got: " + relationalOperator.children[0]);
+        throw new RuntimeException("Identifier expected; got: " + relationalOperator.children[0]);
       }
       children[i] = relationalOperator.children[1];
       propertyIndexMap.put(((Identifier) relationalOperator.children[0]).name, i);

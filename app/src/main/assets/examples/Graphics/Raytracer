@@ -3,70 +3,73 @@ const BLACK = newColor(0,0,0)
 const GREY = newColor(0.5, 0.5, 0.5)
 
 class Vector:
-var x = 0
-var y = 0
-var z = 0
+ var x = 0
+ var y = 0
+ var z = 0
 
-def times(k: float) -> Vector:
- return newVector(k * x, k * y, k * z)
+ def times(k: float) -> Vector:
+  return newVector(k * x, k * y, k * z)
+ end
+
+ def minus(v2: Vector) -> Vector:
+  return newVector(x - v2.x, y - v2.y, z - v2.z)
+ end
+
+ def plus(v2: Vector) -> Vector:
+  return newVector(x + v2.x, y + v2.y, z + v2.z)
+ end
+
+ def dot(v2: Vector) -> float:
+  return x * v2.x + y * v2.y + z * v2.z
+ end
+
+ def mag() -> float:
+  return sqrt(x * x + y * y + z * z)
+ end
+
+ def norm() -> Vector:
+  return times(1/mag())
+ end
+
+ def cross(v2: Vector) -> Vector:
+  return newVector(y * v2.z - z * v2.y, z * v2.x - x * v2.z, x * v2.y - y * v2.x)
+ end
+
 end
 
-def minus(v2: Vector) -> Vector:
- return newVector(x - v2.x, y - v2.y, z - v2.z)
-end
-
-def plus(v2: Vector) -> Vector:
- return newVector(x + v2.x, y + v2.y, z + v2.z)
-end
-
-def dot(v2: Vector) -> float:
- return x * v2.x + y * v2.y + z * v2.z
-end
-
-def mag() -> float:
- return sqr(x * x + y * y + z * z)
-end
-
-def norm() -> Vector:
- return times(1/mag())
-end
-
-def cross(v2: Vector) -> Vector:
- return newVector(y * v2.z - z * v2.y, z * v2.x - x * v2.z, x * v2.y - y * v2.x)
-end
-
-end
-
-def newVector(x: float, y: float, z: float) -> Vector:
-10 return Vector{x = x, y = y, z = z}
+def newVector(x: float, y: float, z: float) -> Vector:
+  return Vector{x = x, y = y, z = z}
 end
 
 def toByte(n: float) -> float:
- if n <= 0 : return 0
- if n >= 1 : return 255
- return INT(n * 255)
+ if n <= 0:
+   return 0
+ elif n >= 1:
+   return 255
+ end
+ return int(n * 255)
 end
 
 class Color:
-var r = 0
-var g = 0
-var b = 0
+ var r = 0
+ var g = 0
+ var b = 0
 
-def scale(k: float) -> Color:
- return newColor(k * r, k * g, k * b)
-end
+ def scale(k: float) -> Color:
+  return newColor(k * r, k * g, k * b)
+ end
 
-def plus(c2: Color) -> Color:
- return newColor(r + c2.r, g + c2.g, b + c2.b)
-end
+ def plus(c2: Color) -> Color:
+  return newColor(r + c2.r, g + c2.g, b + c2.b)
+ end
 
-def times(c2: Color) -> Color:
- return newColor(r * c2.r, g * c2.g, b * c2.b)
-end
+ def times(c2: Color) -> Color:
+  return newColor(r * c2.r, g * c2.g, b * c2.b)
+ end
 
-def toDrawingColor() -> float:
- return  255*256*65536 + toByte(r) * 65536 + toByte(g) * 256 + toByte(b)
-end
+ def toDrawingColor() -> float:
+  return  255*256*65536 + toByte(r) * 65536 + toByte(g) * 256 + toByte(b)
+ end
 
 end
 
@@ -100,31 +103,31 @@ def newRay(start: Vector, dir: Vector) -> Ray:
 end
 
 class Intersection:
-Thing thing
-Ray ray
-float dist
+ Thing thing
+ Ray ray
+ float dist
 end
 
 def newIntersection(t: Thing, r: Ray, dist: float) -> Intersection:
-10 return Intersection{thing = t, ray = r, dist = dist}
+ return Intersection{thing = t, ray = r, dist = dist}
 end
 
-INTERFACE Surface:
-def diffuse(Vector pos) -> Color
-def specular(Vector pos) ->  Color
-def reflect(Vector pos) -> float
-float roughness
-END
+interface Surface:
+ def diffuse(pos: Vector) -> Color
+ def specular(pos: Vector) ->  Color
+ def reflect(pos: Vector) -> float
+ float roughness
+end
 
-INTERFACE Thing:
-def normal(Vector pos) -> Vector
-def intersect(Ray ray) -> Intersection
-Surface surface
-END INTERFACE
+interface Thing:
+ def normal(pos: Vector) -> Vector
+ def intersect(ray: Ray) -> Intersection
+ Surface surface
+end
 
 class Light:
-Vector pos
-Color color
+ Vector pos
+ Color color
 end
 
 def newLight(pos: Vector, color: Color) -> Light:
@@ -132,201 +135,203 @@ def newLight(pos: Vector, color: Color) -> Light:
 end
 
 class Scene:
-Thing[] things
-Light[] lights
-Camera camera
-Color background
+ Thing[] things
+ Light[] lights
+ Camera camera
+ Color background
 end
 
 class Sphere:
-Vector center
-float radius2
-Surface surface
+ Vector center
+ float radius2
+ Surface surface
 
-def normal(pos: Vector) -> Vector:
- return pos.minus(center).norm()
-end
+ def normal(pos: Vector) -> Vector:
+  return pos.minus(center).norm()
+ end
 
-def intersect(r: Ray) -> Intersection:
- var eo = center.minus(r.start)
- var v = eo.dot(r.dir)
- var dist = 1/0
- if v >= 0 :
+ def intersect(r: Ray) -> Intersection:
+  var eo = center.minus(r.start)
+  var v = eo.dot(r.dir)
+  var dist = 1/0
+  if v >= 0 :
    var disc = radius2 - (eo.dot(eo) - v * v)
    if disc >= 0 :
-     dist = v - sqr(disc)
+     dist = v - sqrt(disc)
    end
+  end
+  return newIntersection(self, r, dist)
  end
- return newIntersection(self, r, dist)
-end
 
 end
 
-def newSphere(center: Vector, radius: float, s: Surface) -> Sphere:
+def newSphere(center: Vector, radius: float, s: Surface) -> Sphere:
  return Sphere{center = center, radius2 = radius * radius, surface = s}
 end
 
 class Plane:
-Vector norm
-float offset
-Surface surface
+ Vector norm
+ float offset
+ Surface surface
 
-def normal(pos: Vector) -> Vector:
- return norm
+ def normal(pos: Vector) -> Vector:
+  return norm
+ end
+
+ def intersect(r: Ray) -> Intersection:
+  var denom = norm.dot(r.dir)
+  var dist = 1/0
+  if denom <= 0:
+    dist = (norm.dot(r.start) + offset) / (-denom)
+  end
+  return newIntersection(self, r, dist)
+ end
+
 end
 
-def intersect(r: Ray) -> Intersection:
- var denom = norm.dot(r.dir)
- var dist = 1/0
- if denom <= 0 : dist = (norm.dot(r.start) + offset) / (-denom)
- return newIntersection(self, r, dist)
-end
-
-end
-
-def newPlane(normal: Vector, offset: float, s: Surface) -> Plane:
+def newPlane(normal: Vector, offset: float, s: Surface) -> Plane:
  return Plane{norm = normal, offset = offset, surface = s}
 end
 
 class Shiny:
-var roughness = 250
+ var roughness = 250
 
-def diffuse(pos: Vector) -> Color:
- return WHITE
-end
+ def diffuse(pos: Vector) -> Color:
+  return WHITE
+ end
 
-def specular(pos: Vector) -> Color:
- return GREY
-end
+ def specular(pos: Vector) -> Color:
+  return GREY
+ end
 
-def reflect(pos: Vector) -> float:
- return 0.7
-end
+ def reflect(pos: Vector) -> float:
+  return 0.7
+ end
 
 end
 
 class Checkerboard:
-var roughness = 150
+ var roughness = 150
 
-def diffuse(pos: Vector) -> Color:
- if (1000 + int(pos.z) + int(pos.x)) % 2 != 0 :
+ def diffuse(pos: Vector) -> Color:
+  if (100000 + floor(pos.z) + floor(pos.x)) % 2 != 0 :
    return WHITE
- else
+  else :
    return BLACK
+  end
  end
-end
 
-def specular(pos: Vector) -> Color:
- return WHITE
-end
+ def specular(pos: Vector) -> Color:
+  return WHITE
+ end
 
-
-def reflect(pos Vector) -> float:
- if (1000 + int(pos.z) + int(pos.x)) % 2 != 0 :
+ def reflect(pos: Vector) -> float:
+  if (1000 + int(pos.z) + int(pos.x)) % 2 != 0 :
    return 0.1
- else
+  else :
    return 0.7
+  end
  end
-end
-
 
 end
 
 
 class RayTracer:
-var maxDepth = 5
-var defaultColor = BLACK
+ var maxDepth = 5
+ var defaultColor = BLACK
 
-def intersections(r: Ray, s: Scene) -> Intersection:
- var closest = s.things[0].intersect(r)
- for i = 1 to s.things.size - 1
+ def intersections(r: Ray, s: Scene) -> Intersection:
+  var closest = s.things[0].intersect(r)
+  for i in range(1, s.things.size):
    var inter = s.things[i].intersect(r)
    if inter.dist < closest.dist :
      closest = inter
    end
+  end
+  return closest
  end
- return closest
-end
 
-def testRay(r: Ray, s: Scene) -> float:
- return intersections(r, s).dist
-end
+ def testRay(r: Ray, s: Scene) -> float:
+  return intersections(r, s).dist
+ end
 
-def traceRay(r: Ray, s: Scene, depth: float) -> Color:
- var isect = intersections(r, s)
- if isect.dist == 1/0 :
+ def traceRay(r: Ray, s: Scene, depth: float) -> Color:
+  var isect = intersections(r, s)
+  if isect.dist == 1/0 :
    return s.background
+  end
+  return shade(isect, s, depth)
  end
- return shade(isect, s, depth)
-end
 
-def shade(isect: Intersection, s: Scene, depth: float) -> Color:
- var d = isect.ray.dir
- var pos = d.times(isect.dist).plus(isect.ray.start)
- var normal = isect.thing.normal(pos)
- var reflectDir = d.minus(normal.times(2 * normal.dot(d)))
- var naturalColor = s.background.plus(getNaturalColor(isect.thing, pos, normal, reflectDir, s))
- var reflectedColor = GREY
- if depth < maxDepth :
+ def shade(isect: Intersection, s: Scene, depth: float) -> Color:
+  var d = isect.ray.dir
+  var pos = d.times(isect.dist).plus(isect.ray.start)
+  var normal = isect.thing.normal(pos)
+  var reflectDir = d.minus(normal.times(2 * normal.dot(d)))
+  var naturalColor = s.background.plus(getNaturalColor(isect.thing, pos, normal, reflectDir, s))
+  var reflectedColor = GREY
+  if depth < maxDepth :
    reflectedColor = getReflectionColor(isect.thing, pos, normal, reflectDir, s, depth)
+  end
+  return naturalColor.plus(reflectedColor)
  end
- return naturalColor.plus(reflectedColor)
-end
 
-def getReflectionColor(t: Thing, pos: Vector, normal: Vector, rd: Vector, s: Scene, depth: float) -> Color:
- return traceRay(newRay(pos, rd), s, depth + 1).scale(t.surface.reflect(pos))
-end
+ def getReflectionColor(t: Thing, pos: Vector, normal: Vector, rd: Vector, s: Scene, depth: float) -> Color:
+  return traceRay(newRay(pos, rd), s, depth + 1).scale(t.surface.reflect(pos))
+ end
 
-def addLight(t: Thing, pos: Vector, norm: Vector, rd: Vector, s: Scene, col: Color, l: Light) -> Color:
- var ldis = l.pos.minus(pos)
- var livec = ldis.norm()
- var nearIsect = testRay(newRay(pos, livec), s)
- var isInShadow = (nearIsect <= ldis.mag())
- if isInShadow :
+ def addLight(t: Thing, pos: Vector, norm: Vector, rd: Vector, s: Scene, col: Color, l: Light) -> Color:
+  var ldis = l.pos.minus(pos)
+  var livec = ldis.norm()
+  var nearIsect = testRay(newRay(pos, livec), s)
+  var isInShadow = (nearIsect <= ldis.mag())
+  if isInShadow :
    return col
- end
- var illum = livec.dot(norm)
- var lcolor = defaultColor
- if illum > 0 :
+  end
+  var illum = livec.dot(norm)
+  var lcolor = defaultColor
+  if illum > 0 :
    lcolor = l.color.scale(illum)
- end
- var specular = livec.dot(rd.norm())
- var scolor = defaultColor
- if specular > 0 :
+  end
+  var specular = livec.dot(rd.norm())
+  var scolor = defaultColor
+  if specular > 0 :
    scolor = l.color.scale(specular ^ t.surface.roughness)
+  end
+  return col.plus(lcolor.times(t.surface.diffuse(pos))).plus(scolor.times(t.surface.specular(pos)))
  end
- return col.plus(lcolor.times(t.surface.diffuse(pos))).plus(scolor.times(t.surface.specular(pos)))
-end
 
-def getNaturalColor(t: Thing, pos: Vector, norm: Vector, rd: Vector, s: Scene) -> Color
- var col = defaultColor
- for l in s.lights:
+ def getNaturalColor(t: Thing, pos: Vector, norm: Vector, rd: Vector, s: Scene) -> Color:
+  var col = defaultColor
+  for l in s.lights:
    col = addLight(t, pos, norm, rd, s, col, l)
+  end
+  return col
  end
- return col
-end
 
-def getPoint(x: float, y: float, cam: Camera, screenWidth: float, screenHeight: float) -> Vector:
- return cam.forward.plus(cam.right.times(x / screenWidth)).plus(cam.up.times(y / screenHeight)).norm()
-end
+ def getPoint(x: float, y: float, cam: Camera) -> Vector:
+  return cam.forward.plus(cam.right.times(x / 200)).plus(cam.up.times(y / 200)).norm()
+ end
 
-def render(s: Scene, p: Pen, screenWidth: float, screenHeight: float)
- p.strokeColor = 0
- for y in range(screenHeight):
+ def render(s: Scene, p: Pen, screenWidth: float, screenHeight: float):
+  p.strokeColor = 0
+  for y in range(screenHeight):
    for x in range(-screenWidth / 2, screenWidth / 2):
-     var yy = int(y / 2)
-     if y % 2 == 0 : yy = -yy; end
-     var color = traceRay(newRay(s.camera.pos, getPoint(x, yy, s.camera, screenWidth, screenHeight)), s, 0)
+     var yy = floor(y / 2)
+     if y % 2 == 0:
+       yy = -yy
+     end
+     var color = traceRay(newRay(s.camera.pos, getPoint(x, yy, s.camera)), s, 0)
      p.fillColor = color.toDrawingColor()
      p.rect(x, yy, 1.5, 1.5)
    end
+  end
  end
-end
 
 end
 
 const defaultThings = Thing[]{newPlane(newVector(0,1,0), 0, Checkerboard{}), newSphere(newVector(0,1,-0.25), 1, Shiny{}), newSphere(newVector(-1,0.5,1.5),0.5, Shiny{})}
-const defaultLights = {newLight(newVector(-2,2.5,0), newColor(0.49,0.07,0.07)), newLight(newVector(1.5,2.5,1.5), newColor(0.07,0.07,0.49)), newLight(newVector(1.5,2.5,-1.5), newColor(0.07,0.49,0.071)), newLight(newVector(0,3.5,0), newColor(0.21,0.21,0.35))}
+const defaultLights = [newLight(newVector(-2,2.5,0), newColor(0.49,0.07,0.07)), newLight(newVector(1.5,2.5,1.5), newColor(0.07,0.07,0.49)), newLight(newVector(1.5,2.5,-1.5), newColor(0.07,0.49,0.071)), newLight(newVector(0,3.5,0), newColor(0.21,0.21,0.35))]
 const defaultCamera = newCamera(newVector(3,2,4), newVector(-1,0.5,0))
 const defaultScene = Scene{background = BLACK, things = defaultThings, lights = defaultLights, camera = defaultCamera}
 

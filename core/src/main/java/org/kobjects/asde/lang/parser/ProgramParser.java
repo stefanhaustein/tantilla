@@ -42,7 +42,6 @@ public class ProgramParser {
     ArrayList<String> lines = new ArrayList<>();
     boolean legacyMode;
     int depth = 0;
-    int lineNumber = 0;
 
     {
       String line = reader.readLine();
@@ -71,17 +70,11 @@ public class ProgramParser {
 
     for (int i = 0; i < lines.size(); i++) {
       String line = lines.get(i);
-      System.out.println("Parsing: '" + line + "'; depth: " + depth);
+      System.out.println("Parsing #" + (i+1) + " depth: " + depth + ": '" + line + "'");
       try {
         Tokenizer tokenizer = statementParser.createTokenizer(line);
         tokenizer.nextToken();
         if (currentFunction != null) {
-          if (tokenizer.currentType == Tokenizer.TokenType.NUMBER) {
-            lineNumber = (int) Double.parseDouble(tokenizer.currentValue);
-            tokenizer.nextToken();
-          } else {
-            lineNumber+=2;
-          }
           int pos = tokenizer.currentPosition;
           try {
             List<Statement> statements = statementParser.parseStatementList(tokenizer, currentFunction);
@@ -107,7 +100,6 @@ public class ProgramParser {
           }
           if (depth < 0) {
             depth = 0;
-            lineNumber = 0;
             currentFunction = null;
           }
         } else if (tokenizer.tryConsume("end")) {

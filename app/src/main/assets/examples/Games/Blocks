@@ -23,17 +23,19 @@ def checkPosition(x: float, y: float) -> bool:
 end
 
 def drawScore():
- p.fillColor = 0xff888888
  p.clear 40, -10, 60, 60
+ p.strokeColor = 0
+ p.fillColor = 0xff888888
+ p.textSize = 10;
  p.write 40, 40, "Rows:"
  p.write 40, 30, "" + rows + "  "
  p.write 40, 10, "Score:"
  p.write 40, 0, "" + score + "  "
- p.strokeColor = 0
 end
 
 def setColor(c: float):
  # Store in array?
+ p.strokeColor = 0xff000000
  if c == 1 :
    p.fillColor = 0xff0000ff # blue J
  elif c == 2 :
@@ -68,7 +70,7 @@ def erasePiece():
    let x = px0 + pieceX[i]
    let y = py0 + pieceY[i]
    grid[x][y] = 0
-   p.clear x * 8 - 70, 90 - y * 8, 8, 8
+   p.clear x * 8 - 70, 90 - y * 8, 9, 9
  end
 end
 
@@ -180,7 +182,7 @@ def rotate():
    mx = 3
  end
  for i in range(4):
-  var x = piece[i]
+  var x = pieceX[i]
   pieceX[i] = mx - pieceY[i]
   pieceY[i] = x
  end
@@ -203,7 +205,7 @@ def main():
   # http://www.the8bitguy.com/download-davids-software/
   gameOver = false
   dpad.visible = true
-  p.strokeColor = 0
+  p.strokeColor = 0xff000000
   pp = 1
 
   for i in range(21):
@@ -239,7 +241,9 @@ def main():
 
    sleep 100
   end
+  p.strokeColor = 0
   p.fillColor = 0xff888888
+  p.textSize = 10;
   p.write -40, 40, "GAME OVER"
   sleep 4000
   p.write -40, 20, "Press any key"

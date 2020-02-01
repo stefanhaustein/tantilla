@@ -75,6 +75,7 @@ public class StatementParser {
       case "else":
         tokenizer.nextToken();
         result.add(new ConditionStatement(ConditionStatement.Kind.ELSE, new Literal(Boolean.TRUE)));
+        tokenizer.consume(":");
         return;
       case "end":
         tokenizer.consumeIdentifier();
