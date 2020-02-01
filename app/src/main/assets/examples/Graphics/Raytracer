@@ -99,7 +99,7 @@ Vector dir
 end
 
 def newRay(start: Vector, dir: Vector) -> Ray:
-10 return Ray{start = start, dir = dir}
+ return Ray{start = start, dir = dir}
 end
 
 class Intersection:
