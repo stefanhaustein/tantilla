@@ -35,7 +35,7 @@ public class FunctionValidationContext {
     this.program = programValidationContext.program;
     this.mode = mode;
     this.functionImplementation = functionImplementation;
-    startBlock(null, 0);
+    startBlock(null);
     if (functionImplementation != null) {
       for (int i = 0; i < functionImplementation.parameterNames.length; i++) {
         currentBlock.localSymbols.put(functionImplementation.parameterNames[i], new LocalSymbol(localSymbolCount++, functionImplementation.getType().getParameterType(i), false));
@@ -52,13 +52,12 @@ public class FunctionValidationContext {
   }
 
 
-  public void startBlock(BlockStatement startStatement, int line) {
-    currentBlock = new Block(currentBlock, startStatement, line);
+  public void startBlock(BlockStatement startStatement) {
+    currentBlock = new Block(currentBlock, startStatement);
   }
 
-  public BlockStatement endBlock(Node endStatement, int endLine) {
+  public BlockStatement endBlock() {
     BlockStatement startStatement = currentBlock.startStatement;
-    startStatement.onResolveEnd(this, endStatement, endLine);
     currentBlock = currentBlock.parent;
     return startStatement;
   }

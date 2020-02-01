@@ -147,7 +147,7 @@ public enum Builtin implements Function {
         return Program.toString(evaluationContext.getParameter(0));
       case RANGE: {
         double end = (Double) evaluationContext.getParameter(paramCount == 1 ? 0 : 1);
-        double start = paramCount < 2 ? 0 : (Double) evaluationContext.getParameter(1);
+        double start = paramCount < 2 ? 0 : (Double) evaluationContext.getParameter(0);
         double step = paramCount < 3 ? 1 : (Double) evaluationContext.getParameter(2);
 
         Object[] values = new Object[(int) ((end - start) / step)];

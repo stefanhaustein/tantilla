@@ -7,13 +7,11 @@ import java.util.HashMap;
 public class Block {
   final Block parent;
   public final BlockStatement startStatement;
-  final int startLine;
   final HashMap<String, LocalSymbol> localSymbols = new HashMap<>();
 
-  Block(Block parent, BlockStatement startStatement, int startLine) {
+  Block(Block parent, BlockStatement startStatement) {
     this.parent = parent;
     this.startStatement = startStatement;
-    this.startLine = startLine;
   }
 
   LocalSymbol get(String name) {

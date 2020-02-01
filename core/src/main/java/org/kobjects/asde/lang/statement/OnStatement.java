@@ -22,7 +22,7 @@ public class OnStatement extends BlockStatement  {
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
-    resolutionContext.startBlock(this, line);
+    resolutionContext.startBlock(this);
   }
 
   @Override
@@ -45,8 +45,8 @@ public class OnStatement extends BlockStatement  {
   }
 
   @Override
-  public void onResolveEnd(FunctionValidationContext resolutionContext, Node parent, int line) {
-    resolvedEndLine = line;
+  public void onResolveEnd(FunctionValidationContext resolutionContext, EndStatement endStatement, int endLine) {
+    resolvedEndLine = endLine;
   }
 
   @Override

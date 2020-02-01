@@ -17,8 +17,8 @@ public class WhileStatement extends BlockStatement {
   }
 
   @Override
-  public void onResolveEnd(FunctionValidationContext resolutionContext, Node parent, int line) {
-    resolvedEndLine = line;
+  public void onResolveEnd(FunctionValidationContext resolutionContext, EndStatement endStatement, int endLine) {
+    resolvedEndLine = endLine;
   }
 
   @Override
@@ -32,7 +32,7 @@ public class WhileStatement extends BlockStatement {
     if (children[0].returnType() != Types.BOOL) {
       throw new RuntimeException("Boolean condition expected.");
     }
-    resolutionContext.startBlock(this, line);
+    resolutionContext.startBlock(this);
   }
 
   @Override

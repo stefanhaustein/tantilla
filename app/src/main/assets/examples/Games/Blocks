@@ -15,7 +15,7 @@ var gameOver = false
 
 def checkPosition(x: float, y: float) -> bool:
  for i in range(4):
-  if grid[x + pieceX(i)][y + pieceY(i)] != 0 :
+  if grid[x + pieceX[i]][y + pieceY[i]] != 0 :
     return False
   end
  end
@@ -34,21 +34,21 @@ end
 
 def setColor(c: float):
  # Store in array?
- if c = 1 :
+ if c == 1 :
    p.fillColor = 0xff0000ff # blue J
- elif c = 2 :
+ elif c == 2 :
    p.fillColor = 0xff00ff00 # green S
- elif c = 3 :
+ elif c == 3 :
    p.fillColor = 0xffff8800 # orange L
- elif c = 4 :
+ elif c == 4 :
    p.fillColor = 0xffff0000 # red Z
- elif c = 5 :
+ elif c == 5 :
    p.fillColor = 0xffff00ff # violet T
- elif c = 6 :
+ elif c == 6 :
    p.fillColor = 0xffeeee00 # yellow O
- elif c = 7 :
+ elif c == 7 :
    p.fillColor = 0xff00ffff # cyan I
- elif c = 8 :
+ elif c == 8 :
    p.fillColor = 0xff888888 # border
  end
 end
@@ -56,26 +56,26 @@ end
 def drawPiece():
  setColor pc
  for i in range(4):
-  let x = px0 + pieceX(i)
-  let y = py0 + pieceY(i)
-  grid(x, y) = pc
+  let x = px0 + pieceX[i]
+  let y = py0 + pieceY[i]
+  grid[x][y] = pc
   p.rect x * 8 - 69, 91 - y * 8, 7, 7
  end
 end
 
 def erasePiece():
  for i in range(4):
-   let x = px0 + pieceX(i)
-   let y = py0 + pieceY(i)
-   grid(x, y) = 0
+   let x = px0 + pieceX[i]
+   let y = py0 + pieceY[i]
+   grid[x][y] = 0
    p.clear x * 8 - 70, 90 - y * 8, 8, 8
  end
 end
 
 def definePiece():
  for i in range(4):
-   pieceX(i) = allPieces(pc - 1, i * 2)
-   pieceY(i) = allPieces(pc - 1, i * 2 + 1)
+   pieceX[i] = allPieces(pc - 1, i * 2)
+   pieceY[i] = allPieces(pc - 1, i * 2 + 1)
  end
 end
 
@@ -180,18 +180,18 @@ def rotate():
    mx = 3
  end
  for i in range(4):
-  var x = pieceX(i)
-  pieceX(i) = mx - pieceY(i)
-  pieceY(i) = x
+  var x = piece[i]
+  pieceX[i] = mx - pieceY[i]
+  pieceY[i] = x
  end
  if checkPosition(px0, py0) :
    drawPiece
    return
  end
  for i in range(4):
-   var x = pieceX(i)
-   pieceX(i) = pieceY(i)
-   pieceY(i) = mx - x
+   var x = pieceX[i]
+   pieceX[i] = pieceY[i]
+   pieceY[i] = mx - x
  end
  drawPiece
 end
@@ -214,7 +214,7 @@ def main():
    end
   end
 
-  for i in  range(1, 13):
+  for i in range(1, 13):
    grid[i][20] = 8
   end
 

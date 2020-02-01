@@ -28,7 +28,7 @@ public class ForStatement extends BlockStatement {
   }
 
   public void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
-    resolutionContext.startBlock(this, line);
+    resolutionContext.startBlock(this);
     resolvedForLine = line;
 
     if (!(children[0].returnType() instanceof ListType)) {
@@ -60,8 +60,8 @@ public class ForStatement extends BlockStatement {
   }
 
   @Override
-  public void onResolveEnd(FunctionValidationContext resolutionContext, Node endStatement, int line) {
-    this.resolvedNextLine = line;
+  public void onResolveEnd(FunctionValidationContext resolutionContext, EndStatement endStatement, int endLine) {
+    this.resolvedNextLine = endLine;
   }
 
   @Override
