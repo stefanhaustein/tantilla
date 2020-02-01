@@ -94,7 +94,7 @@ public class FunctionSignatureFlow {
 
     AlertDialog.Builder alertBuilder = new AlertDialog.Builder(mainActivity);
 
-    alertBuilder.setTitle(mode == Mode.CREATE_MEMBER ? "Constructor Method" : "Constructor Function");
+    alertBuilder.setTitle(mode == Mode.CREATE_MEMBER ? "New Method" : "New Function");
     alertBuilder.setView(mainView);
 
     alertBuilder.setNegativeButton("Cancel", null);

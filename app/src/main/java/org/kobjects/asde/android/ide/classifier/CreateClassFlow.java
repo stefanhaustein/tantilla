@@ -9,7 +9,7 @@ import org.kobjects.asde.lang.program.GlobalSymbol;
 public class CreateClassFlow {
 
   public static void start(MainActivity mainActivity) {
-    new InputFlowBuilder(mainActivity, "Constructor Class")
+    new InputFlowBuilder(mainActivity, "New Class")
         .addInput("Name", null, new SymbolNameValidator(mainActivity.program))
         .setPositiveLabel("Create")
         .start(result -> {

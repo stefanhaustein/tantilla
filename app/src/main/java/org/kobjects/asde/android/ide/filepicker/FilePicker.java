@@ -36,8 +36,8 @@ public class FilePicker {
     DELETE, CREATE_FILE, CREATE_FOLDER, CONFIRM_OVERWRITE, SINGLE_CLICK
   }
 
-  private static final String NEW_FILE = "Constructor File";
-  private static final String NEW_FOLDER = "Constructor Folder";
+  private static final String NEW_FILE = "New File";
+  private static final String NEW_FOLDER = "New Folder";
 
   private final Context context;
   private final Consumer<Node> callback;
