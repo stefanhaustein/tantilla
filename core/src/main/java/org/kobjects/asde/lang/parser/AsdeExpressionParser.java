@@ -20,7 +20,7 @@ public class AsdeExpressionParser extends ExpressionParser<Node> {
     super(new ExpressionBuilder(program));
     addApplyBrackets(10,"(", ",", ")");
     addApplyBrackets(10,"[", ",", "]");
-    addApplyBrackets(10,"{", ",", "}");
+    addOperators(OperatorType.SUFFIX, 10,"{");
     addGroupBrackets("(", null, ")");
     addGroupBrackets("[", ",", "]");
     addOperators(OperatorType.INFIX, 11, ".");
@@ -37,7 +37,7 @@ public class AsdeExpressionParser extends ExpressionParser<Node> {
 
 
   public Tokenizer createTokenizer(String line) {
-    Tokenizer tokenizer = new Tokenizer(new Scanner(line), getSymbols(), "->", ";", ":", "AND", "FOR", "IF", "NEXT", "OR", "THEN" );
+    Tokenizer tokenizer = new Tokenizer(new Scanner(line), getSymbols(), "->", ";", ":", "}");
     tokenizer.numberPattern = NUMBER_PATTERN;
     tokenizer.lineCommentPattern = LINE_COMMENT_PATTERN;
     return tokenizer;

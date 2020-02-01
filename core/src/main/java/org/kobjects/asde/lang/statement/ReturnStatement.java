@@ -8,9 +8,9 @@ import org.kobjects.asde.lang.function.FunctionValidationContext;
 
 import java.util.Map;
 
-public class FunctionReturnStatement extends Statement {
+public class ReturnStatement extends Statement {
 
-  public FunctionReturnStatement(Node... children) {
+  public ReturnStatement(Node... children) {
     super(children);
   }
 
@@ -41,7 +41,7 @@ public class FunctionReturnStatement extends Statement {
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
-    appendLinked(asb, "RETURN", errors);
+    appendLinked(asb, "return", errors);
     if (children.length > 0) {
       asb.append(' ');
       children[0].toString(asb, errors, preferAscii);

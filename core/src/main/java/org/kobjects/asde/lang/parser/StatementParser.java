@@ -25,7 +25,7 @@ import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.MathOperator;
 import org.kobjects.asde.lang.statement.OnStatement;
 import org.kobjects.asde.lang.statement.RemStatement;
-import org.kobjects.asde.lang.statement.FunctionReturnStatement;
+import org.kobjects.asde.lang.statement.ReturnStatement;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.statement.UninitializedField;
@@ -301,13 +301,13 @@ public class StatementParser {
     return new RemStatement(sb.toString());
   }
 
-  private FunctionReturnStatement parseFunctionReturn(Tokenizer tokenizer) {
+  private ReturnStatement parseFunctionReturn(Tokenizer tokenizer) {
     tokenizer.nextToken();
     if (tokenizer.currentType != Tokenizer.TokenType.EOF &&
             !tokenizer.currentValue.equals(";")) {
-      return new FunctionReturnStatement(expressionParser.parse(tokenizer));
+      return new ReturnStatement(expressionParser.parse(tokenizer));
     }
-    return new FunctionReturnStatement();
+    return new ReturnStatement();
   }
 
 

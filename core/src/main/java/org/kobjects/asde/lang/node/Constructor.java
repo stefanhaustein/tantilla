@@ -43,18 +43,12 @@ public class Constructor extends Node {
     Node[] children = new Node[arguments.size()];
     HashMap<String, Integer> propertyIndexMap = new HashMap<>();
     for (int i = 0; i < arguments.size(); i++) {
-      if (!(arguments.get(i) instanceof RelationalOperator)) {
-        throw new RuntimeException("Assignment expected; got: '" + arguments.get(i) + "' (" + arguments.get(i).getClass().getSimpleName() + ")");
+      if (!(arguments.get(i) instanceof Colon)) {
+        throw new RuntimeException("<field> : <expr> expected; got: '" + arguments.get(i) + "' (" + arguments.get(i).getClass().getSimpleName() + ")");
       }
-      RelationalOperator relationalOperator = (RelationalOperator) arguments.get(i);
-      if (!relationalOperator.getName().equals("==")) {
-        throw new RuntimeException("Assignment expected; got: '" + relationalOperator.getName() + "'");
-      }
-      if (!(relationalOperator.children[0] instanceof Identifier)) {
-        throw new RuntimeException("Identifier expected; got: " + relationalOperator.children[0]);
-      }
-      children[i] = relationalOperator.children[1];
-      propertyIndexMap.put(((Identifier) relationalOperator.children[0]).name, i);
+      Node colon = arguments.get(i);
+      children[i] = colon.children[1];
+      propertyIndexMap.put(((Identifier) colon.children[0]).name, i);
     }
     return new Constructor(base.toString(), propertyIndexMap, children);
   }
@@ -155,7 +149,7 @@ public class Constructor extends Node {
           asb.append(", ");
         }
         asb.append(entry.getKey());
-        asb.append(" = ");
+        asb.append(": ");
         children[entry.getValue()].toString(asb, errors, preferAscii);
       }
     }

@@ -3,6 +3,7 @@ package org.kobjects.asde.lang.parser;
 import org.kobjects.asde.lang.node.AndOperator;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.ArrayLiteral;
+import org.kobjects.asde.lang.node.Colon;
 import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.NegOperator;
 import org.kobjects.asde.lang.node.Constructor;
@@ -20,6 +21,7 @@ import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.expressionparser.Processor;
 import org.kobjects.expressionparser.Tokenizer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -64,8 +66,27 @@ class ExpressionBuilder extends Processor<Node> {
   }
 
   @Override
+  public Node suffixOperator(Tokenizer tokenizer, String name, Node param) {
+    AsdeExpressionParser subParser = new AsdeExpressionParser(program);
+    ArrayList<Node> children = new ArrayList<>();
+    if (!tokenizer.tryConsume("}")) {
+      do {
+        Node child = subParser.parse(tokenizer);
+        if (tokenizer.tryConsume(":")) {
+          child = new Colon(child, subParser.parse(tokenizer));
+        }
+        children.add(child);
+      } while (tokenizer.tryConsume(","));
+      tokenizer.consume("}");
+    }
+    return Constructor.create(param, children);
+  }
+
+  @Override
   public Node infixOperator(Tokenizer tokenizer, String name, Node left, Node right) {
     switch (name) {
+      case ":":
+        return new Colon(left, right);
       case ".":
         return new Path(left, right);
       case "<":

@@ -38,7 +38,7 @@ class Vector:
 end
 
 def newVector(x: float, y: float, z: float) -> Vector:
-  return Vector{x = x, y = y, z = z}
+  return Vector{x: x, y: y, z: z}
 end
 
 def toByte(n: float) -> float:
@@ -75,7 +75,7 @@ end
 
 
 def newColor(r: float, g: float, b: float) -> Color:
- return Color{r = r, g = g, b = b}
+ return Color{r: r, g: g, b: b}
 end
 
 class Camera:
@@ -90,7 +90,7 @@ def newCamera(pos: Vector, lookAt: Vector) -> Camera:
  var forward = lookAt.minus(pos).norm()
  var right = forward.cross(down).norm().times(1.5)
  var up = forward.cross(right).norm().times(1.5)
- return Camera{pos = pos, forward = forward, right = right, up = up}
+ return Camera{pos: pos, forward: forward, right: right, up: up}
 end
 
 class Ray:
@@ -99,7 +99,7 @@ Vector dir
 end
 
 def newRay(start: Vector, dir: Vector) -> Ray:
- return Ray{start = start, dir = dir}
+ return Ray{start: start, dir: dir}
 end
 
 class Intersection:
@@ -109,7 +109,7 @@ class Intersection:
 end
 
 def newIntersection(t: Thing, r: Ray, dist: float) -> Intersection:
- return Intersection{thing = t, ray = r, dist = dist}
+ return Intersection{thing: t, ray: r, dist: dist}
 end
 
 interface Surface:
@@ -131,7 +131,7 @@ class Light:
 end
 
 def newLight(pos: Vector, color: Color) -> Light:
- return Light{pos = pos, color = color}
+ return Light{pos: pos, color: color}
 end
 
 class Scene:
@@ -166,7 +166,7 @@ class Sphere:
 end
 
 def newSphere(center: Vector, radius: float, s: Surface) -> Sphere:
- return Sphere{center = center, radius2 = radius * radius, surface = s}
+ return Sphere{center: center, radius2: radius * radius, surface: s}
 end
 
 class Plane:
@@ -190,7 +190,7 @@ class Plane:
 end
 
 def newPlane(normal: Vector, offset: float, s: Surface) -> Plane:
- return Plane{norm = normal, offset = offset, surface = s}
+ return Plane{norm: normal, offset: offset, surface: s}
 end
 
 class Shiny:
@@ -333,7 +333,7 @@ end
 const defaultThings = Thing[]{newPlane(newVector(0,1,0), 0, Checkerboard{}), newSphere(newVector(0,1,-0.25), 1, Shiny{}), newSphere(newVector(-1,0.5,1.5),0.5, Shiny{})}
 const defaultLights = [newLight(newVector(-2,2.5,0), newColor(0.49,0.07,0.07)), newLight(newVector(1.5,2.5,1.5), newColor(0.07,0.07,0.49)), newLight(newVector(1.5,2.5,-1.5), newColor(0.07,0.49,0.071)), newLight(newVector(0,3.5,0), newColor(0.21,0.21,0.35))]
 const defaultCamera = newCamera(newVector(3,2,4), newVector(-1,0.5,0))
-const defaultScene = Scene{background = BLACK, things = defaultThings, lights = defaultLights, camera = defaultCamera}
+const defaultScene = Scene{background: BLACK, things: defaultThings, lights: defaultLights, camera: defaultCamera}
 
 def main():
  var p = screen.newPen()
