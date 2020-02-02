@@ -2,6 +2,7 @@ package org.kobjects.asde.lang.parser;
 
 import org.kobjects.asde.lang.node.AndOperator;
 import org.kobjects.asde.lang.node.Apply;
+import org.kobjects.asde.lang.node.ArrayAccess;
 import org.kobjects.asde.lang.node.ArrayLiteral;
 import org.kobjects.asde.lang.node.Colon;
 import org.kobjects.asde.lang.node.Group;
@@ -47,7 +48,7 @@ class ExpressionBuilder extends Processor<Node> {
     for (int i = 0; i < arguments.size(); i++) {
       children[i + 1] = arguments.get(i);
     }
-    return new Apply(true, children);
+    return bracket.equals("(") ? new Apply(true, children) : new ArrayAccess(children);
   }
 
   @Override

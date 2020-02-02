@@ -1,27 +1,27 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
+import org.kobjects.asde.lang.function.Function;
+import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.function.Types;
 import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.list.ListType;
-import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.function.Types;
-import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
 
 // Not static for access to the variables.
-public class Apply extends Node {
+public class ArrayAccess extends AssignableNode {
 
-  boolean parenthesis;
-
-  public Apply(boolean parentesis, Node... children) {
+  public ArrayAccess(Node... children) {
     super(children);
+    if (children.length != 2) {
+      throw new RuntimeException("Exactly two children expected.");
+    }
   }
-
 
   @Override
   public void changeSignature(StaticSymbol symbol, int[] newOrder) {
@@ -56,6 +56,20 @@ public class Apply extends Node {
   }
 
 
+  @Override
+  public void resolveForAssignment(FunctionValidationContext resolutionContext, Node parent, Type type, int line) {
+    resolve(resolutionContext, parent, line);
+
+    if (!(children[0].returnType() instanceof ListType)) {
+      throw new RuntimeException("Array expected");
+    }
+
+    if (!type.isAssignableFrom(returnType())) {
+      throw new RuntimeException("Expected type for assignment: " + type + " actual type: " + returnType());
+    }
+  }
+
+
   public void set(EvaluationContext evaluationContext, Object value) {
     Object base = children[0].eval(evaluationContext);
     ListImpl array = (ListImpl) base;
@@ -67,66 +81,49 @@ public class Apply extends Node {
   }
 
   @Override
+  public boolean isConstant() {
+    return false;
+  }
+
+  @Override
+  public boolean isAssignable() {
+    return children[0].returnType() instanceof ListType;
+  }
+
+  @Override
   protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
-    if (!(children[0].returnType() instanceof FunctionType)) {
-      throw new RuntimeException("Can't apply parameters to " + children[0].returnType());
+    if (!(children[0].returnType() instanceof ListType)) {
+      throw new RuntimeException("Not a list: " + children[0].returnType());
     }
-    FunctionType resolved = (FunctionType) children[0].returnType();
-    // TODO: b/c optional params, add minParameterCount
-    if (children.length - 1 > resolved.getParameterCount() || children.length - 1 < resolved.getMinParameterCount()) {
-      throw new RuntimeException("Expected parameter count is "
-          + resolved.getMinParameterCount() + ".."
-          + resolved.getParameterCount() + " but got " + (children.length - 1) + " for " + this);
-    }
-    for (int i = 0; i < children.length - 1; i++) {
-      if (!resolved.getParameterType(i).isAssignableFrom(children[i+1].returnType())) {
-        throw new RuntimeException("Type mismatch for parameter " + i + ": expected: "
-            + resolved.getParameterType(i) + " actual: " + children[i+1].returnType() + " base type: " + resolved);
+      for (int i = 1; i < children.length; i++) {
+        if (children[i].returnType() != Types.FLOAT) {
+          throw new RuntimeException("Number expected for paramter " + i + "; got: " + children[i].returnType());
+        }
       }
-    }
   }
 
   public Object eval(EvaluationContext evaluationContext) {
-        Object base = children[0].eval(evaluationContext);
-        if (!(base instanceof Function)) {
-          throw new EvaluationException(this, "Can't apply parameters to " + base + " / " + children[0]);
-        }
-        Function function = (Function) base;
-        evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
-        if (children.length - 1 > function.getLocalVariableCount()) {
-          throw new RuntimeException("Too many params for " + function);
-        }
-        // Push is important here, as parameter evaluation might also run apply().
-        for (int i = 1; i < children.length; i++) {
-          evaluationContext.push(children[i].eval(evaluationContext));
-        }
-        evaluationContext.popN(children.length - 1);
-        try {
-          return function.call(evaluationContext, children.length - 1);
-        } catch (Exception e) {
-          throw new RuntimeException(e.getMessage() + " in " + children[0], e);
-        }
+    ListImpl array = (ListImpl) children[0].eval(evaluationContext);
+    return array.get(children[1].evalInt(evaluationContext));
   }
 
   // Shouldn't throw, as it's used outside validation!
   public Type returnType() {
-    return ((FunctionType) children[0].returnType()).getReturnType();
+    return ((ListType) children[0].returnType()).elementType;
   }
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     int start = asb.length();
     children[0].toString(asb, errors, preferAscii);
-    asb.append(parenthesis ?  '(' : ' ');
+    asb.append('[');
     for (int i = 1; i < children.length; i++) {
       if (i > 1) {
         asb.append(", ");
       }
       children[i].toString(asb, errors, preferAscii);
     }
-    if (parenthesis) {
-      asb.append(')');
-    }
+    asb.append(']');
     asb.annotate(start, asb.length(), errors.get(this));
   }
 }

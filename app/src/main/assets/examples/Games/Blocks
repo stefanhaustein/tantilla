@@ -3,10 +3,10 @@ var allPieces = [[1, 0, 1, 1, 1, 2, 0, 2], [1, 0, 1, 1, 2, 1, 2, 2], [1, 0, 1, 1
 var pc = 0
 var pp = 0
 var p = screen.newPen()
-DIM pieceX(4)
-DIM pieceY(4)
-DIM previewX(4)
-DIM previewY(4)
+var pieceX = [0, 0, 0, 0]
+var pieceY = [0, 0, 0, 0]
+var previewX = [0, 0, 0, 0]
+var previewY = [0, 0, 0, 0]
 var px0 = 1
 var py0 = 0
 var score = 0
