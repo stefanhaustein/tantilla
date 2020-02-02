@@ -114,7 +114,7 @@ def checkGrid():
        row = row + 1
      end
    end
-   if row = 10 :
+   if row == 10:
      dropGrid cy
      dropCount = dropCount + 1
    end

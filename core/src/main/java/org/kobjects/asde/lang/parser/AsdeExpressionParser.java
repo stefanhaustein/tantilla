@@ -28,11 +28,11 @@ public class AsdeExpressionParser extends ExpressionParser<Node> {
     addOperators(OperatorType.PREFIX, 8, "-");
     addOperators(OperatorType.INFIX, 7, "*", "/", "×", "⋅", "÷", "%");
     addOperators(OperatorType.INFIX, 6, "+", "-", "−");
-    addOperators(OperatorType.INFIX, 5, ">=", "<=", ">", "<", "=", "≠", "!=", "≥", "≤", "==");
+    addOperators(OperatorType.INFIX, 5, ">=", "<=", ">", "<", "≠", "!=", "≥", "≤", "==");
     addOperators(OperatorType.PREFIX, 4, "not");
     addOperators(OperatorType.INFIX, 3, "and");
     addOperators(OperatorType.INFIX, 2, "or");
-    addOperators(OperatorType.INFIX, 1, "=");
+    addOperators(OperatorType.PREFIX, 1, "lambda");
   }
 
 

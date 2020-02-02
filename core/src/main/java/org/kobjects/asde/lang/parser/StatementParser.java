@@ -129,15 +129,10 @@ public class StatementParser {
       }
     }
 
-    if (name.equals("?")) {
-      name = "PRINT";
-    }
-
     Node expression = expressionParser.parse(tokenizer);
-    if ((expression instanceof RelationalOperator) && (expression.children[0] instanceof AssignableNode)
-             && ((RelationalOperator) expression).getName().equals("==")) {
+    if (tokenizer.tryConsume("=")) {
       try {
-        result.add(new AssignStatement(expression.children[0], expression.children[1]));
+        result.add(new AssignStatement(expression, expressionParser.parse(tokenizer)));
       } catch (Exception e) {
         throw tokenizer.exception(null, e);
       }
@@ -267,24 +262,10 @@ public class StatementParser {
 
   private Statement parseDeclaration(Tokenizer tokenizer, DeclarationStatement.Kind kind) {
     tokenizer.nextToken();
-    Node assignment = expressionParser.parse(tokenizer);
-    if (!(assignment instanceof RelationalOperator) || !(assignment.children[0] instanceof AssignableNode)
-            || !((RelationalOperator) assignment).getName().equals("==")) {
-      throw tokenizer.exception("Unrecognized statement or illegal assignment: '"
-              + assignment + "'.", null);
-    }
-    if (assignment.children[0] instanceof Identifier) {
-      String varName = ((Identifier) assignment.children[0]).getName();
-      return new DeclarationStatement(kind, varName, assignment.children[1]);
-    }
-    if (kind == DeclarationStatement.Kind.CONST) {
-      throw tokenizer.exception("Left hand side of CONST assignment must be a variable.", null);
-    }
-    try {
-      return new AssignStatement(assignment.children[0], assignment.children[1]);
-    } catch (Exception e) {
-      throw tokenizer.exception("Error parsing " + kind, e);
-    }
+    String varName = tokenizer.consumeIdentifier();
+    tokenizer.consume("=");
+    Node value = expressionParser.parse(tokenizer);
+    return new DeclarationStatement(kind, varName, value);
   }
 
 
