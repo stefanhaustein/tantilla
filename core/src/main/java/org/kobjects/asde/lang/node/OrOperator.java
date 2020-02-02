@@ -17,7 +17,7 @@ public final class OrOperator extends Node {
   boolean boolMode;
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     Type t0 = children[0].returnType();
     if (t0 != Types.BOOL && t0 != Types.FLOAT) {
       throw new IllegalArgumentException("First argument must be number or boolean instead of " + t0);

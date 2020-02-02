@@ -29,7 +29,7 @@ public class Literal extends Node {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     // Nothing to do here.
   }
 

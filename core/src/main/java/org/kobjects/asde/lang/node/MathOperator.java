@@ -43,7 +43,7 @@ public class MathOperator extends Node {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     stringAdd = false;
     Type t0 = children[0].returnType();
     if (t0 != Types.BOOL && t0 != Types.FLOAT) {

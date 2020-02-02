@@ -36,7 +36,7 @@ public class ListType implements InstanceType {
 
   @Override
   public String toString() {
-    return elementType + "[]";
+    return "List[" + elementType + "]";
   }
 
   @Override
@@ -53,6 +53,8 @@ public class ListType implements InstanceType {
         return new ArrayPropertyDescriptor(ArrayPropertyEnum.remove, new FunctionTypeImpl(Types.VOID, elementType));
       case "size":
         return new ArrayPropertyDescriptor(ArrayPropertyEnum.size, Types.FLOAT);
+      case "clear":
+        return new ArrayPropertyDescriptor(ArrayPropertyEnum.clear, new FunctionTypeImpl(Types.VOID));
       default:
         throw new IllegalArgumentException("Unrecognized array property: '" + name + "'");
     }
@@ -125,6 +127,6 @@ public class ListType implements InstanceType {
   }
 
   enum ArrayPropertyEnum {
-    append, size, remove
+    append, size, remove, clear
   }
 }

@@ -1,14 +1,16 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.function.Types;
 import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.list.ListType;
+import org.kobjects.asde.lang.parser.AsdeExpressionParser;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
-import org.kobjects.typesystem.FunctionType;
+import org.kobjects.expressionparser.ExpressionParser;
+import org.kobjects.expressionparser.Tokenizer;
+import org.kobjects.typesystem.MetaType;
 import org.kobjects.typesystem.Type;
 
 import java.util.Map;
@@ -16,11 +18,15 @@ import java.util.Map;
 // Not static for access to the variables.
 public class ArrayAccess extends AssignableNode {
 
+  enum Kind {
+    ERROR, ARRAY_ACCES, QUALIFIED_TYPE, LIST_CONSTRUCTOR
+  }
+
+  Kind kind = Kind.ERROR;
+  Type resolvedType;
+
   public ArrayAccess(Node... children) {
     super(children);
-    if (children.length != 2) {
-      throw new RuntimeException("Exactly two children expected.");
-    }
   }
 
   @Override
@@ -41,24 +47,9 @@ public class ArrayAccess extends AssignableNode {
     }
   }
 
-
-  // Resolves "base" node last, which allows identifiers to access parameter types
-  public void resolve(FunctionValidationContext resolutionContext, Node parent, int line) {
-    for (int i = 1; i < children.length; i++) {
-      children[i].resolve(resolutionContext, this, line);
-    }
-    children[0].resolve(resolutionContext, this, line);
-    try {
-      onResolve(resolutionContext, parent, line);
-    } catch (Exception e) {
-      resolutionContext.addError(this, e);
-    }
-  }
-
-
   @Override
-  public void resolveForAssignment(FunctionValidationContext resolutionContext, Node parent, Type type, int line) {
-    resolve(resolutionContext, parent, line);
+  public void resolveForAssignment(FunctionValidationContext resolutionContext, Type type, int line) {
+    resolve(resolutionContext, line);
 
     if (!(children[0].returnType() instanceof ListType)) {
       throw new RuntimeException("Array expected");
@@ -87,29 +78,67 @@ public class ArrayAccess extends AssignableNode {
 
   @Override
   public boolean isAssignable() {
-    return children[0].returnType() instanceof ListType;
+    return kind == Kind.ARRAY_ACCES;
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
-    if (!(children[0].returnType() instanceof ListType)) {
-      throw new RuntimeException("Not a list: " + children[0].returnType());
-    }
-      for (int i = 1; i < children.length; i++) {
-        if (children[i].returnType() != Types.FLOAT) {
-          throw new RuntimeException("Number expected for paramter " + i + "; got: " + children[i].returnType());
-        }
+  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
+    kind = Kind.ERROR;
+    if (children[0].returnType() instanceof ListType) {
+      kind = Kind.ARRAY_ACCES;
+      if (children.length != 2) {
+        throw new RuntimeException("Exactly one array index argument expected");
       }
+      if (children[1].returnType() != Types.FLOAT) {
+        throw new RuntimeException("Number argument expected for array access; got: " + children[1].returnType());
+      }
+    } else if (children[0].toString().equals("List")) {
+      // The reason for parsing the type is the ambiguity of float (conversion method vs. type).
+      kind = Kind.QUALIFIED_TYPE;
+      Tokenizer tokenizer = resolutionContext.program.parser.createTokenizer(toString());
+      tokenizer.nextToken();
+      resolvedType = resolutionContext.program.parser.parseType(tokenizer);
+    } else if (children[0].returnType() instanceof MetaType) {
+      kind = Kind.LIST_CONSTRUCTOR;
+      Type inner = ((MetaType) children[0].returnType()).getWrapped();
+      if (!(inner instanceof ListType)) {
+        throw new RuntimeException("List type expected for list constructor");
+      }
+      resolvedType = ((ListType) inner).elementType;
+    } else {
+      throw new RuntimeException("Not a list: " + children[0] + " (" + children[0].returnType() + ") -- this: " + this);
+    }
   }
 
   public Object eval(EvaluationContext evaluationContext) {
-    ListImpl array = (ListImpl) children[0].eval(evaluationContext);
-    return array.get(children[1].evalInt(evaluationContext));
+    switch (kind) {
+      case ARRAY_ACCES:
+        ListImpl array = (ListImpl) children[0].eval(evaluationContext);
+        return array.get(children[1].evalInt(evaluationContext));
+      case QUALIFIED_TYPE:
+        return resolvedType;
+      case LIST_CONSTRUCTOR:
+        Object[] data = new Object[children.length - 1];
+        for (int i = 0; i < data.length; i++) {
+          data[i] = children[i+1].eval(evaluationContext);
+        }
+        return new ListImpl(resolvedType, data);
+    }
+    throw new IllegalStateException();
   }
 
   // Shouldn't throw, as it's used outside validation!
   public Type returnType() {
-    return ((ListType) children[0].returnType()).elementType;
+    switch (kind) {
+      case ARRAY_ACCES:
+        return ((ListType) children[0].returnType()).elementType;
+      case QUALIFIED_TYPE:
+        return new MetaType(resolvedType);
+      case LIST_CONSTRUCTOR:
+        return new ListType(resolvedType);
+      default:
+        return null;
+    }
   }
 
   @Override

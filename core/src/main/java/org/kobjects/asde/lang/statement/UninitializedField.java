@@ -1,7 +1,6 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.asde.lang.function.FunctionValidationContext;
-import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.typesystem.Type;
 
@@ -26,7 +25,7 @@ public class UninitializedField extends AbstractDeclarationStatement {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
 
   }
 }

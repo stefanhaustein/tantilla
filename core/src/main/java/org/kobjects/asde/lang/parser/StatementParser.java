@@ -7,15 +7,12 @@ import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.NegOperator;
-import org.kobjects.asde.lang.node.RelationalOperator;
 import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
 import org.kobjects.asde.lang.statement.AssignStatement;
-import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.statement.Command;
 import org.kobjects.asde.lang.statement.ConditionStatement;
 import org.kobjects.asde.lang.statement.DebuggerStatement;
-import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.EndStatement;
 import org.kobjects.asde.lang.statement.ForStatement;
 import org.kobjects.asde.lang.statement.IoStatement;
@@ -63,14 +60,12 @@ public class StatementParser {
 
     switch (name.toLowerCase()) {
       case "const":
-        result.add(parseDeclaration(tokenizer, DeclarationStatement.Kind.CONST));
+      case "var":
+        result.add(parseDeclaration(tokenizer, false));
         return;
       case "debugger":
         tokenizer.consumeIdentifier();
         result.add(new DebuggerStatement());
-        return;
-      case "dim":
-        parseDim(tokenizer, result);
         return;
       case "else":
         tokenizer.nextToken();
@@ -92,10 +87,6 @@ public class StatementParser {
         return;
       case "input":
         result.add(parseIo(IoStatement.Kind.INPUT, tokenizer));
-        return;
-      case "let":
-      case "var":
-        result.add(parseDeclaration(tokenizer, DeclarationStatement.Kind.VAR));
         return;
       case "on":
         result.add(parseOn(tokenizer));
@@ -185,33 +176,6 @@ public class StatementParser {
     }
   }
 
-  private void parseDim(Tokenizer tokenizer, List<Statement> result) {
-    tokenizer.nextToken();
-    do {
-      Node dimExpr = expressionParser.parse(tokenizer);
-      if (!(dimExpr instanceof Apply)) {
-        throw tokenizer.exception("DIM: Apply expected, got: " + dimExpr, null);
-      }
-      if (!(dimExpr.children[0] instanceof Identifier)) {
-        throw tokenizer.exception("DIM: Identifier expected, got: " + dimExpr.children[0], null);
-      }
-      String varName = ((Identifier) dimExpr.children[0]).getName();
-      if (dimExpr.children.length < 2) {
-        throw tokenizer.exception("DIM: At least one dimension expected", null);
-      }
-      Node[] dimensions = new Node[dimExpr.children.length - 1];
-      System.arraycopy(dimExpr.children, 1, dimensions, 0, dimensions.length);
-
-      Type elementType;
-      if (tokenizer.tryConsume("as") || tokenizer.tryConsume("AS") || tokenizer.tryConsume("As")) {
-        elementType = parseType(tokenizer);
-      } else {
-        elementType = varName.endsWith("$") ? Types.STR : Types.FLOAT;
-      }
-      result.add(new DimStatement(elementType, varName, dimensions));
-    } while (tokenizer.tryConsume(","));
-  }
-
   private void parseConditional(Tokenizer tokenizer, ConditionStatement.Kind kind, List<Statement> result) {
     tokenizer.nextToken();
     Node condition = expressionParser.parse(tokenizer);
@@ -260,12 +224,28 @@ public class StatementParser {
     return new ForStatement(varName, iterable);
   }
 
-  private Statement parseDeclaration(Tokenizer tokenizer, DeclarationStatement.Kind kind) {
-    tokenizer.nextToken();
+  AbstractDeclarationStatement parseDeclaration(Tokenizer tokenizer, boolean permitUninitialized) {
+    DeclarationStatement.Kind kind;
+    if (tokenizer.tryConsume("var")) {
+      kind = DeclarationStatement.Kind.VAR;
+    } else if (tokenizer.tryConsume("const")) {
+      kind = DeclarationStatement.Kind.CONST;
+    } else {
+      throw new RuntimeException("var or const expected");
+    }
     String varName = tokenizer.consumeIdentifier();
-    tokenizer.consume("=");
-    Node value = expressionParser.parse(tokenizer);
-    return new DeclarationStatement(kind, varName, value);
+    if (tokenizer.tryConsume("=")) {
+      Node value = expressionParser.parse(tokenizer);
+      return new DeclarationStatement(kind, varName, value);
+    } else if (tokenizer.tryConsume(":")) {
+      if (!permitUninitialized) {
+        throw new RuntimeException("Uninitialized vars not permitted here.");
+      }
+      Type type = parseType(tokenizer);
+      return new UninitializedField(type, varName);
+    } else {
+      throw new RuntimeException(": or = expected");
+    }
   }
 
 
@@ -291,6 +271,7 @@ public class StatementParser {
     return new ReturnStatement();
   }
 
+  /*
 
   public AbstractDeclarationStatement parseDeclaration(Tokenizer tokenizer, boolean permitUninitialized) {
     AbstractDeclarationStatement result;
@@ -312,6 +293,8 @@ public class StatementParser {
     }
     return result;
   }
+
+   */
 
   public List<Statement> parseStatementList(Tokenizer tokenizer, FunctionImplementation parsingContext) {
     ArrayList<Statement> result = new ArrayList<>();
@@ -349,29 +332,28 @@ public class StatementParser {
 
 
   public Type parseType(Tokenizer tokenizer) {
-     String typeName = tokenizer.consumeIdentifier();
-     Type result;
-     if (typeName.equals("float")) {
-         result = Types.FLOAT;
-     } else if (typeName.equals("str")) {
-         result = Types.STR;
-     } else if (typeName.equals("bool")) {
-       result = Types.BOOL;
-     } else {
-       GlobalSymbol symbol = program.getSymbol(typeName);
-       if (symbol == null) {
-         throw new RuntimeException("Unrecognized type: " + typeName);
-       }
-       if (!(symbol.getValue() instanceof Type)) {
-         throw new RuntimeException("'" + typeName + "' is not a type!");
-       }
-       result = (Type) symbol.getValue();
-     }
-     while (tokenizer.tryConsume("[")) {
-       tokenizer.consume("]");
-       result = new ListType(result);
-     }
-
-     return  result;
- }
+    String typeName = tokenizer.consumeIdentifier();
+    if (typeName.equals("float")) {
+      return Types.FLOAT;
+    }
+    if (typeName.equals("str")) {
+      return Types.STR;
+    } if (typeName.equals("bool")) {
+      return Types.BOOL;
+    }
+    if (typeName.equals("List")) {
+      tokenizer.consume("[");
+      Type elementType = parseType(tokenizer);
+      tokenizer.consume("]");
+      return new ListType(elementType);
+    }
+    GlobalSymbol symbol = program.getSymbol(typeName);
+    if (symbol == null) {
+      throw new RuntimeException("Unrecognized type: " + typeName);
+    }
+    if (!(symbol.getValue() instanceof Type)) {
+      throw new RuntimeException("'" + typeName + "' is not a type!");
+    }
+    return  (Type) symbol.getValue();
+  }
 }

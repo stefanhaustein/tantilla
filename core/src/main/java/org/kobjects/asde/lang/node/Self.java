@@ -14,7 +14,7 @@ public class Self extends Node {
   ClassImplementation resolvedType;
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     if (!resolutionContext.functionImplementation.isMethod()) {
       throw new RuntimeException("'self' is only valid inside methods.");
     }

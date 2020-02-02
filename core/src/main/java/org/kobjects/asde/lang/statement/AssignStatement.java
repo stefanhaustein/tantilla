@@ -17,21 +17,24 @@ public class AssignStatement extends Statement {
   }
 
   @Override
-  public void resolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  public boolean resolve(FunctionValidationContext resolutionContext, int line) {
     block = resolutionContext.getCurrentBlock();
-    children[1].resolve(resolutionContext, this, line);
+    if (!children[1].resolve(resolutionContext, line)) {
+      return false;
+    }
     try {
       // May fail if resolve above has failed.
-      ((AssignableNode) children[0]).resolveForAssignment(resolutionContext, this, children[1].returnType(), line);
-      onResolve(resolutionContext, parent, line);
+      ((AssignableNode) children[0]).resolveForAssignment(resolutionContext, children[1].returnType(), line);
+      onResolve(resolutionContext, line);
     } catch (Exception e) {
-
+      resolutionContext.addError(this, e);
     }
+    return true;
    }
 
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     if (((AssignableNode) children[0]).isConstant()) {
       throw new RuntimeException("Cannot assign to a constant.");
     }

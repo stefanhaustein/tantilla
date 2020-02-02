@@ -26,19 +26,20 @@ public abstract class Node {
   public void addPropertyChangeListener(EvaluationContext evaluationContext, PropertyChangeListener listener) {
   }
 
-  protected abstract void onResolve(FunctionValidationContext resolutionContext, Node parent, int line);
+  protected abstract void onResolve(FunctionValidationContext resolutionContext, int line);
 
-  public void resolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  public boolean resolve(FunctionValidationContext resolutionContext, int line) {
     for (Node child: children) {
-      child.resolve(resolutionContext, this, line);
-   /*   if (child.returnType() == null) {
-        resolutionContext.addError(child, new RuntimeException("return type null: " + child));
-      }*/
+      if (!child.resolve(resolutionContext, line)) {
+        return false;
+      }
     }
     try {
-      onResolve(resolutionContext, parent, line);
+      onResolve(resolutionContext, line);
+      return true;
     } catch (Exception e) {
       resolutionContext.addError(this, e);
+      return false;
     }
   }
 

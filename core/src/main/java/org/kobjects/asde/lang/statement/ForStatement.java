@@ -27,7 +27,7 @@ public class ForStatement extends BlockStatement {
     this.variableName = varName;
   }
 
-  public void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  public void onResolve(FunctionValidationContext resolutionContext, int line) {
     resolutionContext.startBlock(this);
     resolvedForLine = line;
 

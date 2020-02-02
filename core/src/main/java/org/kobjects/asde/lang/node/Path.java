@@ -37,7 +37,7 @@ public class Path extends SymbolNode {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     if (children[0].returnType() instanceof InstanceType) {
       resolvedPropertyDescriptor = ((InstanceType) children[0].returnType()).getPropertyDescriptor(pathName);
       if (resolvedPropertyDescriptor == null) {
@@ -78,8 +78,8 @@ public class Path extends SymbolNode {
   }
 
   @Override
-  public void resolveForAssignment(FunctionValidationContext resolutionContext, Node parent, Type type, int line) {
-    resolve(resolutionContext, parent, line);
+  public void resolveForAssignment(FunctionValidationContext resolutionContext, Type type, int line) {
+    resolve(resolutionContext, line);
 
     // TODO: Check support...
   }

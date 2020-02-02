@@ -47,7 +47,7 @@ public class ClassPropertyDescriptor implements PropertyDescriptor, ResolvedSymb
       methodImplementation.validate(context);
 
     } else {
-      initializer.resolve(context, null, 0);
+      initializer.resolve(context, 0);
 
       index = owner.resolvedInitializers.size();
       owner.resolvedInitializers.add(initializer);

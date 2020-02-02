@@ -26,13 +26,13 @@ public class IoStatement extends Statement {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     if (kind == Kind.INPUT) {
       for (Node child : children) {
         if (child instanceof AssignableNode) {
           AssignableNode assignable = (AssignableNode) child;
           if (assignable.isAssignable()) {
-            assignable.resolveForAssignment(resolutionContext, parent, child.returnType(), line);
+            assignable.resolveForAssignment(resolutionContext, child.returnType(), line);
           }
         }
       }

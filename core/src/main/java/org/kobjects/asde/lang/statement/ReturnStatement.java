@@ -15,7 +15,7 @@ public class ReturnStatement extends Statement {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     if (resolutionContext.functionImplementation.getType().getReturnType() == Types.VOID) {
       if (children.length != 0) {
         throw new RuntimeException("Unexpected return value for subroutine.");

@@ -15,7 +15,6 @@ import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.NodeProcessor;
 import org.kobjects.asde.lang.parser.ProgramParser;
 import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
-import org.kobjects.asde.lang.statement.DimStatement;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.list.ListType;
@@ -50,7 +49,16 @@ public class Program implements SymbolOwner {
   }
 
   public static String toString(Object o) {
-    return o instanceof Number ? toString(((Number) o).doubleValue()) : String.valueOf(o);
+    if (Boolean.TRUE.equals(o)) {
+      return "True";
+    }
+    if (Boolean.FALSE.equals(o)) {
+      return "False";
+    }
+    if (o instanceof Number) {
+      return toString(((Number) o).doubleValue());
+    }
+    return String.valueOf(o);
   }
 
   public ProgramReference reference;
@@ -79,6 +87,8 @@ public class Program implements SymbolOwner {
     this.console = console;
     main.setDeclaringSymbol(mainSymbol);
     this.reference = console.nameToReference(null);
+    // Primitives can't be registered because of ambiguities with conversion functions!
+    addBuiltin("List", new ListType(Types.VOID));
     for (Builtin builtin : Builtin.values()) {
       addBuiltin(builtin.name().toLowerCase(), builtin);
     }
@@ -283,35 +293,6 @@ public class Program implements SymbolOwner {
 
   public synchronized GlobalSymbol addBuiltinFunction(String name, Callable callable, CharSequence documentation, Type returnType, Type... argTypes) {
     return addBuiltin(name, new BuiltinFunction(callable, documentation, returnType, argTypes));
-  }
-
-
-  public synchronized GlobalSymbol addTransientSymbol(String name, Type type, ProgramValidationContext programValidationContext) {
-    // assert !symbolMap.containsKey(name);
-
-    GlobalSymbol symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.TRANSIENT, null);
-
-    symbol.type = type;
-    symbol.stamp = currentStamp;
-    if (type instanceof ListType) {
-      ListType arrayType = (ListType) type;
-      int dimension = arrayType.getDimension();
-      Node[] args = new Node[dimension];
-      for (int i = 0; i < dimension; i++) {
-        args[i] = new Literal(11.0);
-      }
-      symbol.initializer = new DimStatement(arrayType.getRootElementType(), name, args);
-    } else if (type instanceof FunctionType) {
-      // no init available, should error on access...
-    } else {
-      symbol.initializer = new DeclarationStatement(DeclarationStatement.Kind.VAR, name, new Literal(type.getDefaultValue()));
-    }
-    symbolMap.put(name.toLowerCase(), symbol);
-
-    // Required as these are added during validation...
-    symbol.validate(programValidationContext);
-
-    return symbol;
   }
 
 

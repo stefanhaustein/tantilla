@@ -21,7 +21,7 @@ public class OnStatement extends BlockStatement  {
 
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     resolutionContext.startBlock(this);
   }
 

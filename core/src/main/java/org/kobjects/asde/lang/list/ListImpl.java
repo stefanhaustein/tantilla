@@ -76,6 +76,12 @@ public class ListImpl extends Instance implements Iterable<Object> {
                     append(evaluationContext.getParameter(0));
                     return null;
                 }};
+            case clear:  return new Method((FunctionType) property.type()) {
+                @Override
+                public Object call(EvaluationContext evaluationContext, int paramCount) {
+                    clear();
+                    return null;
+                }};
             case remove:  return new Method((FunctionType) property.type()) {
                 @Override
                 public Object call(EvaluationContext evaluationContext, int paramCount) {
@@ -91,6 +97,12 @@ public class ListImpl extends Instance implements Iterable<Object> {
 
     public synchronized Object get(int index) {
         return data.get(index);
+    }
+
+
+    public synchronized void clear() {
+        data.clear();
+        length.notifyChanged();
     }
 
     public synchronized void remove(int index) {

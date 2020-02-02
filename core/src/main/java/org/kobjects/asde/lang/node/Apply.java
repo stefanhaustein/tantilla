@@ -3,10 +3,8 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.list.ListImpl;
-import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.function.Types;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
@@ -41,21 +39,6 @@ public class Apply extends Node {
     }
   }
 
-
-  // Resolves "base" node last, which allows identifiers to access parameter types
-  public void resolve(FunctionValidationContext resolutionContext, Node parent, int line) {
-    for (int i = 1; i < children.length; i++) {
-      children[i].resolve(resolutionContext, this, line);
-    }
-    children[0].resolve(resolutionContext, this, line);
-    try {
-      onResolve(resolutionContext, parent, line);
-    } catch (Exception e) {
-      resolutionContext.addError(this, e);
-    }
-  }
-
-
   public void set(EvaluationContext evaluationContext, Object value) {
     Object base = children[0].eval(evaluationContext);
     ListImpl array = (ListImpl) base;
@@ -67,7 +50,7 @@ public class Apply extends Node {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     if (!(children[0].returnType() instanceof FunctionType)) {
       throw new RuntimeException("Can't apply parameters to " + children[0].returnType());
     }

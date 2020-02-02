@@ -1,4 +1,4 @@
-DIM grid(21, 21)
+var grid = List[List[float]][]
 var allPieces = [[1, 0, 1, 1, 1, 2, 0, 2], [1, 0, 1, 1, 2, 1, 2, 2], [1, 0, 1, 1, 1, 2, 2, 2], [2, 0, 2, 1, 1, 1, 1, 2], [1, 0, 0, 1, 1, 1, 2, 1], [1, 0, 2, 0, 1, 1, 2, 1], [2, 0, 2, 1, 2, 2, 2, 3]]
 var pc = 0
 var pp = 0
@@ -15,7 +15,7 @@ var gameOver = false
 
 def checkPosition(x: float, y: float) -> bool:
  for i in range(4):
-  if grid[x + pieceX[i]][y + pieceY[i]] != 0 :
+  if grid[y + pieceY[i]][x + pieceX[i]] != 0 :
     return False
   end
  end
@@ -58,33 +58,33 @@ end
 def drawPiece():
  setColor pc
  for i in range(4):
-  let x = px0 + pieceX[i]
-  let y = py0 + pieceY[i]
-  grid[x][y] = pc
+  var x = px0 + pieceX[i]
+  var y = py0 + pieceY[i]
+  grid[y][x] = pc
   p.rect x * 8 - 69, 91 - y * 8, 7, 7
  end
 end
 
 def erasePiece():
  for i in range(4):
-   let x = px0 + pieceX[i]
-   let y = py0 + pieceY[i]
-   grid[x][y] = 0
+   var x = px0 + pieceX[i]
+   var y = py0 + pieceY[i]
+   grid[y][x] = 0
    p.clear x * 8 - 70, 90 - y * 8, 9, 9
  end
 end
 
 def definePiece():
  for i in range(4):
-   pieceX[i] = allPieces(pc - 1, i * 2)
-   pieceY[i] = allPieces(pc - 1, i * 2 + 1)
+   pieceX[i] = allPieces[pc - 1][i * 2]
+   pieceY[i] = allPieces[pc - 1][i * 2 + 1]
  end
 end
 
 def drawAll():
  for y in range(21):
   for x in range(1, 13):
-    var c = grid[x][y]
+    var c = grid[y][x]
     if c != 0:
       setColor c
       p.rect x * 8 - 69, 91 - y * 8, 7, 7
@@ -99,7 +99,7 @@ def dropGrid(cy: float):
  for x in range(2, 12):
    for y in range(1, cy):
      # used to be from cy down to 2
-     grid[x][cy-y] = grid[x][cy-y -1]
+     grid[cy-y][x] = grid[cy-y -1][x]
    end
  end
  drawAll
@@ -110,7 +110,7 @@ def checkGrid():
  for cy in range(20):
    var row = 0
    for x in range(2, 12):
-     if grid[x][cy] != 0 :
+     if grid[cy][x] != 0 :
        row = row + 1
      end
    end
@@ -208,16 +208,13 @@ def main():
   p.strokeColor = 0xff000000
   pp = 1
 
+  grid.clear()
   for i in range(21):
-   grid[1][i] = 8
-   grid[12][i] = 8
-   for j in range(2, 12):
-     grid[j][i] = 0
-   end
+   grid.append([0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0])
   end
 
   for i in range(1, 13):
-   grid[i][20] = 8
+   grid[20][i] = 8
   end
 
   drawAll

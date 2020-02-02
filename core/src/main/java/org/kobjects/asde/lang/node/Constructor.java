@@ -19,9 +19,7 @@ import java.util.Map;
 
 public class Constructor extends Node {
   final String name;
-  final boolean isArrayLiteral;
   InstantiableType instantiableType;
-  Type elementType;
   Map<String, Integer> nameIndexMap;
   int[] indexMap;
   int arraySize;
@@ -30,15 +28,11 @@ public class Constructor extends Node {
     super(children);
     this.name = name;
     this.nameIndexMap = nameIndexMap;
-    isArrayLiteral = nameIndexMap == null;
-    indexMap = isArrayLiteral ? null : new int[nameIndexMap.size()];
+    indexMap = new int[nameIndexMap.size()];
   }
 
   public static Node create(Node base, List<Node> arguments) {
     String name = base.toString();
-    if (name.endsWith("()")) {
-      return new Constructor(name.substring(0, name.indexOf('(')), null, arguments.toArray(new Node[0]));
-    }
     System.err.println("Constructor.create --- name: " + name);
     Node[] children = new Node[arguments.size()];
     HashMap<String, Integer> propertyIndexMap = new HashMap<>();
@@ -54,7 +48,7 @@ public class Constructor extends Node {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     GlobalSymbol symbol = resolutionContext.program.getSymbol(name);
     if (symbol == null) {
       throw new RuntimeException("'" + name + "' is not defined");
@@ -62,17 +56,6 @@ public class Constructor extends Node {
     symbol.validate(resolutionContext.programValidationContext);
     Object value = symbol.getValue();
 
-    if (isArrayLiteral) {
-      if (!(value instanceof Type)) {
-        throw new RuntimeException(name + " is not a type.");
-      }
-      elementType = (Type) value;
-      for (Node child : children) {
-        if (!elementType.isAssignableFrom(child.returnType())) {
-          throw new RuntimeException("Expected type '" + elementType + "' but got '" + child.returnType() + " for child node: " + child);
-        }
-      }
-    } else {
       if (!(value instanceof InstantiableType)) {
         throw new RuntimeException("'" + name + "' is not an instantiable type.");
       }
@@ -101,18 +84,10 @@ public class Constructor extends Node {
           throw new RuntimeException("Imitializer property " + i + " is not a part of class " + instantiableType);
         }
       }
-    }
   }
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
-    if (isArrayLiteral) {
-      Object[] values = new Object[children.length];
-      for (int i = 0; i < children.length; i++) {
-        values[i] = children[i].eval(evaluationContext);
-      }
-      return new ListImpl(elementType, values);
-    }
     if (arraySize == 0) {
       return instantiableType.createInstance(evaluationContext);
     }
@@ -125,21 +100,12 @@ public class Constructor extends Node {
 
   @Override
   public Type returnType() {
-    return isArrayLiteral ? new ListType(elementType) : instantiableType;
+    return instantiableType;
   }
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     appendLinked(asb, name, errors);
-    if (isArrayLiteral) {
-      asb.append("[]{");
-      for (int i = 0; i < children.length; i++) {
-        if (i > 0) {
-          asb.append(", ");
-        }
-        children[i].toString(asb, errors, preferAscii);
-      }
-    } else {
       asb.append('{');
       boolean first = true;
       for (Map.Entry<String, Integer> entry : nameIndexMap.entrySet()) {
@@ -152,7 +118,6 @@ public class Constructor extends Node {
         asb.append(": ");
         children[entry.getValue()].toString(asb, errors, preferAscii);
       }
-    }
     asb.append('}');
   }
 }

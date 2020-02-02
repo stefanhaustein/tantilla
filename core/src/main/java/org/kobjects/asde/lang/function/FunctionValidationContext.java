@@ -125,11 +125,7 @@ public class FunctionValidationContext {
         : program.getSymbol(name);
 
     if (symbol == null) {
-      if (mode != ResolutionMode.PROGRAM && (forAssignment)) {
-        symbol = program.addTransientSymbol(name, impliedType, programValidationContext);
-      } else {
-        throw new RuntimeException("Variable not found: \"" + name + "\"");
-      }
+      throw new RuntimeException("Variable not found: \"" + name + "\"");
     } else {
       if (forAssignment && symbol.scope == GlobalSymbol.Scope.BUILTIN) {
         throw new RuntimeException("Can't overwrite builtin " + name);

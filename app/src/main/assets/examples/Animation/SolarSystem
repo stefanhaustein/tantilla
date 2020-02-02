@@ -5,36 +5,35 @@ const SCALE = 0.5e-9
 const bodies = [newBody(1.99e30, 0, 0, "🟡", 12), newBody( 3.3e23, 58e9, 47.36e3, "🌕", 3), newBody( 4.87e24, 108e9, 35e3, "🟤", 6), newBody( 5.97e24, 150e9, 29.8e3, "🌍", 6)]
 
 class Body:
-var mass = 0
-var x = 0
-var y = 0
-var vx = 0
-var vy = 0
-var fx = 0
-var fy = 0
-var sprite = screen.newSprite()
+ var mass = 0
+ var x = 0
+ var y = 0
+ var vx = 0
+ var vy = 0
+ var fx = 0
+ var fy = 0
+ var sprite = screen.newSprite()
 
-def addAttraction(other: Body):
- var dx = other.x - x
- var dy = other.y - y
- var r2 = dx * dx + dy * dy
- var f = G * mass * other.mass / r2
- var th = atan2(dy, dx)
- fx = fx + f * cos(th)
- fy = fy + f * sin(th)
-end
+ def addAttraction(other: Body):
+  var dx = other.x - x
+  var dy = other.y - y
+  var r2 = dx * dx + dy * dy
+  var f = G * mass * other.mass / r2
+  var th = atan2(dy, dx)
+  fx = fx + f * cos(th)
+  fy = fy + f * sin(th)
+ end
 
-def update(dt: float):
- vx = vx + dt * fx / mass
- vy = vy + dt * fy / mass
- x = x + vx * dt
- y = y + vy * dt
- sprite.x = x * SCALE
- sprite.y = y * SCALE
- fx = 0
- fy = 0
-end
-
+ def update(dt: float):
+  vx = vx + dt * fx / mass
+  vy = vy + dt * fy / mass
+  x = x + vx * dt
+  y = y + vy * dt
+  sprite.x = x * SCALE
+  sprite.y = y * SCALE
+  fx = 0
+  fy = 0
+ end
 end
 
 def newBody(mass: float, distance: float, velocity: float, face: str, size: float) -> Body:

@@ -17,7 +17,7 @@ public class VoidStatement extends Statement {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     Type returnType = children[0].returnType();
     if (returnType instanceof FunctionType) {
       returnType = ((FunctionType) returnType).getReturnType();

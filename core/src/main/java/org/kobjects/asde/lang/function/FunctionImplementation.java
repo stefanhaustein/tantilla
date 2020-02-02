@@ -1,8 +1,6 @@
 package org.kobjects.asde.lang.function;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.statement.BlockStatement;
-import org.kobjects.asde.lang.statement.RemStatement;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -18,10 +16,8 @@ import org.kobjects.typesystem.PropertyDescriptor;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * In the main package because of the direct interaction with programControl.
@@ -44,7 +40,7 @@ public class FunctionImplementation implements Function, Declaration {
   public void validate(FunctionValidationContext functionValidationContext) {
     for (int i = 0; i < code.size(); i++) {
       Statement statement = code.get(i);
-      statement.resolve(functionValidationContext, null, i + 1);
+      statement.resolve(functionValidationContext, i + 1);
     }
     localVariableCount = functionValidationContext.getLocalVariableCount();
   }

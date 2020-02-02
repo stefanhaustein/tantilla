@@ -4,7 +4,7 @@ var score = 0
 var scoreDisplay = screen.newTextBox()
 var gameOverDisplay = screen.newTextBox()
 var continueDisplay = screen.newTextBox()
-DIM asteroids(0) as Sprite
+var asteroids = List[Sprite][]
 
 def newAsteroid(x: float, y: float, size: float, direction: float, speed: float):
  var asteroid = screen.newSprite()

@@ -12,7 +12,7 @@ public class EndStatement extends Statement {
   BlockStatement resolvedStartStatement;
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     resolvedStartStatement = resolutionContext.endBlock();
     resolvedStartStatement.onResolveEnd(resolutionContext, this, line);
   }

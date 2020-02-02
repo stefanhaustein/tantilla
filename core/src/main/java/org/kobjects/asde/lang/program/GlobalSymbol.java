@@ -128,7 +128,18 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
     if (programValidationContext.validated.contains(this)) {
       return;
     }
-    if (value instanceof FunctionImplementation) {
+    if (initializer != null) {
+      FunctionValidationContext context = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.INTERACTIVE, null);
+      try {
+        initializer.resolve(context, 0);
+      } catch (Exception e) {
+        e.printStackTrace();
+        context.addError(initializer, e);
+      }
+      this.errors = context.errors;
+      this.dependencies = context.dependencies;
+      type = initializer.getValueType();
+    } else if (value instanceof FunctionImplementation) {
       // Avoid an infinite validation loop in recursion
       programValidationContext.validated.add(this);
 
@@ -150,12 +161,6 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
       classImplementation.validate(classValidationContext);
       this.errors = classValidationContext.errors;
       this.dependencies = classValidationContext.dependencies;
-    } else if (initializer != null) {
-      FunctionValidationContext context = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.INTERACTIVE, null);
-      initializer.resolve(context, null, 0);
-      this.errors = context.errors;
-      this.dependencies = context.dependencies;
-      type = initializer.getValueType();
     }
     programValidationContext.validated.add(this);
   }

@@ -142,6 +142,9 @@ public class ProgramParser {
 
         } else if (!tokenizer.tryConsume("")) {
           AbstractDeclarationStatement declaration = statementParser.parseDeclaration(tokenizer, currentClass != null);
+          if (tokenizer.currentType != Tokenizer.TokenType.EOF) {
+            throw tokenizer.exception("Leftover input", null);
+          }
           if (currentClass != null) {
             currentClass.processDeclaration(declaration);
           } else {
@@ -173,10 +176,13 @@ public class ProgramParser {
         ArrayList<String> parameterNames = new ArrayList();
         FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames);
         interfaceImplementation.addProperty(functionName, functionType);
-      } else {
-        Type type = statementParser.parseType(tokenizer);
+      } else if (tokenizer.tryConsume("var")) {
         String name = tokenizer.consumeIdentifier();
+        tokenizer.consume(":");
+        Type type = statementParser.parseType(tokenizer);
         interfaceImplementation.addProperty(name, type);
+      } else {
+        throw new RuntimeException("def or var expected!");
       }
     }
     return index;

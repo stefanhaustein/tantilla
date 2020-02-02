@@ -33,9 +33,9 @@ public abstract class Statement extends Node {
   }
 
   @Override
-  public void resolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  public boolean resolve(FunctionValidationContext resolutionContext, int line) {
     block = resolutionContext.getCurrentBlock();
-    super.resolve(resolutionContext, parent, line);
+    return super.resolve(resolutionContext, line);
   }
 
 }

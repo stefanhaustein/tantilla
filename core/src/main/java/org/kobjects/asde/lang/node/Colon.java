@@ -11,7 +11,7 @@ public class Colon extends Node {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     throw new RuntimeException("colon not permitted in this context.");
   }
 

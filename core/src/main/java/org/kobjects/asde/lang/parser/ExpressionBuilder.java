@@ -39,16 +39,12 @@ class ExpressionBuilder extends Processor<Node> {
 
   @Override
   public Node apply(Tokenizer tokenizer, Node base, String bracket, List<Node> arguments) {
-    if (bracket.equals("{")) {
-      return Constructor.create(base, arguments);
-    }
-
     Node[] children = new Node[arguments.size() + 1];
     children[0] = base;
     for (int i = 0; i < arguments.size(); i++) {
       children[i + 1] = arguments.get(i);
     }
-    return bracket.equals("(") ? new Apply(true, children) : new ArrayAccess(children);
+    return new Apply(true, children);
   }
 
   @Override
@@ -67,10 +63,11 @@ class ExpressionBuilder extends Processor<Node> {
   }
 
   @Override
-  public Node suffixOperator(Tokenizer tokenizer, String name, Node param) {
+  public Node suffixOperator(Tokenizer tokenizer, String name, Node base) {
     AsdeExpressionParser subParser = new AsdeExpressionParser(program);
+    String end = name.equals("{") ? "}" : "]";
     ArrayList<Node> children = new ArrayList<>();
-    if (!tokenizer.tryConsume("}")) {
+    if (!tokenizer.tryConsume(end)) {
       do {
         Node child = subParser.parse(tokenizer);
         if (tokenizer.tryConsume(":")) {
@@ -78,9 +75,16 @@ class ExpressionBuilder extends Processor<Node> {
         }
         children.add(child);
       } while (tokenizer.tryConsume(","));
-      tokenizer.consume("}");
+      tokenizer.consume(end);
     }
-    return Constructor.create(param, children);
+
+    if (name.equals("{")) {
+      return Constructor.create(base, children);
+    }
+
+    children.add(0, base);
+
+    return new ArrayAccess(children.toArray(new Node[0]));
   }
 
   @Override

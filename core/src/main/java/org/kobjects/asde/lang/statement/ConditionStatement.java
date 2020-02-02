@@ -33,7 +33,7 @@ public class ConditionStatement extends BlockStatement {
 
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     resolvedLine = line;
     resolvedPrevious = null;
     resolvedNext = null;

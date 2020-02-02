@@ -28,7 +28,7 @@ public class Command extends Statement {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     // Commands can't be in programs.
   }
 

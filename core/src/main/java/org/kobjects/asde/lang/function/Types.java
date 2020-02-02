@@ -9,22 +9,7 @@ import org.kobjects.typesystem.Typed;
 import java.util.HashMap;
 
 public class Types {
-  public static final Type FORWARD_DECLARATION = new Type() {
-    @Override
-    public boolean hasDefaultValue() {
-      return false;
-    }
 
-    @Override
-    public Object getDefaultValue() {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Type getType() {
-      return new MetaType(this);
-    }
-  };
 
   private static HashMap<Object, Type> typeMap = new HashMap<>();
 

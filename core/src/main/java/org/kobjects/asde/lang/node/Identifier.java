@@ -18,12 +18,12 @@ public class Identifier extends SymbolNode {
     this.name = name;
   }
 
-  public void onResolve(FunctionValidationContext resolutionContext, Node parent, int line) {
+  public void onResolve(FunctionValidationContext resolutionContext, int line) {
     resolved = resolutionContext.resolveVariableAccess(name, null);
   }
 
   @Override
-  public void resolveForAssignment(FunctionValidationContext resolutionContext, Node parent, Type type, int line) {
+  public void resolveForAssignment(FunctionValidationContext resolutionContext, Type type, int line) {
     resolved = resolutionContext.resolveVariableAssignment(name, type);
   }
 
