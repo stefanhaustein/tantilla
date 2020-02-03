@@ -31,7 +31,6 @@ import org.kobjects.asde.lang.runtime.WrappedExecutionException;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.function.Types;
-import org.kobjects.typesystem.Type;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -80,7 +79,7 @@ public class AndroidConsole implements Console {
 
 
   @Override
-  public String input(Type typeHint) {
+  public String input() {
     SynchronousQueue<String> inputQueue = new SynchronousQueue<>();
     final EditText[] inputEditText = new EditText[1];
     mainActivity.runOnUiThread(() -> {
@@ -89,8 +88,7 @@ public class AndroidConsole implements Console {
 
       inputEditText[0].setInputType(
           InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-              | InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE
-              | (typeHint == Types.FLOAT ? InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL|InputType.TYPE_NUMBER_FLAG_SIGNED : 0));
+              | InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
       inputEditText[0].setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI|EditorInfo.IME_FLAG_NO_FULLSCREEN);
       inputEditText[0].setOnEditorActionListener((view, actionId, event) -> {
         if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED

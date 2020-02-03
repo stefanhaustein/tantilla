@@ -2,7 +2,6 @@ package org.kobjects.asde.lang.io;
 
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
-import org.kobjects.typesystem.Type;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,7 +12,7 @@ public interface Console {
     }
 
     void print(CharSequence s);
-    String input(Type typeHint);
+    String input();
 
     void clearScreen(ClearScreenType clearScreenType);
 

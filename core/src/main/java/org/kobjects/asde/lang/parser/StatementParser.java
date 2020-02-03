@@ -15,7 +15,7 @@ import org.kobjects.asde.lang.statement.ConditionStatement;
 import org.kobjects.asde.lang.statement.DebuggerStatement;
 import org.kobjects.asde.lang.statement.EndStatement;
 import org.kobjects.asde.lang.statement.ForStatement;
-import org.kobjects.asde.lang.statement.IoStatement;
+import org.kobjects.asde.lang.statement.PrintStatement;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
@@ -23,7 +23,6 @@ import org.kobjects.asde.lang.node.MathOperator;
 import org.kobjects.asde.lang.statement.OnStatement;
 import org.kobjects.asde.lang.statement.RemStatement;
 import org.kobjects.asde.lang.statement.ReturnStatement;
-import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.statement.UninitializedField;
 import org.kobjects.asde.lang.statement.VoidStatement;
@@ -85,14 +84,11 @@ public class StatementParser {
       case "if":
         parseConditional(tokenizer, ConditionStatement.Kind.IF, result);
         return;
-      case "input":
-        result.add(parseIo(IoStatement.Kind.INPUT, tokenizer));
-        return;
       case "on":
         result.add(parseOn(tokenizer));
         return;
       case "print":
-        result.add(parseIo(IoStatement.Kind.PRINT, tokenizer));
+        result.add(parsePrint(tokenizer));
         return;
       case "rem":
         result.add(parseRem(tokenizer));
@@ -195,24 +191,17 @@ public class StatementParser {
   }
 
 
-  private IoStatement parseIo(IoStatement.Kind kind, Tokenizer tokenizer) {
+  private PrintStatement parsePrint(Tokenizer tokenizer) {
     tokenizer.nextToken();
     List<Node> args = new ArrayList<>();
-    List<String> delimiter = new ArrayList<>();
     while (tokenizer.currentType != Tokenizer.TokenType.EOF
             && !tokenizer.currentValue.equals(";")) {
-      if (tokenizer.currentValue.equals(",")) {
-        delimiter.add(tokenizer.currentValue + " ");
-        tokenizer.nextToken();
-        if (delimiter.size() > args.size()) {
-          args.add(new Literal(Program.INVISIBLE_STRING));
-        }
-      } else {
-        args.add(expressionParser.parse(tokenizer));
+      args.add(expressionParser.parse(tokenizer));
+      if (!tokenizer.tryConsume(",")) {
+        break;
       }
     }
-    return new IoStatement(kind, delimiter.toArray(new String[delimiter.size()]),
-            args.toArray(new Node[args.size()]));
+    return new PrintStatement(args.toArray(new Node[0]));
   }
 
   private ForStatement parseFor(Tokenizer tokenizer) {
@@ -271,30 +260,6 @@ public class StatementParser {
     return new ReturnStatement();
   }
 
-  /*
-
-  public AbstractDeclarationStatement parseDeclaration(Tokenizer tokenizer, boolean permitUninitialized) {
-    AbstractDeclarationStatement result;
-    if (tokenizer.currentValue.equalsIgnoreCase("var")
-        || tokenizer.currentValue.equalsIgnoreCase("dim")
-        || tokenizer.currentValue.equalsIgnoreCase("const")) {
-      ArrayList<Statement> statements = new ArrayList<>();
-      parseStatement(tokenizer, statements, null);
-      result = (AbstractDeclarationStatement) statements.get(0);
-    } else if (!permitUninitialized) {
-      throw tokenizer.exception("var, dim or const expected.", null);
-    } else {
-      Type type = parseType(tokenizer); // consumeType
-      String fieldName = tokenizer.consumeIdentifier();
-      result = new UninitializedField(type, fieldName);
-    }
-    if (tokenizer.currentType != Tokenizer.TokenType.EOF) {
-      throw tokenizer.exception("Leftover input", null);
-    }
-    return result;
-  }
-
-   */
 
   public List<Statement> parseStatementList(Tokenizer tokenizer, FunctionImplementation parsingContext) {
     ArrayList<Statement> result = new ArrayList<>();

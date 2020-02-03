@@ -18,6 +18,7 @@ public class Apply extends Node {
 
   public Apply(boolean parentesis, Node... children) {
     super(children);
+    this.parenthesis = parentesis;
   }
 
 

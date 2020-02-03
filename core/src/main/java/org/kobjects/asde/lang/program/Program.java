@@ -11,7 +11,6 @@ import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.symbol.SymbolChangeListener;
 import org.kobjects.asde.lang.io.ProgramReference;
-import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.NodeProcessor;
 import org.kobjects.asde.lang.parser.ProgramParser;
 import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
@@ -23,7 +22,6 @@ import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.function.Types;
 import org.kobjects.asde.lang.parser.StatementParser;
-import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
 
@@ -89,6 +87,7 @@ public class Program implements SymbolOwner {
     this.reference = console.nameToReference(null);
     // Primitives can't be registered because of ambiguities with conversion functions!
     addBuiltin("List", new ListType(Types.VOID));
+    addBuiltinFunction("input", (a, b) -> console.input(), "Reads a string as input from the user.", Types.STR);
     for (Builtin builtin : Builtin.values()) {
       addBuiltin(builtin.name().toLowerCase(), builtin);
     }
