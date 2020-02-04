@@ -1,5 +1,6 @@
 package org.kobjects.annotatedtext;
 
+import java.lang.annotation.Annotation;
 import java.util.LinkedHashSet;
 
 public class AnnotatedStringBuilder implements Appendable {
@@ -27,11 +28,13 @@ public class AnnotatedStringBuilder implements Appendable {
         return this;
     }
 
-    public AnnotatedStringBuilder append(CharSequence charSequence, Object annotation) {
+    public AnnotatedStringBuilder append(CharSequence charSequence, Object... annotations) {
         int start = sb.length();
         append(charSequence);
-        if (annotation != null) {
-            annotate(start, sb.length(), annotation);
+        for (Object annotation : annotations) {
+            if (annotation != null) {
+                annotate(start, sb.length(), annotation);
+            }
         }
         return this;
     }

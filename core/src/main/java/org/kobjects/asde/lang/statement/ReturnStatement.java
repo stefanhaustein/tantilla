@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.Types;
 import org.kobjects.asde.lang.node.Node;
@@ -41,7 +42,7 @@ public class ReturnStatement extends Statement {
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
-    appendLinked(asb, "return", errors);
+    appendLinked(asb, "return", errors, SyntaxColor.KEYWORD);
     if (children.length > 0) {
       asb.append(' ');
       children[0].toString(asb, errors, preferAscii);

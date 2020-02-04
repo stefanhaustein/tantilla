@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.Types;
@@ -46,7 +47,7 @@ public class Literal extends Node {
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     if (value != Program.INVISIBLE_STRING && value instanceof String) {
-      appendLinked(asb, "\"" + ((String) value).replace("\"", "\"\"") + '"', errors);
+      appendLinked(asb, "\"" + ((String) value).replace("\"", "\"\"") + '"', errors, SyntaxColor.STRING);
     } else if (format == Format.HEX && returnType() == Types.FLOAT && ((Number) value).longValue() == ((Number) value).doubleValue()) {
       appendLinked(asb, "0x" + Long.toHexString(((Number) value).longValue()), errors);
     } else {

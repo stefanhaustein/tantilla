@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
@@ -38,7 +39,8 @@ public class DeclarationStatement extends AbstractDeclarationStatement {
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
-    appendLinked(asb, kind.name().toLowerCase() + " " + varName + " = ", errors);
+    asb.append(kind.name().toLowerCase(), SyntaxColor.KEYWORD);
+    appendLinked(asb, " " + varName + " = ", errors);
     children[0].toString(asb, errors, preferAscii);
   }
 }

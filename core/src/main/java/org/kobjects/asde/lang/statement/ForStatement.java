@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
@@ -54,7 +55,9 @@ public class ForStatement extends BlockStatement {
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
-    appendLinked(asb, "for " + variableName + " in ", errors);
+    appendLinked(asb, "for ", errors, SyntaxColor.KEYWORD);
+    appendLinked(asb, variableName, errors);
+    appendLinked(asb, " in ", errors, SyntaxColor.KEYWORD);
     children[0].toString(asb, errors, preferAscii);
     asb.append(':');
   }

@@ -98,8 +98,14 @@ public abstract class Node {
   public void changeSignature(StaticSymbol symbol, int[] newOrder) {
   }
 
-  protected void appendLinked(AnnotatedStringBuilder asb, String s, Map<Node, Exception> errors) {
+  protected void appendLinked(AnnotatedStringBuilder asb, String s, Map<Node, Exception> errors, Object... annotations) {
+    int p0 = asb.length();
     asb.append(s, errors.get(this));
+    for (Object annotation : annotations) {
+      if (annotation != null) {
+        asb.annotate(p0, asb.length(), annotation);
+      }
+    }
   }
 
   public final String toString() {

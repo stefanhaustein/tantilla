@@ -223,7 +223,7 @@ def main():
   drawPiece
   var timer = 0
 
-  while not gameover:
+  while not gameOver:
 
    if dpad.left : moveLeft; end
    if dpad.right : moveRight; end

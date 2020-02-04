@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.function.Function;
@@ -101,16 +102,14 @@ public class Apply extends Node {
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     int start = asb.length();
     children[0].toString(asb, errors, preferAscii);
-    asb.append(parenthesis ?  '(' : ' ');
+    asb.append("(" , parenthesis ? null : SyntaxColor.HIDE);
     for (int i = 1; i < children.length; i++) {
       if (i > 1) {
         asb.append(", ");
       }
       children[i].toString(asb, errors, preferAscii);
     }
-    if (parenthesis) {
-      asb.append(')');
-    }
+    asb.append(")" , parenthesis ? null : SyntaxColor.HIDE);
     asb.annotate(start, asb.length(), errors.get(this));
   }
 }

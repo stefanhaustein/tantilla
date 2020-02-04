@@ -12,6 +12,7 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.help.HelpDialog;
 import org.kobjects.asde.lang.io.Format;
+import org.kobjects.asde.lang.io.SyntaxColor;
 
 public class AnnotatedStringConverter {
 
@@ -32,6 +33,8 @@ public class AnnotatedStringConverter {
       for (final Span span : annotated.spans()) {
         if (span.annotation == Annotations.ACCENT_COLOR) {
           s.setSpan(new ForegroundColorSpan(Colors.ACCENT), span.start, span.end, 0);
+        } else if (span.annotation instanceof SyntaxColor) {
+          s.setSpan(new ForegroundColorSpan(((SyntaxColor) span.annotation).argb), span.start, span.end, 0);
         } else if (span.annotation instanceof Exception) {
           s.setSpan(new BackgroundColorSpan(Colors.RED), span.start, span.end, 0);
           if (linkedLine > NO_LINKS) {

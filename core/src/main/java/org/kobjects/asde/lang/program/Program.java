@@ -172,7 +172,7 @@ public class Program implements SymbolOwner {
 
   @Override
   public synchronized GlobalSymbol getSymbol(String name) {
-    return symbolMap.get(name.toLowerCase());
+    return symbolMap.get(name);
   }
 
   /**
@@ -181,7 +181,7 @@ public class Program implements SymbolOwner {
    */
   @Override
   public synchronized void removeSymbol(StaticSymbol symbol) {
-    symbolMap.remove(symbol.getName().toLowerCase());
+    symbolMap.remove(symbol.getName());
     notifyProgramChanged();
   }
 
@@ -286,7 +286,7 @@ public class Program implements SymbolOwner {
 
   public synchronized GlobalSymbol addBuiltin(String name, Object value) {
     GlobalSymbol symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.BUILTIN, value);
-    symbolMap.put(name.toLowerCase(), symbol);
+    symbolMap.put(name, symbol);
     return symbol;
   }
 
@@ -299,7 +299,7 @@ public class Program implements SymbolOwner {
     GlobalSymbol symbol = getSymbol(name);
     if (symbol == null) {
       symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, declaration);
-      symbolMap.put(name.toLowerCase(), symbol);
+      symbolMap.put(name, symbol);
     } else {
       if (symbol.getScope() == GlobalSymbol.Scope.BUILTIN) {
         throw new RuntimeException("Can't overwrite builtin '" + name + "'");
@@ -316,7 +316,7 @@ public class Program implements SymbolOwner {
     GlobalSymbol symbol = getSymbol(name);
     if (symbol == null || symbol.scope == GlobalSymbol.Scope.TRANSIENT) {
       symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, null);
-      symbolMap.put(name.toLowerCase(), symbol);
+      symbolMap.put(name, symbol);
     } else if (symbol.getScope() == GlobalSymbol.Scope.BUILTIN) {
       throw new RuntimeException("Can't overwrite builtin '" + name + "'");
     }
@@ -412,7 +412,7 @@ public class Program implements SymbolOwner {
    */
   @Override
   public void addSymbol(StaticSymbol symbol) {
-    symbolMap.put(symbol.getName().toLowerCase(), (GlobalSymbol) symbol);
+    symbolMap.put(symbol.getName(), (GlobalSymbol) symbol);
 //    notifyProgramChanged();  // crashes refactoring....
   }
 
