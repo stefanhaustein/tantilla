@@ -10,13 +10,11 @@ import org.kobjects.asde.lang.program.ProgramValidationContext;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.runtime.StartStopListener;
-import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.function.Types;
-import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.expressionparser.Tokenizer;
-import org.kobjects.typesystem.FunctionTypeImpl;
+import org.kobjects.typesystem.FunctionType;
 
 import java.util.List;
 
@@ -100,7 +98,7 @@ public class Shell {
                 CodeLine codeLine = new CodeLine(-2, statements);
                 program.processStandaloneDeclarations(codeLine);
 
-                FunctionImplementation wrapper = new FunctionImplementation(program, new FunctionTypeImpl(Types.VOID));
+                FunctionImplementation wrapper = new FunctionImplementation(program, new FunctionType(Types.VOID));
 
                 for (Statement statement : statements) {
                     wrapper.appendStatement(statement);

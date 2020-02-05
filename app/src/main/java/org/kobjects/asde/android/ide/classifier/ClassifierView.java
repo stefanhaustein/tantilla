@@ -13,11 +13,12 @@ import org.kobjects.asde.android.ide.symbol.SymbolListView;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.android.ide.symbol.ExpandListener;
 import org.kobjects.asde.lang.classifier.ClassImplementation;
+import org.kobjects.asde.lang.classifier.InterfaceImplementation;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 
 import java.util.Collections;
 
-public class ClassView extends SymbolView {
+public class ClassifierView extends SymbolView {
 
   SymbolView currentSymbolView;
 
@@ -37,7 +38,7 @@ public class ClassView extends SymbolView {
   };
 
 
-  public ClassView(MainActivity mainActivity, StaticSymbol symbol) {
+  public ClassifierView(MainActivity mainActivity, StaticSymbol symbol) {
     super(mainActivity, symbol);
 
     titleView.setTypeIndicator(R.drawable.outline_widgets_24, Colors.LIGHT_BLUE, false);
@@ -83,7 +84,13 @@ public class ClassView extends SymbolView {
       return;
     }
 
-    getContentView().synchronizeTo(((ClassImplementation) symbol.getValue()).propertyMap.values(), expandListener, null);
+    Iterable<? extends StaticSymbol> symbols;
+    if (symbol.getValue() instanceof ClassImplementation) {
+      symbols = ((ClassImplementation) symbol.getValue()).propertyMap.values();
+    } else {
+      symbols = ((InterfaceImplementation) symbol.getValue()).propertyMap.values();
+    }
+    getContentView().synchronizeTo(symbols, expandListener, null);
 
   }
 

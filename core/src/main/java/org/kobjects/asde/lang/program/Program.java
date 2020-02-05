@@ -22,7 +22,7 @@ import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.function.Types;
 import org.kobjects.asde.lang.parser.StatementParser;
-import org.kobjects.typesystem.FunctionTypeImpl;
+import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.Type;
 
 import java.io.BufferedReader;
@@ -62,7 +62,7 @@ public class Program implements SymbolOwner {
   public ProgramReference reference;
 
   public final StatementParser parser = new StatementParser(this);
-  public final FunctionImplementation main = new FunctionImplementation(this, new FunctionTypeImpl(Types.VOID));
+  public final FunctionImplementation main = new FunctionImplementation(this, new FunctionType(Types.VOID));
   public final GlobalSymbol mainSymbol = new GlobalSymbol(this, "", GlobalSymbol.Scope.PERSISTENT, main);
   private final ArrayList<SymbolChangeListener> programChangeListeners = new ArrayList<>();
   private final ArrayList<ProgramListener> programListeners = new ArrayList<>();

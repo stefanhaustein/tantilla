@@ -12,7 +12,6 @@ import org.kobjects.graphics.XAlign;
 import org.kobjects.graphics.YAlign;
 import org.kobjects.typesystem.EnumType;
 import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Instance;
 import org.kobjects.typesystem.InstanceTypeImpl;
 import org.kobjects.typesystem.LazyProperty;
@@ -303,7 +302,7 @@ public class SpriteAdapter extends Instance implements Animated {
     label(TextBoxAdapter.TYPE), bubble(TextBoxAdapter.TYPE), face(Types.STR),
     rotation(Types.FLOAT), collisions(new ListType(SpriteAdapter.TYPE)),
     anchor(SpriteAdapter.TYPE), edgeMode(EDGE_MODE),
-    say(new FunctionTypeImpl(Types.VOID, Types.STR));
+    say(new FunctionType(Types.VOID, Types.STR));
 
     final Type type;
 

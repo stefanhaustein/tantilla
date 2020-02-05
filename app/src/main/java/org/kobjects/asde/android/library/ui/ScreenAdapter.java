@@ -91,9 +91,9 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
 
     private enum ScreenMetaProperty implements PropertyDescriptor {
         width(Types.FLOAT), height(Types.FLOAT),
-        newPen(new FunctionTypeImpl(PenAdapter.TYPE)),
-        newSprite(new FunctionTypeImpl(SpriteAdapter.TYPE)),
-        newTextBox(new FunctionTypeImpl(TextBoxAdapter.TYPE));
+        newPen(new FunctionType(PenAdapter.TYPE)),
+        newSprite(new FunctionType(SpriteAdapter.TYPE)),
+        newTextBox(new FunctionType(TextBoxAdapter.TYPE));
 
         private final Type type;
 

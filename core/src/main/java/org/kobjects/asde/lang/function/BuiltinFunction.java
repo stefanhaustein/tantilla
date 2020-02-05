@@ -2,7 +2,6 @@ package org.kobjects.asde.lang.function;
 
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
 
 public class BuiltinFunction implements Function {
@@ -24,7 +23,7 @@ public class BuiltinFunction implements Function {
   public BuiltinFunction(Callable callable, CharSequence documentation, Type returnType, Type... args) {
     this.callable = callable;
     this.documentation = documentation;
-    this.functionType = new FunctionTypeImpl(returnType, args);
+    this.functionType = new FunctionType(returnType, args);
   }
 
   @Override

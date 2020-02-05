@@ -3,26 +3,20 @@ package org.kobjects.asde.lang.parser;
 
 import org.kobjects.asde.lang.classifier.ClassImplementation;
 import org.kobjects.asde.lang.classifier.InterfaceImplementation;
-import org.kobjects.asde.lang.classifier.InterfacePropertyDescriptor;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.program.Program;
-import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
 import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.statement.UnparseableStatement;
-import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.function.Types;
-import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.expressionparser.Tokenizer;
 import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Type;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ProgramParser {
@@ -214,7 +208,7 @@ public class ProgramParser {
 
     Type returnType = tokenizer.tryConsume("->") ? statementParser.parseType(tokenizer) : Types.VOID;
 
-    return new FunctionTypeImpl(returnType, parameterTypes);
+    return new FunctionType(returnType, parameterTypes);
   }
 
 

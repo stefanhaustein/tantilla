@@ -50,7 +50,6 @@ import org.kobjects.graphics.Screen;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.abcnotation.SampleManager;
 import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.FunctionTypeImpl;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -66,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
   static final int OPEN_EXTERNALLY_REQUEST_CODE = 422;
   static final int PICK_SHORTCUT_ICON_REQUEST_CODE = 423;
 
-  static final FunctionType FUNCTION_VOID_0 = new FunctionTypeImpl(Types.VOID);
+  static final FunctionType FUNCTION_VOID_0 = new FunctionType(Types.VOID);
 
   static final String[] HINTS = {
       "Try the classic:\n\n  10 PRINT \"Hello\"\n  20 GOTO 10",
@@ -248,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
     program.addBuiltin("play", new Function() {
       @Override
       public FunctionType getType() {
-        return new FunctionTypeImpl(Types.VOID, Types.STR);
+        return new FunctionType(Types.VOID, Types.STR);
       }
 
       @Override

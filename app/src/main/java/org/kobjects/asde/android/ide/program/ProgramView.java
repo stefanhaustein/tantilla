@@ -3,7 +3,7 @@ package org.kobjects.asde.android.ide.program;
 import android.view.View;
 import android.view.ViewParent;
 
-import org.kobjects.asde.android.ide.classifier.ClassView;
+import org.kobjects.asde.android.ide.classifier.ClassifierView;
 import org.kobjects.asde.android.ide.function.CodeLineView;
 import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.symbol.ExpandListener;
@@ -190,9 +190,9 @@ public class ProgramView extends SymbolListView {
           targetView = childView;
           break;
         }
-        if (childView instanceof ClassView) {
-          ClassView classView = (ClassView) childView;
-          ClassImplementation classImplementation = (ClassImplementation) classView.symbol.getValue();
+        if (childView instanceof ClassifierView) {
+          ClassifierView classifierView = (ClassifierView) childView;
+          ClassImplementation classImplementation = (ClassImplementation) classifierView.symbol.getValue();
           StaticSymbol symbolFound = null;
           for (ClassPropertyDescriptor descriptor : classImplementation.propertyMap.values()) {
             if (descriptor == symbol) {
@@ -200,7 +200,7 @@ public class ProgramView extends SymbolListView {
               break;
             }
           }
-          targetView = classView.getContentView().synchronizeTo(classImplementation.propertyMap.values(), classView.expandListener, symbolFound);
+          targetView = classifierView.getContentView().synchronizeTo(classImplementation.propertyMap.values(), classifierView.expandListener, symbolFound);
           break;
         }
       }

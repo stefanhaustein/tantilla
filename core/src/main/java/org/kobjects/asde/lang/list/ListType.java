@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.list;
 
 import org.kobjects.asde.lang.function.Types;
-import org.kobjects.typesystem.FunctionTypeImpl;
+import org.kobjects.typesystem.FunctionType;
 import org.kobjects.typesystem.InstanceType;
 import org.kobjects.typesystem.MetaType;
 import org.kobjects.typesystem.PropertyDescriptor;
@@ -48,13 +48,13 @@ public class ListType implements InstanceType {
   public PropertyDescriptor getPropertyDescriptor(String name) {
     switch (name) {
       case "append":
-        return new ArrayPropertyDescriptor(ArrayPropertyEnum.append, new FunctionTypeImpl(Types.VOID, elementType));
+        return new ArrayPropertyDescriptor(ArrayPropertyEnum.append, new FunctionType(Types.VOID, elementType));
       case "remove":
-        return new ArrayPropertyDescriptor(ArrayPropertyEnum.remove, new FunctionTypeImpl(Types.VOID, elementType));
+        return new ArrayPropertyDescriptor(ArrayPropertyEnum.remove, new FunctionType(Types.VOID, elementType));
       case "size":
         return new ArrayPropertyDescriptor(ArrayPropertyEnum.size, Types.FLOAT);
       case "clear":
-        return new ArrayPropertyDescriptor(ArrayPropertyEnum.clear, new FunctionTypeImpl(Types.VOID));
+        return new ArrayPropertyDescriptor(ArrayPropertyEnum.clear, new FunctionType(Types.VOID));
       default:
         throw new IllegalArgumentException("Unrecognized array property: '" + name + "'");
     }

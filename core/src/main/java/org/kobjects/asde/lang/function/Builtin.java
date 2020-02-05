@@ -6,7 +6,6 @@ import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.FunctionTypeImpl;
 import org.kobjects.typesystem.Parameter;
 import org.kobjects.typesystem.Type;
 
@@ -100,7 +99,7 @@ public enum Builtin implements Function {
       for (int i = 0; i < parameters.length; i++) {
         parameters[i] = new Parameter(String.valueOf((char) ('a' + i)), parameterTypes[i]);
       }
-      this.signature = new FunctionTypeImpl(returnType, minParams, parameterTypes);
+      this.signature = new FunctionType(returnType, minParams, parameterTypes);
     }
 
   Builtin(String documentation, Type returnType, Type... parameterTypes) {

@@ -2,13 +2,14 @@ package org.kobjects.asde.android.ide.symbol;
 
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.function.FunctionView;
-import org.kobjects.asde.android.ide.classifier.ClassView;
+import org.kobjects.asde.android.ide.classifier.ClassifierView;
 import org.kobjects.asde.android.ide.program.VariableView;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.lang.classifier.ClassImplementation;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
+import org.kobjects.typesystem.InstanceType;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -60,12 +61,12 @@ public class SymbolListView extends ExpandableList {
       if (symbolView != null) {
         symbolView.syncContent();
       } else {
-        if (symbol.getValue() instanceof ClassImplementation) {
-          ClassView classView = new ClassView(mainActivity, symbol);
-          symbolView = classView;
-          classView.addExpandListener(expandListener);
+        if (symbol.getValue() instanceof InstanceType) {
+          ClassifierView classifierView = new ClassifierView(mainActivity, symbol);
+          symbolView = classifierView;
+          classifierView.addExpandListener(expandListener);
           if (matchedView == null && returnViewForSymbol != null) {
-            matchedView = classView.getContentView().findViewBySymbol(returnViewForSymbol);
+            matchedView = classifierView.getContentView().findViewBySymbol(returnViewForSymbol);
           }
         } else if (symbol.getValue() instanceof FunctionImplementation) {
           FunctionView functionView = new FunctionView(mainActivity, symbol);
