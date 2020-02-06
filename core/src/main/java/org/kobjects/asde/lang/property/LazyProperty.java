@@ -1,4 +1,4 @@
-package org.kobjects.typesystem;
+package org.kobjects.asde.lang.property;
 
 public abstract class LazyProperty<T> extends Property<T> {
   private T value;

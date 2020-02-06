@@ -4,8 +4,8 @@ package org.kobjects.asde.lang.statement;
 import org.kobjects.asde.lang.function.Block;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.function.Types;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.type.Type;
 
 public abstract class Statement extends Node {
 

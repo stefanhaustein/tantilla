@@ -4,11 +4,9 @@ import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.symbol.SymbolOwner;
-import org.kobjects.typesystem.Instance;
-import org.kobjects.typesystem.InstanceType;
-import org.kobjects.typesystem.MetaType;
-import org.kobjects.typesystem.PropertyDescriptor;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.type.MetaType;
+import org.kobjects.asde.lang.property.PropertyDescriptor;
+import org.kobjects.asde.lang.type.Type;
 
 import java.util.Collection;
 import java.util.TreeMap;

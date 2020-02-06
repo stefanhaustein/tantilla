@@ -7,21 +7,15 @@ import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.symbol.SymbolOwner;
-import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
-import org.kobjects.asde.lang.statement.DeclarationStatement;
-import org.kobjects.asde.lang.function.CodeLine;
-import org.kobjects.typesystem.Instance;
-import org.kobjects.typesystem.InstanceType;
-import org.kobjects.typesystem.MetaType;
-import org.kobjects.typesystem.PhysicalProperty;
-import org.kobjects.typesystem.Property;
-import org.kobjects.typesystem.PropertyDescriptor;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.type.MetaType;
+import org.kobjects.asde.lang.property.PhysicalProperty;
+import org.kobjects.asde.lang.property.Property;
+import org.kobjects.asde.lang.property.PropertyDescriptor;
+import org.kobjects.asde.lang.type.Type;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 import java.util.TreeMap;
 
 public class ClassImplementation implements InstanceType, InstantiableType, Declaration, SymbolOwner {

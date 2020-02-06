@@ -8,7 +8,7 @@ import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.classifier.ClassValidationContext;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.type.Type;
 
 import java.util.HashMap;
 import java.util.HashSet;

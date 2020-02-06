@@ -1,14 +1,14 @@
 package org.kobjects.asde.android.library.ui;
 
-import org.kobjects.asde.lang.function.Types;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.TextBox;
 import org.kobjects.graphics.XAlign;
 import org.kobjects.graphics.YAlign;
-import org.kobjects.typesystem.Instance;
-import org.kobjects.typesystem.InstanceTypeImpl;
-import org.kobjects.typesystem.Property;
-import org.kobjects.typesystem.PropertyDescriptor;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.classifier.Instance;
+import org.kobjects.asde.lang.classifier.InstanceTypeImpl;
+import org.kobjects.asde.lang.property.Property;
+import org.kobjects.asde.lang.property.PropertyDescriptor;
+import org.kobjects.asde.lang.type.Type;
 
 public class TextBoxAdapter extends Instance {
 

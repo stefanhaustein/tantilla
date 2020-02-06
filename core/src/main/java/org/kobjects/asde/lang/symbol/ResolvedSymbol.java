@@ -1,10 +1,7 @@
 package org.kobjects.asde.lang.symbol;
 
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.statement.DeclarationStatement;
-import org.kobjects.asde.lang.list.ListType;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.type.Type;
 
 public interface ResolvedSymbol {
 

@@ -1,4 +1,7 @@
-package org.kobjects.typesystem;
+package org.kobjects.asde.lang.function;
+
+import org.kobjects.asde.lang.type.MetaType;
+import org.kobjects.asde.lang.type.Type;
 
 public class FunctionType implements Type {
   private final Type returnType;

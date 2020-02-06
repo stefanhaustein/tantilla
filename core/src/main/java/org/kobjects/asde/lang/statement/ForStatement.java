@@ -8,8 +8,8 @@ import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
-import org.kobjects.typesystem.Type;
-import org.kobjects.typesystem.TypeImpl;
+import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.type.TypeImpl;
 
 import java.util.Iterator;
 import java.util.Map;

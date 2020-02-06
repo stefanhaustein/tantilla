@@ -1,4 +1,4 @@
-package org.kobjects.typesystem;
+package org.kobjects.asde.lang.type;
 
 public interface Type extends Typed {
    Type[] EMPTY_ARRAY = new Type[0];

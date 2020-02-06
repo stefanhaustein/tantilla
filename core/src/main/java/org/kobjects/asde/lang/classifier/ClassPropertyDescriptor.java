@@ -8,8 +8,8 @@ import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
-import org.kobjects.typesystem.PropertyDescriptor;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.property.PropertyDescriptor;
+import org.kobjects.asde.lang.type.Type;
 
 import java.util.Collections;
 import java.util.Map;

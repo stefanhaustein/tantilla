@@ -1,11 +1,11 @@
 package org.kobjects.asde.lang.list;
 
-import org.kobjects.asde.lang.function.Types;
-import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.InstanceType;
-import org.kobjects.typesystem.MetaType;
-import org.kobjects.typesystem.PropertyDescriptor;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.function.FunctionType;
+import org.kobjects.asde.lang.classifier.InstanceType;
+import org.kobjects.asde.lang.type.MetaType;
+import org.kobjects.asde.lang.property.PropertyDescriptor;
+import org.kobjects.asde.lang.type.Type;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.function;
 
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.type.Type;
 
 public class LocalSymbol implements ResolvedSymbol {
     private final int index;

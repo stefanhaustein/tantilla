@@ -20,10 +20,10 @@ import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.Builtin;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.CodeLine;
-import org.kobjects.asde.lang.function.Types;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.parser.StatementParser;
-import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.function.FunctionType;
+import org.kobjects.asde.lang.type.Type;
 
 import java.io.BufferedReader;
 import java.io.IOException;

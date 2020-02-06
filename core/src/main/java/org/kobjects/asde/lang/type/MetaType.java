@@ -1,4 +1,4 @@
-package org.kobjects.typesystem;
+package org.kobjects.asde.lang.type;
 
 public class MetaType implements Type {
   private final Type wrapped;

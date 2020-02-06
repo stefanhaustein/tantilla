@@ -9,9 +9,9 @@ import org.kobjects.asde.lang.classifier.ClassValidationContext;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
-import org.kobjects.asde.lang.function.Types;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.type.Type;
 
 import java.util.Collections;
 import java.util.HashSet;

@@ -1,8 +1,7 @@
 package org.kobjects.asde.lang.function;
 
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.type.Type;
 
 public class BuiltinFunction implements Function {
 

@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.statement;
 
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.type.Type;
 
 public class UninitializedField extends AbstractDeclarationStatement {
 

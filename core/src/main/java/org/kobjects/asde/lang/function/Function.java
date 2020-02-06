@@ -1,8 +1,7 @@
 package org.kobjects.asde.lang.function;
 
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.Typed;
+import org.kobjects.asde.lang.type.Typed;
 
 public interface Function extends Typed, Callable {
 

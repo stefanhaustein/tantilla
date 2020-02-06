@@ -35,7 +35,6 @@ dependencies {
     implementation "com.github.stefanhaustein.emojisprites:core:v1.3.6"
 
     api project(':core')
-    api project(':typesystem')
     implementation 'com.vanniktech:emoji-twitter:0.6.0'
 
 

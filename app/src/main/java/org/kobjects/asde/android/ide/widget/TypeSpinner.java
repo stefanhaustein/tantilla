@@ -4,8 +4,8 @@ import androidx.appcompat.widget.AppCompatSpinner;
 import android.widget.ArrayAdapter;
 
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.lang.function.Types;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.type.Type;
 
 import java.util.ArrayList;
 

@@ -11,8 +11,8 @@ import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.runtime.WrappedExecutionException;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.PropertyDescriptor;
+import org.kobjects.asde.lang.property.PropertyDescriptor;
+import org.kobjects.asde.lang.type.Types;
 
 import java.util.ArrayList;
 import java.util.Collections;

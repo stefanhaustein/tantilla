@@ -41,7 +41,7 @@ import org.kobjects.asde.lang.program.ProgramListener;
 import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.io.Shell;
-import org.kobjects.asde.lang.function.Types;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.android.library.ui.DpadAdapter;
 import org.kobjects.asde.android.library.ui.ScreenAdapter;
 import org.kobjects.asde.android.library.ui.SpriteAdapter;
@@ -49,7 +49,7 @@ import org.kobjects.asde.android.library.ui.TextBoxAdapter;
 import org.kobjects.graphics.Screen;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.abcnotation.SampleManager;
-import org.kobjects.typesystem.FunctionType;
+import org.kobjects.asde.lang.function.FunctionType;
 
 import java.io.File;
 import java.io.FileOutputStream;

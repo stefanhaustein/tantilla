@@ -1,4 +1,4 @@
-package org.kobjects.typesystem;
+package org.kobjects.asde.lang.type;
 
 public class TypeImpl implements Type {
   private final String name;

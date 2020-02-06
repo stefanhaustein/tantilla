@@ -4,8 +4,15 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
-import org.kobjects.asde.lang.function.Types;
-import org.kobjects.typesystem.*;
+import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.type.EnumType;
+import org.kobjects.asde.lang.classifier.Instance;
+import org.kobjects.asde.lang.classifier.InstanceType;
+import org.kobjects.asde.lang.type.MetaType;
+import org.kobjects.asde.lang.property.Property;
+import org.kobjects.asde.lang.property.PropertyChangeListener;
+import org.kobjects.asde.lang.property.PropertyDescriptor;
+import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 

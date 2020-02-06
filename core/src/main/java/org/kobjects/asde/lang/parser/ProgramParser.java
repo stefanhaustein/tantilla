@@ -9,10 +9,10 @@ import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
 import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.statement.UnparseableStatement;
-import org.kobjects.asde.lang.function.Types;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.expressionparser.Tokenizer;
-import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.function.FunctionType;
+import org.kobjects.asde.lang.type.Type;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,10 +1,9 @@
-package org.kobjects.asde.lang.function;
+package org.kobjects.asde.lang.type;
 
-import org.kobjects.typesystem.EnumType;
-import org.kobjects.typesystem.MetaType;
-import org.kobjects.typesystem.Type;
-import org.kobjects.typesystem.TypeImpl;
-import org.kobjects.typesystem.Typed;
+import org.kobjects.asde.lang.type.EnumType;
+import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.type.TypeImpl;
+import org.kobjects.asde.lang.type.Typed;
 
 import java.util.HashMap;
 

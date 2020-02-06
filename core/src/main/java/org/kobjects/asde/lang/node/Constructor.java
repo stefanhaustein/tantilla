@@ -1,16 +1,14 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.list.ListImpl;
-import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.classifier.ClassPropertyDescriptor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.classifier.InstantiableType;
 import org.kobjects.asde.lang.statement.UninitializedField;
-import org.kobjects.typesystem.PropertyDescriptor;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.property.PropertyDescriptor;
+import org.kobjects.asde.lang.type.Type;
 
 import java.util.Arrays;
 import java.util.HashMap;

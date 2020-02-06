@@ -2,8 +2,7 @@ package org.kobjects.asde.lang.symbol;
 
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.GlobalSymbol;
-import org.kobjects.asde.lang.statement.Statement;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 

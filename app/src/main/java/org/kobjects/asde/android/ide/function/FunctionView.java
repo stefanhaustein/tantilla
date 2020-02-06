@@ -19,8 +19,7 @@ import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
-import org.kobjects.asde.lang.function.CodeLine;
-import org.kobjects.asde.lang.function.Types;
+import org.kobjects.asde.lang.type.Types;
 
 import java.util.ArrayList;
 

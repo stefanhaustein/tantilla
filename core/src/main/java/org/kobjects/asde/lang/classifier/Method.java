@@ -1,8 +1,8 @@
 package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.function.Function;
-import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.Property;
+import org.kobjects.asde.lang.function.FunctionType;
+import org.kobjects.asde.lang.property.Property;
 
 public abstract class Method extends Property implements Function {
     final FunctionType type;

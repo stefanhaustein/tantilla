@@ -6,7 +6,6 @@ targetCompatibility = "1.8"
 
 dependencies {
     api "com.github.stefanhaustein.expressionparser:core:v3.0.0"
-    api project(':typesystem')
 }
 
 

@@ -30,7 +30,6 @@ import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.runtime.WrappedExecutionException;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
-import org.kobjects.asde.lang.function.Types;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

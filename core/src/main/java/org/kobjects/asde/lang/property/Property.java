@@ -1,4 +1,4 @@
-package org.kobjects.typesystem;
+package org.kobjects.asde.lang.property;
 
 import java.util.LinkedHashSet;
 

@@ -6,8 +6,8 @@ import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.program.ProgramControl;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.NodeProcessor;
-import org.kobjects.typesystem.Property;
-import org.kobjects.typesystem.PropertyChangeListener;
+import org.kobjects.asde.lang.property.Property;
+import org.kobjects.asde.lang.property.PropertyChangeListener;
 
 import java.util.Map;
 

@@ -2,9 +2,8 @@ package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.FunctionImplementation;
-import org.kobjects.typesystem.Instance;
-import org.kobjects.typesystem.Property;
-import org.kobjects.typesystem.PropertyDescriptor;
+import org.kobjects.asde.lang.property.Property;
+import org.kobjects.asde.lang.property.PropertyDescriptor;
 
 public class InstanceImpl extends Instance {
   final Property[] properties;

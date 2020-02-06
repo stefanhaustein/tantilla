@@ -12,9 +12,9 @@ import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.function.CodeLine;
-import org.kobjects.asde.lang.function.Types;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.expressionparser.Tokenizer;
-import org.kobjects.typesystem.FunctionType;
+import org.kobjects.asde.lang.function.FunctionType;
 
 import java.util.List;
 

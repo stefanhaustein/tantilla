@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 

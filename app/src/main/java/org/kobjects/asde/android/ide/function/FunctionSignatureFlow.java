@@ -20,10 +20,10 @@ import org.kobjects.asde.android.ide.text.TextValidator;
 import org.kobjects.asde.lang.classifier.ClassImplementation;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
-import org.kobjects.asde.lang.function.Types;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.statement.RemStatement;
-import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.function.FunctionType;
+import org.kobjects.asde.lang.type.Type;
 
 import java.util.ArrayList;
 

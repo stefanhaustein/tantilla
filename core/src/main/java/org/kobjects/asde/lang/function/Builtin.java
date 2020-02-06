@@ -5,9 +5,8 @@ import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
-import org.kobjects.typesystem.FunctionType;
-import org.kobjects.typesystem.Parameter;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.type.Types;
 
 public enum Builtin implements Function {
 

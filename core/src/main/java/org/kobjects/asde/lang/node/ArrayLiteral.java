@@ -5,7 +5,7 @@ import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 

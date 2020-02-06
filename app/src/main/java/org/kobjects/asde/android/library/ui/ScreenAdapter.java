@@ -4,11 +4,18 @@ import android.view.View;
 
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.classifier.Method;
-import org.kobjects.asde.lang.function.Types;
+import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.type.EnumType;
+import org.kobjects.asde.lang.function.FunctionType;
+import org.kobjects.asde.lang.classifier.Instance;
+import org.kobjects.asde.lang.classifier.InstanceTypeImpl;
+import org.kobjects.asde.lang.property.PhysicalProperty;
+import org.kobjects.asde.lang.property.Property;
+import org.kobjects.asde.lang.property.PropertyDescriptor;
+import org.kobjects.asde.lang.type.Type;
 import org.kobjects.graphics.Screen;
 import org.kobjects.graphics.XAlign;
 import org.kobjects.graphics.YAlign;
-import org.kobjects.typesystem.*;
 
 
 public class ScreenAdapter extends Instance implements View.OnLayoutChangeListener{

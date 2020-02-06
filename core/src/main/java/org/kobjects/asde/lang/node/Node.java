@@ -4,10 +4,10 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
-import org.kobjects.asde.lang.function.Types;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
-import org.kobjects.typesystem.PropertyChangeListener;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.property.PropertyChangeListener;
+import org.kobjects.asde.lang.type.Type;
 
 import java.util.Collections;
 import java.util.Map;

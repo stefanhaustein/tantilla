@@ -26,10 +26,10 @@ import org.kobjects.asde.lang.statement.ReturnStatement;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.statement.UninitializedField;
 import org.kobjects.asde.lang.statement.VoidStatement;
-import org.kobjects.asde.lang.function.Types;
+import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.statement.WhileStatement;
 import org.kobjects.expressionparser.Tokenizer;
-import org.kobjects.typesystem.Type;
+import org.kobjects.asde.lang.type.Type;
 
 import java.util.ArrayList;
 import java.util.List;
