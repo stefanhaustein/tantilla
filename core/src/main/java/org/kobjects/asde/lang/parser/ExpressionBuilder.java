@@ -7,6 +7,7 @@ import org.kobjects.asde.lang.node.ArrayLiteral;
 import org.kobjects.asde.lang.node.Colon;
 import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.ImpliedSliceValue;
+import org.kobjects.asde.lang.node.InvokeMethod;
 import org.kobjects.asde.lang.node.NegOperator;
 import org.kobjects.asde.lang.node.Constructor;
 import org.kobjects.asde.lang.node.Slice;
@@ -42,10 +43,15 @@ class ExpressionBuilder extends Processor<Node> {
   @Override
   public Node apply(Tokenizer tokenizer, Node base, String bracket, List<Node> arguments) {
     Node[] children = new Node[arguments.size() + 1];
-    children[0] = base;
     for (int i = 0; i < arguments.size(); i++) {
       children[i + 1] = arguments.get(i);
     }
+    if (base instanceof Path) {
+      Path path = (Path) base;
+      children[0] = path.children[0];
+      return new InvokeMethod(path.pathName, children);
+    }
+    children[0] = base;
     return new Apply(true, children);
   }
 

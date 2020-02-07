@@ -41,16 +41,6 @@ public class Apply extends Node {
     }
   }
 
-  public void set(EvaluationContext evaluationContext, Object value) {
-    Object base = children[0].eval(evaluationContext);
-    ListImpl array = (ListImpl) base;
-    int[] indices = new int[children.length - 1];
-    for (int i = 1; i < children.length; i++) {
-      indices[i - 1] = children[i].evalInt(evaluationContext);
-    }
-    array.setValueAt(value, indices);
-  }
-
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     if (!(children[0].returnType() instanceof FunctionType)) {

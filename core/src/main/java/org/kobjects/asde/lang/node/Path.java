@@ -18,7 +18,7 @@ import java.util.Map;
 
 
 public class Path extends SymbolNode {
-  private String pathName;
+  public String pathName;
   private PropertyDescriptor resolvedPropertyDescriptor;
   private Object resolvedConstant;
 
