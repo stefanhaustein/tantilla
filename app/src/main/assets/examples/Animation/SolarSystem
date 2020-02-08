@@ -14,25 +14,25 @@ class Body:
  var fy = 0
  var sprite = screen.newSprite()
 
- def addAttraction(other: Body):
-  var dx = other.x - x
-  var dy = other.y - y
+ def addAttraction(self: Body, other: Body):
+  var dx = other.x - self.x
+  var dy = other.y - self.y
   var r2 = dx * dx + dy * dy
   var f = G * mass * other.mass / r2
   var th = atan2(dy, dx)
-  fx = fx + f * cos(th)
-  fy = fy + f * sin(th)
+  self.fx = self.fx + f * cos(th)
+  self.fy = self.fy + f * sin(th)
  end
 
- def update(dt: float):
-  vx = vx + dt * fx / mass
-  vy = vy + dt * fy / mass
-  x = x + vx * dt
-  y = y + vy * dt
-  sprite.x = x * SCALE
-  sprite.y = y * SCALE
-  fx = 0
-  fy = 0
+ def update(self: Body, dt: float):
+  self.vx = self.vx + dt * self.fx / self.mass
+  self.vy = self.vy + dt * self.fy / self.mass
+  self.x = self.x + self.vx * dt
+  self.y = self.y + self.vy * dt
+  self.sprite.x = self.x * SCALE
+  self.sprite.y = self.y * SCALE
+  self.fx = 0
+  self.fy = 0
  end
 end
 

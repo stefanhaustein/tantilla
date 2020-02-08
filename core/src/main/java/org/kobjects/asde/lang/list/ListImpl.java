@@ -73,7 +73,7 @@ public class ListImpl extends Instance implements Iterable<Object> {
             case append:  return new Method((FunctionType) property.type()) {
                 @Override
                 public Object call(EvaluationContext evaluationContext, int paramCount) {
-                    append(evaluationContext.getParameter(0));
+                    append(evaluationContext.getParameter(1));
                     return null;
                 }};
             case clear:  return new Method((FunctionType) property.type()) {
@@ -85,7 +85,7 @@ public class ListImpl extends Instance implements Iterable<Object> {
             case remove:  return new Method((FunctionType) property.type()) {
                 @Override
                 public Object call(EvaluationContext evaluationContext, int paramCount) {
-                    remove(evaluationContext.getParameter(0));
+                    remove(evaluationContext.getParameter(1));
                     return null;
                 }};
 

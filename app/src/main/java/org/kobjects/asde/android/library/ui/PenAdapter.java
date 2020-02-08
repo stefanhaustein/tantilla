@@ -76,10 +76,10 @@ public class PenAdapter extends Instance {
                     @Override
                     public Object call(EvaluationContext evaluationContext, int paramCount) {
                         pen.clearRect(
-                                ((Number) evaluationContext.getParameter(0)).floatValue(),
                                 ((Number) evaluationContext.getParameter(1)).floatValue(),
                                 ((Number) evaluationContext.getParameter(2)).floatValue(),
-                                ((Number) evaluationContext.getParameter(3)).floatValue());
+                                ((Number) evaluationContext.getParameter(3)).floatValue(),
+                                ((Number) evaluationContext.getParameter(4)).floatValue());
                         return null;
                     }
                 };
@@ -88,10 +88,10 @@ public class PenAdapter extends Instance {
                     @Override
                     public Object call(EvaluationContext evaluationContext, int paramCount) {
                         pen.drawRect(
-                                ((Number) evaluationContext.getParameter(0)).floatValue(),
                                 ((Number) evaluationContext.getParameter(1)).floatValue(),
                                 ((Number) evaluationContext.getParameter(2)).floatValue(),
-                                ((Number) evaluationContext.getParameter(3)).floatValue());
+                                ((Number) evaluationContext.getParameter(3)).floatValue(),
+                                ((Number) evaluationContext.getParameter(4)).floatValue());
                         return null;
                     }
                 };
@@ -100,9 +100,9 @@ public class PenAdapter extends Instance {
                     @Override
                     public Object call(EvaluationContext evaluationContext, int paramCount) {
                         pen.drawText(
-                                ((Number) evaluationContext.getParameter(0)).floatValue(),
                                 ((Number) evaluationContext.getParameter(1)).floatValue(),
-                                ((String) evaluationContext.getParameter(2)));
+                                ((Number) evaluationContext.getParameter(2)).floatValue(),
+                                ((String) evaluationContext.getParameter(3)));
                         return null;
                     }
                 };
@@ -111,10 +111,10 @@ public class PenAdapter extends Instance {
                     @Override
                     public Object call(EvaluationContext evaluationContext, int paramCount) {
                         pen.drawLine(
-                                ((Number) evaluationContext.getParameter(0)).floatValue(),
                                 ((Number) evaluationContext.getParameter(1)).floatValue(),
                                 ((Number) evaluationContext.getParameter(2)).floatValue(),
-                                ((Number) evaluationContext.getParameter(3)).floatValue());
+                                ((Number) evaluationContext.getParameter(3)).floatValue(),
+                                ((Number) evaluationContext.getParameter(4)).floatValue());
                         return null;
                     }
                 };
@@ -128,10 +128,10 @@ public class PenAdapter extends Instance {
         fillColor(Types.FLOAT),
         strokeColor(Types.FLOAT),
         textSize(Types.FLOAT),
-        clear(new FunctionType(Types.VOID, Types.FLOAT, Types.FLOAT, Types.FLOAT, Types.FLOAT)),
-        rect(new FunctionType(Types.VOID, Types.FLOAT, Types.FLOAT, Types.FLOAT, Types.FLOAT)),
-        write(new FunctionType(Types.VOID, Types.FLOAT, Types.FLOAT, Types.STR)),
-        line(new FunctionType(Types.VOID, Types.FLOAT, Types.FLOAT, Types.FLOAT, Types.FLOAT));
+        clear(new FunctionType(Types.VOID, TYPE, Types.FLOAT, Types.FLOAT, Types.FLOAT, Types.FLOAT)),
+        rect(new FunctionType(Types.VOID, TYPE, Types.FLOAT, Types.FLOAT, Types.FLOAT, Types.FLOAT)),
+        write(new FunctionType(Types.VOID, TYPE, Types.FLOAT, Types.FLOAT, Types.STR)),
+        line(new FunctionType(Types.VOID, TYPE, Types.FLOAT, Types.FLOAT, Types.FLOAT, Types.FLOAT));
 
         private final Type type;
 

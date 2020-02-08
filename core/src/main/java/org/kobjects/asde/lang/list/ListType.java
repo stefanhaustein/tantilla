@@ -48,13 +48,13 @@ public class ListType implements InstanceType {
   public PropertyDescriptor getPropertyDescriptor(String name) {
     switch (name) {
       case "append":
-        return new ArrayPropertyDescriptor(ArrayPropertyEnum.append, new FunctionType(Types.VOID, elementType));
+        return new ArrayPropertyDescriptor(ArrayPropertyEnum.append, new FunctionType(Types.VOID, this, elementType));
       case "remove":
-        return new ArrayPropertyDescriptor(ArrayPropertyEnum.remove, new FunctionType(Types.VOID, elementType));
+        return new ArrayPropertyDescriptor(ArrayPropertyEnum.remove, new FunctionType(Types.VOID, this, elementType));
       case "size":
         return new ArrayPropertyDescriptor(ArrayPropertyEnum.size, Types.FLOAT);
       case "clear":
-        return new ArrayPropertyDescriptor(ArrayPropertyEnum.clear, new FunctionType(Types.VOID));
+        return new ArrayPropertyDescriptor(ArrayPropertyEnum.clear, new FunctionType(Types.VOID, this));
       default:
         throw new IllegalArgumentException("Unrecognized array property: '" + name + "'");
     }

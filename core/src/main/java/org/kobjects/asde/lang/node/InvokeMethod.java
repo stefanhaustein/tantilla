@@ -52,15 +52,15 @@ public class InvokeMethod extends Node {
 
     FunctionType resolved = (FunctionType) resolvedPropertyDescriptor.type() ;
     // TODO: b/c optional params, add minParameterCount
-    if (children.length - 1 > resolved.getParameterCount() || children.length - 1 < resolved.getMinParameterCount()) {
+    if (children.length  > resolved.getParameterCount() || children.length < resolved.getMinParameterCount()) {
       throw new RuntimeException("Expected parameter count is "
           + resolved.getMinParameterCount() + ".."
-          + resolved.getParameterCount() + " but got " + (children.length - 1) + " for " + this);
+          + resolved.getParameterCount() + " but got " + (children.length ) + " for " + this);
     }
-    for (int i = 0; i < children.length - 1; i++) {
-      if (!resolved.getParameterType(i).isAssignableFrom(children[i+1].returnType())) {
+    for (int i = 0; i < children.length; i++) {
+      if (!resolved.getParameterType(i).isAssignableFrom(children[i].returnType())) {
         throw new RuntimeException("Type mismatch for parameter " + i + ": expected: "
-            + resolved.getParameterType(i) + " actual: " + children[i+1].returnType() + " base type: " + resolved);
+            + resolved.getParameterType(i) + " actual: " + children[i].returnType() + " base type: " + resolved);
       }
     }
   }
@@ -69,16 +69,17 @@ public class InvokeMethod extends Node {
     Object base = children[0].eval(evaluationContext);
     Function function = (Function) resolvedPropertyDescriptor.get(evaluationContext, base);
     evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
-    if (children.length - 1 > function.getLocalVariableCount()) {
+    if (children.length > function.getLocalVariableCount()) {
       throw new RuntimeException("Too many params for " + function);
      }
     // Push is important here, as parameter evaluation might also run apply().
+    evaluationContext.push(base);
     for (int i = 1; i < children.length; i++) {
        evaluationContext.push(children[i].eval(evaluationContext));
      }
-     evaluationContext.popN(children.length - 1);
+     evaluationContext.popN(children.length);
      try {
-       return function.call(evaluationContext, children.length - 1);
+       return function.call(evaluationContext, children.length);
      } catch (Exception e) {
        throw new RuntimeException(e.getMessage() + " in " + children[0], e);
      }

@@ -99,7 +99,7 @@ public class SpriteAdapter extends Instance implements Animated {
       case say: return new Method((FunctionType) SpriteMetaProperty.say.type()) {
         @Override
         public Object call(EvaluationContext evaluationContext, int paramCount) {
-          sprite.say((String) (evaluationContext.getParameter(0)));
+          sprite.say((String) (evaluationContext.getParameter(1)));
           return null;
         }};
       case x: return x;
@@ -294,15 +294,28 @@ public class SpriteAdapter extends Instance implements Animated {
   }
 
   enum SpriteMetaProperty implements PropertyDescriptor {
-    x(Types.FLOAT), y(Types.FLOAT), z(Types.FLOAT),
-    xAlign(ScreenAdapter.X_ALIGN), yAlign(ScreenAdapter.Y_ALIGN),
-    size(Types.FLOAT), opacity(Types.FLOAT),
-    speed(Types.FLOAT), direction(Types.FLOAT), dx(Types.FLOAT), dy(Types.FLOAT), grow(Types.FLOAT), fade(Types.FLOAT),
+    x(Types.FLOAT),
+    y(Types.FLOAT),
+    z(Types.FLOAT),
+    xAlign(ScreenAdapter.X_ALIGN),
+    yAlign(ScreenAdapter.Y_ALIGN),
+    size(Types.FLOAT),
+    opacity(Types.FLOAT),
+    speed(Types.FLOAT),
+    direction(Types.FLOAT),
+    dx(Types.FLOAT),
+    dy(Types.FLOAT),
+    grow(Types.FLOAT),
+    fade(Types.FLOAT),
     angle(Types.FLOAT),
-    label(TextBoxAdapter.TYPE), bubble(TextBoxAdapter.TYPE), face(Types.STR),
-    rotation(Types.FLOAT), collisions(new ListType(SpriteAdapter.TYPE)),
-    anchor(SpriteAdapter.TYPE), edgeMode(EDGE_MODE),
-    say(new FunctionType(Types.VOID, Types.STR));
+    label(TextBoxAdapter.TYPE),
+    bubble(TextBoxAdapter.TYPE),
+    face(Types.STR),
+    rotation(Types.FLOAT),
+    collisions(new ListType(SpriteAdapter.TYPE)),
+    anchor(SpriteAdapter.TYPE),
+    edgeMode(EDGE_MODE),
+    say(new FunctionType(Types.VOID, TYPE, Types.STR));
 
     final Type type;
 
