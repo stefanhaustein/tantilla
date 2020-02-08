@@ -25,8 +25,6 @@ public abstract class Property<T> {
         listener.propertyChanged(this);
       }
     }
-
-
   }
 
   public synchronized void addListener(PropertyChangeListener listener) {

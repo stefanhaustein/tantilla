@@ -58,7 +58,7 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
             case newPen: return new Method((FunctionType) ScreenMetaProperty.newPen.type) {
                 @Override
                 public Object call(EvaluationContext evaluationContext, int paramCount) {
-                    return new PenAdapter(screen.createPen());
+                    return screen.createPen();
                 }
             };
             case newSprite: return new Method((FunctionType) ScreenMetaProperty.newSprite.type) {
@@ -99,7 +99,7 @@ public class ScreenAdapter extends Instance implements View.OnLayoutChangeListen
     private enum ScreenMetaProperty implements PropertyDescriptor {
         width(Types.FLOAT),
         height(Types.FLOAT),
-        newPen(new FunctionType(PenAdapter.TYPE, TYPE)),
+        newPen(new FunctionType(PenType.PEN_TYPE, TYPE)),
         newSprite(new FunctionType(SpriteAdapter.TYPE, TYPE)),
         newTextBox(new FunctionType(TextBoxAdapter.TYPE, TYPE));
 

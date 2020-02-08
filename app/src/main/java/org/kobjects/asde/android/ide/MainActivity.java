@@ -34,6 +34,7 @@ import org.kobjects.asde.android.ide.program.ProgramView;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.android.library.ui.PenAdapter;
+import org.kobjects.asde.android.library.ui.PenType;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramControl;
@@ -228,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
     program.addBuiltin("YAlign", ScreenAdapter.Y_ALIGN);
     program.addBuiltin("Sprite", SpriteAdapter.TYPE);
     program.addBuiltin("TextBox", TextBoxAdapter.TYPE);
-    program.addBuiltin("Pen", PenAdapter.TYPE);
+    program.addBuiltin("Pen", PenType.PEN_TYPE);
     program.addBuiltin("dpad", new DpadAdapter(screen.dpad));
     program.addBuiltinFunction("cls", (evaluationContext, paramCount) -> {
       console.clearScreen(Console.ClearScreenType.CLS_STATEMENT);

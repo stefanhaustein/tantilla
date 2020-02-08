@@ -1,8 +1,6 @@
 package org.kobjects.asde.lang.classifier;
 
-import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.GlobalSymbol;
-import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.function.FunctionValidationContext;

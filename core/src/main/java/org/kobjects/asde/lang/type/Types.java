@@ -10,6 +10,7 @@ import java.util.HashMap;
 public class Types {
 
 
+  private static HashMap<Class<?>, Type> classMap = new HashMap<>();
   private static HashMap<Object, Type> typeMap = new HashMap<>();
 
   public static final Type BOOL = new TypeImpl("bool", Boolean.FALSE);
@@ -35,11 +36,17 @@ public class Types {
     }
     Type result = typeMap.get(o);
     if (result == null) {
-      throw new IllegalArgumentException("Unrecognized type: " + o.getClass());
+      result = classMap.get(o.getClass());
+      if (result == null) {
+        throw new IllegalArgumentException("Unrecognized type: " + o.getClass());
+      }
     }
     return result;
   }
 
+  public static void addClass(Class<?> clazz, Type type) {
+    classMap.put(clazz, type);
+  }
 
   public static EnumType wrapEnum(String name, Object[] values) {
     EnumType type = new EnumType(name, values);

@@ -13,6 +13,9 @@ public interface PropertyDescriptor {
   }
 
   default void set(EvaluationContext context, Object instance, Object value) {
+    if (!(instance instanceof Instance)) {
+      throw new RuntimeException("Object " + instance + " of class " + instance.getClass() + " is not an instance. PropertyDescriptor " + name() + " type " + type() + " class " + getClass());
+    }
     ((Instance) instance).getProperty(this).set(value);
   }
 
