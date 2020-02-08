@@ -2,6 +2,8 @@ package org.kobjects.asde.lang.parser;
 
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.node.InvokeMethod;
+import org.kobjects.asde.lang.node.Path;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Apply;
@@ -129,7 +131,7 @@ public class StatementParser {
         if (expression instanceof MathOperator && ((MathOperator) expression).kind == MathOperator.Kind.SUB) {
           params.add(expression.children[0]);
           params.add(new Group(new NegOperator(expression.children[1])));
-        } else if (expression instanceof Apply  && expression.children.length == 2) {
+        } else if ((expression instanceof Apply || expression instanceof InvokeMethod) && expression.children.length == 2) {
           params.add(expression.children[0]);
           params.add(new Group(expression.children[1]));
         } else {
@@ -142,7 +144,15 @@ public class StatementParser {
         params.add(expressionParser.parse(tokenizer));
       } while (tokenizer.tryConsume(","));
 
-      result.add(new VoidStatement(new Apply(false, params.toArray(Node.EMPTY_ARRAY))));
+      if (expression instanceof InvokeMethod) {
+        result.add(new VoidStatement(new InvokeMethod(((InvokeMethod) expression).name, params.toArray(Node.EMPTY_ARRAY))));
+      } else if (params.get(0) instanceof Path) {
+        Path path = (Path) params.get(0);
+        params.set(0, path.children[0]);
+        result.add(new VoidStatement(new InvokeMethod(path.pathName, params.toArray(Node.EMPTY_ARRAY))));
+      } else {
+        result.add(new VoidStatement(new Apply(false, params.toArray(Node.EMPTY_ARRAY))));
+      }
     } else {//if (expression instanceof Path || expression instanceof Identifier){
       result.add(new VoidStatement(expression));
     } /*else {

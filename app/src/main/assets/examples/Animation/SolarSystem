@@ -18,7 +18,7 @@ class Body:
   var dx = other.x - self.x
   var dy = other.y - self.y
   var r2 = dx * dx + dy * dy
-  var f = G * mass * other.mass / r2
+  var f = G * self.mass * other.mass / r2
   var th = atan2(dy, dx)
   self.fx = self.fx + f * cos(th)
   self.fy = self.fy + f * sin(th)

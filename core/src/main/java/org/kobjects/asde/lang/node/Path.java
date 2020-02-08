@@ -85,7 +85,8 @@ public class Path extends SymbolNode {
 
   @Override
   public void set(EvaluationContext evaluationContext, Object value) {
-    resolvedPropertyDescriptor.set(evaluationContext, children[0].eval(evaluationContext), value);
+    Object target = children[0].eval(evaluationContext);
+    resolvedPropertyDescriptor.set(evaluationContext, target, value);
   }
 
   @Override

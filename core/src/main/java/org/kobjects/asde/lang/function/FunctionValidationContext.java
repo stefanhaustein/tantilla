@@ -111,12 +111,14 @@ public class FunctionValidationContext {
 
     // Members
 
+    /*
     if (classValidationContext != null) {
       resolved = classValidationContext.resolve(name);
       if (resolved != null) {
         return resolved;
       }
     }
+     */
 
     // Globals
 

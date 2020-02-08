@@ -18,7 +18,7 @@ import java.util.Map;
 // Not static for access to the variables.
 public class InvokeMethod extends Node {
 
-  String name;
+  public String name;
   PropertyDescriptor resolvedPropertyDescriptor;
 
   public InvokeMethod(String name, Node... children) {

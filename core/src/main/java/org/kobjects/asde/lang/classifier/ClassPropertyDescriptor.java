@@ -14,7 +14,7 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.Collections;
 import java.util.Map;
 
-public class ClassPropertyDescriptor implements PropertyDescriptor, ResolvedSymbol, StaticSymbol {
+public class ClassPropertyDescriptor implements PropertyDescriptor, StaticSymbol {
   private ClassImplementation owner;
   String name;
   AbstractDeclarationStatement initializer;
@@ -77,7 +77,7 @@ public class ClassPropertyDescriptor implements PropertyDescriptor, ResolvedSymb
   public int getIndex() {
     return index;
   }
-
+/*
   @Override
   public Object get(EvaluationContext evaluationContext) {
     return evaluationContext.self.getProperty(this).get();
@@ -86,7 +86,7 @@ public class ClassPropertyDescriptor implements PropertyDescriptor, ResolvedSymb
   @Override
   public void set(EvaluationContext evaluationContext, Object value) {
     evaluationContext.self.getProperty(this).set(value);
-  }
+  }*/
 
   @Override
   public ClassImplementation getOwner() {

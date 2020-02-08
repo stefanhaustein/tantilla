@@ -20,8 +20,6 @@ import org.kobjects.asde.lang.node.OrOperator;
 import org.kobjects.asde.lang.node.Path;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.RelationalOperator;
-import org.kobjects.asde.lang.node.Self;
-import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.expressionparser.Processor;
 import org.kobjects.expressionparser.Tokenizer;
 
@@ -190,8 +188,6 @@ class ExpressionBuilder extends Processor<Node> {
       case "false":
       case "False":
         return new Literal(Boolean.FALSE);
-      case "self":
-        return new Self();
     }
     return new Identifier(name);
   }

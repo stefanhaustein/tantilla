@@ -23,6 +23,7 @@ public class ClassValidationContext {
     this.classImplementation = classImplementation;
   }
 
+  /*
   public ResolvedSymbol resolve(String name) {
     ClassPropertyDescriptor descriptor = classImplementation.getPropertyDescriptor(name);
     if (descriptor == null) {
@@ -39,5 +40,5 @@ public class ClassValidationContext {
       }
     }
     return descriptor;
-  }
+  }*/
 }
