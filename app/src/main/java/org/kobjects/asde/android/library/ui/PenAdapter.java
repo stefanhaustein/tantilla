@@ -143,5 +143,9 @@ public class PenAdapter extends Instance {
         public Type type() {
             return type;
         }
+
+        public Object get(Instance instance) {
+            return instance.getProperty(this);
+        }
     }
 }

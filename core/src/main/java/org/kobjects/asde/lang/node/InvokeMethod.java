@@ -67,11 +67,7 @@ public class InvokeMethod extends Node {
 
   public Object eval(EvaluationContext evaluationContext) {
     Object base = children[0].eval(evaluationContext);
-    if (!(base instanceof Instance)) {
-      throw new RuntimeException("instance expected; was: " + (base == null ? null : base.getClass()) + " expr: " + children[0]);
-    }
-    Instance instance = (Instance) base;
-    Function function = (Function) instance.getProperty(resolvedPropertyDescriptor);
+    Function function = (Function) resolvedPropertyDescriptor.get(evaluationContext, base);
     evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
     if (children.length - 1 > function.getLocalVariableCount()) {
       throw new RuntimeException("Too many params for " + function);

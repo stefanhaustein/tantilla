@@ -3,6 +3,7 @@ package org.kobjects.asde.lang.classifier;
 import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.property.Property;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
 
 public abstract class Method extends Property implements Function {
     final FunctionType type;
@@ -12,7 +13,7 @@ public abstract class Method extends Property implements Function {
     }
 
     @Override
-    public FunctionType getType() {
+        public FunctionType getType() {
         return type;
     }
 

@@ -30,19 +30,6 @@ public class Path extends SymbolNode {
     pathName = ((Identifier) right).name;
   }
 
-  public Property evalProperty(EvaluationContext evaluationContext) {
-    Object base = children[0].eval(evaluationContext);
-    if (!(base instanceof Instance)) {
-      throw new RuntimeException("instance expected; was: " + (base == null ? null : base.getClass()) + " expr: " + children[0]);
-    }
-    Instance instance = (Instance) base;
-    PropertyDescriptor propertyDescriptor = resolvedPropertyDescriptor != null ? resolvedPropertyDescriptor : instance.getType().getPropertyDescriptor(pathName);
-    if (propertyDescriptor == null) {
-      throw new RuntimeException("Property '" + pathName + "' does not exist.");
-    }
-    return instance.getProperty(propertyDescriptor);
-  }
-
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     if (children[0].returnType() instanceof InstanceType) {
@@ -70,7 +57,7 @@ public class Path extends SymbolNode {
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
-    return resolvedConstant != null ? resolvedConstant : evalProperty(evaluationContext).get();
+    return resolvedConstant != null ? resolvedConstant : resolvedPropertyDescriptor.get(evaluationContext, children[0].eval(evaluationContext));
   }
 
   @Override
@@ -93,12 +80,12 @@ public class Path extends SymbolNode {
 
   @Override
   public void addPropertyChangeListener(EvaluationContext evaluationContext, PropertyChangeListener listener) {
-    evalProperty(evaluationContext).addListener(listener);
+    resolvedPropertyDescriptor.addListener(children[0].eval(evaluationContext), listener);
   }
 
   @Override
   public void set(EvaluationContext evaluationContext, Object value) {
-    evalProperty(evaluationContext).set(value);
+    resolvedPropertyDescriptor.set(evaluationContext, children[0].eval(evaluationContext), value);
   }
 
   @Override

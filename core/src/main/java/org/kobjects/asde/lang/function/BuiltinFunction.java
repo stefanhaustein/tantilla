@@ -9,16 +9,6 @@ public class BuiltinFunction implements Function {
   private final FunctionType functionType;
   private final Callable callable;
 
-  @Override
-  public FunctionType getType() {
-    return functionType;
-  }
-
-  @Override
-  public Object call(EvaluationContext evaluationContext, int paramCount) {
-    return callable.call(evaluationContext, paramCount);
-  }
-
   public BuiltinFunction(Callable callable, CharSequence documentation, Type returnType, Type... args) {
     this.callable = callable;
     this.documentation = documentation;
@@ -28,6 +18,17 @@ public class BuiltinFunction implements Function {
   @Override
   public CharSequence getDocumentation() {
     return documentation;
+  }
+
+
+  @Override
+  public FunctionType getType() {
+    return functionType;
+  }
+
+  @Override
+  public Object call(EvaluationContext evaluationContext, int paramCount) {
+    return callable.call(evaluationContext, paramCount);
   }
 
 
