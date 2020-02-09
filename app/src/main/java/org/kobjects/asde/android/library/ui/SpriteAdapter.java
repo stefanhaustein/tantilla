@@ -4,7 +4,6 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.classifier.Method;
-import org.kobjects.asde.lang.type.ChangeListener;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Animated;
 import org.kobjects.graphics.EdgeMode;

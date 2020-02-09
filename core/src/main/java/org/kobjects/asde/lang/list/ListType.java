@@ -1,6 +1,5 @@
 package org.kobjects.asde.lang.list;
 
-import org.kobjects.asde.lang.type.ChangeListener;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.classifier.InstanceType;
