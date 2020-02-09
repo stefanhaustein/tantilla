@@ -10,6 +10,10 @@ import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.function.CodeLine;
 
+
+/**
+ * Used for refactorings.
+ */
 public class NodeProcessor {
 
   Consumer<Node> action;

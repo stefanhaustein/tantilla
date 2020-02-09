@@ -8,12 +8,15 @@ import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.NodeProcessor;
 import org.kobjects.asde.lang.property.Property;
 import org.kobjects.asde.lang.property.PropertyChangeListener;
+import org.kobjects.asde.lang.type.ChangeListener;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class OnStatement extends BlockStatement  {
 
   int resolvedEndLine;
+  ArrayList<Node> listenableSubexpressions = new ArrayList<>();
 
   public OnStatement(Node condition) {
     super(condition);
@@ -23,6 +26,18 @@ public class OnStatement extends BlockStatement  {
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     resolutionContext.startBlock(this);
+    listenableSubexpressions.clear();
+    findListenableSubexpressions(children);
+  }
+
+  void findListenableSubexpressions(Node[] nodes) {
+    for (Node node: nodes) {
+      if (node.returnType().supportsChangeListeners()) {
+        listenableSubexpressions.add(node);
+      } else {
+        findListenableSubexpressions(node.children);
+      }
+    }
   }
 
   @Override
@@ -30,8 +45,15 @@ public class OnStatement extends BlockStatement  {
     EvaluationContext newContectBase = new EvaluationContext(evaluationContext);
     newContectBase.currentLine++;
 
-    new NodeProcessor(node -> node.addPropertyChangeListener(evaluationContext, new Trigger(newContectBase)))
+    Trigger trigger = new Trigger(newContectBase);
+    // Old
+    new NodeProcessor(node -> node.addPropertyChangeListener(evaluationContext, trigger))
         .processNode(children[0]);
+
+    // New
+    for (Node node : listenableSubexpressions) {
+      node.returnType().addChangeListener(node.eval(evaluationContext), trigger);
+    }
 
     evaluationContext.currentLine = resolvedEndLine + 1;
     return null;
@@ -54,7 +76,7 @@ public class OnStatement extends BlockStatement  {
     context.currentLine = Integer.MAX_VALUE;
   }
 
-  class Trigger implements PropertyChangeListener {
+  class Trigger implements PropertyChangeListener, ChangeListener<Object> {
 
     final EvaluationContext evaluationContext;
 
@@ -65,6 +87,11 @@ public class OnStatement extends BlockStatement  {
 
     @Override
     public void propertyChanged(Property<?> property) {
+      notifyChanged(null);
+    }
+
+    @Override
+    public void notifyChanged(Object object) {
       if (evaluationContext.control.getState() == ProgramControl.State.ABORTED ||
           evaluationContext.control.getState() == ProgramControl.State.ENDED) {
         return;

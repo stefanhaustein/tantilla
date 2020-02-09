@@ -10,4 +10,12 @@ public interface Type extends Typed {
    default boolean isAssignableFrom(Type other) {
       return this.equals(other);
    }
+
+   default boolean supportsChangeListeners() {
+      return false;
+   }
+
+   default void addChangeListener(Object instance, ChangeListener<?> changeListener) {
+      throw new UnsupportedOperationException();
+   }
 }
