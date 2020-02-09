@@ -4,6 +4,7 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.classifier.Method;
+import org.kobjects.asde.lang.type.ChangeListener;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Animated;
 import org.kobjects.graphics.EdgeMode;
@@ -26,7 +27,17 @@ public class SpriteAdapter extends Instance implements Animated {
 
   public static final InstanceTypeImpl TYPE =
       new InstanceTypeImpl("Sprite",
-          "Class representing character objects on the screen.");
+          "Class representing character objects on the screen.") {
+        @Override
+        public boolean supportsChangeListeners() {
+          return true;
+        }
+
+        @Override
+        public void addChangeListener(final Object instance, Runnable changeListener) {
+          ((SpriteAdapter) instance).sprite.addChangeListener(unused -> changeListener.run());
+        }
+      };
 
   static {
     TYPE.addProperties(SpriteAdapter.SpriteMetaProperty.values());

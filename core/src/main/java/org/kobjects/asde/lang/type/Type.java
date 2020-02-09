@@ -15,7 +15,7 @@ public interface Type extends Typed {
       return false;
    }
 
-   default void addChangeListener(Object instance, ChangeListener<?> changeListener) {
+   default void addChangeListener(Object instance, Runnable changeListener) {
       throw new UnsupportedOperationException();
    }
 }

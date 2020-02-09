@@ -4,6 +4,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import org.kobjects.asde.lang.type.Types;
+import org.kobjects.graphics.ChangeListener;
 import org.kobjects.graphics.Dpad;
 import org.kobjects.asde.lang.classifier.Instance;
 import org.kobjects.asde.lang.classifier.InstanceTypeImpl;
@@ -11,6 +12,8 @@ import org.kobjects.asde.lang.property.PhysicalProperty;
 import org.kobjects.asde.lang.property.Property;
 import org.kobjects.asde.lang.property.PropertyDescriptor;
 import org.kobjects.asde.lang.type.Type;
+
+import java.util.ArrayList;
 
 public class DpadAdapter extends Instance {
 
@@ -21,15 +24,28 @@ public class DpadAdapter extends Instance {
     final TouchProperty right;
     final TouchProperty fire;
     final Property<Boolean> visible;
+    private final ArrayList<Runnable> changeListeners = new ArrayList<>();
 
     static InstanceTypeImpl TYPE = new InstanceTypeImpl("Dpad (Singleton)",
         "Virtual directional pad that is displayed at the bottom of the screen"
             + "when the visible property is set. Other properties are true when the "
-            + "corresponding key is pressed.");
+            + "corresponding key is pressed.") {
+        @Override
+        public boolean supportsChangeListeners() {
+            return true;
+        }
+
+        @Override
+        public void addChangeListener(final Object instance, Runnable changeListener) {
+            ((DpadAdapter) instance).addChangeListener(changeListener);
+        }
+
+    };
 
     static {
         TYPE.addProperties(DpadMetaProperty.values());
     }
+
 
     public DpadAdapter(final Dpad dpad) {
         super(TYPE);
@@ -65,6 +81,11 @@ public class DpadAdapter extends Instance {
         throw new RuntimeException("Unrecognized property: " + property);
     }
 
+
+    public void addChangeListener(Runnable changeListener) {
+        changeListeners.add(changeListener);
+    }
+
     enum DpadMetaProperty implements PropertyDescriptor {
         left(Types.BOOL),
         right(Types.BOOL),
@@ -86,7 +107,14 @@ public class DpadAdapter extends Instance {
     }
 
 
-    static class TouchProperty extends PhysicalProperty<Boolean> implements View.OnTouchListener {
+    public void notifyChanged() {
+        for (Runnable changeListener : changeListeners) {
+            changeListener.run();
+        }
+    }
+
+
+    class TouchProperty extends PhysicalProperty<Boolean> implements View.OnTouchListener {
 
         public TouchProperty(View view) {
             super(false);
@@ -98,10 +126,12 @@ public class DpadAdapter extends Instance {
         public boolean onTouch(View v, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 set(true);
+                DpadAdapter.this.notifyChanged();
                 return true;
             }
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 set(false);
+                DpadAdapter.this.notifyChanged();
                 return true;
             }
             return false;

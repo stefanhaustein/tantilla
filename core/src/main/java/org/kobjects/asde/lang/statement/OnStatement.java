@@ -46,10 +46,10 @@ public class OnStatement extends BlockStatement  {
     newContectBase.currentLine++;
 
     Trigger trigger = new Trigger(newContectBase);
-    // Old
+    /*
     new NodeProcessor(node -> node.addPropertyChangeListener(evaluationContext, trigger))
         .processNode(children[0]);
-
+*/
     // New
     for (Node node : listenableSubexpressions) {
       node.returnType().addChangeListener(node.eval(evaluationContext), trigger);
@@ -76,9 +76,10 @@ public class OnStatement extends BlockStatement  {
     context.currentLine = Integer.MAX_VALUE;
   }
 
-  class Trigger implements PropertyChangeListener, ChangeListener<Object> {
+  class Trigger implements PropertyChangeListener, Runnable {
 
     final EvaluationContext evaluationContext;
+    boolean armed = true;
 
     public Trigger(EvaluationContext evaluationContext) {
       this.evaluationContext = evaluationContext;
@@ -87,24 +88,29 @@ public class OnStatement extends BlockStatement  {
 
     @Override
     public void propertyChanged(Property<?> property) {
-      notifyChanged(null);
+      run();
     }
 
     @Override
-    public void notifyChanged(Object object) {
+    public void run() {
       if (evaluationContext.control.getState() == ProgramControl.State.ABORTED ||
           evaluationContext.control.getState() == ProgramControl.State.ENDED) {
         return;
       }
       if (children[0].evalBoolean(evaluationContext)) {
 //        System.out.println("Condition did trigger: " + OnStatement.this);
-        new Thread(() -> {
-          try {
-            evaluationContext.function.callImpl(new EvaluationContext(evaluationContext));
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-        }).start();
+        if (armed) {
+          armed = false;
+          new Thread(() -> {
+            try {
+              evaluationContext.function.callImpl(new EvaluationContext(evaluationContext));
+            } catch (Exception e) {
+              e.printStackTrace();
+            }
+          }).start();
+        }
+      } else {
+        armed = true;
       }
     }
   }
