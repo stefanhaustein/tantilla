@@ -33,8 +33,8 @@ public class SpriteAdapter extends Instance implements Animated {
         }
 
         @Override
-        public void addChangeListener(final Object instance, Runnable changeListener) {
-          ((SpriteAdapter) instance).sprite.addChangeListener(unused -> changeListener.run());
+        public void addChangeListener(final Object instance, Runnable listener) {
+          ((SpriteAdapter) instance).sprite.addChangeListener(listener);
         }
       };
 

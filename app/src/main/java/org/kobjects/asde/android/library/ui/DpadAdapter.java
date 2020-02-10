@@ -4,7 +4,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.graphics.ChangeListener;
 import org.kobjects.graphics.Dpad;
 import org.kobjects.asde.lang.classifier.Instance;
 import org.kobjects.asde.lang.classifier.InstanceTypeImpl;

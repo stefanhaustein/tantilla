@@ -10,10 +10,10 @@ import org.kobjects.graphics.Pen;
 
 public class PenType {
 
-  public static InstanceTypeImpl PEN_TYPE = new InstanceTypeImpl("Pen", "A pen");
+  public static InstanceTypeImpl TYPE = new InstanceTypeImpl("Pen", "A pen");
   static {
-    Types.addClass(Pen.class, PEN_TYPE);
-    PEN_TYPE.addProperties(
+    Types.addClass(Pen.class, TYPE);
+    TYPE.addProperties(
         new NativePropertyDescriptor("fillColor", "The current fill color for this pen.", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
@@ -50,7 +50,7 @@ public class PenType {
         new MethodDescriptor(
             "clear",
             "Clear the rectangle determined by the four coordinates",
-            Types.VOID, PEN_TYPE,
+            Types.VOID, TYPE,
             Types.FLOAT, Types.FLOAT, Types.FLOAT, Types.FLOAT) {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
@@ -66,7 +66,7 @@ public class PenType {
         new MethodDescriptor(
             "rect",
             "Draw the rectangle determined by the four coordinates",
-            Types.VOID, PEN_TYPE,
+            Types.VOID, TYPE,
             Types.FLOAT, Types.FLOAT, Types.FLOAT, Types.FLOAT) {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
@@ -82,7 +82,7 @@ public class PenType {
         new MethodDescriptor(
             "line",
             "Draw the line determined by the four coordinates",
-            Types.VOID, PEN_TYPE,
+            Types.VOID, TYPE,
             Types.FLOAT, Types.FLOAT, Types.FLOAT, Types.FLOAT) {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
@@ -98,7 +98,7 @@ public class PenType {
         new MethodDescriptor(
             "write",
             "Write the given text at the given coordinates",
-            Types.VOID, PEN_TYPE,
+            Types.VOID, TYPE,
             Types.FLOAT, Types.FLOAT, Types.STR) {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
