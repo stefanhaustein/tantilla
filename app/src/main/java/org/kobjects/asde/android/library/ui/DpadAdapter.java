@@ -1,29 +1,22 @@
 package org.kobjects.asde.android.library.ui;
 
 import android.view.MotionEvent;
-import android.view.View;
+import android.widget.ImageView;
 
+import org.kobjects.asde.lang.property.NativePropertyDescriptor;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
+import org.kobjects.asde.lang.type.Typed;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Dpad;
-import org.kobjects.asde.lang.classifier.Instance;
 import org.kobjects.asde.lang.classifier.InstanceTypeImpl;
-import org.kobjects.asde.lang.property.PhysicalProperty;
-import org.kobjects.asde.lang.property.Property;
-import org.kobjects.asde.lang.property.PropertyDescriptor;
 import org.kobjects.asde.lang.type.Type;
+
 
 import java.util.ArrayList;
 
-public class DpadAdapter extends Instance {
+public class DpadAdapter implements Typed {
 
-    final Dpad dpad;
-    final TouchProperty left;
-    final TouchProperty up;
-    final TouchProperty down;
-    final TouchProperty right;
-    final TouchProperty fire;
-    final Property<Boolean> visible;
-    private final ArrayList<Runnable> changeListeners = new ArrayList<>();
+    static String[] BUTTON_NAMES = {"up", "down", "left", "right", "fire"};
 
     static InstanceTypeImpl TYPE = new InstanceTypeImpl("Dpad (Singleton)",
         "Virtual directional pad that is displayed at the bottom of the screen"
@@ -40,44 +33,66 @@ public class DpadAdapter extends Instance {
         }
 
     };
-
     static {
-        TYPE.addProperties(DpadMetaProperty.values());
+        Types.addClass(DpadAdapter.class, TYPE);
+        for (int i = 0; i < BUTTON_NAMES.length; i++) {
+            final int index = i;
+            TYPE.addProperties(
+                new NativePropertyDescriptor(BUTTON_NAMES[i], "True if the '"+ BUTTON_NAMES[i] + "' button is pressed", Types.BOOL) {
+                    @Override
+                    public Object get(EvaluationContext context, Object instance) {
+                        return ((DpadAdapter) instance).buttonState[index];
+                    }
+
+                    @Override
+                    public void set(EvaluationContext context, Object instance, Object value) {
+                        ((DpadAdapter) instance).buttonState[index] = (Boolean) value;
+                    }
+                });
+        }
+        TYPE.addProperties(
+            new NativePropertyDescriptor("visible", "True if the dpad is currently shown.", Types.BOOL) {
+                @Override
+                public Object get(EvaluationContext context, Object instance) {
+                    return ((DpadAdapter) instance).dpad.getVisible();
+                }
+
+                @Override
+                public void set(EvaluationContext context, Object instance, Object value) {
+                    ((DpadAdapter) instance).dpad.setVisible((Boolean) value);
+                }
+            });
     }
+
+
+    final Dpad dpad;
+    private final ArrayList<Runnable> changeListeners = new ArrayList<>();
+    boolean[] buttonState = new boolean[5];
 
 
     public DpadAdapter(final Dpad dpad) {
-        super(TYPE);
         this.dpad = dpad;
-        left = new TouchProperty(dpad.left);
-        up = new TouchProperty(dpad.up);
-        down = new TouchProperty(dpad.down);
-        right = new TouchProperty(dpad.right);
-        fire = new TouchProperty(dpad.fire);
-        visible = new Property<Boolean>() {
-            @Override
-            public boolean setImpl(Boolean visible) {
-                return dpad.setVisible(visible);
-            }
+        ImageView[] buttons = {dpad.up, dpad.down, dpad.left, dpad.right, dpad.fire};
 
-            @Override
-            public Boolean get() {
-                return dpad.getVisible();
-            }
-        };
-    }
-
-    @Override
-    public Property getProperty(PropertyDescriptor property) {
-        switch ((DpadMetaProperty) property) {
-            case up: return up;
-            case left: return left;
-            case right: return right;
-            case down: return down;
-            case fire: return fire;
-            case visible: return visible;
+        for (int i = 0; i < buttons.length; i++) {
+            final int index = i;
+            buttons[i].setOnTouchListener((view, event) -> {
+                boolean newState;
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    newState = true;
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    newState = false;
+                } else {
+                    return false;
+                }
+                if (buttonState[index] == newState) {
+                    return false;
+                }
+                buttonState[index] = newState;
+                DpadAdapter.this.notifyChanged();
+                return true;
+            });
         }
-        throw new RuntimeException("Unrecognized property: " + property);
     }
 
 
@@ -85,56 +100,14 @@ public class DpadAdapter extends Instance {
         changeListeners.add(changeListener);
     }
 
-    enum DpadMetaProperty implements PropertyDescriptor {
-        left(Types.BOOL),
-        right(Types.BOOL),
-        up(Types.BOOL),
-        down(Types.BOOL),
-        fire(Types.BOOL),
-        visible(Types.BOOL);
-
-        private final Type type;
-
-        DpadMetaProperty(Type type) {
-            this.type = type;
-        }
-
-        @Override
-        public Type type() {
-            return type;
-        }
+    @Override
+    public Type getType() {
+        return TYPE;
     }
-
 
     public void notifyChanged() {
         for (Runnable changeListener : changeListeners) {
             changeListener.run();
         }
     }
-
-
-    class TouchProperty extends PhysicalProperty<Boolean> implements View.OnTouchListener {
-
-        public TouchProperty(View view) {
-            super(false);
-            view.setOnTouchListener(this);
-
-        }
-
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                set(true);
-                DpadAdapter.this.notifyChanged();
-                return true;
-            }
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                set(false);
-                DpadAdapter.this.notifyChanged();
-                return true;
-            }
-            return false;
-        }
-    }
-
 }
