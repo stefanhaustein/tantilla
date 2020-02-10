@@ -7,6 +7,7 @@ import org.kobjects.asde.lang.classifier.Method;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Animated;
 import org.kobjects.graphics.EdgeMode;
+import org.kobjects.graphics.Screen;
 import org.kobjects.graphics.Sprite;
 import org.kobjects.graphics.XAlign;
 import org.kobjects.graphics.YAlign;
@@ -77,9 +78,9 @@ public class SpriteAdapter extends Instance implements Animated {
   final ObjectProperty collisions = new ObjectProperty(SpriteMetaProperty.collisions);
   ListImpl collisionsArray = new ListImpl(SpriteAdapter.TYPE, 0);
 
-  public SpriteAdapter(final ScreenAdapter screen) {
+  public SpriteAdapter(final Screen screen) {
     super(TYPE);
-    sprite = new Sprite(screen.getScreen());
+    sprite = new Sprite(screen);
     sprite.setTag(this);
     sprite.setSize(10);
 
@@ -307,8 +308,8 @@ public class SpriteAdapter extends Instance implements Animated {
     x(Types.FLOAT),
     y(Types.FLOAT),
     z(Types.FLOAT),
-    xAlign(ScreenAdapter.X_ALIGN),
-    yAlign(ScreenAdapter.Y_ALIGN),
+    xAlign(ScreenType.X_ALIGN),
+    yAlign(ScreenType.Y_ALIGN),
     size(Types.FLOAT),
     opacity(Types.FLOAT),
     speed(Types.FLOAT),

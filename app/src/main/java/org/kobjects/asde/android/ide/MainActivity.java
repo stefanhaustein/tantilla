@@ -34,6 +34,7 @@ import org.kobjects.asde.android.ide.program.ProgramView;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.android.library.ui.PenType;
+import org.kobjects.asde.android.library.ui.ScreenType;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramControl;
@@ -43,7 +44,6 @@ import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.io.Shell;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.android.library.ui.DpadAdapter;
-import org.kobjects.asde.android.library.ui.ScreenAdapter;
 import org.kobjects.asde.android.library.ui.SpriteAdapter;
 import org.kobjects.asde.android.library.ui.TextBoxAdapter;
 import org.kobjects.graphics.Screen;
@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
   public Program program;
   public TextOutputView textOutputView;
   ResizableFrameLayout resizableFrameLayout;
-  ScreenAdapter screenAdapter;
   //  public ProgramControl mainControl = new ProgramControl(program);
   // ProgramControl shellControl = new ProgramControl(program);
   AsdePreferences preferences;
@@ -220,12 +219,12 @@ public class MainActivity extends AppCompatActivity {
       }
     }).start();
 
-    screenAdapter = new ScreenAdapter(screen);
 
-    program.addBuiltin("screen", screenAdapter);
+    program.addBuiltin("Screen", ScreenType.TYPE);
+    program.addBuiltin("screen", screen);
     program.addBuiltin("EdgeMode", SpriteAdapter.EDGE_MODE);
-    program.addBuiltin("XAlign", ScreenAdapter.X_ALIGN);
-    program.addBuiltin("YAlign", ScreenAdapter.Y_ALIGN);
+    program.addBuiltin("XAlign", ScreenType.X_ALIGN);
+    program.addBuiltin("YAlign", ScreenType.Y_ALIGN);
     program.addBuiltin("Sprite", SpriteAdapter.TYPE);
     program.addBuiltin("TextBox", TextBoxAdapter.TYPE);
     program.addBuiltin("Pen", PenType.TYPE);

@@ -1,6 +1,7 @@
 package org.kobjects.asde.android.library.ui;
 
 import org.kobjects.asde.lang.type.Types;
+import org.kobjects.graphics.Screen;
 import org.kobjects.graphics.TextBox;
 import org.kobjects.graphics.XAlign;
 import org.kobjects.graphics.YAlign;
@@ -35,8 +36,8 @@ public class TextBoxAdapter extends Instance {
     final ObjectProperty xAlign = new ObjectProperty(TextMetaProperty.xAlign);
     final ObjectProperty yAlign = new ObjectProperty(TextMetaProperty.yAlign);
 
-    public TextBoxAdapter(final ScreenAdapter screen) {
-        this(new TextBox(screen.getScreen()));
+    public TextBoxAdapter(final Screen screen) {
+        this(new TextBox(screen));
     }
 
     public TextBoxAdapter(TextBox textBox) {
@@ -181,7 +182,7 @@ public class TextBoxAdapter extends Instance {
 
     enum TextMetaProperty implements PropertyDescriptor {
         x(Types.FLOAT), y(Types.FLOAT), z(Types.FLOAT),
-        xAlign(ScreenAdapter.X_ALIGN), yAlign(ScreenAdapter.Y_ALIGN),
+        xAlign(ScreenType.X_ALIGN), yAlign(ScreenType.Y_ALIGN),
         size(Types.FLOAT),
         lineWidth(Types.FLOAT), lineColor(Types.FLOAT), fillColor(Types.FLOAT),
         textColor(Types.FLOAT), cornerRadius(Types.FLOAT),
