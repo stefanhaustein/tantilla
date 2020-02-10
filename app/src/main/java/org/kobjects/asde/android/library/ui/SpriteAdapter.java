@@ -12,6 +12,7 @@ import org.kobjects.graphics.Animated;
 import org.kobjects.graphics.EdgeMode;
 import org.kobjects.graphics.Screen;
 import org.kobjects.graphics.Sprite;
+import org.kobjects.graphics.TextBox;
 import org.kobjects.graphics.XAlign;
 import org.kobjects.graphics.YAlign;
 import org.kobjects.asde.lang.type.EnumType;
@@ -182,26 +183,26 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setDirection(((Double) value).floatValue());
           }
         },
-        new NativePropertyDescriptor("bubble", "Text bubble", TextBoxAdapter.TYPE) {
+        new NativePropertyDescriptor("bubble", "Text bubble", TextBoxType.TYPE) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
-            return ((SpriteAdapter) instance).sprite.getBubble().getTag();
+            return ((SpriteAdapter) instance).sprite.getBubble();
           }
 
           @Override
           public void set(EvaluationContext context, Object instance, Object value) {
-            ((SpriteAdapter) instance).sprite.setBubble(((TextBoxAdapter) value).textBox);
+            ((SpriteAdapter) instance).sprite.setBubble(((TextBox) value));
           }
         },
-        new NativePropertyDescriptor("label", "Text label", TextBoxAdapter.TYPE) {
+        new NativePropertyDescriptor("label", "Text label", TextBoxType.TYPE) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
-            return ((SpriteAdapter) instance).sprite.getLabel().getTag();
+            return ((SpriteAdapter) instance).sprite.getLabel();
           }
 
           @Override
           public void set(EvaluationContext context, Object instance, Object value) {
-            ((SpriteAdapter) instance).sprite.setLabel(((TextBoxAdapter) value).textBox);
+            ((SpriteAdapter) instance).sprite.setLabel(((TextBox) value));
           }
         },
 

@@ -1,23 +1,14 @@
 package org.kobjects.asde.android.library.ui;
 
-import android.view.View;
-
 import org.kobjects.asde.lang.property.MethodDescriptor;
-import org.kobjects.asde.lang.property.NativePropertyDescriptor;
 import org.kobjects.asde.lang.property.NativeReadonlyPropertyDescriptor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.classifier.Method;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.EnumType;
-import org.kobjects.asde.lang.function.FunctionType;
-import org.kobjects.asde.lang.classifier.Instance;
 import org.kobjects.asde.lang.classifier.InstanceTypeImpl;
-import org.kobjects.asde.lang.property.PhysicalProperty;
-import org.kobjects.asde.lang.property.Property;
-import org.kobjects.asde.lang.property.PropertyDescriptor;
-import org.kobjects.asde.lang.type.Type;
 import org.kobjects.graphics.Pen;
 import org.kobjects.graphics.Screen;
+import org.kobjects.graphics.TextBox;
 import org.kobjects.graphics.XAlign;
 import org.kobjects.graphics.YAlign;
 
@@ -60,11 +51,11 @@ public class ScreenType {
             return new SpriteAdapter(self);
           }
         },
-        new MethodDescriptor("newTextBox", "Create a new textBox attached to this screen object.", TextBoxAdapter.TYPE, TYPE) {
+        new MethodDescriptor("newTextBox", "Create a new textBox attached to this screen object.", TextBoxType.TYPE, TYPE) {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
             Screen self = (Screen) evaluationContext.getParameter(0);
-            return new TextBoxAdapter(self);
+            return new TextBox(self);
           }
         }
     );

@@ -45,7 +45,7 @@ import org.kobjects.asde.lang.io.Shell;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.android.library.ui.DpadAdapter;
 import org.kobjects.asde.android.library.ui.SpriteAdapter;
-import org.kobjects.asde.android.library.ui.TextBoxAdapter;
+import org.kobjects.asde.android.library.ui.TextBoxType;
 import org.kobjects.graphics.Screen;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.abcnotation.SampleManager;
@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
     program.addBuiltin("XAlign", ScreenType.X_ALIGN);
     program.addBuiltin("YAlign", ScreenType.Y_ALIGN);
     program.addBuiltin("Sprite", SpriteAdapter.TYPE);
-    program.addBuiltin("TextBox", TextBoxAdapter.TYPE);
+    program.addBuiltin("TextBox", TextBoxType.TYPE);
     program.addBuiltin("Pen", PenType.TYPE);
     program.addBuiltin("dpad", new DpadAdapter(screen.dpad));
     program.addBuiltinFunction("cls", (evaluationContext, paramCount) -> {
