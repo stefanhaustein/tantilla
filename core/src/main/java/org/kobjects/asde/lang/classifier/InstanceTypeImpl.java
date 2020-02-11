@@ -21,7 +21,7 @@ public class InstanceTypeImpl extends TypeImpl implements InstanceType {
    */
   public void addProperties(PropertyDescriptor... properties) {
     for (PropertyDescriptor property : properties) {
-      this.propertyDescriptors.put(property.name(), property);
+      this.propertyDescriptors.put(property.getName(), property);
     }
   }
 

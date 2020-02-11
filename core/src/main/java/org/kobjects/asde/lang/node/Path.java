@@ -6,10 +6,8 @@ import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.EnumType;
-import org.kobjects.asde.lang.classifier.Instance;
 import org.kobjects.asde.lang.classifier.InstanceType;
 import org.kobjects.asde.lang.type.MetaType;
-import org.kobjects.asde.lang.property.Property;
 import org.kobjects.asde.lang.property.PropertyChangeListener;
 import org.kobjects.asde.lang.property.PropertyDescriptor;
 import org.kobjects.asde.lang.type.Type;
@@ -37,7 +35,7 @@ public class Path extends SymbolNode {
       if (resolvedPropertyDescriptor == null) {
         throw new RuntimeException("Property '" + pathName + "' not found in " + children[0].returnType());
       }
-      if (resolvedPropertyDescriptor.type() == null) {
+      if (resolvedPropertyDescriptor.getType() == null) {
         throw new RuntimeException("Type of property '" + resolvedPropertyDescriptor + "' is null.");
       }
       return;
@@ -62,7 +60,7 @@ public class Path extends SymbolNode {
 
   @Override
   public Type returnType() {
-    return resolvedPropertyDescriptor != null ? resolvedPropertyDescriptor.type() : Types.of(resolvedConstant);
+    return resolvedPropertyDescriptor != null ? resolvedPropertyDescriptor.getType() : Types.of(resolvedConstant);
   }
 
   @Override

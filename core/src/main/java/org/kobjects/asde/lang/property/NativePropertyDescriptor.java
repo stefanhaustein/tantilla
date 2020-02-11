@@ -14,12 +14,12 @@ public abstract class NativePropertyDescriptor implements PropertyDescriptor {
   }
 
   @Override
-  public String name() {
+  public String getName() {
     return name;
   }
 
   @Override
-  public Type type() {
+  public Type getType() {
     return type;
   }
 
@@ -32,5 +32,10 @@ public abstract class NativePropertyDescriptor implements PropertyDescriptor {
   @Override
   public void addListener(Object instance, PropertyChangeListener listener) {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean isConstant() {
+    return false;
   }
 }

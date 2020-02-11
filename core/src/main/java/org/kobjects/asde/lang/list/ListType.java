@@ -116,12 +116,12 @@ public class ListType implements InstanceType {
     }
 
     @Override
-    public String name() {
+    public String getName() {
       return propertyEnum.name();
     }
 
     @Override
-    public Type type() {
+    public Type getType() {
       return type;
     }
   }

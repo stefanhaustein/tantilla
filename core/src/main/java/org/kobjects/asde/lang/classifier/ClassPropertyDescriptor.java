@@ -63,12 +63,12 @@ public class ClassPropertyDescriptor implements PropertyDescriptor, StaticSymbol
 
 
   @Override
-  public String name() {
+  public String getName() {
     return name;
   }
 
   @Override
-  public Type type() {
+  public Type getType() {
     return methodImplementation != null ? methodImplementation.getType() : initializer.getValueType();
   }
 
@@ -99,16 +99,6 @@ public class ClassPropertyDescriptor implements PropertyDescriptor, StaticSymbol
   @Override
   public Object getValue() {
     return methodImplementation;
-  }
-
-  @Override
-  public String getName() {
-    return name;
-  }
-
-  @Override
-  public Type getType() {
-    return type();
   }
 
   @Override

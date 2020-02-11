@@ -35,7 +35,7 @@ public class PropertyFlow {
     this.mode = mode;
     this.owner = owner;
     this.symbol = symbol;
-    name = symbol == null ? "" : symbol.name();
+    name = symbol == null ? "" : symbol.getName();
   }
 
   private void showNameDialog() {

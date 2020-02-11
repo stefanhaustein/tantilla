@@ -85,13 +85,13 @@ public class InterfaceImplementation implements InstanceType, Declaration, Symbo
     InstanceType otherInterface = (InstanceType) other;
 
     for (InterfacePropertyDescriptor propertyDescriptor : propertyMap.values()) {
-      PropertyDescriptor otherDescriptor = otherInterface.getPropertyDescriptor(propertyDescriptor.name());
+      PropertyDescriptor otherDescriptor = otherInterface.getPropertyDescriptor(propertyDescriptor.getName());
       if (otherDescriptor == null) {
-        System.out.println(toString() + " is not assignable from " + other + ": property '" + propertyDescriptor.name() + " is missing");
+        System.out.println(toString() + " is not assignable from " + other + ": property '" + propertyDescriptor.getName() + " is missing");
         return false;
       }
-      if (!propertyDescriptor.type().equals(otherDescriptor.type())) {
-        System.out.println(toString() + " is not assignable from " + other + ": expected type for property '" + propertyDescriptor.name() + "': " + propertyDescriptor.type() + " does not match " + otherDescriptor.type());
+      if (!propertyDescriptor.getType().equals(otherDescriptor.getType())) {
+        System.out.println(toString() + " is not assignable from " + other + ": expected type for property '" + propertyDescriptor.getName() + "': " + propertyDescriptor.getType() + " does not match " + otherDescriptor.getType());
         return false;
       }
     }

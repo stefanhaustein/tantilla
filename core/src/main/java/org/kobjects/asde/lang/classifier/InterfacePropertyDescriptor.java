@@ -50,16 +50,6 @@ public class InterfacePropertyDescriptor implements PropertyDescriptor, Resolved
   }
 
   @Override
-  public String getName() {
-    return name;
-  }
-
-  @Override
-  public Type getType() {
-    return type;
-  }
-
-  @Override
   public Node getInitializer() {
     return null;
   }
@@ -85,12 +75,12 @@ public class InterfacePropertyDescriptor implements PropertyDescriptor, Resolved
   }
 
   @Override
-  public String name() {
+  public String getName() {
     return name;
   }
 
   @Override
-  public Type type() {
+  public Type getType() {
     return type;
   }
 }

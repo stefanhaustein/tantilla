@@ -70,19 +70,19 @@ public class ListImpl extends Instance implements Iterable<Object> {
     synchronized public Property getProperty(PropertyDescriptor property) {
         switch (((ListType.ArrayPropertyDescriptor) property).propertyEnum) {
             case size: return length;
-            case append:  return new Method((FunctionType) property.type()) {
+            case append:  return new Method((FunctionType) property.getType()) {
                 @Override
                 public Object call(EvaluationContext evaluationContext, int paramCount) {
                     append(evaluationContext.getParameter(1));
                     return null;
                 }};
-            case clear:  return new Method((FunctionType) property.type()) {
+            case clear:  return new Method((FunctionType) property.getType()) {
                 @Override
                 public Object call(EvaluationContext evaluationContext, int paramCount) {
                     clear();
                     return null;
                 }};
-            case remove:  return new Method((FunctionType) property.type()) {
+            case remove:  return new Method((FunctionType) property.getType()) {
                 @Override
                 public Object call(EvaluationContext evaluationContext, int paramCount) {
                     remove(evaluationContext.getParameter(1));

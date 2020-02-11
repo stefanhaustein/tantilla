@@ -15,14 +15,10 @@ public abstract class MethodDescriptor implements PropertyDescriptor, Function {
   }
 
   @Override
-  public String name() {
+  public String getName() {
     return name;
   }
 
-  @Override
-  public Type type() {
-    return type;
-  }
 
   @Override
   public Object get(EvaluationContext context, Object instance) {
@@ -46,4 +42,9 @@ public abstract class MethodDescriptor implements PropertyDescriptor, Function {
 
   @Override
   public abstract Object call(EvaluationContext evaluationContext, int paramCount);
+
+  @Override
+  public boolean isConstant() {
+    return true;
+  }
 }

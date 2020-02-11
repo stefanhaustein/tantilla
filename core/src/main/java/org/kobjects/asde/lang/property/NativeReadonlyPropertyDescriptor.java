@@ -13,4 +13,9 @@ public abstract class NativeReadonlyPropertyDescriptor extends NativePropertyDes
   public void set(EvaluationContext context, Object instance, Object value) {
     throw new UnsupportedOperationException();
   }
+
+  @Override
+  public boolean isConstant() {
+    return true;
+  }
 }

@@ -1,16 +1,13 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.Instance;
 import org.kobjects.asde.lang.classifier.InstanceType;
 import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
-import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.property.PropertyDescriptor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
@@ -46,11 +43,11 @@ public class InvokeMethod extends Node {
     if (resolvedPropertyDescriptor == null) {
       throw new RuntimeException("Property '" + name + "' not found in " + children[0].returnType());
     }
-    if (!(resolvedPropertyDescriptor.type() instanceof FunctionType)) {
+    if (!(resolvedPropertyDescriptor.getType() instanceof FunctionType)) {
       throw new RuntimeException("Type of property '" + resolvedPropertyDescriptor + "' is not callable.");
     }
 
-    FunctionType resolved = (FunctionType) resolvedPropertyDescriptor.type() ;
+    FunctionType resolved = (FunctionType) resolvedPropertyDescriptor.getType() ;
     // TODO: b/c optional params, add minParameterCount
     if (children.length  > resolved.getParameterCount() || children.length < resolved.getMinParameterCount()) {
       throw new RuntimeException("Expected parameter count is "
@@ -87,7 +84,7 @@ public class InvokeMethod extends Node {
 
   // Shouldn't throw, as it's used outside validation!
   public Type returnType() {
-    return ((FunctionType) resolvedPropertyDescriptor.type()).getReturnType();
+    return ((FunctionType) resolvedPropertyDescriptor.getType()).getReturnType();
   }
 
   @Override

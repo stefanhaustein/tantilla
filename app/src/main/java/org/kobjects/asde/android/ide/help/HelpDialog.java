@@ -104,17 +104,17 @@ public class HelpDialog {
   }
 
   private void appendMethodLink(AnnotatedStringBuilder asb, PropertyDescriptor property) {
-    appendLink(asb, property.name(), property);
-    appendShortSignature(asb, (FunctionType) property.type());
+    appendLink(asb, property.getName(), property);
+    appendShortSignature(asb, (FunctionType) property.getType());
   }
 
   private void appendPropertyLink(AnnotatedStringBuilder asb, PropertyDescriptor property) {
     if (isMethod(property)) {
       appendMethodLink(asb, property);
     } else {
-      appendLink(asb, property.name(), property);
+      appendLink(asb, property.getName(), property);
       asb.append(": ");
-      asb.append(String.valueOf(property.type()));
+      asb.append(String.valueOf(property.getType()));
     }
 
   }
@@ -250,18 +250,18 @@ public class HelpDialog {
       return;
     }
 
-    alertDialog.setTitle("Property " + o.name());
+    alertDialog.setTitle("Property " + o.getName());
 
     AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
     asb.append("Type: ");
-    appendLink(asb, o.type());
+    appendLink(asb, o.getType());
 
     addParagraph(asb.build());
   }
 
   private void renderMethod(PropertyDescriptor o) {
-    alertDialog.setTitle("Method " + o.name());
-    addSignaure(o.name(), (FunctionType) o.type());
+    alertDialog.setTitle("Method " + o.getName());
+    addSignaure(o.getName(), (FunctionType) o.getType());
   }
 
 
@@ -317,7 +317,7 @@ public class HelpDialog {
   }
 
   private static  boolean isMethod(PropertyDescriptor descriptor) {
-    return descriptor.type() instanceof FunctionType && !(descriptor.type() instanceof ListType);
+    return descriptor.getType() instanceof FunctionType && !(descriptor.getType() instanceof ListType);
   }
 
 
