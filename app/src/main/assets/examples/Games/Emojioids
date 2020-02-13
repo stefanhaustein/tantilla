@@ -17,7 +17,7 @@ def newAsteroid(x: float, y: float, size: float, direction: float, speed: float)
  asteroid.speed = speed
  asteroid.rotation = random() * 30
  asteroid.edgeMode = EdgeMode.WRAP
- on asteroid.collisions.size > 0 :
+ onchange asteroid.collisions:
    if asteroid.face == "🥔" :
      var collisions = asteroid.collisions
      for other in collisions:

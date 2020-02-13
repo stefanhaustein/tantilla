@@ -1,42 +1,33 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
-import org.kobjects.asde.lang.program.ProgramControl;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.program.ProgramControl;
 import org.kobjects.asde.lang.property.Property;
 import org.kobjects.asde.lang.property.PropertyChangeListener;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
 
 import java.util.ArrayList;
 import java.util.Map;
 
-public class OnStatement extends BlockStatement  {
+public class OnChangeStatement extends BlockStatement  {
 
   int resolvedEndLine;
-  ArrayList<Node> listenableSubexpressions = new ArrayList<>();
 
-  public OnStatement(Node condition) {
-    super(condition);
+  public OnChangeStatement(Node listen) {
+    super(listen);
   }
 
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     resolutionContext.startBlock(this);
-    listenableSubexpressions.clear();
-    findListenableSubexpressions(children);
-  }
-
-  void findListenableSubexpressions(Node[] nodes) {
-    for (Node node: nodes) {
-      if (node.returnType().supportsChangeListeners()) {
-        listenableSubexpressions.add(node);
-      } else {
-        findListenableSubexpressions(node.children);
-      }
+    if (!children[0].returnType().supportsChangeListeners()) {
+      throw new RuntimeException("Expression does not support change notifications.");
     }
   }
+
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
@@ -44,14 +35,7 @@ public class OnStatement extends BlockStatement  {
     newContectBase.currentLine++;
 
     Trigger trigger = new Trigger(newContectBase);
-    /*
-    new NodeProcessor(node -> node.addPropertyChangeListener(evaluationContext, trigger))
-        .processNode(children[0]);
-*/
-    // New
-    for (Node node : listenableSubexpressions) {
-      node.returnType().addChangeListener(node.eval(evaluationContext), trigger);
-    }
+    children[0].returnType().addChangeListener(children[0].eval(evaluationContext), trigger);
 
     evaluationContext.currentLine = resolvedEndLine + 1;
     return null;
@@ -59,7 +43,7 @@ public class OnStatement extends BlockStatement  {
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
-    appendLinked(asb, "on ", errors);
+    appendLinked(asb, "onchange ", errors);
     children[0].toString(asb, errors, preferAscii);
     asb.append(": ");
   }
@@ -74,38 +58,27 @@ public class OnStatement extends BlockStatement  {
     context.currentLine = Integer.MAX_VALUE;
   }
 
-  class Trigger implements  Runnable {
+  class Trigger implements Runnable {
 
     final EvaluationContext evaluationContext;
-    boolean armed = true;
 
     public Trigger(EvaluationContext evaluationContext) {
       this.evaluationContext = evaluationContext;
     }
 
-
     @Override
     public void run() {
-      if (evaluationContext.control.getState() == ProgramControl.State.ABORTED ||
-          evaluationContext.control.getState() == ProgramControl.State.ENDED) {
-        return;
-      }
-      if (children[0].evalBoolean(evaluationContext)) {
-//        System.out.println("Condition did trigger: " + OnStatement.this);
-        if (armed) {
-          armed = false;
-          new Thread(() -> {
+
+      new Thread(() -> {
             try {
               evaluationContext.function.callImpl(new EvaluationContext(evaluationContext));
             } catch (Exception e) {
               e.printStackTrace();
             }
           }).start();
-        }
-      } else {
-        armed = true;
+
       }
     }
-  }
+
 
 }

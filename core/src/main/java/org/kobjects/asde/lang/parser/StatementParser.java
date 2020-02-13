@@ -17,6 +17,7 @@ import org.kobjects.asde.lang.statement.ConditionStatement;
 import org.kobjects.asde.lang.statement.DebuggerStatement;
 import org.kobjects.asde.lang.statement.EndStatement;
 import org.kobjects.asde.lang.statement.ForStatement;
+import org.kobjects.asde.lang.statement.OnChangeStatement;
 import org.kobjects.asde.lang.statement.PrintStatement;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.node.Literal;
@@ -88,6 +89,9 @@ public class StatementParser {
         return;
       case "on":
         result.add(parseOn(tokenizer));
+        return;
+      case "onchange":
+        result.add(parseOnchange(tokenizer));
         return;
       case "print":
         result.add(parsePrint(tokenizer));
@@ -198,6 +202,15 @@ public class StatementParser {
       throw new RuntimeException("':' expected.");
     }
     return new OnStatement(expr);
+  }
+
+  private OnChangeStatement parseOnchange(Tokenizer tokenizer) {
+    tokenizer.nextToken();
+    Node expr = expressionParser.parse(tokenizer);
+    if (!tryConsume(tokenizer, ":")) {
+      throw new RuntimeException("':' expected.");
+    }
+    return new OnChangeStatement(expr);
   }
 
 
