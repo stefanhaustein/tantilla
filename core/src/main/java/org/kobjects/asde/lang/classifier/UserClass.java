@@ -18,20 +18,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
 
-public class ClassImplementation implements InstanceType, InstantiableType, Declaration, SymbolOwner {
+public class UserClass implements Classifier, InstantiableType, Declaration, SymbolOwner {
 
   final Program program;
-  public final TreeMap<String, ClassPropertyDescriptor> propertyMap = new TreeMap<>();
+  public final TreeMap<String, AbstractUserClassProperty> propertyMap = new TreeMap<>();
   ArrayList<AbstractDeclarationStatement> resolvedInitializers = new ArrayList<>();
   GlobalSymbol declaringSymbol;
 
-  public ClassImplementation(Program program) {
+  public UserClass(Program program) {
     this.program = program;
   }
 
 
   @Override
-  public ClassPropertyDescriptor getPropertyDescriptor(String name) {
+  public AbstractUserClassProperty getPropertyDescriptor(String name) {
     return propertyMap.get(name);
   }
 
@@ -51,20 +51,20 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
   }
 
   public void setMethod(String functionName, FunctionImplementation methodImplementation) {
-    propertyMap.put(functionName, new ClassPropertyDescriptor(this, functionName, methodImplementation));
+    propertyMap.put(functionName, new UserMethod(this, functionName, methodImplementation));
   }
 
   public void setProperty(String propertyName, AbstractDeclarationStatement initializer) {
-    propertyMap.put(propertyName, new ClassPropertyDescriptor(this, propertyName, initializer));
+    propertyMap.put(propertyName, new UserClassProperty(this, propertyName, initializer));
   }
 
   public void processDeclaration(AbstractDeclarationStatement declaration) {
-    propertyMap.put(declaration.getVarName(), new ClassPropertyDescriptor(this, declaration.getVarName(), declaration));
+    propertyMap.put(declaration.getVarName(), new UserClassProperty(this, declaration.getVarName(), declaration));
   }
 
   public void validate(ClassValidationContext classValidationContext) {
     resolvedInitializers.clear();
-    for (ClassPropertyDescriptor propertyDescriptor : propertyMap.values()) {
+    for (AbstractUserClassProperty propertyDescriptor : propertyMap.values()) {
       propertyDescriptor.validate(classValidationContext);
     }
   }
@@ -97,7 +97,7 @@ public class ClassImplementation implements InstanceType, InstantiableType, Decl
 
   @Override
   public void addSymbol(StaticSymbol symbol) {
-    propertyMap.put(symbol.getName(), (ClassPropertyDescriptor) symbol);
+    propertyMap.put(symbol.getName(), (UserClassProperty) symbol);
   }
 
   @Override

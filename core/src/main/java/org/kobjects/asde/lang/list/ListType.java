@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.list;
 
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.function.FunctionType;
-import org.kobjects.asde.lang.classifier.InstanceType;
+import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.property.PropertyDescriptor;
 import org.kobjects.asde.lang.type.Type;
@@ -10,7 +10,7 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class ListType implements InstanceType {
+public class ListType implements Classifier {
 
   public final Type elementType;
 

@@ -9,10 +9,11 @@ import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.symbol.ExpandListener;
 import org.kobjects.asde.android.ide.symbol.SymbolListView;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
-import org.kobjects.asde.lang.classifier.ClassImplementation;
+import org.kobjects.asde.lang.classifier.AbstractUserClassProperty;
+import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.lang.classifier.ClassPropertyDescriptor;
+import org.kobjects.asde.lang.classifier.UserClassProperty;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 
@@ -192,9 +193,9 @@ public class ProgramView extends SymbolListView {
         }
         if (childView instanceof ClassifierView) {
           ClassifierView classifierView = (ClassifierView) childView;
-          ClassImplementation classImplementation = (ClassImplementation) classifierView.symbol.getValue();
+          UserClass classImplementation = (UserClass) classifierView.symbol.getValue();
           StaticSymbol symbolFound = null;
-          for (ClassPropertyDescriptor descriptor : classImplementation.propertyMap.values()) {
+          for (AbstractUserClassProperty descriptor : classImplementation.propertyMap.values()) {
             if (descriptor == symbol) {
               symbolFound = descriptor;
               break;

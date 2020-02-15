@@ -12,7 +12,7 @@ import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.symbol.SymbolListView;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.android.ide.symbol.ExpandListener;
-import org.kobjects.asde.lang.classifier.ClassImplementation;
+import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.classifier.InterfaceImplementation;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 
@@ -46,11 +46,11 @@ public class ClassifierView extends SymbolView {
     titleView.setMoreClickListener(clicked -> {
       PopupMenu popupMenu = new PopupMenu(mainActivity, clicked);
       popupMenu.getMenu().add("Add Property").setOnMenuItemClickListener(item -> {
-        PropertyFlow.createProperty(mainActivity, (ClassImplementation) symbol.getValue());
+        PropertyFlow.createProperty(mainActivity, (UserClass) symbol.getValue());
         return true;
       });
       popupMenu.getMenu().add("Add Method").setOnMenuItemClickListener(item -> {
-        FunctionSignatureFlow.createMethod(mainActivity, (ClassImplementation) symbol.getValue());
+        FunctionSignatureFlow.createMethod(mainActivity, (UserClass) symbol.getValue());
         return true;
       });
       popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {
@@ -85,8 +85,8 @@ public class ClassifierView extends SymbolView {
     }
 
     Iterable<? extends StaticSymbol> symbols;
-    if (symbol.getValue() instanceof ClassImplementation) {
-      symbols = ((ClassImplementation) symbol.getValue()).propertyMap.values();
+    if (symbol.getValue() instanceof UserClass) {
+      symbols = ((UserClass) symbol.getValue()).propertyMap.values();
     } else {
       symbols = ((InterfaceImplementation) symbol.getValue()).propertyMap.values();
     }

@@ -5,7 +5,7 @@ import org.kobjects.asde.lang.property.NativeReadonlyPropertyDescriptor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.EnumType;
-import org.kobjects.asde.lang.classifier.InstanceTypeImpl;
+import org.kobjects.asde.lang.classifier.NativeClass;
 import org.kobjects.graphics.Pen;
 import org.kobjects.graphics.Screen;
 import org.kobjects.graphics.TextBox;
@@ -19,7 +19,7 @@ public class ScreenType {
   public static EnumType Y_ALIGN = Types.wrapEnum("YAlign", YAlign.values());
 
 
-  public static final InstanceTypeImpl TYPE = new InstanceTypeImpl("Screen (Singleton)",
+  public static final NativeClass TYPE = new NativeClass("Screen (Singleton)",
     "Representation of the main device screen.");
 
   static {

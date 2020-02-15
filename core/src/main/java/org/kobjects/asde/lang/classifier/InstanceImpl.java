@@ -8,26 +8,26 @@ import org.kobjects.asde.lang.property.PropertyDescriptor;
 public class InstanceImpl extends Instance {
   final Property[] properties;
 
-  public InstanceImpl(ClassImplementation clazz, Property[] properties) {
+  public InstanceImpl(UserClass clazz, Property[] properties) {
     super(clazz);
     this.properties = properties;
   }
 
   @Override
-  public ClassImplementation getType() {
-    return (ClassImplementation) super.getType();
+  public UserClass getType() {
+    return (UserClass) super.getType();
   }
 
   @Override
   public Property getProperty(PropertyDescriptor rawDescriptor) {
-    ClassPropertyDescriptor descriptor = (rawDescriptor instanceof ClassPropertyDescriptor)
-        ? ((ClassPropertyDescriptor) rawDescriptor)
+    AbstractUserClassProperty descriptor = (rawDescriptor instanceof UserClassProperty)
+        ? ((AbstractUserClassProperty) rawDescriptor)
         : getType().getPropertyDescriptor(rawDescriptor.getName());
-    int index = descriptor.getIndex();
-    if (index != -1) {
-      return properties[index];
+    if (descriptor instanceof UserClassProperty) {
+      return properties[((UserClassProperty) descriptor).index];
     }
-    final FunctionImplementation methodImplementation = descriptor.methodImplementation;
+    UserMethod method = (UserMethod) descriptor;
+    final FunctionImplementation methodImplementation = method.methodImplementation;
     return new Method(methodImplementation.getType()) {
       @Override
       public Object call(EvaluationContext evaluationContext, int paramCount) {

@@ -16,7 +16,7 @@ import org.kobjects.graphics.TextBox;
 import org.kobjects.graphics.XAlign;
 import org.kobjects.graphics.YAlign;
 import org.kobjects.asde.lang.type.EnumType;
-import org.kobjects.asde.lang.classifier.InstanceTypeImpl;
+import org.kobjects.asde.lang.classifier.NativeClass;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Collection;
@@ -24,8 +24,8 @@ import java.util.Collection;
 public class SpriteAdapter implements Animated, Typed {
   public static EnumType EDGE_MODE = Types.wrapEnum("EdgeMode", EdgeMode.values());
 
-  public static final InstanceTypeImpl TYPE =
-      new InstanceTypeImpl("Sprite",
+  public static final NativeClass TYPE =
+      new NativeClass("Sprite",
           "Class representing character objects on the screen.") {
         @Override
         public boolean supportsChangeListeners() {

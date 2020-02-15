@@ -1,14 +1,14 @@
 package org.kobjects.asde.lang.node;
 
-import org.kobjects.asde.lang.classifier.ClassImplementation;
+import org.kobjects.asde.lang.classifier.AbstractUserClassProperty;
+import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.Consumer;
-import org.kobjects.asde.lang.classifier.ClassPropertyDescriptor;
+import org.kobjects.asde.lang.classifier.UserClassProperty;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
-import org.kobjects.asde.lang.function.CodeLine;
 
 
 /**
@@ -35,15 +35,15 @@ public class NodeProcessor {
     }
   }
 
-  public void processClass(ClassImplementation classImplementation) {
-    for (ClassPropertyDescriptor symbol : classImplementation.propertyMap.values()) {
+  public void processClass(UserClass classImplementation) {
+    for (AbstractUserClassProperty symbol : classImplementation.propertyMap.values()) {
       processSymbol(symbol);
     }
   }
 
   public void processSymbol(StaticSymbol symbol) {
-    if (symbol.getValue() instanceof ClassImplementation) {
-      processClass((ClassImplementation) symbol.getValue());
+    if (symbol.getValue() instanceof UserClass) {
+      processClass((UserClass) symbol.getValue());
     }
     if (symbol.getValue() instanceof FunctionImplementation) {
       processCallableUnit((FunctionImplementation) symbol.getValue());

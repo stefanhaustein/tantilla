@@ -11,7 +11,7 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.Collection;
 import java.util.TreeMap;
 
-public class InterfaceImplementation implements InstanceType, Declaration, SymbolOwner {
+public class InterfaceImplementation implements Classifier, Declaration, SymbolOwner {
   Program program;
   StaticSymbol declaringSymbol;
     public final TreeMap<String, InterfacePropertyDescriptor> propertyMap = new TreeMap<>();
@@ -79,10 +79,10 @@ public class InterfaceImplementation implements InstanceType, Declaration, Symbo
     if (other == this) {
       return true;
     }
-    if (!(other instanceof InstanceType)) {
+    if (!(other instanceof Classifier)) {
       return false;
     }
-    InstanceType otherInterface = (InstanceType) other;
+    Classifier otherInterface = (Classifier) other;
 
     for (InterfacePropertyDescriptor propertyDescriptor : propertyMap.values()) {
       PropertyDescriptor otherDescriptor = otherInterface.getPropertyDescriptor(propertyDescriptor.getName());

@@ -6,7 +6,7 @@ import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.EnumType;
-import org.kobjects.asde.lang.classifier.InstanceType;
+import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.property.PropertyChangeListener;
 import org.kobjects.asde.lang.property.PropertyDescriptor;
@@ -30,8 +30,8 @@ public class Path extends SymbolNode {
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, int line) {
-    if (children[0].returnType() instanceof InstanceType) {
-      resolvedPropertyDescriptor = ((InstanceType) children[0].returnType()).getPropertyDescriptor(pathName);
+    if (children[0].returnType() instanceof Classifier) {
+      resolvedPropertyDescriptor = ((Classifier) children[0].returnType()).getPropertyDescriptor(pathName);
       if (resolvedPropertyDescriptor == null) {
         throw new RuntimeException("Property '" + pathName + "' not found in " + children[0].returnType());
       }

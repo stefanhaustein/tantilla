@@ -2,7 +2,6 @@ package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.ProgramValidationContext;
-import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.node.Node;
 
 import java.util.HashMap;
@@ -13,12 +12,12 @@ import java.util.Map;
 public class ClassValidationContext {
   public final Map<Node, Exception> errors = new HashMap<>();
   public final ProgramValidationContext programValidationContext;
-  public final ClassImplementation classImplementation;
+  public final UserClass classImplementation;
   final LinkedHashSet<String> dependencyChain = new LinkedHashSet<>();
   public HashSet<GlobalSymbol> dependencies = new HashSet<>();
-  final HashSet<ClassPropertyDescriptor> validated = new HashSet<>();
+  final HashSet<AbstractUserClassProperty> validated = new HashSet<>();
 
-  public ClassValidationContext(ProgramValidationContext programValidationContext, ClassImplementation classImplementation) {
+  public ClassValidationContext(ProgramValidationContext programValidationContext, UserClass classImplementation) {
     this.programValidationContext = programValidationContext;
     this.classImplementation = classImplementation;
   }

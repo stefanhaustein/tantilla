@@ -4,7 +4,7 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.symbol.SymbolOwner;
-import org.kobjects.asde.lang.classifier.ClassImplementation;
+import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.classifier.ClassValidationContext;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
@@ -153,10 +153,10 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
       function.validate(context);
       this.errors = context.errors;
       this.dependencies = context.dependencies;
-    } else if (value instanceof ClassImplementation) {
+    } else if (value instanceof UserClass) {
       //  programValidationContext.validated.add(this);
 
-      ClassImplementation classImplementation = (ClassImplementation) value;
+      UserClass classImplementation = (UserClass) value;
       ClassValidationContext classValidationContext = new ClassValidationContext(programValidationContext, classImplementation);
       classImplementation.validate(classValidationContext);
       this.errors = classValidationContext.errors;

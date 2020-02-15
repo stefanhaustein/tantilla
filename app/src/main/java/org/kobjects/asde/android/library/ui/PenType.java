@@ -1,6 +1,6 @@
 package org.kobjects.asde.android.library.ui;
 
-import org.kobjects.asde.lang.classifier.InstanceTypeImpl;
+import org.kobjects.asde.lang.classifier.NativeClass;
 import org.kobjects.asde.lang.property.MethodDescriptor;
 import org.kobjects.asde.lang.property.NativePropertyDescriptor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -10,7 +10,7 @@ import org.kobjects.graphics.Pen;
 
 public class PenType {
 
-  public static InstanceTypeImpl TYPE = new InstanceTypeImpl("Pen", "A pen");
+  public static NativeClass TYPE = new NativeClass("Pen", "A pen");
   static {
     Types.addClass(Pen.class, TYPE);
     TYPE.addProperties(

@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.ClassPropertyDescriptor;
+import org.kobjects.asde.lang.classifier.UserClassProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.program.GlobalSymbol;
@@ -63,7 +63,7 @@ public class Constructor extends Node {
       arraySize = 0;
 
       for (PropertyDescriptor propertyDescriptor : instantiableType.getPropertyDescriptors()) {
-        ClassPropertyDescriptor descriptor = (ClassPropertyDescriptor) propertyDescriptor;
+        UserClassProperty descriptor = (UserClassProperty) propertyDescriptor;
         if (descriptor.getInitializer() != null) {
           Integer childIndex = nameIndexMap.get(descriptor.getName());
           if (childIndex != null) {

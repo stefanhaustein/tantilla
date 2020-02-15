@@ -6,12 +6,12 @@ import org.kobjects.asde.lang.type.TypeImpl;
 import java.util.Collection;
 import java.util.TreeMap;
 
-public class InstanceTypeImpl extends TypeImpl implements InstanceType {
+public class NativeClass extends TypeImpl implements Classifier {
 
   private final TreeMap<String, PropertyDescriptor> propertyDescriptors = new TreeMap<>();
   private final CharSequence documentation;
 
-  public InstanceTypeImpl(String name, CharSequence documentation) {
+  public NativeClass(String name, CharSequence documentation) {
     super(name, null);
     this.documentation = documentation;
   }

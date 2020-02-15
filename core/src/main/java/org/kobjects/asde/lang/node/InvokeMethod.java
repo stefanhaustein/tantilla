@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.InstanceType;
+import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
@@ -36,10 +36,10 @@ public class InvokeMethod extends Node {
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, int line) {
-    if (!(children[0].returnType() instanceof InstanceType)) {
+    if (!(children[0].returnType() instanceof Classifier)) {
       throw new RuntimeException("InstanceType base expected");
     }
-    resolvedPropertyDescriptor = ((InstanceType) children[0].returnType()).getPropertyDescriptor(name);
+    resolvedPropertyDescriptor = ((Classifier) children[0].returnType()).getPropertyDescriptor(name);
     if (resolvedPropertyDescriptor == null) {
       throw new RuntimeException("Property '" + name + "' not found in " + children[0].returnType());
     }

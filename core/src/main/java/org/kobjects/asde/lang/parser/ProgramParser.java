@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.parser;
 
 
-import org.kobjects.asde.lang.classifier.ClassImplementation;
+import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.classifier.InterfaceImplementation;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.program.Program;
@@ -32,7 +32,7 @@ public class ProgramParser {
 
   public void parseProgram(BufferedReader reader) throws IOException {
     FunctionImplementation currentFunction = null;
-    ClassImplementation currentClass = null;
+    UserClass currentClass = null;
     ArrayList<String> lines = new ArrayList<>();
     boolean legacyMode;
     int depth = 0;
@@ -50,7 +50,7 @@ public class ProgramParser {
           int cut = line.lastIndexOf(':');
           String className = line.substring(6, cut).trim();
           System.out.println("class forward declaration: '" + className + "'");
-          program.setDeclaration(className, new ClassImplementation(program));
+          program.setDeclaration(className, new UserClass(program));
         } else if (line.startsWith("interface ")) {
           int cut = line.lastIndexOf(':');
           String interfaceName = line.substring(10, cut).trim();
@@ -121,7 +121,7 @@ public class ProgramParser {
           }
         } else if (tokenizer.tryConsume("class")) {
           String className = tokenizer.consumeIdentifier();
-          currentClass = (ClassImplementation) program.getSymbol(className).getValue();
+          currentClass = (UserClass) program.getSymbol(className).getValue();
           if (!tokenizer.tryConsume(":")) {
             throw new RuntimeException("':' expected.");
           }

@@ -6,13 +6,13 @@ import org.kobjects.asde.lang.property.PropertyDescriptor;
 import org.kobjects.asde.lang.type.Typed;
 
 public abstract class Instance implements Typed {
-  private final InstanceType instanceType;
+  private final Classifier classifier;
 
-  public Instance(InstanceType instanceType) {
-        this.instanceType = instanceType;
+  public Instance(Classifier classifier) {
+        this.classifier = classifier;
     }
 
   public abstract Property getProperty(PropertyDescriptor property);
 
-  public InstanceType getType() { return instanceType; }
+  public Classifier getType() { return classifier; }
 }

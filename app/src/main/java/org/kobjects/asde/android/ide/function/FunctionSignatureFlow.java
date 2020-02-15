@@ -17,7 +17,7 @@ import org.kobjects.asde.android.ide.symbol.SymbolNameValidator;
 import org.kobjects.asde.android.ide.widget.TypeSpinner;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.text.TextValidator;
-import org.kobjects.asde.lang.classifier.ClassImplementation;
+import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Types;
@@ -42,7 +42,7 @@ public class FunctionSignatureFlow {
   ArrayList<Parameter> parameterList = new ArrayList<>();
   LinearLayout parameterListView;
   FunctionImplementation functionImplementation;
-  ClassImplementation classImplementation;
+  UserClass classImplementation;
 
   public static void changeSignature(MainActivity mainActivity, StaticSymbol symbol, FunctionImplementation functionImplementation) {
     FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CHANGE_SIGNATURE, functionImplementation.getType().getReturnType());
@@ -60,7 +60,7 @@ public class FunctionSignatureFlow {
     flow.editFunctionParameters();
   }
 
-  public static void createMethod(MainActivity mainActivity, ClassImplementation classImplementation) {
+  public static void createMethod(MainActivity mainActivity, UserClass classImplementation) {
     FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CREATE_MEMBER, Types.VOID);
     flow.classImplementation = classImplementation;
     flow.createCallableUnit();

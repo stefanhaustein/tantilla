@@ -20,7 +20,7 @@ import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.EnumType;
 import org.kobjects.asde.lang.function.FunctionType;
-import org.kobjects.asde.lang.classifier.InstanceType;
+import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.property.PropertyDescriptor;
 import org.kobjects.asde.lang.type.Type;
@@ -196,7 +196,7 @@ public class HelpDialog {
 
       addAll("Constants", s -> !(s.getValue() instanceof Function) && !(s.getType() instanceof MetaType));
 
-      addAll("Classes", s -> s.getValue() instanceof InstanceType);
+      addAll("Classes", s -> s.getValue() instanceof Classifier);
 
       addAll("Enums", s -> s.getValue() instanceof EnumType);
 
@@ -230,8 +230,8 @@ public class HelpDialog {
       } else {
         throw new RuntimeException("Don't know how to render " + symbol);
       }
-    } else if (o instanceof InstanceType) {
-      renderClass((InstanceType) o);
+    } else if (o instanceof Classifier) {
+      renderClass((Classifier) o);
     } else if (o instanceof PropertyDescriptor) {
       renderProperty((PropertyDescriptor) o);
     } else if (o instanceof EnumType) {
@@ -293,7 +293,7 @@ public class HelpDialog {
   }
 
 
-    void renderClass(InstanceType classifier) {
+    void renderClass(Classifier classifier) {
     alertDialog.setTitle("Class " + classifier.toString());
 
     addParagraph(AnnotatedString.of(classifier.getDocumentation()));

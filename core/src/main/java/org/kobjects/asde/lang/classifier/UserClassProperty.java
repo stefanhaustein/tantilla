@@ -12,26 +12,16 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.Collections;
 import java.util.Map;
 
-public class ClassPropertyDescriptor implements PropertyDescriptor, StaticSymbol {
-  private ClassImplementation owner;
-  String name;
+public class UserClassProperty extends AbstractUserClassProperty {
+
   AbstractDeclarationStatement initializer;
-  FunctionImplementation methodImplementation;
   int index = -1;
-  private Map<Node, Exception> errors = Collections.emptyMap();
 
-  ClassPropertyDescriptor(ClassImplementation classImplementation, String name, AbstractDeclarationStatement initializer) {
-    this.name = name;
+  UserClassProperty(UserClass classImplementation, String name, AbstractDeclarationStatement initializer) {
+    super(classImplementation, name);
     this.initializer = initializer;
-    this.owner = classImplementation;
   }
 
-  ClassPropertyDescriptor(ClassImplementation classImplementation, String name, FunctionImplementation methodImplementation) {
-    this.name = name;
-    this.methodImplementation = methodImplementation;
-    methodImplementation.setDeclaringSymbol(this);
-    this.owner = classImplementation;
-  }
 
   // May also be called from ClassValidationContext.
   void validate(ClassValidationContext classValidationContext) {
@@ -39,17 +29,12 @@ public class ClassPropertyDescriptor implements PropertyDescriptor, StaticSymbol
       return;
     }
 
-    FunctionValidationContext context = new FunctionValidationContext(classValidationContext, methodImplementation);
+    FunctionValidationContext context = new FunctionValidationContext(classValidationContext, null);
 
-    if (methodImplementation != null) {
-      methodImplementation.validate(context);
-
-    } else {
       initializer.resolve(context, 0);
 
       index = owner.resolvedInitializers.size();
       owner.resolvedInitializers.add(initializer);
-    }
 
     if (context.errors.size() > 0) {
       System.err.println("Validation errors for property " + name + ": " + context.errors);
@@ -69,7 +54,7 @@ public class ClassPropertyDescriptor implements PropertyDescriptor, StaticSymbol
 
   @Override
   public Type getType() {
-    return methodImplementation != null ? methodImplementation.getType() : initializer.getValueType();
+    return initializer.getValueType();
   }
 
   public int getIndex() {
@@ -87,7 +72,7 @@ public class ClassPropertyDescriptor implements PropertyDescriptor, StaticSymbol
   }*/
 
   @Override
-  public ClassImplementation getOwner() {
+  public UserClass getOwner() {
     return owner;
   }
 
@@ -98,7 +83,7 @@ public class ClassPropertyDescriptor implements PropertyDescriptor, StaticSymbol
 
   @Override
   public Object getValue() {
-    return methodImplementation;
+    return null;
   }
 
   @Override

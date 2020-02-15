@@ -6,11 +6,11 @@ import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.TextBox;
 import org.kobjects.graphics.XAlign;
 import org.kobjects.graphics.YAlign;
-import org.kobjects.asde.lang.classifier.InstanceTypeImpl;
+import org.kobjects.asde.lang.classifier.NativeClass;
 
 public class TextBoxType {
 
-    public static final InstanceTypeImpl TYPE =new InstanceTypeImpl("TextBox",
+    public static final NativeClass TYPE =new NativeClass("TextBox",
         "Class representing a box of text on the screen.");
     static {
         Types.addClass(TextBox.class, TYPE);

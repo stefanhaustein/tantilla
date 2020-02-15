@@ -8,7 +8,7 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Typed;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Dpad;
-import org.kobjects.asde.lang.classifier.InstanceTypeImpl;
+import org.kobjects.asde.lang.classifier.NativeClass;
 import org.kobjects.asde.lang.type.Type;
 
 
@@ -20,7 +20,7 @@ public class DpadAdapter implements Typed {
 
     static String[] BUTTON_NAMES = {"up", "down", "left", "right", "fire"};
 
-    static InstanceTypeImpl TYPE = new InstanceTypeImpl("Dpad (Singleton)",
+    static NativeClass TYPE = new NativeClass("Dpad (Singleton)",
         "Virtual directional pad that is displayed at the bottom of the screen"
             + "when the visible property is set. Other properties are true when the "
             + "corresponding key is pressed.") {
