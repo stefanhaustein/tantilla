@@ -1,6 +1,5 @@
 package org.kobjects.asde.lang.classifier;
 
-import org.kobjects.asde.lang.property.PropertyDescriptor;
 import org.kobjects.asde.lang.type.TypeImpl;
 
 import java.util.Collection;

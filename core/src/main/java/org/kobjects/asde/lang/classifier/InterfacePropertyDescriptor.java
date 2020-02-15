@@ -6,7 +6,6 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.symbol.SymbolOwner;
-import org.kobjects.asde.lang.property.PropertyDescriptor;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;
 

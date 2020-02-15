@@ -5,7 +5,6 @@ import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.symbol.SymbolOwner;
 import org.kobjects.asde.lang.type.MetaType;
-import org.kobjects.asde.lang.property.PropertyDescriptor;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Collection;

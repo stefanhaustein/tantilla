@@ -1,11 +1,5 @@
 package org.kobjects.asde.lang.list;
 
-import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.classifier.Method;
-import org.kobjects.asde.lang.function.FunctionType;
-import org.kobjects.asde.lang.classifier.Instance;
-import org.kobjects.asde.lang.property.Property;
-import org.kobjects.asde.lang.property.PropertyDescriptor;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Typed;
 
@@ -16,19 +10,7 @@ public class ListImpl implements Typed, Iterable<Object> {
 
     private final ListType type;
     private final ArrayList<Object> data;
-
-    public Property<Double> length = new Property<Double>() {
-        @Override
-        public boolean setImpl(Double aDouble) {
-            throw new UnsupportedOperationException("length is read-only");
-        }
-
-        @Override
-        public Double get() {
-            return Double.valueOf(data.size());
-        }
-    };
-
+    private ArrayList<Runnable> changeListeners;
 
     public ListImpl(Type elementType, Object... data) {
         type = new ListType(elementType);
@@ -39,7 +21,6 @@ public class ListImpl implements Typed, Iterable<Object> {
     }
 
 
-
     public synchronized Object get(int index) {
         return data.get(index);
     }
@@ -47,22 +28,30 @@ public class ListImpl implements Typed, Iterable<Object> {
 
     public synchronized void clear() {
         data.clear();
-        length.notifyChanged();
+        notifyChanged();
     }
 
     public synchronized void remove(int index) {
         data.remove(index);
-        length.notifyChanged();
+        notifyChanged();
     }
 
     public synchronized void remove(Object object) {
         data.remove(object);
-        length.notifyChanged();
+        notifyChanged();
     }
 
     public synchronized void append(Object object) {
         data.add(object);
-        length.notifyChanged();
+        notifyChanged();
+    }
+
+    private synchronized void notifyChanged() {
+        if (changeListeners != null) {
+            for (Runnable listener : changeListeners) {
+                listener.run();
+            }
+        }
     }
 
 
@@ -113,5 +102,12 @@ public class ListImpl implements Typed, Iterable<Object> {
     @Override
     public ListType getType() {
         return type;
+    }
+
+    public synchronized void addChangeListener(Runnable changeListener) {
+        if (changeListeners == null) {
+            changeListeners = new ArrayList<>();
+        }
+        changeListeners.add(changeListener);
     }
 }

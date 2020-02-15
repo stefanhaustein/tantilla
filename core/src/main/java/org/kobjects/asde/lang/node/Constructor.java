@@ -7,7 +7,7 @@ import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.classifier.InstantiableType;
 import org.kobjects.asde.lang.statement.UninitializedField;
-import org.kobjects.asde.lang.property.PropertyDescriptor;
+import org.kobjects.asde.lang.classifier.PropertyDescriptor;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Arrays;

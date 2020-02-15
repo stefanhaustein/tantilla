@@ -20,7 +20,7 @@ import org.kobjects.asde.lang.node.ArrayLiteral;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
-import org.kobjects.asde.lang.property.PropertyDescriptor;
+import org.kobjects.asde.lang.classifier.PropertyDescriptor;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Collections;

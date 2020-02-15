@@ -1,6 +1,6 @@
 package org.kobjects.asde.android.library.ui;
 
-import org.kobjects.asde.lang.property.NativePropertyDescriptor;
+import org.kobjects.asde.lang.classifier.NativePropertyDescriptor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.TextBox;

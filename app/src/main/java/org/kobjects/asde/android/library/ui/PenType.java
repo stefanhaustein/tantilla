@@ -1,8 +1,8 @@
 package org.kobjects.asde.android.library.ui;
 
 import org.kobjects.asde.lang.classifier.NativeClass;
-import org.kobjects.asde.lang.property.MethodDescriptor;
-import org.kobjects.asde.lang.property.NativePropertyDescriptor;
+import org.kobjects.asde.lang.classifier.NativeMethodDescriptor;
+import org.kobjects.asde.lang.classifier.NativePropertyDescriptor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Pen;
@@ -47,7 +47,7 @@ public class PenType {
             ((Pen) instance).setTextSize(((Double) value).floatValue());
           }
         },
-        new MethodDescriptor(
+        new NativeMethodDescriptor(
             "clear",
             "Clear the rectangle determined by the four coordinates",
             Types.VOID, TYPE,
@@ -63,7 +63,7 @@ public class PenType {
             return null;
           }
         },
-        new MethodDescriptor(
+        new NativeMethodDescriptor(
             "rect",
             "Draw the rectangle determined by the four coordinates",
             Types.VOID, TYPE,
@@ -79,7 +79,7 @@ public class PenType {
             return null;
           }
         },
-        new MethodDescriptor(
+        new NativeMethodDescriptor(
             "line",
             "Draw the line determined by the four coordinates",
             Types.VOID, TYPE,
@@ -95,7 +95,7 @@ public class PenType {
             return null;
           }
         },
-        new MethodDescriptor(
+        new NativeMethodDescriptor(
             "write",
             "Write the given text at the given coordinates",
             Types.VOID, TYPE,

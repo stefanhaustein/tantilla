@@ -1,8 +1,8 @@
 package org.kobjects.asde.android.library.ui;
 
-import org.kobjects.asde.lang.property.MethodDescriptor;
-import org.kobjects.asde.lang.property.NativePropertyDescriptor;
-import org.kobjects.asde.lang.property.NativeReadonlyPropertyDescriptor;
+import org.kobjects.asde.lang.classifier.NativeMethodDescriptor;
+import org.kobjects.asde.lang.classifier.NativePropertyDescriptor;
+import org.kobjects.asde.lang.classifier.NativeReadonlyPropertyDescriptor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.list.ListType;
@@ -272,7 +272,7 @@ public class SpriteAdapter implements Animated, Typed {
           }
         },
 
-        new MethodDescriptor("say", "Creats a bubble with the given text.", Types.VOID, TYPE, Types.STR) {
+        new NativeMethodDescriptor("say", "Creats a bubble with the given text.", Types.VOID, TYPE, Types.STR) {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
             SpriteAdapter self = (SpriteAdapter) evaluationContext.getParameter(0);

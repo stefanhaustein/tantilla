@@ -6,7 +6,7 @@ import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.list.ListImpl;
-import org.kobjects.asde.lang.property.PropertyDescriptor;
+import org.kobjects.asde.lang.classifier.PropertyDescriptor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 

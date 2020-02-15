@@ -3,12 +3,8 @@ package org.kobjects.asde.lang.statement;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.program.ProgramControl;
-import org.kobjects.asde.lang.property.Property;
-import org.kobjects.asde.lang.property.PropertyChangeListener;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 public class OnChangeStatement extends BlockStatement  {

@@ -5,8 +5,7 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.program.ProgramControl;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.property.Property;
-import org.kobjects.asde.lang.property.PropertyChangeListener;
+
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -44,11 +43,6 @@ public class OnStatement extends BlockStatement  {
     newContectBase.currentLine++;
 
     Trigger trigger = new Trigger(newContectBase);
-    /*
-    new NodeProcessor(node -> node.addPropertyChangeListener(evaluationContext, trigger))
-        .processNode(children[0]);
-*/
-    // New
     for (Node node : listenableSubexpressions) {
       node.returnType().addChangeListener(node.eval(evaluationContext), trigger);
     }

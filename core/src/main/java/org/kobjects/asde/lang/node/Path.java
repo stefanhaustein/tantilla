@@ -8,8 +8,7 @@ import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.EnumType;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.type.MetaType;
-import org.kobjects.asde.lang.property.PropertyChangeListener;
-import org.kobjects.asde.lang.property.PropertyDescriptor;
+import org.kobjects.asde.lang.classifier.PropertyDescriptor;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;

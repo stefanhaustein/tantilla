@@ -1,15 +1,15 @@
-package org.kobjects.asde.lang.property;
+package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 
-public abstract class MethodDescriptor implements PropertyDescriptor, Function {
+public abstract class NativeMethodDescriptor implements PropertyDescriptor, Function {
   FunctionType type;
   String name;
 
-  public MethodDescriptor(String name, String description, Type returnType, Type... parameterTypes) {
+  public NativeMethodDescriptor(String name, String description, Type returnType, Type... parameterTypes) {
     this.type = new FunctionType(returnType, parameterTypes);
     this.name = name;
   }

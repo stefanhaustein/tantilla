@@ -1,7 +1,7 @@
 package org.kobjects.asde.android.library.ui;
 
-import org.kobjects.asde.lang.property.MethodDescriptor;
-import org.kobjects.asde.lang.property.NativeReadonlyPropertyDescriptor;
+import org.kobjects.asde.lang.classifier.NativeMethodDescriptor;
+import org.kobjects.asde.lang.classifier.NativeReadonlyPropertyDescriptor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.EnumType;
@@ -37,21 +37,21 @@ public class ScreenType {
             return ((Screen) instance).getWidth();
           }
         },
-        new MethodDescriptor("newPen", "Create a new pen drawing to this screen object.", PenType.TYPE, TYPE) {
+        new NativeMethodDescriptor("newPen", "Create a new pen drawing to this screen object.", PenType.TYPE, TYPE) {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
             Screen self = (Screen) evaluationContext.getParameter(0);
             return new Pen(self);
           }
         },
-        new MethodDescriptor("newSprite", "Create a new sprite attached to this screen object.", SpriteAdapter.TYPE, TYPE) {
+        new NativeMethodDescriptor("newSprite", "Create a new sprite attached to this screen object.", SpriteAdapter.TYPE, TYPE) {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
             Screen self = (Screen) evaluationContext.getParameter(0);
             return new SpriteAdapter(self);
           }
         },
-        new MethodDescriptor("newTextBox", "Create a new textBox attached to this screen object.", TextBoxType.TYPE, TYPE) {
+        new NativeMethodDescriptor("newTextBox", "Create a new textBox attached to this screen object.", TextBoxType.TYPE, TYPE) {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
             Screen self = (Screen) evaluationContext.getParameter(0);
