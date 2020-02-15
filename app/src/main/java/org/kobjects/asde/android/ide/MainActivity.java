@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
   public ProgramView programView;
   public ProgramTitleView programTitleView;
   public Shell shell;
+  DpadAdapter dpadAdapter;
 
 
   /**
@@ -219,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
       }
     }).start();
 
-
+    dpadAdapter = new DpadAdapter(screen.dpad);
     program.addBuiltin("Screen", ScreenType.TYPE);
     program.addBuiltin("screen", screen);
     program.addBuiltin("EdgeMode", SpriteAdapter.EDGE_MODE);
@@ -228,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
     program.addBuiltin("Sprite", SpriteAdapter.TYPE);
     program.addBuiltin("TextBox", TextBoxType.TYPE);
     program.addBuiltin("Pen", PenType.TYPE);
-    program.addBuiltin("dpad", new DpadAdapter(screen.dpad));
+    program.addBuiltin("dpad", dpadAdapter);
     program.addBuiltinFunction("cls", (evaluationContext, paramCount) -> {
       console.clearScreen(Console.ClearScreenType.CLS_STATEMENT);
       return null;

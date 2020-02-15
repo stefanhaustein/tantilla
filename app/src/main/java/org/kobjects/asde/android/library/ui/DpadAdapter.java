@@ -16,6 +16,8 @@ import java.util.ArrayList;
 
 public class DpadAdapter implements Typed {
 
+    Object lock = new Object();
+
     static String[] BUTTON_NAMES = {"up", "down", "left", "right", "fire"};
 
     static InstanceTypeImpl TYPE = new InstanceTypeImpl("Dpad (Singleton)",
@@ -97,7 +99,9 @@ public class DpadAdapter implements Typed {
 
 
     public void addChangeListener(Runnable changeListener) {
-        changeListeners.add(changeListener);
+        synchronized (lock) {
+            changeListeners.add(changeListener);
+        }
     }
 
     @Override
@@ -106,8 +110,18 @@ public class DpadAdapter implements Typed {
     }
 
     public void notifyChanged() {
-        for (Runnable changeListener : changeListeners) {
+        Runnable[] snapshot;
+        synchronized (lock) {
+            snapshot = changeListeners.toArray(new Runnable[0]);
+        }
+        for (Runnable changeListener : snapshot) {
             changeListener.run();
+        }
+    }
+
+    public void removeAllListeners() {
+        synchronized (lock) {
+            changeListeners.clear();
         }
     }
 }

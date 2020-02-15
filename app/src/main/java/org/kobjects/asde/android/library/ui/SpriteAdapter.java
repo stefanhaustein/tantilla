@@ -299,11 +299,14 @@ public class SpriteAdapter implements Animated, Typed {
   public void animate(float dt, boolean propertiesChanged) {
     Collection<Sprite> newCollisions = sprite.collisions();
     synchronized (collisionsArray) {
+      int added = 0;
+      int removed = 0;
       for (int i = collisionsArray.length() - 1; i >= 0; i--) {
         SpriteAdapter oldAdapter = (SpriteAdapter) collisionsArray.get(i);
         if (!newCollisions.contains(oldAdapter.sprite)) {
           synchronized (this) {
             collisionsArray.remove(i);
+            removed++;
           }
         }
       }
@@ -312,8 +315,12 @@ public class SpriteAdapter implements Animated, Typed {
         if (newAdapter instanceof SpriteAdapter && !collisionsArray.contains(newAdapter)) {
           synchronized (this) {
             collisionsArray.append(newAdapter);
+            added++;
           }
         }
+      }
+      if (added != 0 || removed != 0) {
+        System.out.println("addedd: " + added + " removed: " + removed + " face: " + sprite.getFace());
       }
     }
   }

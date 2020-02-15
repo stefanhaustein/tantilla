@@ -64,9 +64,11 @@ public class AndroidConsole implements Console {
     switch (clearScreenType) {
       case PROGRAM_CLOSED:
         mainActivity.screen.clearAll();  // sprites
+        mainActivity.dpadAdapter.removeAllListeners();
         break;
       case CLEAR_STATEMENT:
         mainActivity.screen.clearAll();
+        mainActivity.dpadAdapter.removeAllListeners();
         // Fall_through intended;
       case CLS_STATEMENT:
         clearOutput();
