@@ -72,11 +72,11 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
   @Override
   public Instance createInstance(EvaluationContext evaluationContext, Object... ctorValues) {
     int fieldCount = resolvedInitializers.size();
-    Property[] properties = new Property[fieldCount];
+    Object[] properties = new Object[fieldCount];
     for (int i = 0; i < fieldCount; i++) {
-      properties[i] = new PhysicalProperty(ctorValues !=null && ctorValues.length > i && ctorValues[i] != null ? ctorValues[i] : resolvedInitializers.get(i).evalValue(evaluationContext));
+      properties[i] = ctorValues !=null && ctorValues.length > i && ctorValues[i] != null ? ctorValues[i] : resolvedInitializers.get(i).evalValue(evaluationContext);
     }
-    return new InstanceImpl(this, properties);
+    return new Instance(this, properties);
   }
 
 

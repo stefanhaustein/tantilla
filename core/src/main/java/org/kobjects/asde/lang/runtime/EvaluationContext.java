@@ -1,11 +1,9 @@
 package org.kobjects.asde.lang.runtime;
 
-import org.kobjects.asde.lang.classifier.InstanceImpl;
+import org.kobjects.asde.lang.classifier.Instance;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.ProgramControl;
-
-import java.util.ArrayList;
 
 public class EvaluationContext {
     public final ProgramControl control;
@@ -51,7 +49,7 @@ public class EvaluationContext {
     /**
      * Creates a new context for calling the given function.
      */
-    public EvaluationContext(EvaluationContext parentContext, FunctionImplementation functionImplementation, InstanceImpl self) {
+    public EvaluationContext(EvaluationContext parentContext, FunctionImplementation functionImplementation, Instance self) {
         this.function = functionImplementation;
         this.control = parentContext.control;
         this.dataStack = parentContext.dataStack;

@@ -29,7 +29,7 @@ public class ListImpl extends Instance implements Iterable<Object> {
 
 
     public ListImpl(ListImpl array) {
-        super(array.getType());
+        super(array.getType(), null);
         this.data = new ArrayList<>(array.length());
         for (int i = 0; i < data.size(); i++) {
             Object value = array.data.get(i);
@@ -38,7 +38,7 @@ public class ListImpl extends Instance implements Iterable<Object> {
     }
 
     public ListImpl(Type elementType, int... sizes) {
-        super(new ListType(elementType, sizes.length));
+        super(new ListType(elementType, sizes.length), null);
         data = new ArrayList<>(sizes[0]);
         if (sizes.length == 1) {
             if (sizes[0] > 0) {
@@ -59,14 +59,13 @@ public class ListImpl extends Instance implements Iterable<Object> {
     }
 
     public ListImpl(Type elementType, Object[] data) {
-        super(new ListType(elementType));
+        super(new ListType(elementType), null);
         this.data = new ArrayList<>(data.length);
         for (Object value : data) {
             this.data.add(value);
         }
     }
 
-    @Override
     synchronized public Property getProperty(PropertyDescriptor property) {
         switch (((ListType.ArrayPropertyDescriptor) property).propertyEnum) {
             case size: return length;

@@ -130,12 +130,12 @@ public class ListType implements Classifier {
 
     @Override
     public Object get(EvaluationContext context, Object instance) {
-      return ((Instance) instance).getProperty(this).get();
+      return ((ListImpl) instance).getProperty(this).get();
     }
 
     @Override
     public void set(EvaluationContext context, Object instance, Object value) {
-      ((Instance) instance).getProperty(this).set(value);
+      ((ListImpl) instance).getProperty(this).set(value);
     }
 
   }

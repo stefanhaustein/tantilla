@@ -138,12 +138,12 @@ public class UserClassProperty implements PropertyDescriptor, StaticSymbol {
 
   @Override
   public Object get(EvaluationContext context, Object instance) {
-    return methodImplementation == null ? ((Instance) instance).getProperty(this).get() : methodImplementation;
+    return methodImplementation == null ? ((Instance) instance).properties[index] : methodImplementation;
   }
 
   @Override
   public void set(EvaluationContext context, Object instance, Object value) {
-    ((Instance) instance).getProperty(this).set(value);
+    ((Instance) instance).properties[index] = value;
   }
 
 
