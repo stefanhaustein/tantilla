@@ -1,9 +1,9 @@
 package org.kobjects.asde.lang.list;
 
-import org.kobjects.asde.lang.classifier.Instance;
+import org.kobjects.asde.lang.property.MethodDescriptor;
+import org.kobjects.asde.lang.property.NativeReadonlyPropertyDescriptor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.property.PropertyDescriptor;
@@ -49,14 +49,42 @@ public class ListType implements Classifier {
   @Override
   public PropertyDescriptor getPropertyDescriptor(String name) {
     switch (name) {
-      case "append":
-        return new ArrayPropertyDescriptor(ArrayPropertyEnum.append, new FunctionType(Types.VOID, this, elementType));
-      case "remove":
-        return new ArrayPropertyDescriptor(ArrayPropertyEnum.remove, new FunctionType(Types.VOID, this, elementType));
-      case "size":
-        return new ArrayPropertyDescriptor(ArrayPropertyEnum.size, Types.FLOAT);
       case "clear":
-        return new ArrayPropertyDescriptor(ArrayPropertyEnum.clear, new FunctionType(Types.VOID, this));
+        return new MethodDescriptor("clear", "Remove all elements from the list.", Types.VOID, ListType.this) {
+        @Override
+        public Object call(EvaluationContext evaluationContext, int paramCount) {
+          ListImpl list = (ListImpl) evaluationContext.getParameter(0);
+          list.clear();
+          return null;
+        }
+      };
+      case "append":
+        return new MethodDescriptor("append", "Appends an element to the list", Types.VOID, ListType.this, elementType) {
+          @Override
+          public Object call(EvaluationContext evaluationContext, int paramCount) {
+            ListImpl list = (ListImpl) evaluationContext.getParameter(0);
+            Object value = evaluationContext.getParameter(1);
+            list.append(value);
+            return null;
+          }
+        };
+      case "remove":
+        return new MethodDescriptor("remove", "Removes the first occurrence of the given object from the list", Types.VOID, ListType.this, elementType) {
+          @Override
+          public Object call(EvaluationContext evaluationContext, int paramCount) {
+            ListImpl list = (ListImpl) evaluationContext.getParameter(0);
+            Object value = evaluationContext.getParameter(1);
+            list.remove(value);
+            return null;
+          }
+        };
+      case "size":
+        return new NativeReadonlyPropertyDescriptor("size", "The size of the list.", Types.FLOAT) {
+          @Override
+          public Object get(EvaluationContext context, Object instance) {
+            return (double) ((ListImpl) instance).length();
+          }
+        };
       default:
         throw new IllegalArgumentException("Unrecognized array property: '" + name + "'");
     }
@@ -65,9 +93,11 @@ public class ListType implements Classifier {
   @Override
   public Collection<? extends PropertyDescriptor> getPropertyDescriptors() {
     ArrayList<PropertyDescriptor> result = new ArrayList<>();
+
     result.add(getPropertyDescriptor("append"));
     result.add(getPropertyDescriptor("remove"));
     result.add(getPropertyDescriptor("size"));
+    result.add(getPropertyDescriptor("clear"));
     return result;
   }
 
@@ -86,63 +116,10 @@ public class ListType implements Classifier {
     throw new UnsupportedOperationException();
   }
 
-  public int getDimension() {
-    int dim = 1;
-    Type type = elementType;
-    while (type instanceof ListType) {
-      type = ((ListType) type).elementType;
-      dim++;
-    }
-    return dim;
+  public Type getElementType() {
+    return elementType;
   }
 
-  public Type getRootElementType() {
-    return getElementType(getDimension());
-  }
-
-  public Type getElementType(int dim) {
-    Type type = elementType;
-    for (int i = 1; i < dim; i++) {
-      type = ((ListType) type).elementType;
-    }
-    return type;
-  }
-
-  class ArrayPropertyDescriptor implements PropertyDescriptor {
-    final ArrayPropertyEnum propertyEnum;
-    private final Type type;
-
-    ArrayPropertyDescriptor(ArrayPropertyEnum propertyEnum, Type type) {
-      this.propertyEnum = propertyEnum;
-      this.type = type;
-    }
-
-    @Override
-    public String getName() {
-      return propertyEnum.name();
-    }
-
-    @Override
-    public Type getType() {
-      return type;
-    }
-
-
-    @Override
-    public Object get(EvaluationContext context, Object instance) {
-      return ((ListImpl) instance).getProperty(this).get();
-    }
-
-    @Override
-    public void set(EvaluationContext context, Object instance, Object value) {
-      ((ListImpl) instance).getProperty(this).set(value);
-    }
-
-  }
-
-  enum ArrayPropertyEnum {
-    append, size, remove, clear
-  }
 
   @Override
   public boolean supportsChangeListeners() {

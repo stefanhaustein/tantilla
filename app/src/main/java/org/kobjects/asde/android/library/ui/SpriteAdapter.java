@@ -286,7 +286,7 @@ public class SpriteAdapter implements Animated, Typed {
 
   final Sprite sprite;
 
-  ListImpl collisionsArray = new ListImpl(SpriteAdapter.TYPE, 0);
+  ListImpl collisionsArray = new ListImpl(SpriteAdapter.TYPE);
 
   public SpriteAdapter(final Screen screen) {
     sprite = new Sprite(screen);
