@@ -30,10 +30,6 @@ public abstract class MethodDescriptor implements PropertyDescriptor, Function {
     throw new UnsupportedOperationException();
   }
 
-  @Override
-  public void addListener(Object instance, PropertyChangeListener listener) {
-    throw new UnsupportedOperationException();
-  }
 
   @Override
   public FunctionType getType() {

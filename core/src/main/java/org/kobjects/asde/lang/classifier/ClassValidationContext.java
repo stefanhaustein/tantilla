@@ -15,7 +15,7 @@ public class ClassValidationContext {
   public final UserClass classImplementation;
   final LinkedHashSet<String> dependencyChain = new LinkedHashSet<>();
   public HashSet<GlobalSymbol> dependencies = new HashSet<>();
-  final HashSet<AbstractUserClassProperty> validated = new HashSet<>();
+  final HashSet<UserClassProperty> validated = new HashSet<>();
 
   public ClassValidationContext(ProgramValidationContext programValidationContext, UserClass classImplementation) {
     this.programValidationContext = programValidationContext;

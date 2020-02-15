@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.program.GlobalSymbol;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
@@ -12,14 +13,33 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.Collections;
 import java.util.Map;
 
-public class UserClassProperty extends AbstractUserClassProperty {
+public class UserClassProperty implements PropertyDescriptor, StaticSymbol {
 
+  UserClass owner;
+  String name;
+  Map<Node, Exception> errors = Collections.emptyMap();
+
+  // Method
+  FunctionImplementation methodImplementation;
+
+  // Property
   AbstractDeclarationStatement initializer;
   int index = -1;
 
-  UserClassProperty(UserClass classImplementation, String name, AbstractDeclarationStatement initializer) {
-    super(classImplementation, name);
-    this.initializer = initializer;
+
+  UserClassProperty(UserClass owner, String name, FunctionImplementation methodImplementation) {
+      this.owner = owner;
+      this.name = name;
+
+      this.methodImplementation = methodImplementation;
+    methodImplementation.setDeclaringSymbol(this);
+  }
+
+  UserClassProperty(UserClass owner, String name, AbstractDeclarationStatement initializer) {
+      this.owner = owner;
+      this.name = name;
+
+      this.initializer = initializer;
   }
 
 
@@ -29,13 +49,15 @@ public class UserClassProperty extends AbstractUserClassProperty {
       return;
     }
 
-    FunctionValidationContext context = new FunctionValidationContext(classValidationContext, null);
+    FunctionValidationContext context = new FunctionValidationContext(classValidationContext, methodImplementation);
 
+    if (methodImplementation != null) {
+      methodImplementation.validate(context);
+    } else {
       initializer.resolve(context, 0);
-
       index = owner.resolvedInitializers.size();
       owner.resolvedInitializers.add(initializer);
-
+    }
     if (context.errors.size() > 0) {
       System.err.println("Validation errors for property " + name + ": " + context.errors);
     }
@@ -54,22 +76,12 @@ public class UserClassProperty extends AbstractUserClassProperty {
 
   @Override
   public Type getType() {
-    return initializer.getValueType();
+    return methodImplementation == null ? initializer.getValueType() : methodImplementation.getType();
   }
 
   public int getIndex() {
     return index;
   }
-/*
-  @Override
-  public Object get(EvaluationContext evaluationContext) {
-    return evaluationContext.self.getProperty(this).get();
-  }
-
-  @Override
-  public void set(EvaluationContext evaluationContext, Object value) {
-    evaluationContext.self.getProperty(this).set(value);
-  }*/
 
   @Override
   public UserClass getOwner() {
@@ -83,7 +95,7 @@ public class UserClassProperty extends AbstractUserClassProperty {
 
   @Override
   public Object getValue() {
-    return null;
+    return methodImplementation;
   }
 
   @Override
@@ -121,4 +133,18 @@ public class UserClassProperty extends AbstractUserClassProperty {
   public String toString() {
     return getName() + " -> " + getType();
   }
+
+
+
+  @Override
+  public Object get(EvaluationContext context, Object instance) {
+    return methodImplementation == null ? ((Instance) instance).getProperty(this).get() : methodImplementation;
+  }
+
+  @Override
+  public void set(EvaluationContext context, Object instance, Object value) {
+    ((Instance) instance).getProperty(this).set(value);
+  }
+
+
 }

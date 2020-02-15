@@ -6,12 +6,11 @@ import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
-import org.kobjects.asde.lang.property.PropertyChangeListener;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
+
 
 public abstract class Node {
 
@@ -21,9 +20,6 @@ public abstract class Node {
 
   protected Node(Node... children) {
     this.children = children == null || children.length == 0 ? EMPTY_ARRAY : children;
-  }
-
-  public void addPropertyChangeListener(EvaluationContext evaluationContext, PropertyChangeListener listener) {
   }
 
   protected abstract void onResolve(FunctionValidationContext resolutionContext, int line);
@@ -116,10 +112,4 @@ public abstract class Node {
 
   public abstract Type returnType();
 
-
-  public void renumber(TreeMap<Integer, Integer> renumberMap) {
-    for (Node child : children) {
-      child.renumber(renumberMap);
-    }
-  }
 }

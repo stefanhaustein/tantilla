@@ -20,14 +20,13 @@ public class InstanceImpl extends Instance {
 
   @Override
   public Property getProperty(PropertyDescriptor rawDescriptor) {
-    AbstractUserClassProperty descriptor = (rawDescriptor instanceof UserClassProperty)
-        ? ((AbstractUserClassProperty) rawDescriptor)
+    UserClassProperty descriptor = (rawDescriptor instanceof UserClassProperty)
+        ? ((UserClassProperty) rawDescriptor)
         : getType().getPropertyDescriptor(rawDescriptor.getName());
-    if (descriptor instanceof UserClassProperty) {
-      return properties[((UserClassProperty) descriptor).index];
+    if (descriptor.getIndex() != -1) {
+      return properties[descriptor.getIndex()];
     }
-    UserMethod method = (UserMethod) descriptor;
-    final FunctionImplementation methodImplementation = method.methodImplementation;
+    final FunctionImplementation methodImplementation = descriptor.methodImplementation;
     return new Method(methodImplementation.getType()) {
       @Override
       public Object call(EvaluationContext evaluationContext, int paramCount) {

@@ -63,8 +63,8 @@ public class Constructor extends Node {
       arraySize = 0;
 
       for (PropertyDescriptor propertyDescriptor : instantiableType.getPropertyDescriptors()) {
-        UserClassProperty descriptor = (UserClassProperty) propertyDescriptor;
-        if (descriptor.getInitializer() != null) {
+        if (propertyDescriptor instanceof UserClassProperty) {
+          UserClassProperty descriptor = (UserClassProperty) propertyDescriptor;
           Integer childIndex = nameIndexMap.get(descriptor.getName());
           if (childIndex != null) {
             if (!propertyDescriptor.getType().isAssignableFrom(children[childIndex].returnType())) {
@@ -79,7 +79,7 @@ public class Constructor extends Node {
       }
       for (int i = 0; i < indexMap.length; i++) {
         if (indexMap[i] == -1) {
-          throw new RuntimeException("Imitializer property " + i + " is not a part of class " + instantiableType);
+          throw new RuntimeException("Initializer property " + i + " is not a part of class " + instantiableType);
         }
       }
   }

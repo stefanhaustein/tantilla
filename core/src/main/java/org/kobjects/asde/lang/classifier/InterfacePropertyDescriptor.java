@@ -8,6 +8,7 @@ import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.symbol.SymbolOwner;
 import org.kobjects.asde.lang.property.PropertyDescriptor;
 import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.type.Types;
 
 import java.util.Collections;
 import java.util.Map;
@@ -82,5 +83,15 @@ public class InterfacePropertyDescriptor implements PropertyDescriptor, Resolved
   @Override
   public Type getType() {
     return type;
+  }
+
+  @Override
+  public Object get(EvaluationContext context, Object instance) {
+    return ((Classifier) Types.of(instance)).getPropertyDescriptor(name).get(context, instance);
+  }
+
+  @Override
+  public void set(EvaluationContext context, Object instance, Object value) {
+    ((Classifier) Types.of(instance)).getPropertyDescriptor(name).set(context, instance, value);
   }
 }

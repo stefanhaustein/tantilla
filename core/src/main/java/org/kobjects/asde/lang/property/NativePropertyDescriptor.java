@@ -29,10 +29,6 @@ public abstract class NativePropertyDescriptor implements PropertyDescriptor {
   @Override
   public abstract void set(EvaluationContext context, Object instance, Object value);
 
-  @Override
-  public void addListener(Object instance, PropertyChangeListener listener) {
-    throw new UnsupportedOperationException();
-  }
 
   @Override
   public boolean isConstant() {

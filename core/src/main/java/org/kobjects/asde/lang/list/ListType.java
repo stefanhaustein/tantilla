@@ -1,5 +1,7 @@
 package org.kobjects.asde.lang.list;
 
+import org.kobjects.asde.lang.classifier.Instance;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.classifier.Classifier;
@@ -124,6 +126,18 @@ public class ListType implements Classifier {
     public Type getType() {
       return type;
     }
+
+
+    @Override
+    public Object get(EvaluationContext context, Object instance) {
+      return ((Instance) instance).getProperty(this).get();
+    }
+
+    @Override
+    public void set(EvaluationContext context, Object instance, Object value) {
+      ((Instance) instance).getProperty(this).set(value);
+    }
+
   }
 
   enum ArrayPropertyEnum {

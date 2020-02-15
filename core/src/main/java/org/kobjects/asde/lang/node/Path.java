@@ -76,10 +76,6 @@ public class Path extends SymbolNode {
     // TODO: Check support...
   }
 
-  @Override
-  public void addPropertyChangeListener(EvaluationContext evaluationContext, PropertyChangeListener listener) {
-    resolvedPropertyDescriptor.addListener(children[0].eval(evaluationContext), listener);
-  }
 
   @Override
   public void set(EvaluationContext evaluationContext, Object value) {

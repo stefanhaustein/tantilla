@@ -21,7 +21,7 @@ import java.util.TreeMap;
 public class UserClass implements Classifier, InstantiableType, Declaration, SymbolOwner {
 
   final Program program;
-  public final TreeMap<String, AbstractUserClassProperty> propertyMap = new TreeMap<>();
+  public final TreeMap<String, UserClassProperty> propertyMap = new TreeMap<>();
   ArrayList<AbstractDeclarationStatement> resolvedInitializers = new ArrayList<>();
   GlobalSymbol declaringSymbol;
 
@@ -31,7 +31,7 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
 
 
   @Override
-  public AbstractUserClassProperty getPropertyDescriptor(String name) {
+  public UserClassProperty getPropertyDescriptor(String name) {
     return propertyMap.get(name);
   }
 
@@ -51,7 +51,7 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
   }
 
   public void setMethod(String functionName, FunctionImplementation methodImplementation) {
-    propertyMap.put(functionName, new UserMethod(this, functionName, methodImplementation));
+    propertyMap.put(functionName, new UserClassProperty(this, functionName, methodImplementation));
   }
 
   public void setProperty(String propertyName, AbstractDeclarationStatement initializer) {
@@ -64,7 +64,7 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
 
   public void validate(ClassValidationContext classValidationContext) {
     resolvedInitializers.clear();
-    for (AbstractUserClassProperty propertyDescriptor : propertyMap.values()) {
+    for (UserClassProperty propertyDescriptor : propertyMap.values()) {
       propertyDescriptor.validate(classValidationContext);
     }
   }
