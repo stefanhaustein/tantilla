@@ -66,14 +66,18 @@ public class TraitProperty implements Property, ResolvedSymbol, StaticSymbol {
   }
 
   @Override
-  public boolean isConstant() {
-    return false;
+  public boolean isMutable() {
+    return isInstanceField();
   }
 
   @Override
-  public boolean isStatic() {
+  public boolean isConstant() {
+    return !isMutable();
+  }
+  @Override
+  public boolean isInstanceField() {
     // Hack
-    return type instanceof FunctionType;
+    return !(type instanceof FunctionType);
   }
 
   @Override

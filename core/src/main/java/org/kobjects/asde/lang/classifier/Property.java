@@ -11,9 +11,7 @@ public interface Property {
 
   void set(EvaluationContext context, Object instance, Object value);
 
-  default boolean isConstant() {
-    return true;
-  }
+  boolean isMutable();
 
-  boolean isStatic();
+  boolean isInstanceField();
 }

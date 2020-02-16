@@ -38,7 +38,7 @@ public class UserClassProperty implements Property, StaticSymbol {
   // Property
   Node initializer;
   int index = -1;
-  boolean isStatic;
+  boolean isInstanceField;
 
 
   private UserClassProperty(UserClass owner, String name, FunctionImplementation methodImplementation) {
@@ -50,7 +50,7 @@ public class UserClassProperty implements Property, StaticSymbol {
 
     methodImplementation.setDeclaringSymbol(this);
 
-    this.isStatic = true;
+    this.isInstanceField = false;
   }
 
   private UserClassProperty(UserClass owner, String name, Node initializer) {
@@ -58,14 +58,14 @@ public class UserClassProperty implements Property, StaticSymbol {
       this.name = name;
 
       this.initializer = initializer;
-    this.isStatic = false;
+    this.isInstanceField = true;
   }
 
   private UserClassProperty(UserClass owner, String name, Type type) {
     this.owner = owner;
     this.name = name;
     this.fixedType = type;
-    this.isStatic = false;
+    this.isInstanceField = true;
   }
 
 
@@ -144,13 +144,18 @@ public class UserClassProperty implements Property, StaticSymbol {
   }
 
   @Override
-  public boolean isConstant() {
-    return initializer == null;
+  public boolean isMutable() {
+    return methodImplementation == null;
   }
 
   @Override
-  public boolean isStatic() {
-    return isStatic;
+  public  boolean isConstant() {
+    return !isMutable();
+  }
+
+  @Override
+  public boolean isInstanceField() {
+    return isInstanceField;
   }
 
   @Override

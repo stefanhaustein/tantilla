@@ -40,12 +40,12 @@ public abstract class NativeMethod implements Property, Function {
   public abstract Object call(EvaluationContext evaluationContext, int paramCount);
 
   @Override
-  public boolean isConstant() {
-    return true;
+  public boolean isMutable() {
+    return false;
   }
 
   @Override
-  public boolean isStatic() {
-    return true;
+  public boolean isInstanceField() {
+    return false;
   }
 }

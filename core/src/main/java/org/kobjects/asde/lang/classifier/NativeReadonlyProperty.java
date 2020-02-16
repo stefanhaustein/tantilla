@@ -15,7 +15,7 @@ public abstract class NativeReadonlyProperty extends NativeProperty {
   }
 
   @Override
-  public boolean isConstant() {
-    return true;
+  public boolean isMutable() {
+    return false;
   }
 }

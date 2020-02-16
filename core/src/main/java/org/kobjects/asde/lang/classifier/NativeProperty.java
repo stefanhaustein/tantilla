@@ -31,12 +31,12 @@ public abstract class NativeProperty implements Property {
 
 
   @Override
-  public boolean isConstant() {
-    return false;
+  public boolean isMutable() {
+    return true;
   }
 
   @Override
-  public boolean isStatic() {
-    return false;
+  public boolean isInstanceField() {
+    return true;
   }
 }
