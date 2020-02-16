@@ -3,12 +3,12 @@ package org.kobjects.asde.lang.classifier;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 
-public abstract class NativePropertyDescriptor implements PropertyDescriptor {
+public abstract class NativeProperty implements Property {
 
   private final String name;
   private final Type type;
 
-  public NativePropertyDescriptor(String name, String description, Type type) {
+  public NativeProperty(String name, String description, Type type) {
     this.name = name;
     this.type = type;
   }
@@ -32,6 +32,11 @@ public abstract class NativePropertyDescriptor implements PropertyDescriptor {
 
   @Override
   public boolean isConstant() {
+    return false;
+  }
+
+  @Override
+  public boolean isStatic() {
     return false;
   }
 }

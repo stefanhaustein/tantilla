@@ -3,7 +3,7 @@ package org.kobjects.asde.android.library.ui;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
-import org.kobjects.asde.lang.classifier.NativePropertyDescriptor;
+import org.kobjects.asde.lang.classifier.NativeProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Typed;
 import org.kobjects.asde.lang.type.Types;
@@ -40,7 +40,7 @@ public class DpadAdapter implements Typed {
         for (int i = 0; i < BUTTON_NAMES.length; i++) {
             final int index = i;
             TYPE.addProperties(
-                new NativePropertyDescriptor(BUTTON_NAMES[i], "True if the '"+ BUTTON_NAMES[i] + "' button is pressed", Types.BOOL) {
+                new NativeProperty(BUTTON_NAMES[i], "True if the '"+ BUTTON_NAMES[i] + "' button is pressed", Types.BOOL) {
                     @Override
                     public Object get(EvaluationContext context, Object instance) {
                         return ((DpadAdapter) instance).buttonState[index];
@@ -53,7 +53,7 @@ public class DpadAdapter implements Typed {
                 });
         }
         TYPE.addProperties(
-            new NativePropertyDescriptor("visible", "True if the dpad is currently shown.", Types.BOOL) {
+            new NativeProperty("visible", "True if the dpad is currently shown.", Types.BOOL) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return ((DpadAdapter) instance).dpad.getVisible();

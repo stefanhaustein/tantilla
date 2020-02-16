@@ -1,8 +1,8 @@
 package org.kobjects.asde.android.library.ui;
 
 import org.kobjects.asde.lang.classifier.NativeClass;
-import org.kobjects.asde.lang.classifier.NativeMethodDescriptor;
-import org.kobjects.asde.lang.classifier.NativePropertyDescriptor;
+import org.kobjects.asde.lang.classifier.NativeMethod;
+import org.kobjects.asde.lang.classifier.NativeProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Pen;
@@ -14,7 +14,7 @@ public class PenType {
   static {
     Types.addClass(Pen.class, TYPE);
     TYPE.addProperties(
-        new NativePropertyDescriptor("fillColor", "The current fill color for this pen.", Types.FLOAT) {
+        new NativeProperty("fillColor", "The current fill color for this pen.", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((Pen) instance).getFillColor();
@@ -25,7 +25,7 @@ public class PenType {
             ((Pen) instance).setFillColor((int) ((Double) value).longValue());
           }
         },
-        new NativePropertyDescriptor("strokeColor", "The current line color for this pen.", Types.FLOAT) {
+        new NativeProperty("strokeColor", "The current line color for this pen.", Types.FLOAT) {
            @Override
            public Object get(EvaluationContext context, Object instance) {
               return (double) ((Pen) instance).getLineColor();
@@ -36,7 +36,7 @@ public class PenType {
              ((Pen) instance).setLineColor((int) ((Double) value).longValue());
            }
         },
-        new NativePropertyDescriptor("textSize", "The text size.", Types.FLOAT) {
+        new NativeProperty("textSize", "The text size.", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((Pen) instance).getTextSize();
@@ -47,7 +47,7 @@ public class PenType {
             ((Pen) instance).setTextSize(((Double) value).floatValue());
           }
         },
-        new NativeMethodDescriptor(
+        new NativeMethod(
             "clear",
             "Clear the rectangle determined by the four coordinates",
             Types.VOID, TYPE,
@@ -63,7 +63,7 @@ public class PenType {
             return null;
           }
         },
-        new NativeMethodDescriptor(
+        new NativeMethod(
             "rect",
             "Draw the rectangle determined by the four coordinates",
             Types.VOID, TYPE,
@@ -79,7 +79,7 @@ public class PenType {
             return null;
           }
         },
-        new NativeMethodDescriptor(
+        new NativeMethod(
             "line",
             "Draw the line determined by the four coordinates",
             Types.VOID, TYPE,
@@ -95,7 +95,7 @@ public class PenType {
             return null;
           }
         },
-        new NativeMethodDescriptor(
+        new NativeMethod(
             "write",
             "Write the given text at the given coordinates",
             Types.VOID, TYPE,

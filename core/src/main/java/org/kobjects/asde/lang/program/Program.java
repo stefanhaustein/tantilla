@@ -13,7 +13,6 @@ import org.kobjects.asde.lang.symbol.SymbolChangeListener;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.node.NodeProcessor;
 import org.kobjects.asde.lang.parser.ProgramParser;
-import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.list.ListType;
@@ -236,8 +235,8 @@ public class Program implements SymbolOwner {
   public void processStandaloneDeclarations(CodeLine codeLine) {
     for (int i = 0; i < codeLine.length(); i++) {
       Node node = codeLine.get(i);
-      if (node instanceof AbstractDeclarationStatement) {
-        AbstractDeclarationStatement declaration = (AbstractDeclarationStatement) node;
+      if (node instanceof DeclarationStatement) {
+        DeclarationStatement declaration = (DeclarationStatement) node;
         setPersistentInitializer(declaration.getVarName(), declaration);
       }
     }
@@ -312,7 +311,7 @@ public class Program implements SymbolOwner {
     notifySymbolChanged(symbol);
   }
 
-  public synchronized void setPersistentInitializer(String name, AbstractDeclarationStatement expr) {
+  public synchronized void setPersistentInitializer(String name, DeclarationStatement expr) {
     GlobalSymbol symbol = getSymbol(name);
     if (symbol == null || symbol.scope == GlobalSymbol.Scope.TRANSIENT) {
       symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, null);
@@ -321,7 +320,7 @@ public class Program implements SymbolOwner {
       throw new RuntimeException("Can't overwrite builtin '" + name + "'");
     }
     symbol.initializer = expr;
-    symbol.setConstant(expr instanceof DeclarationStatement && ((DeclarationStatement) expr).kind == DeclarationStatement.Kind.CONST);
+    symbol.setConstant(expr.kind == DeclarationStatement.Kind.CONST);
     notifyProgramChanged();
   }
 

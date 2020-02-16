@@ -14,7 +14,7 @@ import java.util.TreeMap;
 public class Trait implements Classifier, Declaration, SymbolOwner {
   Program program;
   StaticSymbol declaringSymbol;
-    public final TreeMap<String, InterfacePropertyDescriptor> propertyMap = new TreeMap<>();
+    public final TreeMap<String, TraitProperty> propertyMap = new TreeMap<>();
 
   public Trait(Program program) {
     this.program = program;
@@ -37,16 +37,16 @@ public class Trait implements Classifier, Declaration, SymbolOwner {
 
   @Override
   public void addSymbol(StaticSymbol symbol) {
-    propertyMap.put(symbol.getName(), (InterfacePropertyDescriptor) symbol);
+    propertyMap.put(symbol.getName(), (TraitProperty) symbol);
   }
 
   @Override
-  public PropertyDescriptor getPropertyDescriptor(String name) {
+  public Property getPropertyDescriptor(String name) {
     return propertyMap.get(name);
   }
 
   @Override
-  public Collection<? extends PropertyDescriptor> getPropertyDescriptors() {
+  public Collection<? extends Property> getPropertyDescriptors() {
     return propertyMap.values();
   }
 
@@ -71,7 +71,7 @@ public class Trait implements Classifier, Declaration, SymbolOwner {
   }
 
   public void addProperty(String name, Type type) {
-    propertyMap.put(name, new InterfacePropertyDescriptor(this, name, type));
+    propertyMap.put(name, new TraitProperty(this, name, type));
   }
 
   @Override
@@ -84,8 +84,8 @@ public class Trait implements Classifier, Declaration, SymbolOwner {
     }
     Classifier otherInterface = (Classifier) other;
 
-    for (InterfacePropertyDescriptor propertyDescriptor : propertyMap.values()) {
-      PropertyDescriptor otherDescriptor = otherInterface.getPropertyDescriptor(propertyDescriptor.getName());
+    for (TraitProperty propertyDescriptor : propertyMap.values()) {
+      Property otherDescriptor = otherInterface.getPropertyDescriptor(propertyDescriptor.getName());
       if (otherDescriptor == null) {
         System.out.println(toString() + " is not assignable from " + other + ": property '" + propertyDescriptor.getName() + " is missing");
         return false;

@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.classifier;
 
-import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.FunctionImplementation;
@@ -8,7 +8,6 @@ import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.symbol.SymbolOwner;
-import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
 
@@ -20,7 +19,7 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
 
   final Program program;
   public final TreeMap<String, UserClassProperty> propertyMap = new TreeMap<>();
-  ArrayList<AbstractDeclarationStatement> resolvedInitializers = new ArrayList<>();
+  ArrayList<Node> resolvedInitializers = new ArrayList<>();
   GlobalSymbol declaringSymbol;
 
   public UserClass(Program program) {
@@ -34,7 +33,7 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
   }
 
   @Override
-  public Collection<? extends PropertyDescriptor> getPropertyDescriptors() {
+  public Collection<? extends Property> getPropertyDescriptors() {
     return propertyMap.values();
   }
 
@@ -49,15 +48,15 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
   }
 
   public void setMethod(String functionName, FunctionImplementation methodImplementation) {
-    propertyMap.put(functionName, new UserClassProperty(this, functionName, methodImplementation));
+    propertyMap.put(functionName, UserClassProperty.createMethod(this, functionName, methodImplementation));
   }
 
-  public void setProperty(String propertyName, AbstractDeclarationStatement initializer) {
-    propertyMap.put(propertyName, new UserClassProperty(this, propertyName, initializer));
+  public void setProperty(String propertyName, Node initializer) {
+    propertyMap.put(propertyName, UserClassProperty.createProperty(this, propertyName, initializer));
   }
 
-  public void processDeclaration(AbstractDeclarationStatement declaration) {
-    propertyMap.put(declaration.getVarName(), new UserClassProperty(this, declaration.getVarName(), declaration));
+  public void setUninitializedProperty(String propertyName, Type type) {
+    propertyMap.put(propertyName, UserClassProperty.createUninitializedProperty(this, propertyName, type));
   }
 
   public void validate(ClassValidationContext classValidationContext) {
@@ -79,7 +78,7 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
     int fieldCount = resolvedInitializers.size();
     Object[] properties = new Object[fieldCount];
     for (int i = 0; i < fieldCount; i++) {
-      properties[i] = ctorValues !=null && ctorValues.length > i && ctorValues[i] != null ? ctorValues[i] : resolvedInitializers.get(i).evalValue(evaluationContext);
+      properties[i] = ctorValues !=null && ctorValues.length > i && ctorValues[i] != null ? ctorValues[i] : resolvedInitializers.get(i).eval(evaluationContext);
     }
     return new Instance(this, properties);
   }

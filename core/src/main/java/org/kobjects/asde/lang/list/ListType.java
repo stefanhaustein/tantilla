@@ -1,12 +1,12 @@
 package org.kobjects.asde.lang.list;
 
-import org.kobjects.asde.lang.classifier.NativeMethodDescriptor;
-import org.kobjects.asde.lang.classifier.NativeReadonlyPropertyDescriptor;
+import org.kobjects.asde.lang.classifier.NativeMethod;
+import org.kobjects.asde.lang.classifier.NativeReadonlyProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.type.MetaType;
-import org.kobjects.asde.lang.classifier.PropertyDescriptor;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.ArrayList;
@@ -47,10 +47,10 @@ public class ListType implements Classifier {
   }
 
   @Override
-  public PropertyDescriptor getPropertyDescriptor(String name) {
+  public Property getPropertyDescriptor(String name) {
     switch (name) {
       case "clear":
-        return new NativeMethodDescriptor("clear", "Remove all elements from the list.", Types.VOID, ListType.this) {
+        return new NativeMethod("clear", "Remove all elements from the list.", Types.VOID, ListType.this) {
         @Override
         public Object call(EvaluationContext evaluationContext, int paramCount) {
           ListImpl list = (ListImpl) evaluationContext.getParameter(0);
@@ -59,7 +59,7 @@ public class ListType implements Classifier {
         }
       };
       case "append":
-        return new NativeMethodDescriptor("append", "Appends an element to the list", Types.VOID, ListType.this, elementType) {
+        return new NativeMethod("append", "Appends an element to the list", Types.VOID, ListType.this, elementType) {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
             ListImpl list = (ListImpl) evaluationContext.getParameter(0);
@@ -69,7 +69,7 @@ public class ListType implements Classifier {
           }
         };
       case "remove":
-        return new NativeMethodDescriptor("remove", "Removes the first occurrence of the given object from the list", Types.VOID, ListType.this, elementType) {
+        return new NativeMethod("remove", "Removes the first occurrence of the given object from the list", Types.VOID, ListType.this, elementType) {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
             ListImpl list = (ListImpl) evaluationContext.getParameter(0);
@@ -79,7 +79,7 @@ public class ListType implements Classifier {
           }
         };
       case "size":
-        return new NativeReadonlyPropertyDescriptor("size", "The size of the list.", Types.FLOAT) {
+        return new NativeReadonlyProperty("size", "The size of the list.", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((ListImpl) instance).length();
@@ -91,8 +91,8 @@ public class ListType implements Classifier {
   }
 
   @Override
-  public Collection<? extends PropertyDescriptor> getPropertyDescriptors() {
-    ArrayList<PropertyDescriptor> result = new ArrayList<>();
+  public Collection<? extends Property> getPropertyDescriptors() {
+    ArrayList<Property> result = new ArrayList<>();
 
     result.add(getPropertyDescriptor("append"));
     result.add(getPropertyDescriptor("remove"));

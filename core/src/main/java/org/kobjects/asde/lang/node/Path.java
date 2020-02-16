@@ -8,7 +8,7 @@ import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.EnumType;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.type.MetaType;
-import org.kobjects.asde.lang.classifier.PropertyDescriptor;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class Path extends SymbolNode {
   public String pathName;
-  private PropertyDescriptor resolvedPropertyDescriptor;
+  private Property resolvedProperty;
   private Object resolvedConstant;
 
   public Path(Node left, Node right) {
@@ -30,12 +30,12 @@ public class Path extends SymbolNode {
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     if (children[0].returnType() instanceof Classifier) {
-      resolvedPropertyDescriptor = ((Classifier) children[0].returnType()).getPropertyDescriptor(pathName);
-      if (resolvedPropertyDescriptor == null) {
+      resolvedProperty = ((Classifier) children[0].returnType()).getPropertyDescriptor(pathName);
+      if (resolvedProperty == null) {
         throw new RuntimeException("Property '" + pathName + "' not found in " + children[0].returnType());
       }
-      if (resolvedPropertyDescriptor.getType() == null) {
-        throw new RuntimeException("Type of property '" + resolvedPropertyDescriptor + "' is null.");
+      if (resolvedProperty.getType() == null) {
+        throw new RuntimeException("Type of property '" + resolvedProperty + "' is null.");
       }
       return;
     }
@@ -54,12 +54,12 @@ public class Path extends SymbolNode {
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
-    return resolvedConstant != null ? resolvedConstant : resolvedPropertyDescriptor.get(evaluationContext, children[0].eval(evaluationContext));
+    return resolvedConstant != null ? resolvedConstant : resolvedProperty.get(evaluationContext, children[0].eval(evaluationContext));
   }
 
   @Override
   public Type returnType() {
-    return resolvedPropertyDescriptor != null ? resolvedPropertyDescriptor.getType() : Types.of(resolvedConstant);
+    return resolvedProperty != null ? resolvedProperty.getType() : Types.of(resolvedConstant);
   }
 
   @Override
@@ -79,7 +79,7 @@ public class Path extends SymbolNode {
   @Override
   public void set(EvaluationContext evaluationContext, Object value) {
     Object target = children[0].eval(evaluationContext);
-    resolvedPropertyDescriptor.set(evaluationContext, target, value);
+    resolvedProperty.set(evaluationContext, target, value);
   }
 
   @Override
@@ -88,12 +88,12 @@ public class Path extends SymbolNode {
   }
 
 
-  public PropertyDescriptor getResolvedPropertyDescriptor() {
-    return resolvedPropertyDescriptor;
+  public Property getResolvedProperty() {
+    return resolvedProperty;
   }
 
   @Override
   public boolean matches(StaticSymbol symbol, String oldName) {
-    return symbol == resolvedPropertyDescriptor;
+    return symbol == resolvedProperty;
   }
 }

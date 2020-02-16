@@ -7,7 +7,7 @@ import java.util.TreeMap;
 
 public class NativeClass extends TypeImpl implements Classifier {
 
-  private final TreeMap<String, PropertyDescriptor> propertyDescriptors = new TreeMap<>();
+  private final TreeMap<String, Property> propertyDescriptors = new TreeMap<>();
   private final CharSequence documentation;
 
   public NativeClass(String name, CharSequence documentation) {
@@ -18,18 +18,18 @@ public class NativeClass extends TypeImpl implements Classifier {
   /**
    * Properties are added separately to allow for circular references.
    */
-  public void addProperties(PropertyDescriptor... properties) {
-    for (PropertyDescriptor property : properties) {
+  public void addProperties(Property... properties) {
+    for (Property property : properties) {
       this.propertyDescriptors.put(property.getName(), property);
     }
   }
 
-  public PropertyDescriptor getPropertyDescriptor(String name) {
+  public Property getPropertyDescriptor(String name) {
     return propertyDescriptors.get(name);
   }
 
   @Override
-  public Collection<? extends PropertyDescriptor> getPropertyDescriptors() {
+  public Collection<? extends Property> getPropertyDescriptors() {
     return propertyDescriptors.values();
   }
 

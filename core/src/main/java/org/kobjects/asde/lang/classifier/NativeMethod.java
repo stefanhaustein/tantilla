@@ -5,11 +5,11 @@ import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 
-public abstract class NativeMethodDescriptor implements PropertyDescriptor, Function {
+public abstract class NativeMethod implements Property, Function {
   FunctionType type;
   String name;
 
-  public NativeMethodDescriptor(String name, String description, Type returnType, Type... parameterTypes) {
+  public NativeMethod(String name, String description, Type returnType, Type... parameterTypes) {
     this.type = new FunctionType(returnType, parameterTypes);
     this.name = name;
   }
@@ -41,6 +41,11 @@ public abstract class NativeMethodDescriptor implements PropertyDescriptor, Func
 
   @Override
   public boolean isConstant() {
+    return true;
+  }
+
+  @Override
+  public boolean isStatic() {
     return true;
   }
 }

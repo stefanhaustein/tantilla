@@ -11,7 +11,7 @@ import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.runtime.WrappedExecutionException;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.classifier.PropertyDescriptor;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.type.Types;
 
 import java.util.ArrayList;
@@ -171,7 +171,7 @@ public class FunctionImplementation implements Function, Declaration {
   }
 
   public boolean isMethod() {
-    return declaringSymbol instanceof PropertyDescriptor;
+    return declaringSymbol instanceof Property;
   }
 
   public StaticSymbol getDeclaringSymbol() {

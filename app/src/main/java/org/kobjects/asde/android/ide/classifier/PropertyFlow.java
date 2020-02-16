@@ -7,7 +7,7 @@ import org.kobjects.asde.android.ide.symbol.SymbolNameValidator;
 import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.classifier.UserClassProperty;
 import org.kobjects.asde.lang.program.ProgramListener;
-import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
+import org.kobjects.asde.lang.statement.DeclarationStatement;
 
 public class PropertyFlow {
 
@@ -53,7 +53,7 @@ public class PropertyFlow {
     InputFlowBuilder builder = new InputFlowBuilder(mainActivity, "Property " + name);
     builder.addInput("Initial value", mode == Mode.EDIT_INITIALIZER ? symbol.getInitializer().toString() : null, new ExpressionValidator(mainActivity));
     builder.start(result -> {
-      AbstractDeclarationStatement parsed = (AbstractDeclarationStatement) mainActivity.program.parser.parseExpression(result[0]);
+      DeclarationStatement parsed = (DeclarationStatement) mainActivity.program.parser.parseExpression(result[0]);
       switch (mode) {
         case CREATE_PROPERTY:
           owner.setProperty(name, parsed);

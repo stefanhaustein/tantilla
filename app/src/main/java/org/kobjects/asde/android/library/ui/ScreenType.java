@@ -1,7 +1,7 @@
 package org.kobjects.asde.android.library.ui;
 
-import org.kobjects.asde.lang.classifier.NativeMethodDescriptor;
-import org.kobjects.asde.lang.classifier.NativeReadonlyPropertyDescriptor;
+import org.kobjects.asde.lang.classifier.NativeMethod;
+import org.kobjects.asde.lang.classifier.NativeReadonlyProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.EnumType;
@@ -25,33 +25,33 @@ public class ScreenType {
   static {
     Types.addClass(Screen.class, TYPE);
     TYPE.addProperties(
-        new NativeReadonlyPropertyDescriptor("width", "The width of the visible area. At least 200 and exactly 200 for a square screen.", Types.FLOAT) {
+        new NativeReadonlyProperty("width", "The width of the visible area. At least 200 and exactly 200 for a square screen.", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((Screen) instance).getWidth();
           }
         },
-        new NativeReadonlyPropertyDescriptor("height", "The height of the visible area. At least 200 and exactly 200 for a square screen.", Types.FLOAT) {
+        new NativeReadonlyProperty("height", "The height of the visible area. At least 200 and exactly 200 for a square screen.", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((Screen) instance).getHeight();
           }
         },
-        new NativeMethodDescriptor("newPen", "Create a new pen drawing to this screen object.", PenType.TYPE, TYPE) {
+        new NativeMethod("newPen", "Create a new pen drawing to this screen object.", PenType.TYPE, TYPE) {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
             Screen self = (Screen) evaluationContext.getParameter(0);
             return new Pen(self);
           }
         },
-        new NativeMethodDescriptor("newSprite", "Create a new sprite attached to this screen object.", SpriteAdapter.TYPE, TYPE) {
+        new NativeMethod("newSprite", "Create a new sprite attached to this screen object.", SpriteAdapter.TYPE, TYPE) {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
             Screen self = (Screen) evaluationContext.getParameter(0);
             return new SpriteAdapter(self);
           }
         },
-        new NativeMethodDescriptor("newTextBox", "Create a new textBox attached to this screen object.", TextBoxType.TYPE, TYPE) {
+        new NativeMethod("newTextBox", "Create a new textBox attached to this screen object.", TextBoxType.TYPE, TYPE) {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
             Screen self = (Screen) evaluationContext.getParameter(0);

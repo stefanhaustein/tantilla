@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.program;
 
 import org.kobjects.asde.lang.runtime.EvaluationContext;
+import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.symbol.SymbolOwner;
@@ -8,7 +9,6 @@ import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.classifier.ClassValidationContext;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
-import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Type;
@@ -28,7 +28,7 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
 
   private final Program program;
   private String name;
-  public AbstractDeclarationStatement initializer;
+  public DeclarationStatement initializer;
   Object value;
   public Scope scope;
   Type type;

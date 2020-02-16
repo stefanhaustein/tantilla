@@ -6,9 +6,9 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.Collection;
 
 public interface Classifier extends Type {
-  PropertyDescriptor getPropertyDescriptor(String name);
+  Property getPropertyDescriptor(String name);
 
-  Collection<? extends PropertyDescriptor> getPropertyDescriptors();
+  Collection<? extends Property> getPropertyDescriptors();
 
   CharSequence getDocumentation();
 }

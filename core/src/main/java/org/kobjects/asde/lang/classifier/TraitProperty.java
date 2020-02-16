@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.classifier;
 
+import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -12,13 +13,13 @@ import org.kobjects.asde.lang.type.Types;
 import java.util.Collections;
 import java.util.Map;
 
-public class InterfacePropertyDescriptor implements PropertyDescriptor, ResolvedSymbol, StaticSymbol {
+public class TraitProperty implements Property, ResolvedSymbol, StaticSymbol {
   private final Trait owner;
   private String name;
   private Type type;
   private Map<Node, Exception> errors = Collections.emptyMap();
 
-  InterfacePropertyDescriptor(Trait owner, String name, Type type) {
+  TraitProperty(Trait owner, String name, Type type) {
     this.owner = owner;
     this.name = name;
     this.type = type;
@@ -67,6 +68,12 @@ public class InterfacePropertyDescriptor implements PropertyDescriptor, Resolved
   @Override
   public boolean isConstant() {
     return false;
+  }
+
+  @Override
+  public boolean isStatic() {
+    // Hack
+    return type instanceof FunctionType;
   }
 
   @Override

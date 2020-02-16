@@ -6,7 +6,7 @@ import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.list.ListImpl;
-import org.kobjects.asde.lang.classifier.PropertyDescriptor;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 
@@ -16,7 +16,7 @@ import java.util.Map;
 public class InvokeMethod extends Node {
 
   public String name;
-  PropertyDescriptor resolvedPropertyDescriptor;
+  Property resolvedProperty;
 
   public InvokeMethod(String name, Node... children) {
     super(children);
@@ -39,15 +39,15 @@ public class InvokeMethod extends Node {
     if (!(children[0].returnType() instanceof Classifier)) {
       throw new RuntimeException("InstanceType base expected");
     }
-    resolvedPropertyDescriptor = ((Classifier) children[0].returnType()).getPropertyDescriptor(name);
-    if (resolvedPropertyDescriptor == null) {
+    resolvedProperty = ((Classifier) children[0].returnType()).getPropertyDescriptor(name);
+    if (resolvedProperty == null) {
       throw new RuntimeException("Property '" + name + "' not found in " + children[0].returnType());
     }
-    if (!(resolvedPropertyDescriptor.getType() instanceof FunctionType)) {
-      throw new RuntimeException("Type of property '" + resolvedPropertyDescriptor + "' is not callable.");
+    if (!(resolvedProperty.getType() instanceof FunctionType)) {
+      throw new RuntimeException("Type of property '" + resolvedProperty + "' is not callable.");
     }
 
-    FunctionType resolved = (FunctionType) resolvedPropertyDescriptor.getType() ;
+    FunctionType resolved = (FunctionType) resolvedProperty.getType() ;
     // TODO: b/c optional params, add minParameterCount
     if (children.length  > resolved.getParameterCount() || children.length < resolved.getMinParameterCount()) {
       throw new RuntimeException("Expected parameter count is "
@@ -64,7 +64,7 @@ public class InvokeMethod extends Node {
 
   public Object eval(EvaluationContext evaluationContext) {
     Object base = children[0].eval(evaluationContext);
-    Function function = (Function) resolvedPropertyDescriptor.get(evaluationContext, base);
+    Function function = (Function) resolvedProperty.get(evaluationContext, base);
     evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
     if (children.length > function.getLocalVariableCount()) {
       throw new RuntimeException("Too many params for " + function);
@@ -84,7 +84,7 @@ public class InvokeMethod extends Node {
 
   // Shouldn't throw, as it's used outside validation!
   public Type returnType() {
-    return ((FunctionType) resolvedPropertyDescriptor.getType()).getReturnType();
+    return ((FunctionType) resolvedProperty.getType()).getReturnType();
   }
 
   @Override

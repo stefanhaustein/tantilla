@@ -1,6 +1,6 @@
 package org.kobjects.asde.android.library.ui;
 
-import org.kobjects.asde.lang.classifier.NativePropertyDescriptor;
+import org.kobjects.asde.lang.classifier.NativeProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.TextBox;
@@ -15,7 +15,7 @@ public class TextBoxType {
     static {
         Types.addClass(TextBox.class, TYPE);
         TYPE.addProperties(
-            new NativePropertyDescriptor("x", "x-position", Types.FLOAT) {
+            new NativeProperty("x", "x-position", Types.FLOAT) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return (double) ((TextBox) instance).getX();
@@ -26,7 +26,7 @@ public class TextBoxType {
                     ((TextBox) instance).setX(((Double) value).floatValue());
                 }
             },
-            new NativePropertyDescriptor("y", "y-position", Types.FLOAT) {
+            new NativeProperty("y", "y-position", Types.FLOAT) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return (double) ((TextBox) instance).getY();
@@ -37,7 +37,7 @@ public class TextBoxType {
                     ((TextBox) instance).setY(((Double) value).floatValue());
                 }
             },
-            new NativePropertyDescriptor("z", "z-position", Types.FLOAT) {
+            new NativeProperty("z", "z-position", Types.FLOAT) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return (double) ((TextBox) instance).getZ();
@@ -48,7 +48,7 @@ public class TextBoxType {
                     ((TextBox) instance).setZ(((Double) value).floatValue());
                 }
             },
-            new NativePropertyDescriptor("size", "size", Types.FLOAT) {
+            new NativeProperty("size", "size", Types.FLOAT) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return (double) ((TextBox) instance).getSize();
@@ -59,7 +59,7 @@ public class TextBoxType {
                     ((TextBox) instance).setSize(((Double) value).floatValue());
                 }
             },
-            new NativePropertyDescriptor("cornerRadius", "Radius of the text box corners.", Types.FLOAT) {
+            new NativeProperty("cornerRadius", "Radius of the text box corners.", Types.FLOAT) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return (double) ((TextBox) instance).getCornerRadius();
@@ -70,7 +70,7 @@ public class TextBoxType {
                     ((TextBox) instance).setCornerRadius(((Double) value).floatValue());
                 }
             },
-            new NativePropertyDescriptor("lineWidth", "Width of the border line.", Types.FLOAT) {
+            new NativeProperty("lineWidth", "Width of the border line.", Types.FLOAT) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return (double) ((TextBox) instance).getLineWidth();
@@ -82,7 +82,7 @@ public class TextBoxType {
                 }
             },
 
-            new NativePropertyDescriptor("lineColor", "Color used for the text box outline", Types.FLOAT) {
+            new NativeProperty("lineColor", "Color used for the text box outline", Types.FLOAT) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return (double) ((TextBox) instance).getLineColor();
@@ -93,7 +93,7 @@ public class TextBoxType {
                     ((TextBox) instance).setLineColor((int) ((Double) value).doubleValue());
                 }
             },
-            new NativePropertyDescriptor("textColor", "Color used for the text content", Types.FLOAT) {
+            new NativeProperty("textColor", "Color used for the text content", Types.FLOAT) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return (double) ((TextBox) instance).getTextColor();
@@ -104,7 +104,7 @@ public class TextBoxType {
                     ((TextBox) instance).setTextColor((int) ((Double) value).doubleValue());
                 }
             },
-            new NativePropertyDescriptor("fillColor", "Color used to fill the text box background", Types.FLOAT) {
+            new NativeProperty("fillColor", "Color used to fill the text box background", Types.FLOAT) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return (double) ((TextBox) instance).getFillColor();
@@ -116,7 +116,7 @@ public class TextBoxType {
                 }
             },
 
-            new NativePropertyDescriptor("anchor", "Anchor for relative positioning", TYPE) {
+            new NativeProperty("anchor", "Anchor for relative positioning", TYPE) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return ((TextBox) instance).getAnchor().getTag();
@@ -128,7 +128,7 @@ public class TextBoxType {
                 }
             },
 
-            new NativePropertyDescriptor("xAlign", "X-Align", ScreenType.X_ALIGN) {
+            new NativeProperty("xAlign", "X-Align", ScreenType.X_ALIGN) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return ((TextBox) instance).getXAlign();
@@ -140,7 +140,7 @@ public class TextBoxType {
                 }
             },
 
-            new NativePropertyDescriptor("yAlign", "Y-Align", ScreenType.Y_ALIGN) {
+            new NativeProperty("yAlign", "Y-Align", ScreenType.Y_ALIGN) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return ((TextBox) instance).getYAlign();
@@ -152,7 +152,7 @@ public class TextBoxType {
                 }
             },
 
-            new NativePropertyDescriptor("text", "Sprite Emoji face", Types.STR) {
+            new NativeProperty("text", "Sprite Emoji face", Types.STR) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return ((TextBox) instance).getText();

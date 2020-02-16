@@ -4,9 +4,10 @@ package org.kobjects.asde.lang.parser;
 import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.classifier.Trait;
 import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.Program;
-import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
 import org.kobjects.asde.lang.statement.BlockStatement;
+import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.statement.UnparseableStatement;
 import org.kobjects.asde.lang.type.Types;
@@ -135,14 +136,25 @@ public class ProgramParser {
           i = parseTrait(currentTrait, lines, i);
 
         } else if (!tokenizer.tryConsume("")) {
-          AbstractDeclarationStatement declaration = statementParser.parseDeclaration(tokenizer, currentClass != null);
+          if (currentClass != null) {
+            tokenizer.consume("var");
+            String name = tokenizer.consumeIdentifier();
+            if (tokenizer.tryConsume("=")) {
+              Node initilaizer = statementParser.expressionParser.parse(tokenizer);
+              currentClass.setProperty(name, initilaizer);
+            } else if (tokenizer.tryConsume(":")) {
+              Type type = statementParser.parseType(tokenizer);
+              currentClass.setUninitializedProperty(name, type);
+            } else {
+              throw new RuntimeException("= or : expected after property name");
+            }
+          } else {
+            DeclarationStatement declaration = statementParser.parseDeclaration(tokenizer);
+            program.setPersistentInitializer(declaration.getVarName(), declaration);
+          }
+          // Push down?
           if (tokenizer.currentType != Tokenizer.TokenType.EOF) {
             throw tokenizer.exception("Leftover input", null);
-          }
-          if (currentClass != null) {
-            currentClass.processDeclaration(declaration);
-          } else {
-            program.setPersistentInitializer(declaration.getVarName(), declaration);
           }
         }
       } catch (Exception e) {
@@ -155,6 +167,8 @@ public class ProgramParser {
       throw new RuntimeException("Loading errors (see console): " + exceptions);
     }
   }
+
+
 
 
   private int parseTrait(Trait trait, List<String> lines, int index) {

@@ -22,7 +22,7 @@ import org.kobjects.asde.lang.type.EnumType;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.type.MetaType;
-import org.kobjects.asde.lang.classifier.PropertyDescriptor;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.ArrayList;
@@ -96,19 +96,19 @@ public class HelpDialog {
         asb.append(": ");
         appendLink(asb, symbol.getType());
       }
-    } else if (linked instanceof PropertyDescriptor) {
-      appendPropertyLink(asb, (PropertyDescriptor) linked);
+    } else if (linked instanceof Property) {
+      appendPropertyLink(asb, (Property) linked);
     } else {
       appendLink(asb, String.valueOf(linked), linked);
     }
   }
 
-  private void appendMethodLink(AnnotatedStringBuilder asb, PropertyDescriptor property) {
+  private void appendMethodLink(AnnotatedStringBuilder asb, Property property) {
     appendLink(asb, property.getName(), property);
     appendShortSignature(asb, (FunctionType) property.getType());
   }
 
-  private void appendPropertyLink(AnnotatedStringBuilder asb, PropertyDescriptor property) {
+  private void appendPropertyLink(AnnotatedStringBuilder asb, Property property) {
     if (isMethod(property)) {
       appendMethodLink(asb, property);
     } else {
@@ -232,8 +232,8 @@ public class HelpDialog {
       }
     } else if (o instanceof Classifier) {
       renderClass((Classifier) o);
-    } else if (o instanceof PropertyDescriptor) {
-      renderProperty((PropertyDescriptor) o);
+    } else if (o instanceof Property) {
+      renderProperty((Property) o);
     } else if (o instanceof EnumType) {
       renderEnum((EnumType) o);
     } else {
@@ -244,7 +244,7 @@ public class HelpDialog {
     }
   }
 
-  private void renderProperty(PropertyDescriptor o) {
+  private void renderProperty(Property o) {
     if (isMethod(o)) {
       renderMethod(o);
       return;
@@ -259,7 +259,7 @@ public class HelpDialog {
     addParagraph(asb.build());
   }
 
-  private void renderMethod(PropertyDescriptor o) {
+  private void renderMethod(Property o) {
     alertDialog.setTitle("Method " + o.getName());
     addSignaure(o.getName(), (FunctionType) o.getType());
   }
@@ -302,7 +302,7 @@ public class HelpDialog {
 
       boolean first = true;
 
-      for (PropertyDescriptor descriptor : classifier.getPropertyDescriptors()) {
+      for (Property descriptor : classifier.getPropertyDescriptors()) {
         if (isMethod(descriptor) == methods) {
           if (first) {
             addSubtitle(methods ? "Methods" : "Properties");
@@ -316,7 +316,7 @@ public class HelpDialog {
     }
   }
 
-  private static  boolean isMethod(PropertyDescriptor descriptor) {
+  private static  boolean isMethod(Property descriptor) {
     return descriptor.getType() instanceof FunctionType && !(descriptor.getType() instanceof ListType);
   }
 

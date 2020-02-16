@@ -3,9 +3,9 @@ package org.kobjects.asde.lang.classifier;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 
-public abstract class NativeReadonlyPropertyDescriptor extends NativePropertyDescriptor {
+public abstract class NativeReadonlyProperty extends NativeProperty {
 
-  public NativeReadonlyPropertyDescriptor(String name, String description, Type type) {
+  public NativeReadonlyProperty(String name, String description, Type type) {
     super(name, description, type);
   }
 

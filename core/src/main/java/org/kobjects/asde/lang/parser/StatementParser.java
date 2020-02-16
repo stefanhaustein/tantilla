@@ -9,7 +9,6 @@ import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.NegOperator;
-import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
 import org.kobjects.asde.lang.statement.AssignStatement;
 import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.statement.Command;
@@ -27,7 +26,6 @@ import org.kobjects.asde.lang.statement.OnStatement;
 import org.kobjects.asde.lang.statement.RemStatement;
 import org.kobjects.asde.lang.statement.ReturnStatement;
 import org.kobjects.asde.lang.statement.Statement;
-import org.kobjects.asde.lang.statement.UninitializedField;
 import org.kobjects.asde.lang.statement.VoidStatement;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.statement.WhileStatement;
@@ -63,7 +61,7 @@ public class StatementParser {
     switch (name.toLowerCase()) {
       case "const":
       case "var":
-        result.add(parseDeclaration(tokenizer, false));
+        result.add(parseDeclaration(tokenizer));
         return;
       case "debugger":
         tokenizer.consumeIdentifier();
@@ -236,7 +234,7 @@ public class StatementParser {
     return new ForStatement(varName, iterable);
   }
 
-  AbstractDeclarationStatement parseDeclaration(Tokenizer tokenizer, boolean permitUninitialized) {
+  DeclarationStatement parseDeclaration(Tokenizer tokenizer) {
     DeclarationStatement.Kind kind;
     if (tokenizer.tryConsume("var")) {
       kind = DeclarationStatement.Kind.VAR;
@@ -246,18 +244,9 @@ public class StatementParser {
       throw new RuntimeException("var or const expected");
     }
     String varName = tokenizer.consumeIdentifier();
-    if (tokenizer.tryConsume("=")) {
-      Node value = expressionParser.parse(tokenizer);
-      return new DeclarationStatement(kind, varName, value);
-    } else if (tokenizer.tryConsume(":")) {
-      if (!permitUninitialized) {
-        throw new RuntimeException("Uninitialized vars not permitted here.");
-      }
-      Type type = parseType(tokenizer);
-      return new UninitializedField(type, varName);
-    } else {
-      throw new RuntimeException(": or = expected");
-    }
+    tokenizer.consume("=");
+    Node value = expressionParser.parse(tokenizer);
+    return new DeclarationStatement(kind, varName, value);
   }
 
 

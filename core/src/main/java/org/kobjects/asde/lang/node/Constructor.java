@@ -6,8 +6,7 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.classifier.InstantiableType;
-import org.kobjects.asde.lang.statement.UninitializedField;
-import org.kobjects.asde.lang.classifier.PropertyDescriptor;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Arrays;
@@ -62,17 +61,17 @@ public class Constructor extends Node {
       Arrays.fill(indexMap, -1);
       arraySize = 0;
 
-      for (PropertyDescriptor propertyDescriptor : instantiableType.getPropertyDescriptors()) {
-        if (propertyDescriptor instanceof UserClassProperty) {
-          UserClassProperty descriptor = (UserClassProperty) propertyDescriptor;
+      for (Property property : instantiableType.getPropertyDescriptors()) {
+        if (property instanceof UserClassProperty) {
+          UserClassProperty descriptor = (UserClassProperty) property;
           Integer childIndex = nameIndexMap.get(descriptor.getName());
           if (childIndex != null) {
-            if (!propertyDescriptor.getType().isAssignableFrom(children[childIndex].returnType())) {
-              throw new RuntimeException("Expected type for property " + descriptor.getName() + ": " + propertyDescriptor.getType() + "; got: " + children[childIndex].returnType());
+            if (!property.getType().isAssignableFrom(children[childIndex].returnType())) {
+              throw new RuntimeException("Expected type for property " + descriptor.getName() + ": " + property.getType() + "; got: " + children[childIndex].returnType());
             }
             indexMap[childIndex] = descriptor.getIndex();
             arraySize = Math.max(descriptor.getIndex() + 1, arraySize);
-          } else if (descriptor.getInitializer() instanceof UninitializedField) {
+          } else if (descriptor.getIndex() != -1 && descriptor.getInitializer() == null) {
             throw new RuntimeException("Initializer required for property " + descriptor.getName());
           }
         }
