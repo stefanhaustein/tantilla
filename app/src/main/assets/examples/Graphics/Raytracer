@@ -7,32 +7,32 @@ class Vector:
  var y = 0
  var z = 0
 
- def times(k: float) -> Vector:
-  return newVector(k * x, k * y, k * z)
+ def times(self, k: float) -> Vector:
+  return newVector(k * self.x, k * self.y, k * self.z)
  end
 
- def minus(v2: Vector) -> Vector:
-  return newVector(x - v2.x, y - v2.y, z - v2.z)
+ def minus(self, v2: Vector) -> Vector:
+  return newVector(self.x - v2.x, self.y - v2.y, self.z - v2.z)
  end
 
- def plus(v2: Vector) -> Vector:
-  return newVector(x + v2.x, y + v2.y, z + v2.z)
+ def plus(self, v2: Vector) -> Vector:
+  return newVector(self.x + v2.x, self.y + v2.y, self.z + v2.z)
  end
 
- def dot(v2: Vector) -> float:
-  return x * v2.x + y * v2.y + z * v2.z
+ def dot(self, v2: Vector) -> float:
+  return self.x * v2.x + self.y * v2.y + self.z * v2.z
  end
 
- def mag() -> float:
-  return sqrt(x * x + y * y + z * z)
+ def mag(self) -> float:
+  return sqrt(self.x * self.x + self.y * self.y + self.z * self.z)
  end
 
- def norm() -> Vector:
-  return times(1/mag())
+ def norm(self) -> Vector:
+  return self.times(1/self.mag())
  end
 
- def cross(v2: Vector) -> Vector:
-  return newVector(y * v2.z - z * v2.y, z * v2.x - x * v2.z, x * v2.y - y * v2.x)
+ def cross(self, v2: Vector) -> Vector:
+  return newVector(self.y * v2.z - self.z * v2.y, self.z * v2.x - self.x * v2.z, self.x * v2.y - self.y * v2.x)
  end
 
 end
@@ -55,20 +55,20 @@ class Color:
  var g = 0
  var b = 0
 
- def scale(k: float) -> Color:
-  return newColor(k * r, k * g, k * b)
+ def scale(self, k: float) -> Color:
+  return newColor(k * self.r, k * self.g, k * self.b)
  end
 
- def plus(c2: Color) -> Color:
-  return newColor(r + c2.r, g + c2.g, b + c2.b)
+ def plus(self, c2: Color) -> Color:
+  return newColor(self.r + c2.r, self.g + c2.g, self.b + c2.b)
  end
 
- def times(c2: Color) -> Color:
-  return newColor(r * c2.r, g * c2.g, b * c2.b)
+ def times(self, c2: Color) -> Color:
+  return newColor(self.r * c2.r, self.g * c2.g, self.b * c2.b)
  end
 
- def toDrawingColor() -> float:
-  return  255*256*65536 + toByte(r) * 65536 + toByte(g) * 256 + toByte(b)
+ def toDrawingColor(self) -> float:
+  return  255*256*65536 + toByte(self.r) * 65536 + toByte(self.g) * 256 + toByte(self.b)
  end
 
 end
@@ -112,16 +112,16 @@ def newIntersection(t: Thing, r: Ray, dist: float) -> Intersection:
  return Intersection{thing: t, ray: r, dist: dist}
 end
 
-interface Surface:
- def diffuse(pos: Vector) -> Color
- def specular(pos: Vector) ->  Color
- def reflect(pos: Vector) -> float
+trait Surface:
+ def diffuse(self, pos: Vector) -> Color
+ def specular(self, pos: Vector) ->  Color
+ def reflect(self, pos: Vector) -> float
  var roughness: float
 end
 
-interface Thing:
- def normal(pos: Vector) -> Vector
- def intersect(ray: Ray) -> Intersection
+trait Thing:
+ def normal(self, pos: Vector) -> Vector
+ def intersect(self, ray: Ray) -> Intersection
  var surface: Surface
 end
 
@@ -146,16 +146,16 @@ class Sphere:
  var radius2: float
  var surface: Surface
 
- def normal(pos: Vector) -> Vector:
-  return pos.minus(center).norm()
+ def normal(self, pos: Vector) -> Vector:
+  return pos.minus(self.center).norm()
  end
 
- def intersect(r: Ray) -> Intersection:
-  var eo = center.minus(r.start)
+ def intersect(self, r: Ray) -> Intersection:
+  var eo = self.center.minus(r.start)
   var v = eo.dot(r.dir)
   var dist = 1/0
   if v >= 0 :
-   var disc = radius2 - (eo.dot(eo) - v * v)
+   var disc = self.radius2 - (eo.dot(eo) - v * v)
    if disc >= 0 :
      dist = v - sqrt(disc)
    end
@@ -174,15 +174,15 @@ class Plane:
  var offset: float
  var surface: Surface
 
- def normal(pos: Vector) -> Vector:
-  return norm
+ def normal(self, pos: Vector) -> Vector:
+  return self.norm
  end
 
- def intersect(r: Ray) -> Intersection:
-  var denom = norm.dot(r.dir)
+ def intersect(self, r: Ray) -> Intersection:
+  var denom = self.norm.dot(r.dir)
   var dist = 1/0
   if denom <= 0:
-    dist = (norm.dot(r.start) + offset) / (-denom)
+    dist = (self.norm.dot(r.start) + self.offset) / (-denom)
   end
   return newIntersection(self, r, dist)
  end
@@ -196,15 +196,15 @@ end
 class Shiny:
  var roughness = 250
 
- def diffuse(pos: Vector) -> Color:
+ def diffuse(self, pos: Vector) -> Color:
   return WHITE
  end
 
- def specular(pos: Vector) -> Color:
+ def specular(self, pos: Vector) -> Color:
   return GREY
  end
 
- def reflect(pos: Vector) -> float:
+ def reflect(self, pos: Vector) -> float:
   return 0.7
  end
 
@@ -213,7 +213,7 @@ end
 class Checkerboard:
  var roughness = 150
 
- def diffuse(pos: Vector) -> Color:
+ def diffuse(self, pos: Vector) -> Color:
   if (100000 + floor(pos.z) + floor(pos.x)) % 2 != 0 :
    return WHITE
   else :
@@ -221,11 +221,11 @@ class Checkerboard:
   end
  end
 
- def specular(pos: Vector) -> Color:
+ def specular(self, pos: Vector) -> Color:
   return WHITE
  end
 
- def reflect(pos: Vector) -> float:
+ def reflect(self, pos: Vector) -> float:
   if (1000 + int(pos.z) + int(pos.x)) % 2 != 0 :
    return 0.1
   else :
@@ -240,7 +240,7 @@ class RayTracer:
  var maxDepth = 5
  var defaultColor = BLACK
 
- def intersections(r: Ray, s: Scene) -> Intersection:
+ def intersections(self, r: Ray, s: Scene) -> Intersection:
   var closest = s.things[0].intersect(r)
   for i in range(1, s.things.size):
    var inter = s.things[i].intersect(r)
@@ -251,69 +251,69 @@ class RayTracer:
   return closest
  end
 
- def testRay(r: Ray, s: Scene) -> float:
-  return intersections(r, s).dist
+ def testRay(self, r: Ray, s: Scene) -> float:
+  return self.intersections(r, s).dist
  end
 
- def traceRay(r: Ray, s: Scene, depth: float) -> Color:
-  var isect = intersections(r, s)
+ def traceRay(self, r: Ray, s: Scene, depth: float) -> Color:
+  var isect = self.intersections(r, s)
   if isect.dist == 1/0 :
    return s.background
   end
-  return shade(isect, s, depth)
+  return self.shade(isect, s, depth)
  end
 
- def shade(isect: Intersection, s: Scene, depth: float) -> Color:
+ def shade(self, isect: Intersection, s: Scene, depth: float) -> Color:
   var d = isect.ray.dir
   var pos = d.times(isect.dist).plus(isect.ray.start)
   var normal = isect.thing.normal(pos)
   var reflectDir = d.minus(normal.times(2 * normal.dot(d)))
-  var naturalColor = s.background.plus(getNaturalColor(isect.thing, pos, normal, reflectDir, s))
+  var naturalColor = s.background.plus(self.getNaturalColor(isect.thing, pos, normal, reflectDir, s))
   var reflectedColor = GREY
-  if depth < maxDepth :
-   reflectedColor = getReflectionColor(isect.thing, pos, normal, reflectDir, s, depth)
+  if depth < self.maxDepth :
+   reflectedColor = self.getReflectionColor(isect.thing, pos, normal, reflectDir, s, depth)
   end
   return naturalColor.plus(reflectedColor)
  end
 
- def getReflectionColor(t: Thing, pos: Vector, normal: Vector, rd: Vector, s: Scene, depth: float) -> Color:
-  return traceRay(newRay(pos, rd), s, depth + 1).scale(t.surface.reflect(pos))
+ def getReflectionColor(self, t: Thing, pos: Vector, normal: Vector, rd: Vector, s: Scene, depth: float) -> Color:
+  return self.traceRay(newRay(pos, rd), s, depth + 1).scale(t.surface.reflect(pos))
  end
 
- def addLight(t: Thing, pos: Vector, norm: Vector, rd: Vector, s: Scene, col: Color, l: Light) -> Color:
+ def addLight(self, t: Thing, pos: Vector, norm: Vector, rd: Vector, s: Scene, col: Color, l: Light) -> Color:
   var ldis = l.pos.minus(pos)
   var livec = ldis.norm()
-  var nearIsect = testRay(newRay(pos, livec), s)
+  var nearIsect = self.testRay(newRay(pos, livec), s)
   var isInShadow = (nearIsect <= ldis.mag())
   if isInShadow :
    return col
   end
   var illum = livec.dot(norm)
-  var lcolor = defaultColor
+  var lcolor = self.defaultColor
   if illum > 0 :
    lcolor = l.color.scale(illum)
   end
   var specular = livec.dot(rd.norm())
-  var scolor = defaultColor
+  var scolor = self.defaultColor
   if specular > 0 :
    scolor = l.color.scale(specular ^ t.surface.roughness)
   end
   return col.plus(lcolor.times(t.surface.diffuse(pos))).plus(scolor.times(t.surface.specular(pos)))
  end
 
- def getNaturalColor(t: Thing, pos: Vector, norm: Vector, rd: Vector, s: Scene) -> Color:
-  var col = defaultColor
+ def getNaturalColor(self, t: Thing, pos: Vector, norm: Vector, rd: Vector, s: Scene) -> Color:
+  var col = self.defaultColor
   for l in s.lights:
-   col = addLight(t, pos, norm, rd, s, col, l)
+   col = self.addLight(t, pos, norm, rd, s, col, l)
   end
   return col
  end
 
- def getPoint(x: float, y: float, cam: Camera) -> Vector:
+ def getPoint(self, x: float, y: float, cam: Camera) -> Vector:
   return cam.forward.plus(cam.right.times(x / 200)).plus(cam.up.times(y / 200)).norm()
  end
 
- def render(s: Scene, p: Pen, screenWidth: float, screenHeight: float):
+ def render(self, s: Scene, p: Pen, screenWidth: float, screenHeight: float):
   p.strokeColor = 0
   for y in range(screenHeight):
    for x in range(-screenWidth / 2, screenWidth / 2):
@@ -321,7 +321,7 @@ class RayTracer:
      if y % 2 == 0:
        yy = -yy
      end
-     var color = traceRay(newRay(s.camera.pos, getPoint(x, yy, s.camera)), s, 0)
+     var color = self.traceRay(newRay(s.camera.pos, self.getPoint(x, yy, s.camera)), s, 0)
      p.fillColor = color.toDrawingColor()
      p.rect(x, yy, 1.5, 1.5)
    end

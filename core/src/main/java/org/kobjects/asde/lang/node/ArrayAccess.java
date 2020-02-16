@@ -75,11 +75,6 @@ public class ArrayAccess extends AssignableNode {
   }
 
   @Override
-  public boolean isAssignable() {
-    return kind == Kind.ARRAY_ACCES;
-  }
-
-  @Override
   protected void onResolve(FunctionValidationContext resolutionContext, int line) {
     kind = Kind.ERROR;
     if (children[0].returnType() instanceof ListType) {

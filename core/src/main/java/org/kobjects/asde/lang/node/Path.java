@@ -87,11 +87,6 @@ public class Path extends SymbolNode {
     return resolvedConstant != null;
   }
 
-  @Override
-  public boolean isAssignable() {
-    return resolvedPropertyDescriptor != null;
-  }
-
 
   public PropertyDescriptor getResolvedPropertyDescriptor() {
     return resolvedPropertyDescriptor;

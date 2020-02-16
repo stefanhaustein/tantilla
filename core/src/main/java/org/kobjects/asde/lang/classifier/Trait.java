@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.classifier;
 
+import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
@@ -10,12 +11,12 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.Collection;
 import java.util.TreeMap;
 
-public class InterfaceImplementation implements Classifier, Declaration, SymbolOwner {
+public class Trait implements Classifier, Declaration, SymbolOwner {
   Program program;
   StaticSymbol declaringSymbol;
     public final TreeMap<String, InterfacePropertyDescriptor> propertyMap = new TreeMap<>();
 
-  public InterfaceImplementation(Program program) {
+  public Trait(Program program) {
     this.program = program;
   }
 
@@ -89,7 +90,12 @@ public class InterfaceImplementation implements Classifier, Declaration, SymbolO
         System.out.println(toString() + " is not assignable from " + other + ": property '" + propertyDescriptor.getName() + " is missing");
         return false;
       }
-      if (!propertyDescriptor.getType().equals(otherDescriptor.getType())) {
+      if (propertyDescriptor.getType() instanceof FunctionType && otherDescriptor.getType() instanceof FunctionType) {
+        if (!((FunctionType) propertyDescriptor.getType()).isAssignableFrom((FunctionType) otherDescriptor.getType(), true)) {
+          System.out.println(toString() + " is not assignable from " + other + ": expected type for property '" + propertyDescriptor.getName() + "': " + propertyDescriptor.getType() + " does not match " + otherDescriptor.getType());
+          return false;
+        }
+      } else if (!propertyDescriptor.getType().equals(otherDescriptor.getType())) {
         System.out.println(toString() + " is not assignable from " + other + ": expected type for property '" + propertyDescriptor.getName() + "': " + propertyDescriptor.getType() + " does not match " + otherDescriptor.getType());
         return false;
       }

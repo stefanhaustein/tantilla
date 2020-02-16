@@ -28,13 +28,13 @@ public class ScreenType {
         new NativeReadonlyPropertyDescriptor("width", "The width of the visible area. At least 200 and exactly 200 for a square screen.", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
-            return ((Screen) instance).getWidth();
+            return (double) ((Screen) instance).getWidth();
           }
         },
         new NativeReadonlyPropertyDescriptor("height", "The height of the visible area. At least 200 and exactly 200 for a square screen.", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
-            return ((Screen) instance).getWidth();
+            return (double) ((Screen) instance).getHeight();
           }
         },
         new NativeMethodDescriptor("newPen", "Create a new pen drawing to this screen object.", PenType.TYPE, TYPE) {

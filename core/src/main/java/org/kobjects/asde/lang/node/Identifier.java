@@ -36,10 +36,6 @@ public class Identifier extends SymbolNode {
     return resolved.isConstant();
   }
 
-  @Override
-  public boolean isAssignable() {
-    return !isConstant();
-  }
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {

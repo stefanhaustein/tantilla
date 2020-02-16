@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.classifier;
 
+import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.FunctionImplementation;
@@ -62,7 +63,14 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
   public void validate(ClassValidationContext classValidationContext) {
     resolvedInitializers.clear();
     for (UserClassProperty propertyDescriptor : propertyMap.values()) {
-      propertyDescriptor.validate(classValidationContext);
+      if (propertyDescriptor.methodImplementation == null) {
+        propertyDescriptor.validate(classValidationContext);
+      }
+    }
+    for (UserClassProperty propertyDescriptor : propertyMap.values()) {
+      if (propertyDescriptor.methodImplementation != null) {
+        propertyDescriptor.validate(classValidationContext);
+      }
     }
   }
 

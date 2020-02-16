@@ -15,6 +15,4 @@ public abstract class AssignableNode extends Node {
     public abstract void set(EvaluationContext evaluationContext, Object value);
 
     public abstract boolean isConstant();
-
-    public abstract boolean isAssignable();
 }

@@ -69,7 +69,17 @@ public class FunctionType implements Type {
       return false;
     }
     FunctionType other = (FunctionType) o;
+    return this.isAssignableFrom(other) && other.isAssignableFrom(this);
+  }
 
+  public boolean isAssignableFromType(Type otherType) {
+    if (!(otherType instanceof FunctionType)) {
+      return false;
+    }
+    return isAssignableFrom((FunctionType) otherType, false);
+  }
+
+  public boolean isAssignableFrom(FunctionType other, boolean skip0) {
     if (!returnType.equals(other.getReturnType())) {
       System.out.println(this + " does not match " + other+ ": return type mismatch");
       return false;
@@ -82,13 +92,15 @@ public class FunctionType implements Type {
       System.out.println(this + " does not match " + other+ ": min parameter count mismatch");
       return false;
     }
-    for (int i = 0; i < getParameterCount(); i++) {
+    for (int i = skip0 ? 1 : 0; i < getParameterCount(); i++) {
       if (!getParameterType(i).equals(other.getParameterType(i))) {
         return false;
       }
     }
 
     return true;
+
+
   }
 
 

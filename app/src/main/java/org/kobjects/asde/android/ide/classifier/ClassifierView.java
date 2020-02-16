@@ -13,7 +13,7 @@ import org.kobjects.asde.android.ide.symbol.SymbolListView;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.android.ide.symbol.ExpandListener;
 import org.kobjects.asde.lang.classifier.UserClass;
-import org.kobjects.asde.lang.classifier.InterfaceImplementation;
+import org.kobjects.asde.lang.classifier.Trait;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 
 import java.util.Collections;
@@ -88,7 +88,7 @@ public class ClassifierView extends SymbolView {
     if (symbol.getValue() instanceof UserClass) {
       symbols = ((UserClass) symbol.getValue()).propertyMap.values();
     } else {
-      symbols = ((InterfaceImplementation) symbol.getValue()).propertyMap.values();
+      symbols = ((Trait) symbol.getValue()).propertyMap.values();
     }
     getContentView().synchronizeTo(symbols, expandListener, null);
 

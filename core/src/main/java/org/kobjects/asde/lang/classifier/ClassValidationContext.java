@@ -13,7 +13,6 @@ public class ClassValidationContext {
   public final Map<Node, Exception> errors = new HashMap<>();
   public final ProgramValidationContext programValidationContext;
   public final UserClass classImplementation;
-  final LinkedHashSet<String> dependencyChain = new LinkedHashSet<>();
   public HashSet<GlobalSymbol> dependencies = new HashSet<>();
   final HashSet<UserClassProperty> validated = new HashSet<>();
 
@@ -22,22 +21,4 @@ public class ClassValidationContext {
     this.classImplementation = classImplementation;
   }
 
-  /*
-  public ResolvedSymbol resolve(String name) {
-    ClassPropertyDescriptor descriptor = classImplementation.getPropertyDescriptor(name);
-    if (descriptor == null) {
-      return null;
-    }
-    if (descriptor.initializer != null) {
-      if (dependencyChain.contains(name)) {
-       throw new RuntimeException("Circular member dependency: " + dependencyChain + " -> " + name);
-      }
-      if (!validated.contains(descriptor)) {
-        dependencyChain.add(name);
-        descriptor.validate(this);
-        dependencyChain.remove(name);
-      }
-    }
-    return descriptor;
-  }*/
 }

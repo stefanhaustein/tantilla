@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.parser;
 
 
 import org.kobjects.asde.lang.classifier.UserClass;
-import org.kobjects.asde.lang.classifier.InterfaceImplementation;
+import org.kobjects.asde.lang.classifier.Trait;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.statement.AbstractDeclarationStatement;
@@ -51,11 +51,11 @@ public class ProgramParser {
           String className = line.substring(6, cut).trim();
           System.out.println("class forward declaration: '" + className + "'");
           program.setDeclaration(className, new UserClass(program));
-        } else if (line.startsWith("interface ")) {
+        } else if (line.startsWith("trait ")) {
           int cut = line.lastIndexOf(':');
-          String interfaceName = line.substring(10, cut).trim();
-          System.out.println("interface forward declaration: '" + interfaceName + "'");
-          program.setDeclaration(interfaceName, new InterfaceImplementation(program));
+          String interfaceName = line.substring("trait".length() + 1, cut).trim();
+          System.out.println("trait forward declaration: '" + interfaceName + "'");
+          program.setDeclaration(interfaceName, new Trait(program));
         }
         line = reader.readLine();
       }
@@ -106,7 +106,7 @@ public class ProgramParser {
           String functionName = tokenizer.consumeIdentifier();
           program.console.updateProgress("Parsing function " + functionName);
           ArrayList<String> parameterNames = new ArrayList();
-          FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames);
+          FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames, currentClass);
           if (!tokenizer.tryConsume(":")) {
             throw new RuntimeException("':' expected.");
           }
@@ -125,14 +125,14 @@ public class ProgramParser {
           if (!tokenizer.tryConsume(":")) {
             throw new RuntimeException("':' expected.");
           }
-        } else if (tokenizer.tryConsume("interface")) {
+        } else if (tokenizer.tryConsume("trait")) {
           String interfaceName = tokenizer.consumeIdentifier();
-          InterfaceImplementation currentInterface = (InterfaceImplementation) (program.getSymbol(interfaceName)).getValue();
+          Trait currentTrait = (Trait) (program.getSymbol(interfaceName)).getValue();
           if (!tokenizer.tryConsume(":")) {
             throw new RuntimeException("':' expected.");
           }
 
-          i = parseInterface(currentInterface, lines, i);
+          i = parseTrait(currentTrait, lines, i);
 
         } else if (!tokenizer.tryConsume("")) {
           AbstractDeclarationStatement declaration = statementParser.parseDeclaration(tokenizer, currentClass != null);
@@ -157,7 +157,7 @@ public class ProgramParser {
   }
 
 
-  private int parseInterface(InterfaceImplementation interfaceImplementation, List<String> lines, int index) {
+  private int parseTrait(Trait trait, List<String> lines, int index) {
     while (true) {
       String line = lines.get(++index);
       Tokenizer tokenizer = statementParser.createTokenizer(line);
@@ -168,13 +168,13 @@ public class ProgramParser {
       if (tokenizer.tryConsume("def")) {
         String functionName = tokenizer.consumeIdentifier();
         ArrayList<String> parameterNames = new ArrayList();
-        FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames);
-        interfaceImplementation.addProperty(functionName, functionType);
+        FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames, trait);
+        trait.addProperty(functionName, functionType);
       } else if (tokenizer.tryConsume("var")) {
         String name = tokenizer.consumeIdentifier();
         tokenizer.consume(":");
         Type type = statementParser.parseType(tokenizer);
-        interfaceImplementation.addProperty(name, type);
+        trait.addProperty(name, type);
       } else {
         throw new RuntimeException("def or var expected!");
       }
@@ -183,16 +183,31 @@ public class ProgramParser {
   }
 
 
-  private Type[] parseParameterList(Tokenizer tokenizer, ArrayList<String> parameterNames) {
+  private Type[] parseParameterList(Tokenizer tokenizer, ArrayList<String> parameterNames, Type self) {
     tokenizer.consume("(");
     ArrayList<Type> parameterTypes = new ArrayList<>();
     while (!tokenizer.tryConsume(")")) {
       String parameterName = tokenizer.consumeIdentifier();
       parameterNames.add(parameterName);
-      tokenizer.consume(":");
-      Type parameterType = statementParser.parseType(tokenizer);
-      parameterTypes.add(parameterType);
-
+      if (parameterName.equals("self")) {
+        if (parameterTypes.size() != 0) {
+          throw new RuntimeException("self must be first parameter");
+        }
+        if (self == null) {
+          throw new RuntimeException("The parameter name 'self' is reserved for class and trait methods.");
+        }
+        if (tokenizer.tryConsume(":")) {
+          Type parameterType = statementParser.parseType(tokenizer);
+          if (parameterType != self) {
+            throw new RuntimeException("Type mismatch for self. Expected: " + self + " got: " + parameterType);
+          }
+        }
+        parameterTypes.add(self);
+      } else {
+        tokenizer.consume(":");
+        Type parameterType = statementParser.parseType(tokenizer);
+        parameterTypes.add(parameterType);
+      }
       if (!tokenizer.tryConsume(",")) {
         if (tokenizer.tryConsume(")")) {
           break;
@@ -203,8 +218,8 @@ public class ProgramParser {
     return parameterTypes.toArray(Type.EMPTY_ARRAY);
   }
 
-  private FunctionType parseFunctionSignature(Tokenizer tokenizer, ArrayList<String> parameterNames) {
-    Type[] parameterTypes = parseParameterList(tokenizer, parameterNames);
+  private FunctionType parseFunctionSignature(Tokenizer tokenizer, ArrayList<String> parameterNames, Type self) {
+    Type[] parameterTypes = parseParameterList(tokenizer, parameterNames, self);
 
     Type returnType = tokenizer.tryConsume("->") ? statementParser.parseType(tokenizer) : Types.VOID;
 

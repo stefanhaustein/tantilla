@@ -13,12 +13,12 @@ import java.util.Collections;
 import java.util.Map;
 
 public class InterfacePropertyDescriptor implements PropertyDescriptor, ResolvedSymbol, StaticSymbol {
-  private final InterfaceImplementation owner;
+  private final Trait owner;
   private String name;
   private Type type;
   private Map<Node, Exception> errors = Collections.emptyMap();
 
-  InterfacePropertyDescriptor(InterfaceImplementation owner, String name, Type type) {
+  InterfacePropertyDescriptor(Trait owner, String name, Type type) {
     this.owner = owner;
     this.name = name;
     this.type = type;
