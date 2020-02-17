@@ -86,7 +86,7 @@ public class ClassifierView extends SymbolView {
 
     Iterable<? extends StaticSymbol> symbols;
     if (symbol.getValue() instanceof UserClass) {
-      symbols = ((UserClass) symbol.getValue()).propertyMap.values();
+      symbols = ((UserClass) symbol.getValue()).getUserProperties();
     } else {
       symbols = ((Trait) symbol.getValue()).propertyMap.values();
     }

@@ -29,7 +29,7 @@ public class NativeClass extends TypeImpl implements Classifier {
   }
 
   @Override
-  public Collection<? extends Property> getPropertyDescriptors() {
+  public Collection<? extends Property> getAllProperties() {
     return propertyDescriptors.values();
   }
 

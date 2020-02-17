@@ -18,7 +18,7 @@ import java.util.TreeMap;
 public class UserClass implements Classifier, InstantiableType, Declaration, SymbolOwner {
 
   final Program program;
-  public final TreeMap<String, UserClassProperty> propertyMap = new TreeMap<>();
+  public final TreeMap<String, Property> propertyMap = new TreeMap<>();
   ArrayList<Node> resolvedInitializers = new ArrayList<>();
   GlobalSymbol declaringSymbol;
 
@@ -26,14 +26,23 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
     this.program = program;
   }
 
+  public Collection<UserClassProperty> getUserProperties() {
+    ArrayList<UserClassProperty> userProperties = new ArrayList<>();
+    for (Property property : propertyMap.values()) {
+      if (property instanceof UserClassProperty) {
+        userProperties.add((UserClassProperty) property);
+      }
+    }
+    return userProperties;
+  }
 
   @Override
-  public UserClassProperty getPropertyDescriptor(String name) {
+  public Property getPropertyDescriptor(String name) {
     return propertyMap.get(name);
   }
 
   @Override
-  public Collection<? extends Property> getPropertyDescriptors() {
+  public Collection<? extends Property> getAllProperties() {
     return propertyMap.values();
   }
 
@@ -61,14 +70,15 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
 
   public void validate(ClassValidationContext classValidationContext) {
     resolvedInitializers.clear();
-    for (UserClassProperty propertyDescriptor : propertyMap.values()) {
-      if (propertyDescriptor.methodImplementation == null) {
-        propertyDescriptor.validate(classValidationContext);
+    Collection<UserClassProperty> userProperties = getUserProperties();
+    for (UserClassProperty property : userProperties) {
+      if (property.methodImplementation == null) {
+          property.validate(classValidationContext);
       }
     }
-    for (UserClassProperty propertyDescriptor : propertyMap.values()) {
-      if (propertyDescriptor.methodImplementation != null) {
-        propertyDescriptor.validate(classValidationContext);
+    for (UserClassProperty property : userProperties) {
+      if (property.methodImplementation != null) {
+        property.validate(classValidationContext);
       }
     }
   }
@@ -91,7 +101,7 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
 
   @Override
   public StaticSymbol getSymbol(String name) {
-    return propertyMap.get(name);
+    return (StaticSymbol) propertyMap.get(name);
   }
 
   @Override

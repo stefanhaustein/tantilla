@@ -8,6 +8,7 @@ import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
+import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
@@ -17,6 +18,7 @@ public class InvokeMethod extends Node {
 
   public String name;
   Property resolvedProperty;
+  int skipChildren;
 
   public InvokeMethod(String name, Node... children) {
     super(children);
@@ -36,10 +38,18 @@ public class InvokeMethod extends Node {
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, int line) {
-    if (!(children[0].returnType() instanceof Classifier)) {
-      throw new RuntimeException("InstanceType base expected");
+    Type baseType = children[0].returnType();
+
+    if (baseType instanceof MetaType && ((MetaType) baseType).getWrapped() instanceof Classifier) {
+      skipChildren = 1;
+      resolvedProperty = ((Classifier) ((MetaType) baseType).getWrapped()).getPropertyDescriptor(name);
+    } else if (baseType instanceof Classifier) {
+      skipChildren = 0;
+      resolvedProperty = ((Classifier) baseType).getPropertyDescriptor(name);
+    } else {
+      throw new RuntimeException("Classifier or instance base expected");
     }
-    resolvedProperty = ((Classifier) children[0].returnType()).getPropertyDescriptor(name);
+
     if (resolvedProperty == null) {
       throw new RuntimeException("Property '" + name + "' not found in " + children[0].returnType());
     }
@@ -47,17 +57,17 @@ public class InvokeMethod extends Node {
       throw new RuntimeException("Type of property '" + resolvedProperty + "' is not callable.");
     }
 
-    FunctionType resolved = (FunctionType) resolvedProperty.getType() ;
+    FunctionType functionType = (FunctionType) resolvedProperty.getType() ;
     // TODO: b/c optional params, add minParameterCount
-    if (children.length  > resolved.getParameterCount() || children.length < resolved.getMinParameterCount()) {
+    if (children.length - skipChildren > functionType.getParameterCount() || children.length - skipChildren < functionType.getMinParameterCount()) {
       throw new RuntimeException("Expected parameter count is "
-          + resolved.getMinParameterCount() + ".."
-          + resolved.getParameterCount() + " but got " + (children.length ) + " for " + this);
+          + functionType.getMinParameterCount() + ".."
+          + functionType.getParameterCount() + " but got " + (children.length - skipChildren) + " for " + this);
     }
-    for (int i = 0; i < children.length; i++) {
-      if (!resolved.getParameterType(i).isAssignableFrom(children[i].returnType())) {
+    for (int i = skipChildren; i < children.length; i++) {
+      if (!functionType.getParameterType(i - skipChildren).isAssignableFrom(children[i].returnType())) {
         throw new RuntimeException("Type mismatch for parameter " + i + ": expected: "
-            + resolved.getParameterType(i) + " actual: " + children[i].returnType() + " base type: " + resolved);
+            + functionType.getParameterType(i) + " actual: " + children[i].returnType() + " base type: " + functionType);
       }
     }
   }
@@ -70,13 +80,15 @@ public class InvokeMethod extends Node {
       throw new RuntimeException("Too many params for " + function);
      }
     // Push is important here, as parameter evaluation might also run apply().
-    evaluationContext.push(base);
+    if (skipChildren == 0) {
+      evaluationContext.push(base);
+    }
     for (int i = 1; i < children.length; i++) {
        evaluationContext.push(children[i].eval(evaluationContext));
      }
-     evaluationContext.popN(children.length);
+     evaluationContext.popN(children.length - skipChildren);
      try {
-       return function.call(evaluationContext, children.length);
+       return function.call(evaluationContext, children.length - skipChildren);
      } catch (Exception e) {
        throw new RuntimeException(e.getMessage() + " in " + children[0], e);
      }

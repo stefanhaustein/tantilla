@@ -7,6 +7,10 @@ class Vector:
  var y = 0
  var z = 0
 
+# def new(x: float, y: float, z: float) -> Vector:
+#   return Vector{x: x, y: y, z: z}
+# end
+
  def times(self, k: float) -> Vector:
   return newVector(k * self.x, k * self.y, k * self.z)
  end

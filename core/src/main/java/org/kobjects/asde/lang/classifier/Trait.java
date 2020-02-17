@@ -46,7 +46,7 @@ public class Trait implements Classifier, Declaration, SymbolOwner {
   }
 
   @Override
-  public Collection<? extends Property> getPropertyDescriptors() {
+  public Collection<? extends Property> getAllProperties() {
     return propertyMap.values();
   }
 

@@ -61,7 +61,7 @@ public class Constructor extends Node {
       Arrays.fill(indexMap, -1);
       arraySize = 0;
 
-      for (Property property : instantiableType.getPropertyDescriptors()) {
+      for (Property property : instantiableType.getAllProperties()) {
         if (property instanceof UserClassProperty) {
           UserClassProperty descriptor = (UserClassProperty) property;
           Integer childIndex = nameIndexMap.get(descriptor.getName());

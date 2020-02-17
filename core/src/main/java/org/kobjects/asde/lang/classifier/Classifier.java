@@ -8,7 +8,7 @@ import java.util.Collection;
 public interface Classifier extends Type {
   Property getPropertyDescriptor(String name);
 
-  Collection<? extends Property> getPropertyDescriptors();
+  Collection<? extends Property> getAllProperties();
 
   CharSequence getDocumentation();
 }
