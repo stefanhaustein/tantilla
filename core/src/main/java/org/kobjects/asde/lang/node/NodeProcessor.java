@@ -1,9 +1,8 @@
 package org.kobjects.asde.lang.node;
 
-import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.Consumer;
-import org.kobjects.asde.lang.classifier.UserClassProperty;
+import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.Program;
@@ -36,7 +35,7 @@ public class NodeProcessor {
   }
 
   public void processClass(UserClass classImplementation) {
-    for (UserClassProperty property : classImplementation.getUserProperties()) {
+    for (UserProperty property : classImplementation.getUserProperties()) {
       processSymbol(property);
     }
   }

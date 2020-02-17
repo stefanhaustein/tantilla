@@ -12,18 +12,18 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.Collections;
 import java.util.Map;
 
-public class UserClassProperty implements Property, StaticSymbol {
+public class UserProperty implements Property, StaticSymbol {
 
-  static UserClassProperty createMethod(UserClass owner, String name, FunctionImplementation functionImplementation) {
-    return new UserClassProperty(owner, name, functionImplementation);
+  static UserProperty createMethod(UserClass owner, String name, FunctionImplementation functionImplementation) {
+    return new UserProperty(owner, name, functionImplementation);
   }
 
-  static UserClassProperty createProperty(UserClass owner, String name, Node initializer) {
-    return new UserClassProperty(owner, name, initializer);
+  static UserProperty createProperty(UserClass owner, String name, Node initializer) {
+    return new UserProperty(owner, name, initializer);
   }
 
-  static UserClassProperty createUninitializedProperty(UserClass owner, String name, Type type) {
-    return new UserClassProperty(owner, name, type);
+  static UserProperty createUninitializedProperty(UserClass owner, String name, Type type) {
+    return new UserProperty(owner, name, type);
   }
 
 
@@ -41,7 +41,7 @@ public class UserClassProperty implements Property, StaticSymbol {
   boolean isInstanceField;
 
 
-  private UserClassProperty(UserClass owner, String name, FunctionImplementation methodImplementation) {
+  private UserProperty(UserClass owner, String name, FunctionImplementation methodImplementation) {
       this.owner = owner;
       this.name = name;
 
@@ -53,7 +53,7 @@ public class UserClassProperty implements Property, StaticSymbol {
     this.isInstanceField = false;
   }
 
-  private UserClassProperty(UserClass owner, String name, Node initializer) {
+  private UserProperty(UserClass owner, String name, Node initializer) {
       this.owner = owner;
       this.name = name;
 
@@ -61,7 +61,7 @@ public class UserClassProperty implements Property, StaticSymbol {
     this.isInstanceField = true;
   }
 
-  private UserClassProperty(UserClass owner, String name, Type type) {
+  private UserProperty(UserClass owner, String name, Type type) {
     this.owner = owner;
     this.name = name;
     this.fixedType = type;

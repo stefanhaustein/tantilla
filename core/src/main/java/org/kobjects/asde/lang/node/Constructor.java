@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.UserClassProperty;
+import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.program.GlobalSymbol;
@@ -62,8 +62,8 @@ public class Constructor extends Node {
       arraySize = 0;
 
       for (Property property : instantiableType.getAllProperties()) {
-        if (property instanceof UserClassProperty) {
-          UserClassProperty descriptor = (UserClassProperty) property;
+        if (property instanceof UserProperty) {
+          UserProperty descriptor = (UserProperty) property;
           Integer childIndex = nameIndexMap.get(descriptor.getName());
           if (childIndex != null) {
             if (!property.getType().isAssignableFrom(children[childIndex].returnType())) {

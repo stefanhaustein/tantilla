@@ -5,7 +5,7 @@ import org.kobjects.asde.android.ide.text.ExpressionValidator;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.android.ide.symbol.SymbolNameValidator;
 import org.kobjects.asde.lang.classifier.UserClass;
-import org.kobjects.asde.lang.classifier.UserClassProperty;
+import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.program.ProgramListener;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 
@@ -14,7 +14,7 @@ public class PropertyFlow {
   enum Mode {EDIT_INITIALIZER, CREATE_PROPERTY};
 
 
-  public static void editInitializer(final MainActivity mainActivity, final UserClassProperty symbol) {
+  public static void editInitializer(final MainActivity mainActivity, final UserProperty symbol) {
     new PropertyFlow(mainActivity, Mode.EDIT_INITIALIZER, symbol.getOwner(), symbol).showInitializerDialog();
   }
 
@@ -26,11 +26,11 @@ public class PropertyFlow {
   private final MainActivity mainActivity;
   private final Mode mode;
   private final UserClass owner;
-  private final UserClassProperty symbol;
+  private final UserProperty symbol;
 
   private String name;
 
-  PropertyFlow(MainActivity mainActivity, Mode mode, UserClass owner, UserClassProperty symbol) {
+  PropertyFlow(MainActivity mainActivity, Mode mode, UserClass owner, UserProperty symbol) {
     this.mainActivity = mainActivity;
     this.mode = mode;
     this.owner = owner;
