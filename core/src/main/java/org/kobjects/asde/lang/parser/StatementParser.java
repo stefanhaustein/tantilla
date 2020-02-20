@@ -27,6 +27,7 @@ import org.kobjects.asde.lang.statement.RemStatement;
 import org.kobjects.asde.lang.statement.ReturnStatement;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.statement.VoidStatement;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.statement.WhileStatement;
 import org.kobjects.expressionparser.Tokenizer;
@@ -324,7 +325,7 @@ public class StatementParser {
       tokenizer.consume("]");
       return new ListType(elementType);
     }
-    GlobalSymbol symbol = program.getSymbol(typeName);
+    StaticSymbol symbol = program.getSymbol(typeName);
     if (symbol == null) {
       throw new RuntimeException("Unrecognized type: " + typeName);
     }

@@ -2,6 +2,7 @@ package org.kobjects.asde.lang.program;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Consumer;
+import org.kobjects.asde.lang.classifier.Module;
 import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
@@ -79,6 +80,7 @@ public class Program implements SymbolOwner {
   private boolean notificationPending;
   private StaticSymbol notificationPendingForSymbol;
   private Timer notificationTimer = new Timer();
+  public Module mainModule = new Module(this);
 
   public Program(Console console) {
     this.console = console;
@@ -88,7 +90,7 @@ public class Program implements SymbolOwner {
     addBuiltin("List", new ListType(Types.VOID));
     addBuiltinFunction("input", (a, b) -> console.input(), "Reads a string as input from the user.", Types.STR);
     for (Builtin builtin : Builtin.values()) {
-      addBuiltin(builtin.name().toLowerCase(), builtin);
+      mainModule.addBuiltin(builtin.name().toLowerCase(), builtin);
     }
   }
 

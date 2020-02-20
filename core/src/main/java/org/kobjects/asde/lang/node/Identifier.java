@@ -19,7 +19,7 @@ public class Identifier extends SymbolNode {
   }
 
   public void onResolve(FunctionValidationContext resolutionContext, int line) {
-    resolved = resolutionContext.resolveVariableAccess(name, null);
+    resolved = resolutionContext.resolveVariableAccess(name);
   }
 
   @Override

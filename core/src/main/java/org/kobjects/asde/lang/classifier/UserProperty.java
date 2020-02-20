@@ -1,30 +1,21 @@
 package org.kobjects.asde.lang.classifier;
 
+import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
+import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.type.Types;
 
 import java.util.Collections;
 import java.util.Map;
 
 public class UserProperty implements Property, StaticSymbol {
-
-  static UserProperty createMethod(UserClass owner, String name, FunctionImplementation functionImplementation) {
-    return new UserProperty(owner, name, functionImplementation);
-  }
-
-  static UserProperty createProperty(UserClass owner, String name, Node initializer) {
-    return new UserProperty(owner, name, initializer);
-  }
-
-  static UserProperty createUninitializedProperty(UserClass owner, String name, Type type) {
-    return new UserProperty(owner, name, type);
-  }
 
 
   UserClass owner;
@@ -33,40 +24,29 @@ public class UserProperty implements Property, StaticSymbol {
   Type fixedType;
 
   // Method
-  FunctionImplementation methodImplementation;
+  Object staticValue;
 
   // Property
   Node initializer;
   int index = -1;
   boolean isInstanceField;
+  boolean isMutable;
 
 
-  private UserProperty(UserClass owner, String name, FunctionImplementation methodImplementation) {
-      this.owner = owner;
-      this.name = name;
-
-      this.methodImplementation = methodImplementation;
-      this.fixedType = methodImplementation.getType();
-
-    methodImplementation.setDeclaringSymbol(this);
-
-    this.isInstanceField = false;
-  }
-
-  private UserProperty(UserClass owner, String name, Node initializer) {
-      this.owner = owner;
-      this.name = name;
-
-      this.initializer = initializer;
-    this.isInstanceField = true;
-  }
-
-  private UserProperty(UserClass owner, String name, Type type) {
+  UserProperty(UserClass owner, boolean isInstanceField, boolean isMutable, Type fixedType, String name, Node initializer, Object staticValue) {
     this.owner = owner;
+    this.isInstanceField = isInstanceField;
+    this.isMutable = isMutable;
+    this.fixedType = fixedType;
     this.name = name;
-    this.fixedType = type;
-    this.isInstanceField = true;
+    this.initializer = initializer;
+    this.staticValue = staticValue;
+
+      if (staticValue instanceof Declaration) {
+        ((Declaration) staticValue).setDeclaringSymbol(this);
+      }
   }
+
 
 
   // May also be called from ClassValidationContext.
@@ -75,16 +55,19 @@ public class UserProperty implements Property, StaticSymbol {
       return;
     }
 
-    FunctionValidationContext context = new FunctionValidationContext(classValidationContext, methodImplementation);
+    FunctionImplementation functionImplementation = staticValue instanceof FunctionImplementation ? (FunctionImplementation) staticValue : null;
+    FunctionValidationContext context = new FunctionValidationContext(classValidationContext, functionImplementation);
 
-    if (methodImplementation != null) {
-      methodImplementation.validate(context);
-    } else {
+    if (functionImplementation != null) {
+      functionImplementation.validate(context);
+    } else  {
       if (initializer != null) {
         initializer.resolve(context, 0);
       }
-      index = owner.resolvedInitializers.size();
-      owner.resolvedInitializers.add(initializer);
+      if (isInstanceField) {
+        index = owner.resolvedInitializers.size();
+        owner.resolvedInitializers.add(initializer);
+      }
     }
     if (context.errors.size() > 0) {
       System.err.println("Validation errors for property " + name + ": " + context.errors);
@@ -123,7 +106,7 @@ public class UserProperty implements Property, StaticSymbol {
 
   @Override
   public Object getValue() {
-    return methodImplementation;
+    return staticValue;
   }
 
   @Override
@@ -145,7 +128,7 @@ public class UserProperty implements Property, StaticSymbol {
 
   @Override
   public boolean isMutable() {
-    return methodImplementation == null;
+    return staticValue == null;
   }
 
   @Override
@@ -176,7 +159,7 @@ public class UserProperty implements Property, StaticSymbol {
 
   @Override
   public Object get(EvaluationContext context, Object instance) {
-    return methodImplementation == null ? ((Instance) instance).properties[index] : methodImplementation;
+    return isInstanceField ? ((Instance) instance).properties[index] : staticValue;
   }
 
   @Override

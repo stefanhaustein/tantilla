@@ -1,13 +1,16 @@
 package org.kobjects.asde.lang.function;
 
 
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramValidationContext;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.classifier.ClassValidationContext;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.HashMap;
@@ -81,7 +84,7 @@ public class FunctionValidationContext {
 
   private ResolvedSymbol resolveVariableAssignment(String name, Type type, boolean addDependency) {
 
-    ResolvedSymbol resolved = resolveVariableAccess(name, type, addDependency, true);
+    ResolvedSymbol resolved = resolveVariableAccess(name, addDependency, true);
     // Doesn't check for assigning to constants here because this is also called from
     // resolveVariableDeclaration handling the initial assignment, so that part is checked in
     // AssignStatement.
@@ -94,11 +97,11 @@ public class FunctionValidationContext {
     return resolved;
   }
 
-  public ResolvedSymbol resolveVariableAccess(String name, Type impliedType) {
-    return resolveVariableAccess(name, impliedType, true, false);
+  public ResolvedSymbol resolveVariableAccess(String name) {
+    return resolveVariableAccess(name, true, false);
   }
 
-  private ResolvedSymbol resolveVariableAccess(String name, Type impliedType, boolean addDependency, boolean forAssignment) {
+  private ResolvedSymbol resolveVariableAccess(String name, boolean addDependency, boolean forAssignment) {
 
     // Block level
 
@@ -110,6 +113,32 @@ public class FunctionValidationContext {
     }
 
     // Members
+
+
+    Property property = program.mainModule.getPropertyDescriptor(name);
+    if (property != null) {
+      return new ResolvedSymbol() {
+        @Override
+        public Object get(EvaluationContext evaluationContext) {
+          return property.get(evaluationContext, null);
+        }
+
+        @Override
+        public void set(EvaluationContext evaluationContext, Object value) {
+          property.set(evaluationContext, null, value);
+        }
+
+        @Override
+        public Type getType() {
+          return property.getType();
+        }
+
+        @Override
+        public boolean isConstant() {
+          return !property.isMutable();
+        }
+      };
+    }
 
     /*
     if (classValidationContext != null) {

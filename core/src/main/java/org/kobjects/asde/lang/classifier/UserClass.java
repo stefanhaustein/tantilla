@@ -1,9 +1,9 @@
 package org.kobjects.asde.lang.classifier;
 
+import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
@@ -56,28 +56,49 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
     return new MetaType(this);
   }
 
-  public void setMethod(String functionName, FunctionImplementation methodImplementation) {
-    propertyMap.put(functionName, UserProperty.createMethod(this, functionName, methodImplementation));
+  public void setMethod(String functionName, Function methodImplementation) {
+    propertyMap.put(functionName, new UserProperty(
+        this,
+        /* isInstanceField= */ false,
+        /* isMutable= */ false,
+        methodImplementation.getType(),
+        functionName,
+        /* initializer= */ null,
+        methodImplementation));
   }
 
   public void setProperty(String propertyName, Node initializer) {
-    propertyMap.put(propertyName, UserProperty.createProperty(this, propertyName, initializer));
+    propertyMap.put(propertyName, new UserProperty(
+        this,
+        /* isInstanceField= */ true,
+        /* isMutable= */ true,
+        /* fixedType= */ null,
+        propertyName,
+        initializer,
+        /* staticValue */ null));
   }
 
   public void setUninitializedProperty(String propertyName, Type type) {
-    propertyMap.put(propertyName, UserProperty.createUninitializedProperty(this, propertyName, type));
+    propertyMap.put(propertyName, new UserProperty(
+        this,
+        /* isInstanceField= */ true,
+        /* isMutable */ true,
+        type,
+        propertyName,
+        /* initializer= */ null,
+        /* staticValue= */ null));
   }
 
   public void validate(ClassValidationContext classValidationContext) {
     resolvedInitializers.clear();
     Collection<UserProperty> userProperties = getUserProperties();
     for (UserProperty property : userProperties) {
-      if (property.methodImplementation == null) {
+      if (property.isInstanceField) {
           property.validate(classValidationContext);
       }
     }
     for (UserProperty property : userProperties) {
-      if (property.methodImplementation != null) {
+      if (!property.isInstanceField) {
         property.validate(classValidationContext);
       }
     }
