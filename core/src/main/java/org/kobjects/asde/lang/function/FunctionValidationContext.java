@@ -8,7 +8,6 @@ import org.kobjects.asde.lang.program.ProgramValidationContext;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
-import org.kobjects.asde.lang.classifier.ClassValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Type;
 

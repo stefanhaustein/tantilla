@@ -6,7 +6,6 @@ import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.symbol.SymbolOwner;
 import org.kobjects.asde.lang.classifier.UserClass;
-import org.kobjects.asde.lang.classifier.ClassValidationContext;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.type.Types;
@@ -157,7 +156,7 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
       //  programValidationContext.validated.add(this);
 
       UserClass classImplementation = (UserClass) value;
-      ClassValidationContext classValidationContext = new ClassValidationContext(programValidationContext, classImplementation);
+      FunctionValidationContext classValidationContext = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.PROGRAM, null);
       classImplementation.validate(classValidationContext);
       this.errors = classValidationContext.errors;
       this.dependencies = classValidationContext.dependencies;

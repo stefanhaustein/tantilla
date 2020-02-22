@@ -42,11 +42,7 @@ public class UserProperty implements Property, StaticSymbol {
 
 
   // May also be called from ClassValidationContext.
-  void validate(ClassValidationContext classValidationContext) {
-    if (classValidationContext.validated.contains(this)) {
-      return;
-    }
-
+  void validate(FunctionValidationContext classValidationContext) {
     UserFunction userFunction = staticValue instanceof UserFunction ? (UserFunction) staticValue : null;
     FunctionValidationContext context = new FunctionValidationContext(classValidationContext.programValidationContext, FunctionValidationContext.ResolutionMode.PROGRAM, userFunction);
 
@@ -68,7 +64,6 @@ public class UserProperty implements Property, StaticSymbol {
     this.errors = context.errors;
     classValidationContext.errors.putAll(context.errors);
     classValidationContext.dependencies.addAll(context.dependencies);
-    classValidationContext.validated.add(this);
   }
 
 
