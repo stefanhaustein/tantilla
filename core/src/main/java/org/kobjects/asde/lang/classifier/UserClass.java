@@ -10,6 +10,7 @@ import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.symbol.SymbolOwner;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.type.Types;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -88,6 +89,18 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
         /* initializer= */ null,
         /* staticValue= */ null));
   }
+
+  public void setStaticValue(String propertyName, Object value) {
+    propertyMap.put(propertyName, new UserProperty(
+        this,
+        /* isInstanceField= */ false,
+        /* isMutable */ false,
+        Types.of(value),
+        propertyName,
+        /* initializer= */ null,
+        /* staticValue= */ value));
+  }
+
 
   public void validate(ClassValidationContext classValidationContext) {
     resolvedInitializers.clear();

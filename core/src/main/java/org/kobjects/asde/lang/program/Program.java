@@ -18,12 +18,10 @@ import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.Builtin;
-import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.parser.StatementParser;
 import org.kobjects.asde.lang.function.FunctionType;
-import org.kobjects.asde.lang.type.Type;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -88,7 +86,9 @@ public class Program implements SymbolOwner {
     this.reference = console.nameToReference(null);
     // Primitives can't be registered because of ambiguities with conversion functions!
     addBuiltin("List", new ListType(Types.VOID));
-    addBuiltinFunction("input", (a, b) -> console.input(), "Reads a string as input from the user.", Types.STR);
+    synchronized (this) {
+      addBuiltin("input", new BuiltinFunction((a, b) -> console.input(), "Reads a string as input from the user.", Types.STR));
+    }
     for (Builtin builtin : Builtin.values()) {
       mainModule.addBuiltin(builtin.name().toLowerCase(), builtin);
     }
@@ -285,14 +285,13 @@ public class Program implements SymbolOwner {
     mainSymbol.validate(context);
   }
 
-  public synchronized GlobalSymbol addBuiltin(String name, Object value) {
+  public synchronized void addBuiltin(String name, Object value) {
+    mainModule.addBuiltin(name, value);
+/*
     GlobalSymbol symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.BUILTIN, value);
     symbolMap.put(name, symbol);
-    return symbol;
-  }
 
-  public synchronized GlobalSymbol addBuiltinFunction(String name, Callable callable, CharSequence documentation, Type returnType, Type... argTypes) {
-    return addBuiltin(name, new BuiltinFunction(callable, documentation, returnType, argTypes));
+ */
   }
 
 

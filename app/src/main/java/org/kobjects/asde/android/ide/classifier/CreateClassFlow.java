@@ -14,8 +14,7 @@ public class CreateClassFlow {
         .setPositiveLabel("Create")
         .start(result -> {
           UserClass classImplementation = new UserClass(mainActivity.program);
-          GlobalSymbol symbol = mainActivity.program.addBuiltin(result[0], classImplementation);
-          classImplementation.setDeclaringSymbol(symbol);
+          mainActivity.program.setDeclaration(result[0], classImplementation);
         });
   }
 

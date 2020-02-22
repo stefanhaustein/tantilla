@@ -35,6 +35,8 @@ import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.android.library.ui.PenType;
 import org.kobjects.asde.android.library.ui.ScreenType;
+import org.kobjects.asde.lang.function.BuiltinFunction;
+import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramControl;
@@ -47,7 +49,6 @@ import org.kobjects.asde.android.library.ui.DpadAdapter;
 import org.kobjects.asde.android.library.ui.SpriteAdapter;
 import org.kobjects.asde.android.library.ui.TextBoxType;
 import org.kobjects.graphics.Screen;
-import org.kobjects.asde.lang.io.Console;
 import org.kobjects.abcnotation.SampleManager;
 import org.kobjects.asde.lang.function.FunctionType;
 
@@ -230,19 +231,14 @@ public class MainActivity extends AppCompatActivity {
     program.addBuiltin("TextBox", TextBoxType.TYPE);
     program.addBuiltin("Pen", PenType.TYPE);
     program.addBuiltin("dpad", dpadAdapter);
-    program.addBuiltinFunction("cls", (evaluationContext, paramCount) -> {
-      console.clearScreen(Console.ClearScreenType.CLS_STATEMENT);
-      return null;
-    }, "Clears the screen", Types.VOID);
-    program.addBuiltinFunction("sleep", (evaluationContext, paramCount) -> {
-      try {
-        Thread.sleep(((Number) evaluationContext.getParameter(0)).intValue());
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-      }
-      return null;
-    }, "Pause the execution for the given number of seconds.",
-        Types.VOID, Types.FLOAT);
+    program.addBuiltin("sleep", new BuiltinFunction((evaluationContext, paramCount) -> {
+            try {
+              Thread.sleep(((Number) evaluationContext.getParameter(0)).intValue());
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+            }
+            return null;
+          }, "Pause the execution for the given number of seconds.", Types.VOID, Types.FLOAT));
 
     program.addBuiltin("play", new Function() {
       @Override

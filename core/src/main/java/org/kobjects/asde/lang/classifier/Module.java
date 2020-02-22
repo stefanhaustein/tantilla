@@ -12,8 +12,8 @@ public class Module extends UserClass {
     super(program);
   }
 
-  public void addBuiltin(String name, Function value) {
+  public void addBuiltin(String name, Object value) {
     builtins.add(name);
-    setMethod(name, value);
+    setStaticValue(name, value);
   }
 }

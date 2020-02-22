@@ -1,6 +1,5 @@
 package org.kobjects.asde.lang.classifier;
 
-import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
@@ -10,7 +9,6 @@ import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Type;
-import org.kobjects.asde.lang.type.Types;
 
 import java.util.Collections;
 import java.util.Map;

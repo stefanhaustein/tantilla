@@ -327,7 +327,10 @@ public class StatementParser {
     }
     StaticSymbol symbol = program.getSymbol(typeName);
     if (symbol == null) {
-      throw new RuntimeException("Unrecognized type: " + typeName);
+      symbol = program.mainModule.getSymbol(typeName);
+      if (symbol == null) {
+        throw new RuntimeException("Unrecognized type: " + typeName);
+      }
     }
     if (!(symbol.getValue() instanceof Type)) {
       throw new RuntimeException("'" + typeName + "' is not a type!");
