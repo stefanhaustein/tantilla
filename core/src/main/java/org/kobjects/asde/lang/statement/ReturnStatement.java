@@ -5,7 +5,7 @@ import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 
 import java.util.Map;
 
@@ -16,7 +16,7 @@ public class ReturnStatement extends Statement {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
+  protected void onResolve(PropertyValidationContext resolutionContext, int line) {
     if (resolutionContext.userFunction.getType().getReturnType() == Types.VOID) {
       if (children.length != 0) {
         throw new RuntimeException("Unexpected return value for subroutine.");

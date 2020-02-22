@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 
@@ -17,7 +17,7 @@ public class OnChangeStatement extends BlockStatement  {
 
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
+  protected void onResolve(PropertyValidationContext resolutionContext, int line) {
     resolutionContext.startBlock(this);
     if (!children[0].returnType().supportsChangeListeners()) {
       throw new RuntimeException("Expression does not support change notifications.");
@@ -45,7 +45,7 @@ public class OnChangeStatement extends BlockStatement  {
   }
 
   @Override
-  public void onResolveEnd(FunctionValidationContext resolutionContext, EndStatement endStatement, int endLine) {
+  public void onResolveEnd(PropertyValidationContext resolutionContext, EndStatement endStatement, int endLine) {
     resolvedEndLine = endLine;
   }
 

@@ -130,7 +130,7 @@ public class Program implements SymbolOwner {
     }
     symbolMap = cleared;
 
-    HashSet<GlobalSymbol> initialized = new HashSet<>();
+    HashSet<StaticSymbol> initialized = new HashSet<>();
 
     for (GlobalSymbol symbol : symbolMap.values()) {
       symbol.init(evaluationContext, initialized);

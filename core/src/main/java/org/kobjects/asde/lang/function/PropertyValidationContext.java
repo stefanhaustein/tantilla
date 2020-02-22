@@ -9,12 +9,13 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class FunctionValidationContext {
+public class PropertyValidationContext {
   public enum ResolutionMode {PROGRAM, INTERACTIVE};
 
   public final Program program;
@@ -24,15 +25,18 @@ public class FunctionValidationContext {
   /** Will be null when validating symbols! */
   public final UserFunction userFunction;
 
+  private StaticSymbol symbol;
+
   private int localSymbolCount;
   private Block currentBlock;
-  public HashSet<GlobalSymbol> dependencies = new HashSet<>();
+  public HashSet<StaticSymbol> dependencies = new HashSet<>();
   public final ProgramValidationContext programValidationContext;
 
-  public FunctionValidationContext(ProgramValidationContext programValidationContext, ResolutionMode mode, UserFunction userFunction) {
+  public PropertyValidationContext(ProgramValidationContext programValidationContext, ResolutionMode mode, StaticSymbol symbol, UserFunction userFunction) {
     this.programValidationContext = programValidationContext;
     this.program = programValidationContext.program;
     this.mode = mode;
+    this.symbol = symbol;
     this.userFunction = userFunction;
     startBlock(null);
     if (userFunction != null) {
@@ -41,7 +45,6 @@ public class FunctionValidationContext {
       }
     }
   }
-
 
   public void startBlock(BlockStatement startStatement) {
     currentBlock = new Block(currentBlock, startStatement);

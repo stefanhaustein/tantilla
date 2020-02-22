@@ -11,6 +11,7 @@ import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 
 public class TraitProperty implements Property, ResolvedSymbol, StaticSymbol {
@@ -83,6 +84,11 @@ public class TraitProperty implements Property, ResolvedSymbol, StaticSymbol {
   @Override
   public void setName(String newName) {
     this.name = newName;
+  }
+
+  @Override
+  public void init(EvaluationContext evaluationContext, HashSet<StaticSymbol> initialized) {
+
   }
 
   @Override

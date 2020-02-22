@@ -4,9 +4,8 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
-import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.type.Type;
 
@@ -42,7 +41,7 @@ public class Apply extends Node {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
+  protected void onResolve(PropertyValidationContext resolutionContext, int line) {
     if (!(children[0].returnType() instanceof FunctionType)) {
       throw new RuntimeException("Can't apply parameters to " + children[0].returnType());
     }

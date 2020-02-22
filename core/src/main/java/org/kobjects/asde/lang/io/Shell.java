@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.io;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.asde.lang.Consumer;
-import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramControl;
 import org.kobjects.asde.lang.program.ProgramValidationContext;
@@ -105,11 +105,11 @@ public class Shell {
                 }
 
                 ProgramValidationContext programValidationContext = new ProgramValidationContext(program);
-                FunctionValidationContext functionValidationContext = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.INTERACTIVE, wrapper);
-                wrapper.validate(functionValidationContext);
+                PropertyValidationContext propertyValidationContext = new PropertyValidationContext(programValidationContext, PropertyValidationContext.ResolutionMode.INTERACTIVE, null, wrapper);
+                wrapper.validate(propertyValidationContext);
 
-                if (functionValidationContext.errors.size() > 0) {
-                    throw new MultiValidationException(codeLine, functionValidationContext.errors);
+                if (propertyValidationContext.errors.size() > 0) {
+                    throw new MultiValidationException(codeLine, propertyValidationContext.errors);
                 }
                 AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
                 asb.append(codeLine.toString(), Annotations.ACCENT_COLOR);

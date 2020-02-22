@@ -4,7 +4,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Type;
@@ -50,7 +50,7 @@ public class DeclarationStatement extends Statement {
     this.kind = kind;
   }
 
-  public void onResolve(FunctionValidationContext resolutionContext, int line) {
+  public void onResolve(PropertyValidationContext resolutionContext, int line) {
     resolved = resolutionContext.resolveVariableDeclaration(varName, children[0].returnType(), kind == Kind.CONST);
   }
 

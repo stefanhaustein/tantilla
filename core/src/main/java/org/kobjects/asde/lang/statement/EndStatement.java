@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.statement;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.node.Node;
 
 import java.util.Map;
@@ -13,7 +13,7 @@ public class EndStatement extends Statement {
   BlockStatement resolvedStartStatement;
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
+  protected void onResolve(PropertyValidationContext resolutionContext, int line) {
     resolvedStartStatement = resolutionContext.endBlock();
     resolvedStartStatement.onResolveEnd(resolutionContext, this, line);
   }

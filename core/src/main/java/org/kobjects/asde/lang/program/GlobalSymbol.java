@@ -7,7 +7,7 @@ import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.symbol.SymbolOwner;
 import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.function.UserFunction;
-import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Type;
@@ -33,7 +33,7 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
   Type type;
   private boolean constant;
   private Map<Node, Exception> errors = Collections.emptyMap();
-  Set<GlobalSymbol> dependencies = Collections.emptySet();
+  Set<StaticSymbol> dependencies = Collections.emptySet();
   public int stamp;
 
   GlobalSymbol(Program program, String name, Scope scope, Object value) {
@@ -81,12 +81,13 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
     return value;
   }
 
-  void init(EvaluationContext evaluationContext, HashSet<GlobalSymbol> initialized) {
+  @Override
+  public void init(EvaluationContext evaluationContext, HashSet<StaticSymbol> initialized) {
     if (initialized.contains(this)) {
       return;
     }
     if (dependencies != null) {
-      for (GlobalSymbol dep : dependencies) {
+      for (StaticSymbol dep : dependencies) {
         dep.init(evaluationContext, initialized);
       }
     }
@@ -127,16 +128,15 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
     if (programValidationContext.validated.contains(this)) {
       return;
     }
+    PropertyValidationContext context = null;
     if (initializer != null) {
-      FunctionValidationContext context = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.INTERACTIVE, null);
+      context = new PropertyValidationContext(programValidationContext, PropertyValidationContext.ResolutionMode.INTERACTIVE, this, null);
       try {
         initializer.resolve(context, 0);
       } catch (Exception e) {
         e.printStackTrace();
         context.addError(initializer, e);
       }
-      this.errors = context.errors;
-      this.dependencies = context.dependencies;
       type = initializer.getValueType();
     } else if (value instanceof UserFunction) {
       // Avoid an infinite validation loop in recursion
@@ -148,19 +148,21 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
         program.currentStamp++;
       }
 
-      FunctionValidationContext context = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.PROGRAM, function);
+      context = new PropertyValidationContext(programValidationContext, PropertyValidationContext.ResolutionMode.PROGRAM, this, function);
       function.validate(context);
-      this.errors = context.errors;
-      this.dependencies = context.dependencies;
     } else if (value instanceof UserClass) {
       //  programValidationContext.validated.add(this);
 
       UserClass classImplementation = (UserClass) value;
-      FunctionValidationContext classValidationContext = new FunctionValidationContext(programValidationContext, FunctionValidationContext.ResolutionMode.PROGRAM, null);
+      PropertyValidationContext classValidationContext = new PropertyValidationContext(programValidationContext, PropertyValidationContext.ResolutionMode.PROGRAM, this, null);
       classImplementation.validate(classValidationContext);
-      this.errors = classValidationContext.errors;
-      this.dependencies = classValidationContext.dependencies;
     }
+
+    if (context != null) {
+      this.errors = context.errors;
+      this.dependencies = context.dependencies;
+    }
+
     programValidationContext.validated.add(this);
   }
 

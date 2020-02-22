@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Type;
@@ -18,12 +18,12 @@ public class Identifier extends SymbolNode {
     this.name = name;
   }
 
-  public void onResolve(FunctionValidationContext resolutionContext, int line) {
+  public void onResolve(PropertyValidationContext resolutionContext, int line) {
     resolved = resolutionContext.resolveVariableAccess(name);
   }
 
   @Override
-  public void resolveForAssignment(FunctionValidationContext resolutionContext, Type type, int line) {
+  public void resolveForAssignment(PropertyValidationContext resolutionContext, Type type, int line) {
     resolved = resolutionContext.resolveVariableAssignment(name, type);
   }
 

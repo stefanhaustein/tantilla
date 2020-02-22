@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.function.Callable;
-import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -117,7 +117,7 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
   }
 
 
-  public void validate(FunctionValidationContext classValidationContext) {
+  public void validate(PropertyValidationContext classValidationContext) {
     resolvedInitializers.clear();
     Collection<UserProperty> userProperties = getUserProperties();
     for (UserProperty property : userProperties) {

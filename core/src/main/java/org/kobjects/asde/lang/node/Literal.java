@@ -5,7 +5,7 @@ import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
@@ -30,7 +30,7 @@ public class Literal extends Node {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
+  protected void onResolve(PropertyValidationContext resolutionContext, int line) {
     // Nothing to do here.
   }
 

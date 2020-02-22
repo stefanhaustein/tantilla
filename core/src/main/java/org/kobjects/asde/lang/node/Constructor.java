@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.classifier.InstantiableType;
 import org.kobjects.asde.lang.classifier.Property;
@@ -45,7 +45,7 @@ public class Constructor extends Node {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
+  protected void onResolve(PropertyValidationContext resolutionContext, int line) {
     GlobalSymbol symbol = resolutionContext.program.getSymbol(name);
     if (symbol == null) {
       throw new RuntimeException("'" + name + "' is not defined");

@@ -6,17 +6,20 @@ import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.function.UserFunction;
-import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class UserProperty implements Property, StaticSymbol {
   UserClass owner;
   String name;
   Map<Node, Exception> errors = Collections.emptyMap();
+  Set<StaticSymbol> dependencies;
   Type fixedType;
   Object staticValue;
   Node initializer;
@@ -40,17 +43,28 @@ public class UserProperty implements Property, StaticSymbol {
   }
 
 
+  @Override
+  public void validate() {
+    if (owner.declaringSymbol != null) {
+      owner.declaringSymbol.validate();
+    }
+  }
 
   // May also be called from ClassValidationContext.
-  void validate(FunctionValidationContext classValidationContext) {
-    UserFunction userFunction = staticValue instanceof UserFunction ? (UserFunction) staticValue : null;
-    FunctionValidationContext context = new FunctionValidationContext(classValidationContext.programValidationContext, FunctionValidationContext.ResolutionMode.PROGRAM, userFunction);
+  void validate(PropertyValidationContext classValidationContext) {
+    UserFunction userFunction =
+        (!isInstanceField && initializer == null && staticValue instanceof UserFunction)
+        ? (UserFunction) staticValue
+            : null;
+    PropertyValidationContext context = new PropertyValidationContext(classValidationContext.programValidationContext, PropertyValidationContext.ResolutionMode.PROGRAM, this, userFunction);
 
     if (userFunction != null) {
       userFunction.validate(context);
     } else  {
       if (initializer != null) {
         initializer.resolve(context, 0);
+      } else if (staticValue instanceof UserClass) {
+        ((UserClass) staticValue).validate(context);
       }
       if (isInstanceField) {
         fieldIndex = owner.resolvedInitializers.size();
@@ -62,8 +76,8 @@ public class UserProperty implements Property, StaticSymbol {
     }
 
     this.errors = context.errors;
+    this.dependencies = context.dependencies;
     classValidationContext.errors.putAll(context.errors);
-    classValidationContext.dependencies.addAll(context.dependencies);
   }
 
 
@@ -101,12 +115,6 @@ public class UserProperty implements Property, StaticSymbol {
     return initializer;
   }
 
-  @Override
-  public void validate() {
-    if (owner.declaringSymbol != null) {
-      owner.declaringSymbol.validate();
-    }
-  }
 
   @Override
   public GlobalSymbol.Scope getScope() {
@@ -131,6 +139,22 @@ public class UserProperty implements Property, StaticSymbol {
   @Override
   public void setName(String newName) {
     name = newName;
+  }
+
+  @Override
+  public void init(EvaluationContext evaluationContext, HashSet<StaticSymbol> initialized) {
+    if (initialized.contains(this)) {
+      return;
+    }
+    if (dependencies != null) {
+      for (StaticSymbol dep : dependencies) {
+        dep.init(evaluationContext, initialized);
+      }
+    }
+    if (!isInstanceField && initializer != null) {
+      staticValue = initializer.eval(evaluationContext);
+    }
+    initialized.add(this);
   }
 
   public void setInitializer(DeclarationStatement initializer) {

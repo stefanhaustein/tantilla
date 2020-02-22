@@ -4,7 +4,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
@@ -17,7 +17,7 @@ public class ArrayLiteral extends Node {
     }
 
     @Override
-    protected void onResolve(FunctionValidationContext resolutionContext, int line) {
+    protected void onResolve(PropertyValidationContext resolutionContext, int line) {
         if (children.length == 0) {
             resolvedType = new ListType(null, 0);
         } else {

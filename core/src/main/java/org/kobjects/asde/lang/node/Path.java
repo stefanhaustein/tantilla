@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.EnumType;
@@ -28,7 +28,7 @@ public class Path extends SymbolNode {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
+  protected void onResolve(PropertyValidationContext resolutionContext, int line) {
     if (children[0].returnType() instanceof Classifier) {
       resolvedProperty = ((Classifier) children[0].returnType()).getPropertyDescriptor(pathName);
       if (resolvedProperty == null) {
@@ -69,7 +69,7 @@ public class Path extends SymbolNode {
   }
 
   @Override
-  public void resolveForAssignment(FunctionValidationContext resolutionContext, Type type, int line) {
+  public void resolveForAssignment(PropertyValidationContext resolutionContext, Type type, int line) {
     resolve(resolutionContext, line);
 
     // TODO: Check support...

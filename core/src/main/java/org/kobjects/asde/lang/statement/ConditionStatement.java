@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.node.Node;
@@ -34,7 +34,7 @@ public class ConditionStatement extends BlockStatement {
 
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
+  protected void onResolve(PropertyValidationContext resolutionContext, int line) {
     resolvedLine = line;
     resolvedPrevious = null;
     resolvedNext = null;
@@ -87,7 +87,7 @@ public class ConditionStatement extends BlockStatement {
   }
 
   @Override
-  public void onResolveEnd(FunctionValidationContext resolutionContext, EndStatement endStatement, int endLine) {
+  public void onResolveEnd(PropertyValidationContext resolutionContext, EndStatement endStatement, int endLine) {
     ConditionStatement current = this;
     do {
       current.resolvedEndLine = endLine;

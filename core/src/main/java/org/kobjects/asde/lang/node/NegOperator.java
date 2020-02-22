@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.asde.lang.function.FunctionValidationContext;
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
@@ -15,7 +15,7 @@ public class NegOperator extends Node {
   }
 
   @Override
-  protected void onResolve(FunctionValidationContext resolutionContext, int line) {
+  protected void onResolve(PropertyValidationContext resolutionContext, int line) {
     if (children[0].returnType() != Types.FLOAT && children[0].returnType() != Types.BOOL) {
       throw new RuntimeException("Number argument expected for negation.");
     }

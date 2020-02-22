@@ -37,12 +37,12 @@ public class UserFunction implements Callable, Declaration {
     this.parameterNames = parameterNames;
   }
 
-  public void validate(FunctionValidationContext functionValidationContext) {
+  public void validate(PropertyValidationContext propertyValidationContext) {
     for (int i = 0; i < code.size(); i++) {
       Statement statement = code.get(i);
-      statement.resolve(functionValidationContext, i + 1);
+      statement.resolve(propertyValidationContext, i + 1);
     }
-    localVariableCount = functionValidationContext.getLocalVariableCount();
+    localVariableCount = propertyValidationContext.getLocalVariableCount();
   }
 
   @Override
