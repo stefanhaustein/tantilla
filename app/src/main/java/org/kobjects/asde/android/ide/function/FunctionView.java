@@ -30,7 +30,7 @@ public class FunctionView extends SymbolView {
 
   public FunctionView(final MainActivity mainActivity, StaticSymbol symbol) {
     super(mainActivity, symbol);
-    this.functionImplementation = (FunctionImplementation) symbol.getValue();
+    this.functionImplementation = (FunctionImplementation) symbol.getStaticValue();
 
     boolean isMain = functionImplementation == functionImplementation.program.main;
     boolean isVoid = functionImplementation.getType().getReturnType() == Types.VOID;

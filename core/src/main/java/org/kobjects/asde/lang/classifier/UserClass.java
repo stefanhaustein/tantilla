@@ -57,48 +57,63 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
     return new MetaType(this);
   }
 
+  void setProperty(
+      boolean isInstanceField,
+      boolean isMutable,
+      Type fixedType,
+      String name,
+      Node initializer,
+      Object staticValue) {
+    propertyMap.put(name, new UserProperty(
+            this,
+            isInstanceField,
+            isMutable,
+            fixedType,
+            name,
+            initializer,
+            staticValue));
+    program.notifyProgramChanged();
+  }
+
+
   public void setMethod(String functionName, Function methodImplementation) {
-    propertyMap.put(functionName, new UserProperty(
-        this,
+    setProperty(
         /* isInstanceField= */ false,
         /* isMutable= */ false,
         methodImplementation.getType(),
         functionName,
         /* initializer= */ null,
-        methodImplementation));
+        methodImplementation);
   }
 
   public void setProperty(String propertyName, Node initializer) {
-    propertyMap.put(propertyName, new UserProperty(
-        this,
+    setProperty(
         /* isInstanceField= */ true,
         /* isMutable= */ true,
         /* fixedType= */ null,
         propertyName,
         initializer,
-        /* staticValue */ null));
+        /* staticValue */ null);
   }
 
   public void setUninitializedProperty(String propertyName, Type type) {
-    propertyMap.put(propertyName, new UserProperty(
-        this,
+    setProperty(
         /* isInstanceField= */ true,
         /* isMutable */ true,
         type,
         propertyName,
         /* initializer= */ null,
-        /* staticValue= */ null));
+        /* staticValue= */ null);
   }
 
   public void setStaticValue(String propertyName, Object value) {
-    propertyMap.put(propertyName, new UserProperty(
-        this,
+    setProperty(
         /* isInstanceField= */ false,
         /* isMutable */ false,
         Types.of(value),
         propertyName,
         /* initializer= */ null,
-        /* staticValue= */ value));
+        /* staticValue= */ value);
   }
 
 

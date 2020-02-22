@@ -1,9 +1,13 @@
 package org.kobjects.asde.lang.classifier;
 
+import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 
+import java.util.Map;
+
 public interface Property {
+  Map<Node, Exception> getErrors();
   String getName();
   Type getType();
 
@@ -14,4 +18,7 @@ public interface Property {
   boolean isMutable();
 
   boolean isInstanceField();
+
+  Object getStaticValue();
+
 }

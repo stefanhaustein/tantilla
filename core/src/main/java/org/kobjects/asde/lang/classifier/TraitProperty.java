@@ -46,7 +46,7 @@ public class TraitProperty implements Property, ResolvedSymbol, StaticSymbol {
   }
 
   @Override
-  public Object getValue() {
+  public Object getStaticValue() {
     return null;
   }
 

@@ -87,10 +87,10 @@ public class HelpDialog {
   void appendLink(AnnotatedStringBuilder asb, Object linked) {
     if (linked instanceof StaticSymbol) {
       StaticSymbol symbol = (StaticSymbol) linked;
-      if (symbol.getValue() instanceof Function) {
+      if (symbol.getStaticValue() instanceof Function) {
         appendFunctionLink(asb, (StaticSymbol) linked);
-      } else if (symbol.getValue() instanceof Type) {
-        appendLink(asb, symbol.getValue());
+      } else if (symbol.getStaticValue() instanceof Type) {
+        appendLink(asb, symbol.getStaticValue());
       } else {
         asb.append(symbol.getName());
         asb.append(": ");
@@ -160,7 +160,7 @@ public class HelpDialog {
   }
 
   void appendFunctionLink(AnnotatedStringBuilder sb, StaticSymbol functionSymbol) {
-    Function function = (Function) functionSymbol.getValue();
+    Function function = (Function) functionSymbol.getStaticValue();
 
     appendLink(sb, functionSymbol.getName(), functionSymbol);
 
@@ -194,13 +194,13 @@ public class HelpDialog {
       alertDialog.setTitle("Help");
       linearLayout.removeAllViews();
 
-      addAll("Constants", s -> !(s.getValue() instanceof Function) && !(s.getType() instanceof MetaType));
+      addAll("Constants", s -> !(s.getStaticValue() instanceof Function) && !(s.getType() instanceof MetaType));
 
-      addAll("Classes", s -> s.getValue() instanceof Classifier);
+      addAll("Classes", s -> s.getStaticValue() instanceof Classifier);
 
-      addAll("Enums", s -> s.getValue() instanceof EnumType);
+      addAll("Enums", s -> s.getStaticValue() instanceof EnumType);
 
-      addAll("Functions", s -> s.getValue() instanceof Function);
+      addAll("Functions", s -> s.getStaticValue() instanceof Function);
     } else {
       renderObject(o);
     }
@@ -223,10 +223,10 @@ public class HelpDialog {
   void renderObject(Object o) {
     if (o instanceof StaticSymbol) {
       StaticSymbol symbol = (StaticSymbol) o;
-      if (symbol.getValue() instanceof Function) {
+      if (symbol.getStaticValue() instanceof Function) {
         renderFunction(symbol);
-      } else if (symbol.getValue() instanceof Type) {
-        renderObject(symbol.getValue());
+      } else if (symbol.getStaticValue() instanceof Type) {
+        renderObject(symbol.getStaticValue());
       } else {
         throw new RuntimeException("Don't know how to render " + symbol);
       }
@@ -266,7 +266,7 @@ public class HelpDialog {
 
 
   void renderFunction(StaticSymbol functionSymbol) {
-    Function function = (Function) functionSymbol.getValue();
+    Function function = (Function) functionSymbol.getStaticValue();
 
     alertDialog.setTitle("Function " + functionSymbol.getName());
 

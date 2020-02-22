@@ -1,7 +1,11 @@
 package org.kobjects.asde.lang.classifier;
 
+import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
+
+import java.util.Collections;
+import java.util.Map;
 
 public abstract class NativeReadonlyProperty extends NativeProperty {
 
@@ -18,4 +22,5 @@ public abstract class NativeReadonlyProperty extends NativeProperty {
   public boolean isMutable() {
     return false;
   }
+
 }

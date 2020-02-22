@@ -9,7 +9,7 @@ import java.util.Map;
 public interface StaticSymbol {
   SymbolOwner getOwner();
   Map<Node, Exception> getErrors();
-  Object getValue();
+  Object getStaticValue();
   String getName();
   Type getType();
   Node getInitializer();

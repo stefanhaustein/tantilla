@@ -53,21 +53,21 @@ public class SymbolListView extends ExpandableList {
       }
       // Qualified needs to be sufficiently specific to disallow cross-type mismatches
       String qualifiedName = symbol.getName() + " " + symbol.getType();
-      if (symbol.getValue() instanceof FunctionImplementation) {
-        qualifiedName += Arrays.toString(((FunctionImplementation) symbol.getValue()).parameterNames);
+      if (symbol.getStaticValue() instanceof FunctionImplementation) {
+        qualifiedName += Arrays.toString(((FunctionImplementation) symbol.getStaticValue()).parameterNames);
       }
       SymbolView symbolView = nameViewMap.get(qualifiedName);
       if (symbolView != null) {
         symbolView.syncContent();
       } else {
-        if (symbol.getValue() instanceof Classifier) {
+        if (symbol.getStaticValue() instanceof Classifier) {
           ClassifierView classifierView = new ClassifierView(mainActivity, symbol);
           symbolView = classifierView;
           classifierView.addExpandListener(expandListener);
           if (matchedView == null && returnViewForSymbol != null) {
             matchedView = classifierView.getContentView().findViewBySymbol(returnViewForSymbol);
           }
-        } else if (symbol.getValue() instanceof FunctionImplementation) {
+        } else if (symbol.getStaticValue() instanceof FunctionImplementation) {
           FunctionView functionView = new FunctionView(mainActivity, symbol);
           symbolView = functionView;
           functionView.addExpandListener(expandListener);

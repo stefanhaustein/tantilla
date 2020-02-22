@@ -335,8 +335,8 @@ public class Program implements SymbolOwner {
   }*/
 
   public void deleteLine(StaticSymbol symbol, int line) {
-    if (symbol.getValue() instanceof FunctionImplementation) {
-      FunctionImplementation functionImplementation = (FunctionImplementation) symbol.getValue();
+    if (symbol.getStaticValue() instanceof FunctionImplementation) {
+      FunctionImplementation functionImplementation = (FunctionImplementation) symbol.getStaticValue();
       functionImplementation.deleteLine(line);
     }
   }

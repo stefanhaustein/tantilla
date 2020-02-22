@@ -95,12 +95,12 @@ public class VariableView extends SymbolView {
 
     public void refresh() {
         super.refresh();
-        if (symbol.getValue() == cache || symbol.getInitializer() == cache) {
+        if (symbol.getStaticValue() == cache || symbol.getInitializer() == cache) {
             return;
         }
         StringBuilder sb = new StringBuilder(" ");
-        if (symbol.getValue() != null) {
-            sb.append(symbol.getValue());
+        if (symbol.getStaticValue() != null) {
+            sb.append(symbol.getStaticValue());
         } else if (symbol.getInitializer() instanceof DeclarationStatement && symbol.getInitializer().children[0] instanceof Literal) {
             sb.append(((Literal) symbol.getInitializer().children[0]).value);
         } else if (symbol.getType() != null) {
@@ -108,7 +108,7 @@ public class VariableView extends SymbolView {
         } else {
             sb.append("?");
         }
-        cache = symbol.getValue() != null ? symbol.getValue() : symbol.getInitializer();
+        cache = symbol.getStaticValue() != null ? symbol.getStaticValue() : symbol.getInitializer();
         titleView.setSubtitles(Collections.singletonList(sb.toString()));
     }
 

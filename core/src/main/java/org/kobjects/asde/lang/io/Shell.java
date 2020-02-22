@@ -71,15 +71,15 @@ public class Shell {
                     if (tokenizer.currentType == Tokenizer.TokenType.IDENTIFIER
                             || "?".equals(tokenizer.currentValue)) {
 
-                        List<Statement> parsed = program.parser.parseStatementList(tokenizer, (FunctionImplementation) currentFunction.getValue());
+                        List<Statement> parsed = program.parser.parseStatementList(tokenizer, (FunctionImplementation) currentFunction.getStaticValue());
                         int targetLine = (int) Math.ceil(lineNumber);
                         boolean replace = lineNumber == targetLine;
                         for (Statement statement : parsed) {
                             if (replace) {
-                                ((FunctionImplementation) currentFunction.getValue()).setLine(targetLine, statement);
+                                ((FunctionImplementation) currentFunction.getStaticValue()).setLine(targetLine, statement);
                                 replace = false;
                             } else {
-                                ((FunctionImplementation) currentFunction.getValue()).insertLine(targetLine, statement);
+                                ((FunctionImplementation) currentFunction.getStaticValue()).insertLine(targetLine, statement);
                             }
                             targetLine++;
                         }

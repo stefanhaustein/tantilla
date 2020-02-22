@@ -51,7 +51,7 @@ public class Constructor extends Node {
       throw new RuntimeException("'" + name + "' is not defined");
     }
     symbol.validate(resolutionContext.programValidationContext);
-    Object value = symbol.getValue();
+    Object value = symbol.getStaticValue();
 
       if (!(value instanceof InstantiableType)) {
         throw new RuntimeException("'" + name + "' is not an instantiable type.");

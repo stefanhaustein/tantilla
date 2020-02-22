@@ -139,8 +139,8 @@ public class AsdeShell {
     @Override
     public void edit(StaticSymbol symbol) {
       this.selectedSymbol = symbol;
-      if (symbol.getValue() instanceof FunctionImplementation) {
-        selectedFunction = (FunctionImplementation) symbol.getValue();
+      if (symbol.getStaticValue() instanceof FunctionImplementation) {
+        selectedFunction = (FunctionImplementation) symbol.getStaticValue();
       }
     }
 

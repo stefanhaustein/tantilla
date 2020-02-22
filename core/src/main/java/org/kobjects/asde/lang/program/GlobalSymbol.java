@@ -78,7 +78,7 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
     return scope;
   }
 
-  public Object getValue() {
+  public Object getStaticValue() {
     return value;
   }
 

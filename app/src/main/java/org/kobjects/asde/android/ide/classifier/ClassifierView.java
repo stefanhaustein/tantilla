@@ -46,11 +46,11 @@ public class ClassifierView extends SymbolView {
     titleView.setMoreClickListener(clicked -> {
       PopupMenu popupMenu = new PopupMenu(mainActivity, clicked);
       popupMenu.getMenu().add("Add Property").setOnMenuItemClickListener(item -> {
-        PropertyFlow.createProperty(mainActivity, (UserClass) symbol.getValue());
+        PropertyFlow.createProperty(mainActivity, (UserClass) symbol.getStaticValue());
         return true;
       });
       popupMenu.getMenu().add("Add Method").setOnMenuItemClickListener(item -> {
-        FunctionSignatureFlow.createMethod(mainActivity, (UserClass) symbol.getValue());
+        FunctionSignatureFlow.createMethod(mainActivity, (UserClass) symbol.getStaticValue());
         return true;
       });
       popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {
@@ -85,10 +85,10 @@ public class ClassifierView extends SymbolView {
     }
 
     Iterable<? extends StaticSymbol> symbols;
-    if (symbol.getValue() instanceof UserClass) {
-      symbols = ((UserClass) symbol.getValue()).getUserProperties();
+    if (symbol.getStaticValue() instanceof UserClass) {
+      symbols = ((UserClass) symbol.getStaticValue()).getUserProperties();
     } else {
-      symbols = ((Trait) symbol.getValue()).propertyMap.values();
+      symbols = ((Trait) symbol.getStaticValue()).propertyMap.values();
     }
     getContentView().synchronizeTo(symbols, expandListener, null);
 

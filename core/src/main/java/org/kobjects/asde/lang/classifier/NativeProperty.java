@@ -1,7 +1,11 @@
 package org.kobjects.asde.lang.classifier;
 
+import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
+
+import java.util.Collections;
+import java.util.Map;
 
 public abstract class NativeProperty implements Property {
 
@@ -29,7 +33,6 @@ public abstract class NativeProperty implements Property {
   @Override
   public abstract void set(EvaluationContext context, Object instance, Object value);
 
-
   @Override
   public boolean isMutable() {
     return true;
@@ -38,5 +41,16 @@ public abstract class NativeProperty implements Property {
   @Override
   public boolean isInstanceField() {
     return true;
+  }
+
+  @Override
+  public Object getStaticValue() {
+    throw new UnsupportedOperationException("Not static.");
+  }
+
+
+  @Override
+  public Map<Node, Exception> getErrors() {
+    return Collections.emptyMap();
   }
 }

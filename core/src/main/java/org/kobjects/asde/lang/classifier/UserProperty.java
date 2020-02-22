@@ -103,7 +103,7 @@ public class UserProperty implements Property, StaticSymbol {
   }
 
   @Override
-  public Object getValue() {
+  public Object getStaticValue() {
     return staticValue;
   }
 

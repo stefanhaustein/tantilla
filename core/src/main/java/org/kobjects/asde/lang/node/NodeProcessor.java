@@ -42,11 +42,11 @@ public class NodeProcessor {
 
 
   public void processSymbol(StaticSymbol symbol) {
-    if (symbol.getValue() instanceof UserClass) {
-      processClass((UserClass) symbol.getValue());
+    if (symbol.getStaticValue() instanceof UserClass) {
+      processClass((UserClass) symbol.getStaticValue());
     }
-    if (symbol.getValue() instanceof FunctionImplementation) {
-      processCallableUnit((FunctionImplementation) symbol.getValue());
+    if (symbol.getStaticValue() instanceof FunctionImplementation) {
+      processCallableUnit((FunctionImplementation) symbol.getStaticValue());
     }
     if (symbol.getInitializer() != null) {
       processNode(symbol.getInitializer());

@@ -192,7 +192,7 @@ public class ProgramView extends SymbolListView {
         }
         if (childView instanceof ClassifierView) {
           ClassifierView classifierView = (ClassifierView) childView;
-          UserClass classImplementation = (UserClass) classifierView.symbol.getValue();
+          UserClass classImplementation = (UserClass) classifierView.symbol.getStaticValue();
           StaticSymbol symbolFound = null;
           for (UserProperty descriptor : classImplementation.getUserProperties()) {
             if (descriptor == symbol) {

@@ -4,7 +4,6 @@ import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.FunctionImplementation;
 import org.kobjects.asde.lang.node.InvokeMethod;
 import org.kobjects.asde.lang.node.Path;
-import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Apply;
 import org.kobjects.asde.lang.node.Group;
@@ -332,9 +331,9 @@ public class StatementParser {
         throw new RuntimeException("Unrecognized type: " + typeName);
       }
     }
-    if (!(symbol.getValue() instanceof Type)) {
+    if (!(symbol.getStaticValue() instanceof Type)) {
       throw new RuntimeException("'" + typeName + "' is not a type!");
     }
-    return  (Type) symbol.getValue();
+    return  (Type) symbol.getStaticValue();
   }
 }
