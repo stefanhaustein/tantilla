@@ -287,15 +287,12 @@ public class Program implements SymbolOwner {
 
   public synchronized void addBuiltin(String name, Object value) {
     mainModule.addBuiltin(name, value);
-/*
-    GlobalSymbol symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.BUILTIN, value);
-    symbolMap.put(name, symbol);
-
- */
   }
 
 
   public synchronized void setDeclaration(String name, Declaration declaration) {
+    //mainModule.setStaticValue(name, declaration);
+
     GlobalSymbol symbol = getSymbol(name);
     if (symbol == null) {
       symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, declaration);

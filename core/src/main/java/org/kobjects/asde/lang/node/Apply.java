@@ -1,10 +1,10 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.list.ListImpl;
-import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.function.FunctionType;
@@ -63,10 +63,10 @@ public class Apply extends Node {
 
   public Object eval(EvaluationContext evaluationContext) {
         Object base = children[0].eval(evaluationContext);
-        if (!(base instanceof Function)) {
+        if (!(base instanceof Callable)) {
           throw new EvaluationException(this, "Can't apply parameters to " + base + " / " + children[0]);
         }
-        Function function = (Function) base;
+        Callable function = (Callable) base;
         evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
         if (children.length - 1 > function.getLocalVariableCount()) {
           throw new RuntimeException("Too many params for " + function);

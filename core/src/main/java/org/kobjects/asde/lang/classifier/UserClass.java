@@ -1,10 +1,9 @@
 package org.kobjects.asde.lang.classifier;
 
-import org.kobjects.asde.lang.function.Function;
+import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.symbol.SymbolOwner;
@@ -21,7 +20,7 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
   final Program program;
   public final TreeMap<String, Property> propertyMap = new TreeMap<>();
   ArrayList<Node> resolvedInitializers = new ArrayList<>();
-  GlobalSymbol declaringSymbol;
+  StaticSymbol declaringSymbol;
 
   public UserClass(Program program) {
     this.program = program;
@@ -76,7 +75,7 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
   }
 
 
-  public void setMethod(String functionName, Function methodImplementation) {
+  public void setMethod(String functionName, Callable methodImplementation) {
     setProperty(
         /* isInstanceField= */ false,
         /* isMutable= */ false,
@@ -145,7 +144,7 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
 
   @Override
   public void setDeclaringSymbol(StaticSymbol declaringSymbol) {
-    this.declaringSymbol = (GlobalSymbol) declaringSymbol;
+    this.declaringSymbol = declaringSymbol;
   }
 
   @Override

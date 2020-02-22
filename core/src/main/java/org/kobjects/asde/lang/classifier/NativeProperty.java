@@ -53,4 +53,9 @@ public abstract class NativeProperty implements Property {
   public Map<Node, Exception> getErrors() {
     return Collections.emptyMap();
   }
+
+  @Override
+  public Node getInitializer() {
+    throw new UnsupportedOperationException();
+  }
 }

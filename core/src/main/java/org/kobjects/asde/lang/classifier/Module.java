@@ -1,6 +1,5 @@
 package org.kobjects.asde.lang.classifier;
 
-import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.program.Program;
 
 import java.util.HashSet;

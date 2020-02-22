@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.classifier;
 
-import org.kobjects.asde.lang.function.Function;
+import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -9,7 +9,7 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.Collections;
 import java.util.Map;
 
-public abstract class NativeMethod implements Property, Function {
+public abstract class NativeMethod implements Property, Callable {
   FunctionType type;
   String name;
 
@@ -33,7 +33,6 @@ public abstract class NativeMethod implements Property, Function {
   public void set(EvaluationContext context, Object instance, Object value) {
     throw new UnsupportedOperationException();
   }
-
 
   @Override
   public FunctionType getType() {
@@ -61,5 +60,10 @@ public abstract class NativeMethod implements Property, Function {
   @Override
   public Map<Node, Exception> getErrors() {
     return Collections.emptyMap();
+  }
+
+  @Override
+  public Node getInitializer() {
+    throw new UnsupportedOperationException();
   }
 }

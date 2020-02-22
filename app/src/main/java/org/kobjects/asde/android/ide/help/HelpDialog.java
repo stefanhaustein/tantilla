@@ -13,10 +13,10 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.android.ide.Dimensions;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
+import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.list.ListType;
-import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.EnumType;
 import org.kobjects.asde.lang.function.FunctionType;
@@ -87,7 +87,7 @@ public class HelpDialog {
   void appendLink(AnnotatedStringBuilder asb, Object linked) {
     if (linked instanceof StaticSymbol) {
       StaticSymbol symbol = (StaticSymbol) linked;
-      if (symbol.getStaticValue() instanceof Function) {
+      if (symbol.getStaticValue() instanceof Callable) {
         appendFunctionLink(asb, (StaticSymbol) linked);
       } else if (symbol.getStaticValue() instanceof Type) {
         appendLink(asb, symbol.getStaticValue());
@@ -160,7 +160,7 @@ public class HelpDialog {
   }
 
   void appendFunctionLink(AnnotatedStringBuilder sb, StaticSymbol functionSymbol) {
-    Function function = (Function) functionSymbol.getStaticValue();
+    Callable function = (Callable) functionSymbol.getStaticValue();
 
     appendLink(sb, functionSymbol.getName(), functionSymbol);
 
@@ -194,13 +194,13 @@ public class HelpDialog {
       alertDialog.setTitle("Help");
       linearLayout.removeAllViews();
 
-      addAll("Constants", s -> !(s.getStaticValue() instanceof Function) && !(s.getType() instanceof MetaType));
+      addAll("Constants", s -> !(s.getStaticValue() instanceof Callable) && !(s.getType() instanceof MetaType));
 
       addAll("Classes", s -> s.getStaticValue() instanceof Classifier);
 
       addAll("Enums", s -> s.getStaticValue() instanceof EnumType);
 
-      addAll("Functions", s -> s.getStaticValue() instanceof Function);
+      addAll("Functions", s -> s.getStaticValue() instanceof Callable);
     } else {
       renderObject(o);
     }
@@ -223,7 +223,7 @@ public class HelpDialog {
   void renderObject(Object o) {
     if (o instanceof StaticSymbol) {
       StaticSymbol symbol = (StaticSymbol) o;
-      if (symbol.getStaticValue() instanceof Function) {
+      if (symbol.getStaticValue() instanceof Callable) {
         renderFunction(symbol);
       } else if (symbol.getStaticValue() instanceof Type) {
         renderObject(symbol.getStaticValue());
@@ -266,7 +266,7 @@ public class HelpDialog {
 
 
   void renderFunction(StaticSymbol functionSymbol) {
-    Function function = (Function) functionSymbol.getStaticValue();
+    Callable function = (Callable) functionSymbol.getStaticValue();
 
     alertDialog.setTitle("Function " + functionSymbol.getName());
 

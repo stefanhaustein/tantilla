@@ -8,7 +8,7 @@ import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;
 
-public enum Builtin implements Function {
+public enum Builtin implements Callable {
 
     ABS("Calculates the absolute value of the input.\n\nExamples:\n\n * abs(3.4) = 3.4\n * abs(-4) = 4\n * abs(0) = 0",
         Types.FLOAT, Types.FLOAT),

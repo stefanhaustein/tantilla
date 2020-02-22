@@ -21,4 +21,5 @@ public interface Property {
 
   Object getStaticValue();
 
+  Node getInitializer();
 }

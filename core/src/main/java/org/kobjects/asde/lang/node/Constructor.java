@@ -69,9 +69,9 @@ public class Constructor extends Node {
             if (!property.getType().isAssignableFrom(children[childIndex].returnType())) {
               throw new RuntimeException("Expected type for property " + descriptor.getName() + ": " + property.getType() + "; got: " + children[childIndex].returnType());
             }
-            indexMap[childIndex] = descriptor.getIndex();
-            arraySize = Math.max(descriptor.getIndex() + 1, arraySize);
-          } else if (descriptor.getIndex() != -1 && descriptor.getInitializer() == null) {
+            indexMap[childIndex] = descriptor.getFieldIndex();
+            arraySize = Math.max(descriptor.getFieldIndex() + 1, arraySize);
+          } else if (descriptor.getFieldIndex() != -1 && descriptor.getInitializer() == null) {
             throw new RuntimeException("Initializer required for property " + descriptor.getName());
           }
         }

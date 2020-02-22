@@ -14,19 +14,13 @@ import java.util.Collections;
 import java.util.Map;
 
 public class UserProperty implements Property, StaticSymbol {
-
-
   UserClass owner;
   String name;
   Map<Node, Exception> errors = Collections.emptyMap();
   Type fixedType;
-
-  // Method
   Object staticValue;
-
-  // Property
   Node initializer;
-  int index = -1;
+  int fieldIndex = -1;
   boolean isInstanceField;
   boolean isMutable;
 
@@ -63,7 +57,7 @@ public class UserProperty implements Property, StaticSymbol {
         initializer.resolve(context, 0);
       }
       if (isInstanceField) {
-        index = owner.resolvedInitializers.size();
+        fieldIndex = owner.resolvedInitializers.size();
         owner.resolvedInitializers.add(initializer);
       }
     }
@@ -88,8 +82,8 @@ public class UserProperty implements Property, StaticSymbol {
     return initializer != null ? initializer.returnType() : fixedType;
   }
 
-  public int getIndex() {
-    return index;
+  public int getFieldIndex() {
+    return fieldIndex;
   }
 
   @Override
@@ -157,12 +151,12 @@ public class UserProperty implements Property, StaticSymbol {
 
   @Override
   public Object get(EvaluationContext context, Object instance) {
-    return isInstanceField ? ((Instance) instance).properties[index] : staticValue;
+    return isInstanceField ? ((Instance) instance).properties[fieldIndex] : staticValue;
   }
 
   @Override
   public void set(EvaluationContext context, Object instance, Object value) {
-    ((Instance) instance).properties[index] = value;
+    ((Instance) instance).properties[fieldIndex] = value;
   }
 
 

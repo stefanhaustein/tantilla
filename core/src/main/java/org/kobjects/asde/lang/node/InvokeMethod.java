@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.Classifier;
-import org.kobjects.asde.lang.function.Function;
+import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.list.ListImpl;
@@ -74,7 +74,7 @@ public class InvokeMethod extends Node {
 
   public Object eval(EvaluationContext evaluationContext) {
     Object base = children[0].eval(evaluationContext);
-    Function function = (Function) resolvedProperty.get(evaluationContext, base);
+    Callable function = (Callable) resolvedProperty.get(evaluationContext, base);
     evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
     if (children.length > function.getLocalVariableCount()) {
       throw new RuntimeException("Too many params for " + function);

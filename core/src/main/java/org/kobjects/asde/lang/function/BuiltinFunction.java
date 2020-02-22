@@ -3,13 +3,13 @@ package org.kobjects.asde.lang.function;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 
-public class BuiltinFunction implements Function {
+public class BuiltinFunction implements Callable {
 
   private final CharSequence documentation;
   private final FunctionType functionType;
-  private final Callable callable;
+  private final NativeImplementation callable;
 
-  public BuiltinFunction(Callable callable, CharSequence documentation, Type returnType, Type... args) {
+  public BuiltinFunction(NativeImplementation callable, CharSequence documentation, Type returnType, Type... args) {
     this.callable = callable;
     this.documentation = documentation;
     this.functionType = new FunctionType(returnType, args);
@@ -31,5 +31,8 @@ public class BuiltinFunction implements Function {
     return callable.call(evaluationContext, paramCount);
   }
 
+  public interface NativeImplementation {
+    Object call(EvaluationContext evaluationContext, int paramCount);
+  }
 
 }

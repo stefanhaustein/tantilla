@@ -1,8 +1,8 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.function.Function;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.type.Types;
@@ -30,8 +30,8 @@ public class VoidStatement extends Statement {
   @Override
   public Object eval(EvaluationContext evaluationContext) {
     Object result = children[0].eval(evaluationContext);
-    if (result instanceof Function) {
-      Function function = (Function) result;
+    if (result instanceof Callable) {
+      Callable function = (Callable) result;
       evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
       function.call(evaluationContext, 0);
     }

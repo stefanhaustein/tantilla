@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * In the main package because of the direct interaction with programControl.
  */
-public class FunctionImplementation implements Function, Declaration {
+public class FunctionImplementation implements Callable, Declaration {
 
   public final Program program;
   FunctionType type;
