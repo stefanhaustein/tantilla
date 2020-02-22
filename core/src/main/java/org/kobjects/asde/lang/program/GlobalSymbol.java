@@ -7,7 +7,7 @@ import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.symbol.SymbolOwner;
 import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.classifier.ClassValidationContext;
-import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
@@ -139,11 +139,11 @@ public class GlobalSymbol implements ResolvedSymbol, StaticSymbol {
       this.errors = context.errors;
       this.dependencies = context.dependencies;
       type = initializer.getValueType();
-    } else if (value instanceof FunctionImplementation) {
+    } else if (value instanceof UserFunction) {
       // Avoid an infinite validation loop in recursion
       programValidationContext.validated.add(this);
 
-      FunctionImplementation function = (FunctionImplementation) value;
+      UserFunction function = (UserFunction) value;
 
       if (this == program.mainSymbol) {
         program.currentStamp++;

@@ -8,7 +8,7 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.symbol.SymbolOwner;
 import org.kobjects.asde.lang.function.BuiltinFunction;
-import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.symbol.SymbolChangeListener;
 import org.kobjects.asde.lang.io.ProgramReference;
@@ -60,7 +60,7 @@ public class Program implements SymbolOwner {
   public ProgramReference reference;
 
   public final StatementParser parser = new StatementParser(this);
-  public final FunctionImplementation main = new FunctionImplementation(this, new FunctionType(Types.VOID));
+  public final UserFunction main = new UserFunction(this, new FunctionType(Types.VOID));
   public final GlobalSymbol mainSymbol = new GlobalSymbol(this, "", GlobalSymbol.Scope.PERSISTENT, main);
   private final ArrayList<SymbolChangeListener> programChangeListeners = new ArrayList<>();
   private final ArrayList<ProgramListener> programListeners = new ArrayList<>();
@@ -190,7 +190,7 @@ public class Program implements SymbolOwner {
     sb.append("ASDE\n");
     for (GlobalSymbol symbol : symbolMap.values()) {
       if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
-        if (!(symbol.value instanceof FunctionImplementation)) {
+        if (!(symbol.value instanceof UserFunction)) {
           sb.append(symbol.toString(false)).append('\n');
         }
       }
@@ -198,8 +198,8 @@ public class Program implements SymbolOwner {
 
     for (GlobalSymbol symbol : symbolMap.values()) {
       if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
-        if (symbol.value instanceof FunctionImplementation) {
-          ((FunctionImplementation) symbol.value).toString(sb, symbol.getName(), symbol.getErrors());
+        if (symbol.value instanceof UserFunction) {
+          ((UserFunction) symbol.value).toString(sb, symbol.getName(), symbol.getErrors());
         }
       }
     }
@@ -332,9 +332,9 @@ public class Program implements SymbolOwner {
   }*/
 
   public void deleteLine(StaticSymbol symbol, int line) {
-    if (symbol.getStaticValue() instanceof FunctionImplementation) {
-      FunctionImplementation functionImplementation = (FunctionImplementation) symbol.getStaticValue();
-      functionImplementation.deleteLine(line);
+    if (symbol.getStaticValue() instanceof UserFunction) {
+      UserFunction userFunction = (UserFunction) symbol.getStaticValue();
+      userFunction.deleteLine(line);
     }
   }
 

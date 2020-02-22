@@ -24,7 +24,7 @@ import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.lang.runtime.ForcedStopException;
 import org.kobjects.asde.lang.io.Format;
-import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.runtime.WrappedExecutionException;
@@ -178,7 +178,7 @@ public class AndroidConsole implements Console {
           wrappedExecutionException = (WrappedExecutionException) wrappedExecutionException.getCause();
         }
 
-       highlight(wrappedExecutionException.functionImplementation, wrappedExecutionException.lineNumber);
+       highlight(wrappedExecutionException.userFunction, wrappedExecutionException.lineNumber);
       }
 
       AlertDialog.Builder alertBuilder = new AlertDialog.Builder(mainActivity);
@@ -235,8 +235,8 @@ public class AndroidConsole implements Console {
       // Append moves the cursor to the end.
       mainActivity.controlView.codeEditText.setText("");
       if (functionView != null) {
-        FunctionImplementation functionImplementation = functionView.functionImplementation;
-        Statement codeLine = functionImplementation.getLine((line-2)/2);
+        UserFunction userFunction = functionView.userFunction;
+        Statement codeLine = userFunction.getLine((line-2)/2);
         if (codeLine != null) {
           mainActivity.controlView.codeEditText.append(line + " " + codeLine);
           return;
@@ -252,10 +252,10 @@ public class AndroidConsole implements Console {
   }
 
   @Override
-  public FunctionImplementation getSelectedFunction() {
+  public UserFunction getSelectedFunction() {
     return mainActivity.programView.currentFunctionView == null
         ? mainActivity.program.main
-        : mainActivity.programView.currentFunctionView.functionImplementation;
+        : mainActivity.programView.currentFunctionView.userFunction;
   }
 
 
@@ -304,7 +304,7 @@ public class AndroidConsole implements Console {
 
 
   @Override
-  public void highlight(FunctionImplementation function, int lineNumber) {
+  public void highlight(UserFunction function, int lineNumber) {
     mainActivity.runOnUiThread(() -> mainActivity.programView.highlightImpl(function, lineNumber));
   }
 

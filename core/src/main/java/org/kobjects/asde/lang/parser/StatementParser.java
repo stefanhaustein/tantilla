@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.parser;
 
 import org.kobjects.asde.lang.list.ListType;
-import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.node.InvokeMethod;
 import org.kobjects.asde.lang.node.Path;
 import org.kobjects.asde.lang.program.Program;
@@ -55,7 +55,7 @@ public class StatementParser {
     return expressionParser.parse(tokenizer);
   }
 
-  void parseStatement(Tokenizer tokenizer, List<Statement> result, FunctionImplementation parsingContext) {
+  void parseStatement(Tokenizer tokenizer, List<Statement> result, UserFunction parsingContext) {
     String name = tokenizer.currentValue;
 
     switch (name.toLowerCase()) {
@@ -273,7 +273,7 @@ public class StatementParser {
   }
 
 
-  public List<Statement> parseStatementList(Tokenizer tokenizer, FunctionImplementation parsingContext) {
+  public List<Statement> parseStatementList(Tokenizer tokenizer, UserFunction parsingContext) {
     ArrayList<Statement> result = new ArrayList<>();
     Node statement;
     do {

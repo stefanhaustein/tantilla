@@ -5,7 +5,7 @@ import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.classifier.ClassifierView;
 import org.kobjects.asde.android.ide.program.VariableView;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
-import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.classifier.Classifier;
@@ -53,8 +53,8 @@ public class SymbolListView extends ExpandableList {
       }
       // Qualified needs to be sufficiently specific to disallow cross-type mismatches
       String qualifiedName = symbol.getName() + " " + symbol.getType();
-      if (symbol.getStaticValue() instanceof FunctionImplementation) {
-        qualifiedName += Arrays.toString(((FunctionImplementation) symbol.getStaticValue()).parameterNames);
+      if (symbol.getStaticValue() instanceof UserFunction) {
+        qualifiedName += Arrays.toString(((UserFunction) symbol.getStaticValue()).parameterNames);
       }
       SymbolView symbolView = nameViewMap.get(qualifiedName);
       if (symbolView != null) {
@@ -67,7 +67,7 @@ public class SymbolListView extends ExpandableList {
           if (matchedView == null && returnViewForSymbol != null) {
             matchedView = classifierView.getContentView().findViewBySymbol(returnViewForSymbol);
           }
-        } else if (symbol.getStaticValue() instanceof FunctionImplementation) {
+        } else if (symbol.getStaticValue() instanceof UserFunction) {
           FunctionView functionView = new FunctionView(mainActivity, symbol);
           symbolView = functionView;
           functionView.addExpandListener(expandListener);

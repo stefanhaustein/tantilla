@@ -3,8 +3,7 @@ package org.kobjects.asde.lang.program;
 import org.kobjects.asde.lang.Consumer;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.runtime.StartStopListener;
-import org.kobjects.asde.lang.function.CodeLine;
-import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.statement.Statement;
 
 import java.util.ArrayList;
@@ -101,7 +100,7 @@ public class ProgramControl {
     }
 
     // Called from the shell
-    public void runStatementsAsync(FunctionImplementation wrapper, final ProgramControl programInterpreterControl, Consumer resultConsumer) {
+    public void runStatementsAsync(UserFunction wrapper, final ProgramControl programInterpreterControl, Consumer resultConsumer) {
         runAsync(() -> {
             EvaluationContext wrapperContext = new EvaluationContext(ProgramControl.this, wrapper);
             wrapperContext.currentLine = -2;

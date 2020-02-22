@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.io;
 
-import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 
 import java.io.InputStream;
@@ -16,7 +16,7 @@ public interface Console {
 
     void clearScreen(ClearScreenType clearScreenType);
 
-    void highlight(FunctionImplementation function, int lineNumber);
+    void highlight(UserFunction function, int lineNumber);
 
     InputStream openInputStream(String url);
 
@@ -35,7 +35,7 @@ public interface Console {
     void edit(int i);
     void edit(StaticSymbol symbol);
 
-    FunctionImplementation getSelectedFunction();
+    UserFunction getSelectedFunction();
 
     void showError(String message, Exception e);
 }

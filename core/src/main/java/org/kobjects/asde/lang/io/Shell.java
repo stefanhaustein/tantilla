@@ -10,7 +10,7 @@ import org.kobjects.asde.lang.program.ProgramValidationContext;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.runtime.StartStopListener;
-import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.expressionparser.Tokenizer;
@@ -71,15 +71,15 @@ public class Shell {
                     if (tokenizer.currentType == Tokenizer.TokenType.IDENTIFIER
                             || "?".equals(tokenizer.currentValue)) {
 
-                        List<Statement> parsed = program.parser.parseStatementList(tokenizer, (FunctionImplementation) currentFunction.getStaticValue());
+                        List<Statement> parsed = program.parser.parseStatementList(tokenizer, (UserFunction) currentFunction.getStaticValue());
                         int targetLine = (int) Math.ceil(lineNumber);
                         boolean replace = lineNumber == targetLine;
                         for (Statement statement : parsed) {
                             if (replace) {
-                                ((FunctionImplementation) currentFunction.getStaticValue()).setLine(targetLine, statement);
+                                ((UserFunction) currentFunction.getStaticValue()).setLine(targetLine, statement);
                                 replace = false;
                             } else {
-                                ((FunctionImplementation) currentFunction.getStaticValue()).insertLine(targetLine, statement);
+                                ((UserFunction) currentFunction.getStaticValue()).insertLine(targetLine, statement);
                             }
                             targetLine++;
                         }
@@ -98,7 +98,7 @@ public class Shell {
                 CodeLine codeLine = new CodeLine(-2, statements);
                 program.processStandaloneDeclarations(codeLine);
 
-                FunctionImplementation wrapper = new FunctionImplementation(program, new FunctionType(Types.VOID));
+                UserFunction wrapper = new UserFunction(program, new FunctionType(Types.VOID));
 
                 for (Statement statement : statements) {
                     wrapper.appendStatement(statement);

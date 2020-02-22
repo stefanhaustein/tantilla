@@ -5,7 +5,7 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
-import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.function.FunctionValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Type;
@@ -47,11 +47,11 @@ public class UserProperty implements Property, StaticSymbol {
       return;
     }
 
-    FunctionImplementation functionImplementation = staticValue instanceof FunctionImplementation ? (FunctionImplementation) staticValue : null;
-    FunctionValidationContext context = new FunctionValidationContext(classValidationContext, functionImplementation);
+    UserFunction userFunction = staticValue instanceof UserFunction ? (UserFunction) staticValue : null;
+    FunctionValidationContext context = new FunctionValidationContext(classValidationContext.programValidationContext, FunctionValidationContext.ResolutionMode.PROGRAM, userFunction);
 
-    if (functionImplementation != null) {
-      functionImplementation.validate(context);
+    if (userFunction != null) {
+      userFunction.validate(context);
     } else  {
       if (initializer != null) {
         initializer.resolve(context, 0);

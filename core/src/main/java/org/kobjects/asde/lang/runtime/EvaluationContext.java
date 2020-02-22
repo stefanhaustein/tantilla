@@ -1,13 +1,13 @@
 package org.kobjects.asde.lang.runtime;
 
 import org.kobjects.asde.lang.classifier.Instance;
-import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.ProgramControl;
 
 public class EvaluationContext {
     public final ProgramControl control;
-    public final FunctionImplementation function;
+    public final UserFunction function;
 
     private final DataStack dataStack;
     private final int stackBase;
@@ -21,7 +21,7 @@ public class EvaluationContext {
     /**
      * Creates a new root evaluation context.
      */
-    public EvaluationContext(ProgramControl control, FunctionImplementation function) {
+    public EvaluationContext(ProgramControl control, UserFunction function) {
         this.control = control;
         this.function = function;
         stackBase = 0;
@@ -49,12 +49,12 @@ public class EvaluationContext {
     /**
      * Creates a new context for calling the given function.
      */
-    public EvaluationContext(EvaluationContext parentContext, FunctionImplementation functionImplementation, Instance self) {
-        this.function = functionImplementation;
+    public EvaluationContext(EvaluationContext parentContext, UserFunction userFunction, Instance self) {
+        this.function = userFunction;
         this.control = parentContext.control;
         this.dataStack = parentContext.dataStack;
         this.stackBase = parentContext.stackTop;
-        this.stackTop = stackBase + functionImplementation.localVariableCount;
+        this.stackTop = stackBase + userFunction.localVariableCount;
 
         control.lastCreatedContext = this;
     }

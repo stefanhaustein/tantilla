@@ -1,14 +1,14 @@
 package org.kobjects.asde.lang.runtime;
 
-import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.function.UserFunction;
 
 public class WrappedExecutionException extends RuntimeException {
-    public final FunctionImplementation functionImplementation;
+    public final UserFunction userFunction;
     public final int lineNumber;
 
-    public WrappedExecutionException(FunctionImplementation functionImplementation, int lineNumber, Exception cause) {
+    public WrappedExecutionException(UserFunction userFunction, int lineNumber, Exception cause) {
         super(cause);
-        this.functionImplementation = functionImplementation;
+        this.userFunction = userFunction;
         this.lineNumber = lineNumber;
     }
 }

@@ -13,7 +13,7 @@ import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 
 import java.util.Collections;
@@ -145,7 +145,7 @@ public class ProgramView extends SymbolListView {
     expandOnSync = null;
   }
 
-  public void highlightImpl(FunctionImplementation function, int lineNumber) {
+  public void highlightImpl(UserFunction function, int lineNumber) {
     unHighlight();
     SymbolView selectedView = selectImpl(function.getDeclaringSymbol());
     if (selectedView instanceof FunctionView) {

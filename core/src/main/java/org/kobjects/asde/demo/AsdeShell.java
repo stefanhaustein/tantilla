@@ -6,7 +6,7 @@ import org.kobjects.asde.lang.runtime.WrappedExecutionException;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.io.Shell;
-import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.expressionparser.ParsingException;
 
 import java.io.BufferedReader;
@@ -64,7 +64,7 @@ public class AsdeShell {
   static class StdioConsole implements Console {
 
     private final BufferedReader reader;
-    private FunctionImplementation selectedFunction;
+    private UserFunction selectedFunction;
     private StaticSymbol selectedSymbol;
 
     StdioConsole(BufferedReader reader) {
@@ -91,7 +91,7 @@ public class AsdeShell {
     }
 
     @Override
-    public void highlight(FunctionImplementation function, int lineNumber) {
+    public void highlight(UserFunction function, int lineNumber) {
       // TBD
     }
 
@@ -139,13 +139,13 @@ public class AsdeShell {
     @Override
     public void edit(StaticSymbol symbol) {
       this.selectedSymbol = symbol;
-      if (symbol.getStaticValue() instanceof FunctionImplementation) {
-        selectedFunction = (FunctionImplementation) symbol.getStaticValue();
+      if (symbol.getStaticValue() instanceof UserFunction) {
+        selectedFunction = (UserFunction) symbol.getStaticValue();
       }
     }
 
     @Override
-    public FunctionImplementation getSelectedFunction() {
+    public UserFunction getSelectedFunction() {
       return selectedFunction;
     }
 

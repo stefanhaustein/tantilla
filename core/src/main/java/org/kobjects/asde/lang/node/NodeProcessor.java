@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.Consumer;
 import org.kobjects.asde.lang.classifier.UserProperty;
-import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.statement.Statement;
@@ -28,8 +28,8 @@ public class NodeProcessor {
     action.accept(node);
   }
 
-  public void processCallableUnit(FunctionImplementation functionImplementation) {
-    for (Statement statement : functionImplementation.allLines()) {
+  public void processCallableUnit(UserFunction userFunction) {
+    for (Statement statement : userFunction.allLines()) {
       processNode(statement);
     }
   }
@@ -45,8 +45,8 @@ public class NodeProcessor {
     if (symbol.getStaticValue() instanceof UserClass) {
       processClass((UserClass) symbol.getStaticValue());
     }
-    if (symbol.getStaticValue() instanceof FunctionImplementation) {
-      processCallableUnit((FunctionImplementation) symbol.getStaticValue());
+    if (symbol.getStaticValue() instanceof UserFunction) {
+      processCallableUnit((UserFunction) symbol.getStaticValue());
     }
     if (symbol.getInitializer() != null) {
       processNode(symbol.getInitializer());

@@ -18,7 +18,7 @@ import org.kobjects.asde.android.ide.widget.TypeSpinner;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.text.TextValidator;
 import org.kobjects.asde.lang.classifier.UserClass;
-import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.statement.RemStatement;
@@ -41,19 +41,19 @@ public class FunctionSignatureFlow {
   ArrayList<Parameter> originalParameterList;
   ArrayList<Parameter> parameterList = new ArrayList<>();
   LinearLayout parameterListView;
-  FunctionImplementation functionImplementation;
+  UserFunction userFunction;
   UserClass classImplementation;
 
-  public static void changeSignature(MainActivity mainActivity, StaticSymbol symbol, FunctionImplementation functionImplementation) {
-    FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CHANGE_SIGNATURE, functionImplementation.getType().getReturnType());
+  public static void changeSignature(MainActivity mainActivity, StaticSymbol symbol, UserFunction userFunction) {
+    FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CHANGE_SIGNATURE, userFunction.getType().getReturnType());
     flow.symbol = symbol;
     flow.name = symbol.getName();
-    flow.functionImplementation = functionImplementation;
+    flow.userFunction = userFunction;
     flow.originalParameterList = new ArrayList<>();
-    for (int i = 0; i < functionImplementation.getType().getParameterCount(); i++) {
+    for (int i = 0; i < userFunction.getType().getParameterCount(); i++) {
       Parameter parameter = new Parameter();
-      parameter.name = functionImplementation.parameterNames[i];
-      parameter.type = functionImplementation.getType().getParameterType(i);
+      parameter.name = userFunction.parameterNames[i];
+      parameter.type = userFunction.getType().getParameterType(i);
       flow.originalParameterList.add(parameter);
       flow.parameterList.add(parameter);
     }
@@ -340,14 +340,14 @@ public class FunctionSignatureFlow {
     }
 
     Type[] types = new Type[count];
-    functionImplementation.parameterNames = new String[parameterList.size()];
+    userFunction.parameterNames = new String[parameterList.size()];
     for (int i = 0; i < parameterList.size(); i++) {
       Parameter parameter = parameterList.get(i);
-      functionImplementation.parameterNames[i] = parameter.name;
+      userFunction.parameterNames[i] = parameter.name;
       types[i] = parameter.type;
     }
 
-    functionImplementation.setType(new FunctionType(returnType, types));
+    userFunction.setType(new FunctionType(returnType, types));
 
     if (moved) {
       mainActivity.program.processNodes(node -> node.changeSignature(symbol, oldIndices));
@@ -358,16 +358,16 @@ public class FunctionSignatureFlow {
 
   void commitNewFunction() {
     FunctionType functionType = new FunctionType(returnType, getParameterTypeArray());
-    FunctionImplementation functionImplementation = new FunctionImplementation(mainActivity.program, functionType, getParameterNameArray());
+    UserFunction userFunction = new UserFunction(mainActivity.program, functionType, getParameterNameArray());
 
     RemStatement remStatement = new RemStatement("This comment should document this function.");
 
-    functionImplementation.appendStatement(remStatement);
+    userFunction.appendStatement(remStatement);
 
     if (mode == Mode.CREATE_MEMBER) {
-      classImplementation.setMethod(name, functionImplementation);
+      classImplementation.setMethod(name, userFunction);
     } else {
-      mainActivity.program.setDeclaration(name, functionImplementation);
+      mainActivity.program.setDeclaration(name, userFunction);
     }
     mainActivity.program.notifyProgramChanged();
   }

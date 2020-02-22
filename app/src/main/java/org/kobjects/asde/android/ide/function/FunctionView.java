@@ -16,7 +16,7 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.symbol.DeleteFlow;
 import org.kobjects.asde.android.ide.symbol.RenameFlow;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
-import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Types;
@@ -24,17 +24,17 @@ import org.kobjects.asde.lang.type.Types;
 import java.util.ArrayList;
 
 public class FunctionView extends SymbolView {
-  public FunctionImplementation functionImplementation;
+  public UserFunction userFunction;
 
   private Selection selection;
 
   public FunctionView(final MainActivity mainActivity, StaticSymbol symbol) {
     super(mainActivity, symbol);
-    this.functionImplementation = (FunctionImplementation) symbol.getStaticValue();
+    this.userFunction = (UserFunction) symbol.getStaticValue();
 
-    boolean isMain = functionImplementation == functionImplementation.program.main;
-    boolean isVoid = functionImplementation.getType().getReturnType() == Types.VOID;
-    boolean isMethod = functionImplementation.isMethod();
+    boolean isMain = userFunction == userFunction.program.main;
+    boolean isVoid = userFunction.getType().getReturnType() == Types.VOID;
+    boolean isMethod = userFunction.isMethod();
 
 
       titleView.setTypeIndicator(
@@ -51,7 +51,7 @@ public class FunctionView extends SymbolView {
           return true;
         });
         menu.add("Change Signature").setOnMenuItemClickListener(item -> {
-          FunctionSignatureFlow.changeSignature(mainActivity, symbol, functionImplementation);
+          FunctionSignatureFlow.changeSignature(mainActivity, symbol, userFunction);
           return true;
         });
       }
@@ -66,11 +66,11 @@ public class FunctionView extends SymbolView {
 
 
     ArrayList<String> subtitles = new ArrayList<>();
-    for (int i = 0; i < functionImplementation.getType().getParameterCount(); i++) {
-      subtitles.add(" " + functionImplementation.parameterNames[i] + ": " + functionImplementation.getType().getParameterType(i));
+    for (int i = 0; i < userFunction.getType().getParameterCount(); i++) {
+      subtitles.add(" " + userFunction.parameterNames[i] + ": " + userFunction.getType().getParameterType(i));
     }
     if (!isVoid) {
-      subtitles.add("-> " + functionImplementation.getType().getReturnType());
+      subtitles.add("-> " + userFunction.getType().getReturnType());
     }
     titleView.setSubtitles(subtitles);
   }
@@ -98,7 +98,7 @@ public class FunctionView extends SymbolView {
 
     int updated = 0;
 
-    for (Statement statement: functionImplementation.allLines()) {
+    for (Statement statement: userFunction.allLines()) {
       if (index >= syncedTo) {
         updated++;
         CodeLineView codeLineView;
@@ -284,7 +284,7 @@ public class FunctionView extends SymbolView {
       alertBuilder.setNegativeButton("Cancel", null);
       alertBuilder.setPositiveButton("Delete", (a, b) -> {
         for (int i = getEndIndex() - 1; i >= getStartIndex(); i--) {
-          functionImplementation.deleteLine(getCodeLineView(i).lineNumber);
+          userFunction.deleteLine(getCodeLineView(i).lineNumber);
           getContentView().removeViewAt(i);
         }
       });

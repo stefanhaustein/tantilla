@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.parser;
 
 import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.classifier.Trait;
-import org.kobjects.asde.lang.function.FunctionImplementation;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.statement.BlockStatement;
@@ -32,7 +32,7 @@ public class ProgramParser {
   }
 
   public void parseProgram(BufferedReader reader) throws IOException {
-    FunctionImplementation currentFunction = null;
+    UserFunction currentFunction = null;
     UserClass currentClass = null;
     ArrayList<String> lines = new ArrayList<>();
     boolean legacyMode;
@@ -111,7 +111,7 @@ public class ProgramParser {
           if (!tokenizer.tryConsume(":")) {
             throw new RuntimeException("':' expected.");
           }
-          currentFunction = new FunctionImplementation(program, functionType, parameterNames.toArray(new String[0]));
+          currentFunction = new UserFunction(program, functionType, parameterNames.toArray(new String[0]));
           if (currentClass != null) {
             currentClass.setMethod(functionName, currentFunction);
           } else if (functionName.equals("main")) {

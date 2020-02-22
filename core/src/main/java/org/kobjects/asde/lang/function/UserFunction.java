@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * In the main package because of the direct interaction with programControl.
  */
-public class FunctionImplementation implements Callable, Declaration {
+public class UserFunction implements Callable, Declaration {
 
   public final Program program;
   FunctionType type;
@@ -31,7 +31,7 @@ public class FunctionImplementation implements Callable, Declaration {
   public int localVariableCount;
   private StaticSymbol declaringSymbol;
 
-  public FunctionImplementation(Program program, FunctionType type, String... parameterNames) {
+  public UserFunction(Program program, FunctionType type, String... parameterNames) {
     this.program = program;
     this.type = type;
     this.parameterNames = parameterNames;

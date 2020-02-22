@@ -10,7 +10,6 @@ import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.classifier.ClassValidationContext;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.HashMap;
@@ -24,34 +23,24 @@ public class FunctionValidationContext {
   public final ResolutionMode mode;
 
   /** Will be null when validating symbols! */
-  public final FunctionImplementation functionImplementation;
+  public final UserFunction userFunction;
 
   private int localSymbolCount;
   private Block currentBlock;
   public HashSet<GlobalSymbol> dependencies = new HashSet<>();
   public final ProgramValidationContext programValidationContext;
-  private final ClassValidationContext classValidationContext;
 
-  private FunctionValidationContext(ProgramValidationContext programValidationContext, ClassValidationContext classValidationContext, ResolutionMode mode, FunctionImplementation functionImplementation) {
+  public FunctionValidationContext(ProgramValidationContext programValidationContext, ResolutionMode mode, UserFunction userFunction) {
     this.programValidationContext = programValidationContext;
-    this.classValidationContext = classValidationContext;
     this.program = programValidationContext.program;
     this.mode = mode;
-    this.functionImplementation = functionImplementation;
+    this.userFunction = userFunction;
     startBlock(null);
-    if (functionImplementation != null) {
-      for (int i = 0; i < functionImplementation.parameterNames.length; i++) {
-        currentBlock.localSymbols.put(functionImplementation.parameterNames[i], new LocalSymbol(localSymbolCount++, functionImplementation.getType().getParameterType(i), false));
+    if (userFunction != null) {
+      for (int i = 0; i < userFunction.parameterNames.length; i++) {
+        currentBlock.localSymbols.put(userFunction.parameterNames[i], new LocalSymbol(localSymbolCount++, userFunction.getType().getParameterType(i), false));
       }
     }
-  }
-
-  public FunctionValidationContext(ProgramValidationContext programValidationContext, ResolutionMode mode, FunctionImplementation functionImplementation) {
-    this (programValidationContext, null, mode, functionImplementation);
-  }
-
-  public FunctionValidationContext(ClassValidationContext classValidationContext, FunctionImplementation functionImplementation) {
-    this (classValidationContext.programValidationContext, classValidationContext, ResolutionMode.PROGRAM, functionImplementation);
   }
 
 

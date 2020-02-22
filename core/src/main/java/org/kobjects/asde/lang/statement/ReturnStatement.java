@@ -17,7 +17,7 @@ public class ReturnStatement extends Statement {
 
   @Override
   protected void onResolve(FunctionValidationContext resolutionContext, int line) {
-    if (resolutionContext.functionImplementation.getType().getReturnType() == Types.VOID) {
+    if (resolutionContext.userFunction.getType().getReturnType() == Types.VOID) {
       if (children.length != 0) {
         throw new RuntimeException("Unexpected return value for subroutine.");
       }
@@ -25,8 +25,8 @@ public class ReturnStatement extends Statement {
       if (children.length != 1) {
         throw new RuntimeException("Return value expected for function.");
       }
-      if (!children[0].returnType().equals(resolutionContext.functionImplementation.getType().getReturnType())) {
-        throw new RuntimeException("Expected return type: " + resolutionContext.functionImplementation.getType().getReturnType() + "; actual: " + children[0].returnType());
+      if (!children[0].returnType().equals(resolutionContext.userFunction.getType().getReturnType())) {
+        throw new RuntimeException("Expected return type: " + resolutionContext.userFunction.getType().getReturnType() + "; actual: " + children[0].returnType());
       }
     }
   }
