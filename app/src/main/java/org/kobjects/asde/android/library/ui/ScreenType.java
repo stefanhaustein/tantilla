@@ -57,7 +57,16 @@ public class ScreenType {
             Screen self = (Screen) evaluationContext.getParameter(0);
             return new TextBox(self);
           }
+        },
+        new NativeMethod("cls", "Clear the screen", Types.VOID, TYPE) {
+          @Override
+          public Object call(EvaluationContext evaluationContext, int paramCount) {
+            Screen self = (Screen) evaluationContext.getParameter(0);
+            self.cls();
+            return null;
+          }
         }
+
     );
   }
 
