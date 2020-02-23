@@ -13,7 +13,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.android.ide.symbol.SymbolNameValidator;
+import org.kobjects.asde.android.ide.symbol.PropertyNameValidator;
 import org.kobjects.asde.android.ide.widget.TypeSpinner;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.text.TextValidator;
@@ -105,8 +105,8 @@ public class FunctionSignatureFlow {
 
 
 
-    new SymbolNameValidator(
-            mode == Mode.CREATE_MEMBER ? classImplementation : mainActivity.program) {
+    new PropertyNameValidator(
+            mode == Mode.CREATE_MEMBER ? classImplementation : mainActivity.program.mainModule) {
       @Override
       public String validate(String text) {
         String result = super.validate(text);

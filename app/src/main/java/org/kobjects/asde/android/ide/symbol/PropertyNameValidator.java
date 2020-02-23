@@ -1,14 +1,14 @@
 package org.kobjects.asde.android.ide.symbol;
 
 import org.kobjects.asde.android.ide.text.TextValidator;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
-import org.kobjects.asde.lang.symbol.SymbolOwner;
+import org.kobjects.asde.lang.classifier.Classifier;
+import org.kobjects.asde.lang.classifier.Property;
 
-public class SymbolNameValidator extends TextValidator {
-    private SymbolOwner symbolOwner;
+public class PropertyNameValidator extends TextValidator {
+    private Classifier classifier;
 
-    public SymbolNameValidator(SymbolOwner symbolOwner) {
-        this.symbolOwner = symbolOwner;
+    public PropertyNameValidator(Classifier symbolOwner) {
+        this.classifier = symbolOwner;
 
     }
 
@@ -20,9 +20,9 @@ public class SymbolNameValidator extends TextValidator {
         if (!Character.isJavaIdentifierStart(text.charAt(0))) {
             return "'" + text.charAt(0) + "' is not a valid name start character. Function names should start with a lowercase letter.";
         }
-        StaticSymbol existing = symbolOwner.getSymbol(text);
+        Property existing = classifier.getPropertyDescriptor(text);
         if (existing != null) {
-            System.out.println("Existing: " + symbolOwner.getSymbol(text));
+            System.out.println("Existing: " + existing);
             return "Name exists already.";
         }
 

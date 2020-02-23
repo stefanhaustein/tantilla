@@ -3,7 +3,7 @@ package org.kobjects.asde.android.ide.classifier;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.text.ExpressionValidator;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
-import org.kobjects.asde.android.ide.symbol.SymbolNameValidator;
+import org.kobjects.asde.android.ide.symbol.PropertyNameValidator;
 import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.program.ProgramListener;
@@ -40,7 +40,7 @@ public class PropertyFlow {
 
   private void showNameDialog() {
     new InputFlowBuilder(mainActivity, "Add Property")
-        .addInput("Name", name, new SymbolNameValidator(owner))
+        .addInput("Name", name, new PropertyNameValidator(owner))
         .setPositiveLabel("Next")
         .start( result -> {
           this.name = result[0];
