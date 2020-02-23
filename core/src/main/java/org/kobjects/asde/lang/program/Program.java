@@ -3,16 +3,16 @@ package org.kobjects.asde.lang.program;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Consumer;
 import org.kobjects.asde.lang.classifier.Module;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.function.PropertyValidationContext;
-import org.kobjects.asde.lang.symbol.Declaration;
+import org.kobjects.asde.lang.classifier.DeclaredBy;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
-import org.kobjects.asde.lang.symbol.SymbolOwner;
 import org.kobjects.asde.lang.function.BuiltinFunction;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.io.Console;
-import org.kobjects.asde.lang.symbol.SymbolChangeListener;
+import org.kobjects.asde.lang.classifier.UserPropertyChangeListener;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.node.NodeProcessor;
 import org.kobjects.asde.lang.parser.ProgramParser;
@@ -30,15 +30,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.TreeMap;
 
 
-public class Program implements SymbolOwner {
+public class Program {
 
   public static final String INVISIBLE_STRING = new String();
 
@@ -63,7 +61,7 @@ public class Program implements SymbolOwner {
 
   public final StatementParser parser = new StatementParser(this);
   public final UserFunction main = new UserFunction(this, new FunctionType(Types.VOID));
-  private final ArrayList<SymbolChangeListener> programChangeListeners = new ArrayList<>();
+  private final ArrayList<UserPropertyChangeListener> programChangeListeners = new ArrayList<>();
   private final ArrayList<ProgramListener> programListeners = new ArrayList<>();
 
   // Program state
@@ -76,7 +74,7 @@ public class Program implements SymbolOwner {
   public boolean hasUnsavedChanges;
 
   private boolean notificationPending;
-  private StaticSymbol notificationPendingForSymbol;
+  private UserProperty notificationPendingForSymbol;
   private Timer notificationTimer = new Timer();
   public Module mainModule = new Module(this);
 
@@ -159,21 +157,6 @@ public class Program implements SymbolOwner {
 
   public synchronized Iterable<StaticSymbol> getSymbols() {
     return new ArrayList<>(mainModule.getUserProperties());
-  }
-
-  @Override
-  public synchronized StaticSymbol getSymbol(String name) {
-    return (UserProperty) mainModule.getPropertyDescriptor(name);
-  }
-
-  /**
-   * Used for deletion and in refactoring to remove a symbol temporarily for renaming.
-   * In the latter case, the symbol will be re-added via addSymbol() under a different name.
-   */
-  @Override
-  public synchronized void removeSymbol(StaticSymbol symbol) {
-    mainModule.remove(symbol.getName());
-    notifyProgramChanged();
   }
 
   public synchronized void toString(AnnotatedStringBuilder sb) {
@@ -272,7 +255,7 @@ public class Program implements SymbolOwner {
   }
 
 
-  public synchronized void setDeclaration(String name, Declaration declaration) {
+  public synchronized void setDeclaration(String name, DeclaredBy declaration) {
     mainModule.setStaticValue(name, declaration);
   }
 
@@ -281,7 +264,7 @@ public class Program implements SymbolOwner {
   }
 
 
-  public void deleteLine(StaticSymbol symbol, int line) {
+  public void deleteLine(Property symbol, int line) {
     if (symbol.getStaticValue() instanceof UserFunction) {
       UserFunction userFunction = (UserFunction) symbol.getStaticValue();
       userFunction.deleteLine(line);
@@ -293,7 +276,7 @@ public class Program implements SymbolOwner {
     programListeners.add(listener);
   }
 
-  public void addSymbolChangeListener(SymbolChangeListener programChangeListener) {
+  public void addSymbolChangeListener(UserPropertyChangeListener programChangeListener) {
     programChangeListeners.add(programChangeListener);
   }
 
@@ -307,7 +290,7 @@ public class Program implements SymbolOwner {
     }
   }
 
-  synchronized void deferNotification(StaticSymbol symbol) {
+  synchronized void deferNotification(UserProperty symbol) {
     if (loading) {
       return;
     }
@@ -329,8 +312,8 @@ public class Program implements SymbolOwner {
             }
             if (notificationPendingForSymbol != null) {
               notificationPendingForSymbol.validate();
-              for (SymbolChangeListener changeListener : programChangeListeners) {
-                changeListener.symbolChangedByUser(notificationPendingForSymbol);
+              for (UserPropertyChangeListener changeListener : programChangeListeners) {
+                changeListener.propertyDefinitionChanged(notificationPendingForSymbol);
               }
               notificationPendingForSymbol = null;
             } else {
@@ -346,21 +329,12 @@ public class Program implements SymbolOwner {
   }
 
 
-  public void notifySymbolChanged(StaticSymbol symbol) {
-    deferNotification(symbol);
+  public void notifySymbolChanged(UserProperty property) {
+    deferNotification(property);
   }
 
   public void notifyProgramChanged() {
     deferNotification(null);
-  }
-
-  /**
-   * Used in refactoring to re-add a symbol that was removed for renaming
-   */
-  @Override
-  public void addSymbol(StaticSymbol symbol) {
-    mainModule.addSymbol(symbol);
-//    notifyProgramChanged();  // crashes refactoring....
   }
 
 

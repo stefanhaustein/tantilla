@@ -2,7 +2,6 @@ package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
-import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.function.PropertyValidationContext;
@@ -36,8 +35,8 @@ public class UserProperty implements Property, StaticSymbol {
     this.initializer = initializer;
     this.staticValue = staticValue;
 
-      if (staticValue instanceof Declaration) {
-        ((Declaration) staticValue).setDeclaringSymbol(this);
+      if (staticValue instanceof DeclaredBy) {
+        ((DeclaredBy) staticValue).setDeclaredBy(this);
       }
   }
 

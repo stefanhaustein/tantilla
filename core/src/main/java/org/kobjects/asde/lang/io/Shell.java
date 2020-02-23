@@ -3,6 +3,7 @@ package org.kobjects.asde.lang.io;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.asde.lang.Consumer;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramControl;
@@ -54,7 +55,7 @@ public class Shell {
 
 
     public void enter(String line, Consumer<Object> resultConsumer) {
-        StaticSymbol currentFunction = program.console.getSelectedFunction().getDeclaringSymbol();
+        Property currentFunction = program.console.getSelectedFunction().getDeclaringSymbol();
         if (line.isEmpty()) {
             resultConsumer.accept("");
             return;

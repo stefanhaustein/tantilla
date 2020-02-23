@@ -6,7 +6,6 @@ import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
-import org.kobjects.asde.lang.symbol.SymbolOwner;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;
 
@@ -37,7 +36,7 @@ public class TraitProperty implements Property, ResolvedSymbol, StaticSymbol {
   }
 
   @Override
-  public SymbolOwner getOwner() {
+  public Trait getOwner() {
     return owner;
   }
 
@@ -105,6 +104,7 @@ public class TraitProperty implements Property, ResolvedSymbol, StaticSymbol {
   public void set(EvaluationContext context, Object instance, Object value) {
     ((Classifier) Types.of(instance)).getPropertyDescriptor(name).set(context, instance, value);
   }
+
 
 
   @Override

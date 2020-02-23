@@ -2,6 +2,7 @@ package org.kobjects.asde.android.ide.symbol;
 
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
+import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 
 public class DeleteFlow {
@@ -12,7 +13,7 @@ public class DeleteFlow {
         .setConfirmationCheckbox("Yes, I am sure!")
         .setPositiveLabel("Delete")
         .start(result -> {
-          symbol.getOwner().removeSymbol(symbol);
+          ((UserClass) symbol.getOwner()).remove(symbol.getName());
           mainActivity.program.notifyProgramChanged();
     });
   }

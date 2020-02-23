@@ -2,18 +2,16 @@ package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.program.Program;
-import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
-import org.kobjects.asde.lang.symbol.SymbolOwner;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Collection;
 import java.util.TreeMap;
 
-public class Trait implements Classifier, Declaration, SymbolOwner {
+public class Trait implements Classifier, DeclaredBy {
   Program program;
-  StaticSymbol declaringSymbol;
+  Property declaringSymbol;
     public final TreeMap<String, TraitProperty> propertyMap = new TreeMap<>();
 
   public Trait(Program program) {
@@ -21,21 +19,18 @@ public class Trait implements Classifier, Declaration, SymbolOwner {
   }
 
   @Override
-  public void setDeclaringSymbol(StaticSymbol declaringSymbol) {
+  public void setDeclaredBy(UserProperty declaringSymbol) {
     this.declaringSymbol = declaringSymbol;
   }
 
-  @Override
   public StaticSymbol getSymbol(String name) {
     return propertyMap.get(name);
   }
 
-  @Override
   public void removeSymbol(StaticSymbol symbol) {
     propertyMap.remove(symbol.getName());
   }
 
-  @Override
   public void addSymbol(StaticSymbol symbol) {
     propertyMap.put(symbol.getName(), (TraitProperty) symbol);
   }

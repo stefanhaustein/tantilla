@@ -12,10 +12,13 @@ import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.symbol.SymbolListView;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.android.ide.symbol.ExpandListener;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.classifier.Trait;
+import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 public class ClassifierView extends SymbolView {
@@ -38,7 +41,7 @@ public class ClassifierView extends SymbolView {
   };
 
 
-  public ClassifierView(MainActivity mainActivity, StaticSymbol symbol) {
+  public ClassifierView(MainActivity mainActivity, UserProperty symbol) {
     super(mainActivity, symbol);
 
     titleView.setTypeIndicator(R.drawable.outline_widgets_24, Colors.LIGHT_BLUE, false);
@@ -84,11 +87,12 @@ public class ClassifierView extends SymbolView {
       return;
     }
 
-    Iterable<? extends StaticSymbol> symbols;
+    Iterable<? extends UserProperty> symbols;
     if (symbol.getStaticValue() instanceof UserClass) {
       symbols = ((UserClass) symbol.getStaticValue()).getUserProperties();
     } else {
-      symbols = ((Trait) symbol.getStaticValue()).propertyMap.values();
+      symbols = new ArrayList<>();
+   //   symbols = ((Trait) symbol.getStaticValue()).propertyMap.values();
     }
     getContentView().synchronizeTo(symbols, expandListener, null);
 

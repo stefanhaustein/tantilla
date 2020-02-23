@@ -5,6 +5,8 @@ import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.classifier.ClassifierView;
 import org.kobjects.asde.android.ide.program.VariableView;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
+import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.classifier.Classifier;
@@ -15,7 +17,7 @@ import java.util.HashMap;
 
 public class SymbolListView extends ExpandableList {
   public HashMap<String, SymbolView> nameViewMap = new HashMap<>();
-  HashMap<StaticSymbol, SymbolView> symbolViewMap = new HashMap<>();
+  HashMap<UserProperty, SymbolView> symbolViewMap = new HashMap<>();
   private final MainActivity mainActivity;
 
   public SymbolListView(MainActivity mainActivity) {
@@ -34,7 +36,7 @@ public class SymbolListView extends ExpandableList {
    * @param returnViewForSymbol Return the view for this symbol.
    * @return
    */
-  public SymbolView synchronizeTo(Iterable<? extends StaticSymbol> symbolList, ExpandListener expandListener, StaticSymbol returnViewForSymbol) {
+  public SymbolView synchronizeTo(Iterable<? extends UserProperty> symbolList, ExpandListener expandListener, StaticSymbol returnViewForSymbol) {
 
     System.out.println("########  synchronizeTo: " + symbolList);
 
@@ -44,9 +46,9 @@ public class SymbolListView extends ExpandableList {
     SymbolView matchedView = null;
 
     HashMap<String, SymbolView> newNameViewMap = new HashMap<>();
-    HashMap<StaticSymbol, SymbolView> newSymbolViewMap = new HashMap<>();
+    HashMap<UserProperty, SymbolView> newSymbolViewMap = new HashMap<>();
 
-    for (StaticSymbol symbol : symbolList) {
+    for (UserProperty symbol : symbolList) {
       if (symbol == null) {
         continue;
       }

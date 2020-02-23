@@ -1,5 +1,6 @@
 package org.kobjects.asde.demo;
 
+import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.runtime.WrappedExecutionException;
@@ -137,7 +138,7 @@ public class AsdeShell {
     }
 
     @Override
-    public void edit(StaticSymbol symbol) {
+    public void edit(UserProperty symbol) {
       this.selectedSymbol = symbol;
       if (symbol.getStaticValue() instanceof UserFunction) {
         selectedFunction = (UserFunction) symbol.getStaticValue();

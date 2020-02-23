@@ -65,9 +65,9 @@ public class Command extends Statement {
 
       case EDIT:
         if (children.length == 0) {
-          program.console.edit(program.getSymbol("main"));
+          program.console.edit(program.mainModule.getUserProperty("main"));
         } else if (children[0] instanceof Identifier) {
-          program.console.edit(program.getSymbol(((Identifier) children[0]).getName()));
+          program.console.edit(program.mainModule.getUserProperty(((Identifier) children[0]).getName()));
         } else {
           program.console.edit(children[0].evalInt(evaluationContext));
         }

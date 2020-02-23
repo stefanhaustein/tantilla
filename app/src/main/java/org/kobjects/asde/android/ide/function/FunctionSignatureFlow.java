@@ -18,6 +18,7 @@ import org.kobjects.asde.android.ide.widget.TypeSpinner;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.text.TextValidator;
 import org.kobjects.asde.lang.classifier.UserClass;
+import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Types;
@@ -44,7 +45,7 @@ public class FunctionSignatureFlow {
   UserFunction userFunction;
   UserClass classImplementation;
 
-  public static void changeSignature(MainActivity mainActivity, StaticSymbol symbol, UserFunction userFunction) {
+  public static void changeSignature(MainActivity mainActivity, UserProperty symbol, UserFunction userFunction) {
     FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CHANGE_SIGNATURE, userFunction.getType().getReturnType());
     flow.symbol = symbol;
     flow.name = symbol.getName();

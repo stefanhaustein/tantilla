@@ -26,7 +26,7 @@ public class ProgramView extends SymbolListView {
   public FunctionView currentFunctionView;
   public SymbolView currentSymbolView;
   int syncRequestCount;
-  StaticSymbol expandOnSync;
+  UserProperty expandOnSync;
   private final ExpandListener expandListener = new ExpandListener() {
     @Override
     public void notifyExpanding(SymbolView symbolView, boolean animated) {
@@ -179,7 +179,7 @@ public class ProgramView extends SymbolListView {
   /**
    * Users should call console.edit(symbol) instead.
    */
-  public SymbolView selectImpl(StaticSymbol symbol) {
+  public SymbolView selectImpl(UserProperty symbol) {
     SymbolView targetView = null;
     if (currentSymbolView != null && currentSymbolView.symbol == symbol) {
       targetView = currentSymbolView;

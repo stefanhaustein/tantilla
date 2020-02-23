@@ -1,13 +1,13 @@
 package org.kobjects.asde.lang.function;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.statement.Statement;
-import org.kobjects.asde.lang.symbol.Declaration;
+import org.kobjects.asde.lang.classifier.DeclaredBy;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.runtime.ForcedStopException;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramControl;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.runtime.WrappedExecutionException;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 import org.kobjects.asde.lang.node.Node;
@@ -22,14 +22,14 @@ import java.util.Map;
 /**
  * In the main package because of the direct interaction with programControl.
  */
-public class UserFunction implements Callable, Declaration {
+public class UserFunction implements Callable, DeclaredBy {
 
   public final Program program;
   FunctionType type;
   public String[] parameterNames;
   private List<Statement> code = new ArrayList<>();
   public int localVariableCount;
-  private StaticSymbol declaringSymbol;
+  private UserProperty declaringSymbol;
 
   public UserFunction(Program program, FunctionType type, String... parameterNames) {
     this.program = program;
@@ -166,7 +166,7 @@ public class UserFunction implements Callable, Declaration {
   }
 
 
-  public void setDeclaringSymbol(StaticSymbol symbol) {
+  public void setDeclaredBy(UserProperty symbol) {
     this.declaringSymbol = symbol;
   }
 
@@ -174,7 +174,7 @@ public class UserFunction implements Callable, Declaration {
     return declaringSymbol instanceof Property;
   }
 
-  public StaticSymbol getDeclaringSymbol() {
+  public UserProperty getDeclaringSymbol() {
     return declaringSymbol;
   }
 

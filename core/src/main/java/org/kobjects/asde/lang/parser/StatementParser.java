@@ -324,12 +324,9 @@ public class StatementParser {
       tokenizer.consume("]");
       return new ListType(elementType);
     }
-    StaticSymbol symbol = program.getSymbol(typeName);
+    StaticSymbol symbol = program.mainModule.getSymbol(typeName);
     if (symbol == null) {
-      symbol = program.mainModule.getSymbol(typeName);
-      if (symbol == null) {
-        throw new RuntimeException("Unrecognized type: " + typeName);
-      }
+      throw new RuntimeException("Unrecognized type: " + typeName);
     }
     if (!(symbol.getStaticValue() instanceof Type)) {
       throw new RuntimeException("'" + typeName + "' is not a type!");

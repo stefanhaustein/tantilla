@@ -25,4 +25,6 @@ public interface Property {
   Node getInitializer();
 
   void validate(PropertyValidationContext validationContext);
+
+  void validate();
 }

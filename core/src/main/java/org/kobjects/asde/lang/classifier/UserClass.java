@@ -3,11 +3,9 @@ package org.kobjects.asde.lang.classifier;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
-import org.kobjects.asde.lang.symbol.SymbolOwner;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;
@@ -16,12 +14,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
 
-public class UserClass implements Classifier, InstantiableType, Declaration, SymbolOwner {
+public class UserClass implements Classifier, InstantiableType, DeclaredBy {
 
   final Program program;
   public final TreeMap<String, Property> propertyMap = new TreeMap<>();
   ArrayList<Node> resolvedInitializers = new ArrayList<>();
-  StaticSymbol declaringSymbol;
+  Property declaringSymbol;
 
   public UserClass(Program program) {
     this.program = program;
@@ -40,6 +38,10 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
   @Override
   public Property getPropertyDescriptor(String name) {
     return propertyMap.get(name);
+  }
+
+  public UserProperty getUserProperty(String name) {
+    return (UserProperty) propertyMap.get(name);
   }
 
   @Override
@@ -158,21 +160,18 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
 
 
   @Override
-  public void setDeclaringSymbol(StaticSymbol declaringSymbol) {
+  public void setDeclaredBy(UserProperty declaringSymbol) {
     this.declaringSymbol = declaringSymbol;
   }
 
-  @Override
   public StaticSymbol getSymbol(String name) {
     return (StaticSymbol) propertyMap.get(name);
   }
 
-  @Override
   public void removeSymbol(StaticSymbol symbol) {
     propertyMap.remove(symbol.getName());
   }
 
-  @Override
   public void addSymbol(StaticSymbol symbol) {
     propertyMap.put(symbol.getName(), (UserProperty) symbol);
   }

@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.symbol;
 
+import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
@@ -8,7 +9,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 public interface StaticSymbol {
-  SymbolOwner getOwner();
+  Classifier getOwner();
   Map<Node, Exception> getErrors();
   Object getStaticValue();
   String getName();
