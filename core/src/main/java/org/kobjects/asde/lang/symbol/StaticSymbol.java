@@ -1,7 +1,6 @@
 package org.kobjects.asde.lang.symbol;
 
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 
@@ -17,7 +16,6 @@ public interface StaticSymbol {
   Node getInitializer();
   void validate();
 
-  GlobalSymbol.Scope getScope();
 
   boolean isConstant();
 

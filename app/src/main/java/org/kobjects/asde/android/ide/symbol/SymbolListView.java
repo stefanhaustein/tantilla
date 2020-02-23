@@ -6,7 +6,6 @@ import org.kobjects.asde.android.ide.classifier.ClassifierView;
 import org.kobjects.asde.android.ide.program.VariableView;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.lang.function.UserFunction;
-import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.classifier.Classifier;
 
@@ -48,7 +47,7 @@ public class SymbolListView extends ExpandableList {
     HashMap<StaticSymbol, SymbolView> newSymbolViewMap = new HashMap<>();
 
     for (StaticSymbol symbol : symbolList) {
-      if (symbol == null || symbol.getScope() != GlobalSymbol.Scope.PERSISTENT) {
+      if (symbol == null) {
         continue;
       }
       // Qualified needs to be sufficiently specific to disallow cross-type mismatches

@@ -3,6 +3,8 @@ package org.kobjects.asde.lang.program;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Consumer;
 import org.kobjects.asde.lang.classifier.Module;
+import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.symbol.Declaration;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
@@ -61,13 +63,11 @@ public class Program implements SymbolOwner {
 
   public final StatementParser parser = new StatementParser(this);
   public final UserFunction main = new UserFunction(this, new FunctionType(Types.VOID));
-  public final GlobalSymbol mainSymbol = new GlobalSymbol(this, "", GlobalSymbol.Scope.PERSISTENT, main);
   private final ArrayList<SymbolChangeListener> programChangeListeners = new ArrayList<>();
   private final ArrayList<ProgramListener> programListeners = new ArrayList<>();
 
   // Program state
 
-  private TreeMap<String, GlobalSymbol> symbolMap = new TreeMap<>();
   public Exception lastException;
   public int tabPos;
   public final Console console;
@@ -82,7 +82,6 @@ public class Program implements SymbolOwner {
 
   public Program(Console console) {
     this.console = console;
-    main.setDeclaringSymbol(mainSymbol);
     this.reference = console.nameToReference(null);
     // Primitives can't be registered because of ambiguities with conversion functions!
     addBuiltin("List", new ListType(Types.VOID));
@@ -92,6 +91,7 @@ public class Program implements SymbolOwner {
     for (Builtin builtin : Builtin.values()) {
       mainModule.addBuiltin(builtin.name().toLowerCase(), builtin);
     }
+    mainModule.addBuiltin("main", main);
   }
 
   public void processNodes(Consumer<Node> action) {
@@ -101,14 +101,13 @@ public class Program implements SymbolOwner {
 
   public synchronized void deleteAll() {
     main.clear();
-    TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
-    for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
-      GlobalSymbol symbol = entry.getValue();
-      if (symbol != null && symbol.scope == GlobalSymbol.Scope.BUILTIN) {
-        cleared.put(entry.getKey(), symbol);
-      }
+
+    Module replacement = new Module(this);
+    for (Map.Entry<String, Object> builtin : mainModule.builtins().entrySet()) {
+      replacement.addBuiltin(builtin.getKey(), builtin.getValue());
     }
-    symbolMap = cleared;
+    mainModule = replacement;
+
     ProgramReference newReference = console.nameToReference(null);
     if (!reference.equals(newReference)) {
       reference = newReference;
@@ -120,7 +119,10 @@ public class Program implements SymbolOwner {
 
   public synchronized void clear(EvaluationContext evaluationContext) {
     console.clearScreen(Console.ClearScreenType.CLEAR_STATEMENT);
-    TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
+
+
+
+    /* TreeMap<String, GlobalSymbol> cleared = new TreeMap<String, GlobalSymbol>();
     for (Map.Entry<String, GlobalSymbol> entry : symbolMap.entrySet()) {
       GlobalSymbol symbol = entry.getValue();
       if (symbol != null
@@ -128,29 +130,17 @@ public class Program implements SymbolOwner {
         cleared.put(entry.getKey(), symbol);
       }
     }
-    symbolMap = cleared;
+    symbolMap = cleared; */
 
     HashSet<StaticSymbol> initialized = new HashSet<>();
 
-    for (GlobalSymbol symbol : symbolMap.values()) {
+
+    for (StaticSymbol symbol : mainModule.getUserProperties()) {
       symbol.init(evaluationContext, initialized);
     }
   }
 
 
-  public String tab(int pos) {
-    pos = Math.max(0, pos - 1);
-    char[] fill;
-    if (pos < tabPos) {
-      fill = new char[pos + 1];
-      Arrays.fill(fill, ' ');
-      fill[0] = '\n';
-    } else {
-      fill = new char[pos - tabPos];
-      Arrays.fill(fill, ' ');
-    }
-    return new String(fill);
-  }
 
   public void println(Object o) {
     print(o + "\n");
@@ -167,13 +157,13 @@ public class Program implements SymbolOwner {
     }
   }
 
-  public synchronized Iterable<GlobalSymbol> getSymbols() {
-    return new ArrayList<>(symbolMap.values());
+  public synchronized Iterable<StaticSymbol> getSymbols() {
+    return new ArrayList<>(mainModule.getUserProperties());
   }
 
   @Override
-  public synchronized GlobalSymbol getSymbol(String name) {
-    return symbolMap.get(name);
+  public synchronized StaticSymbol getSymbol(String name) {
+    return (UserProperty) mainModule.getPropertyDescriptor(name);
   }
 
   /**
@@ -182,28 +172,22 @@ public class Program implements SymbolOwner {
    */
   @Override
   public synchronized void removeSymbol(StaticSymbol symbol) {
-    symbolMap.remove(symbol.getName());
+    mainModule.remove(symbol.getName());
     notifyProgramChanged();
   }
 
   public synchronized void toString(AnnotatedStringBuilder sb) {
-    sb.append("ASDE\n");
-    for (GlobalSymbol symbol : symbolMap.values()) {
-      if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
-        if (!(symbol.value instanceof UserFunction)) {
-          sb.append(symbol.toString(false)).append('\n');
-        }
+    for (UserProperty symbol : mainModule.getUserProperties()) {
+      if (!(symbol.getStaticValue() instanceof UserFunction)) {
+        sb.append(symbol.getStaticValue().toString()).append('\n');
       }
     }
 
-    for (GlobalSymbol symbol : symbolMap.values()) {
-      if (symbol != null && symbol.scope == GlobalSymbol.Scope.PERSISTENT) {
-        if (symbol.value instanceof UserFunction) {
-          ((UserFunction) symbol.value).toString(sb, symbol.getName(), symbol.getErrors());
-        }
+    for (UserProperty symbol : mainModule.getUserProperties()) {
+      if (symbol.getStaticValue() instanceof UserFunction) {
+        ((UserFunction) symbol.getStaticValue()).toString(sb, symbol.getName(), symbol.getErrors());
       }
     }
-    main.toString(sb, null, mainSymbol.getErrors());
   }
 
 
@@ -278,11 +262,9 @@ public class Program implements SymbolOwner {
 
   public synchronized void validate() {
     ProgramValidationContext context = new ProgramValidationContext(this);
-    for (Map.Entry<String, GlobalSymbol> entry : new TreeMap<>(symbolMap).entrySet()) {
-      context.startChain(entry.getKey());
-      entry.getValue().validate(context);
-    }
-    mainSymbol.validate(context);
+
+    PropertyValidationContext moduleValidationContext = new PropertyValidationContext(context, PropertyValidationContext.ResolutionMode.PROGRAM, null, null);
+    mainModule.validate(moduleValidationContext);
   }
 
   public synchronized void addBuiltin(String name, Object value) {
@@ -291,45 +273,13 @@ public class Program implements SymbolOwner {
 
 
   public synchronized void setDeclaration(String name, Declaration declaration) {
-    //mainModule.setStaticValue(name, declaration);
-
-    GlobalSymbol symbol = getSymbol(name);
-    if (symbol == null) {
-      symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, declaration);
-      symbolMap.put(name, symbol);
-    } else {
-      if (symbol.getScope() == GlobalSymbol.Scope.BUILTIN) {
-        throw new RuntimeException("Can't overwrite builtin '" + name + "'");
-      }
-      symbol.value = declaration;
-    }
-    symbol.setConstant(true);
-    declaration.setDeclaringSymbol(symbol);
-
-    notifySymbolChanged(symbol);
+    mainModule.setStaticValue(name, declaration);
   }
 
   public synchronized void setPersistentInitializer(String name, DeclarationStatement expr) {
-    GlobalSymbol symbol = getSymbol(name);
-    if (symbol == null || symbol.scope == GlobalSymbol.Scope.TRANSIENT) {
-      symbol = new GlobalSymbol(this, name, GlobalSymbol.Scope.PERSISTENT, null);
-      symbolMap.put(name, symbol);
-    } else if (symbol.getScope() == GlobalSymbol.Scope.BUILTIN) {
-      throw new RuntimeException("Can't overwrite builtin '" + name + "'");
-    }
-    symbol.initializer = expr;
-    symbol.setConstant(expr.kind == DeclarationStatement.Kind.CONST);
-    notifyProgramChanged();
+    mainModule.setProperty(false, expr.kind == DeclarationStatement.Kind.VAR, name, expr.children[0]);
   }
 
-  /*
-  public void setLine(StaticSymbol symbol, CodeLine codeLine) {
-    if (symbol.getValue() instanceof FunctionImplementation) {
-      FunctionImplementation functionImplementation = (FunctionImplementation) symbol.getValue();
-      functionImplementation.setLine(codeLine);
-      notifySymbolChanged(symbol);
-    }
-  }*/
 
   public void deleteLine(StaticSymbol symbol, int line) {
     if (symbol.getStaticValue() instanceof UserFunction) {
@@ -409,7 +359,7 @@ public class Program implements SymbolOwner {
    */
   @Override
   public void addSymbol(StaticSymbol symbol) {
-    symbolMap.put(symbol.getName(), (GlobalSymbol) symbol);
+    mainModule.addSymbol(symbol);
 //    notifyProgramChanged();  // crashes refactoring....
   }
 
@@ -418,10 +368,9 @@ public class Program implements SymbolOwner {
     if (main.getLineCount() > 0) {
       return false;
     }
-    for (StaticSymbol symbol : symbolMap.values()) {
-      if (symbol.getScope() == GlobalSymbol.Scope.PERSISTENT) {
-        return false;
-      }
+    for (StaticSymbol symbol : mainModule.getUserProperties()) {
+      // TODO
+      return false;
     }
     return true;
   }

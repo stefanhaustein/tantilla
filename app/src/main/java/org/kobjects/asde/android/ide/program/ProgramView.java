@@ -45,7 +45,7 @@ public class ProgramView extends SymbolListView {
 
     this.mainActivity = context;
 
-    mainFunctionView = new FunctionView(context, mainActivity.program.mainSymbol);
+    mainFunctionView = new FunctionView(context, mainActivity.program.main.getDeclaringSymbol());
     mainFunctionView.addExpandListener(expandListener);
     mainFunctionView.setExpanded(true, false);
     currentFunctionView = mainFunctionView;
@@ -131,11 +131,11 @@ public class ProgramView extends SymbolListView {
       return;
     }
 
-    SymbolView expandView = synchronizeTo(mainActivity.program.getSymbols(), expandListener, expandOnSync);
+    SymbolView expandView = synchronizeTo(mainActivity.program.mainModule.getUserProperties(), expandListener, expandOnSync);
     addView(mainFunctionView);
 
     mainFunctionView.syncContent();
-    if (expandOnSync == mainActivity.program.mainSymbol) {
+    if (expandOnSync == mainActivity.program.main.getDeclaringSymbol()) {
       expandView = mainFunctionView;
     }
 

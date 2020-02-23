@@ -126,7 +126,7 @@ public class ControlView extends LinearLayout  {
     String line = codeEditText.getText().toString();
 
     try {
-      mainActivity.shell.enter(line, mainActivity.programView.currentFunctionView.symbol, result -> {
+      mainActivity.shell.enter(line, result -> {
         mainActivity.runOnUiThread(() -> {
           if (result == null) {
             resultView.setText("Ok");

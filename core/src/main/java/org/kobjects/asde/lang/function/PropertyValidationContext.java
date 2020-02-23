@@ -2,7 +2,6 @@ package org.kobjects.asde.lang.function;
 
 
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramValidationContext;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -140,24 +139,7 @@ public class PropertyValidationContext {
     }
      */
 
-    // Globals
-
-    GlobalSymbol symbol = addDependency
-        ? programValidationContext.resolve(name)  // Checks for cyclic dependencies.
-        : program.getSymbol(name);
-
-    if (symbol == null) {
-      throw new RuntimeException("Variable not found: \"" + name + "\"");
-    } else {
-      if (forAssignment && symbol.scope == GlobalSymbol.Scope.BUILTIN) {
-        throw new RuntimeException("Can't overwrite builtin " + name);
-      }
-    }
-
-    if (addDependency && symbol.initializer != null) {
-      dependencies.add(symbol);
-    }
-    return symbol;
+    return null;
   }
 
   public void addError(Node node, Exception e) {

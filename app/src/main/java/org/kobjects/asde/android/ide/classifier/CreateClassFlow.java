@@ -4,7 +4,6 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.android.ide.symbol.SymbolNameValidator;
 import org.kobjects.asde.lang.classifier.UserClass;
-import org.kobjects.asde.lang.program.GlobalSymbol;
 
 public class CreateClassFlow {
 

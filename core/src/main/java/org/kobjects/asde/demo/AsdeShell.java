@@ -40,7 +40,7 @@ public class AsdeShell {
       }
       prompt = true;
       try {
-        shell.enter(line, program.mainSymbol, result -> {
+        shell.enter(line, result -> {
           console.print(result == null ? "Ok" : String.valueOf(result));
         });
       } catch (ParsingException e) {

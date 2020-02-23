@@ -53,7 +53,8 @@ public class Shell {
     }
 
 
-    public void enter(String line, StaticSymbol currentFunction, Consumer<Object> resultConsumer) {
+    public void enter(String line, Consumer<Object> resultConsumer) {
+        StaticSymbol currentFunction = program.console.getSelectedFunction().getDeclaringSymbol();
         if (line.isEmpty()) {
             resultConsumer.accept("");
             return;

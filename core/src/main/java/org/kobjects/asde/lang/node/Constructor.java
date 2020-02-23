@@ -4,7 +4,6 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.PropertyValidationContext;
-import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.classifier.InstantiableType;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.type.Type;
@@ -46,11 +45,11 @@ public class Constructor extends Node {
 
   @Override
   protected void onResolve(PropertyValidationContext resolutionContext, int line) {
-    GlobalSymbol symbol = resolutionContext.program.getSymbol(name);
+    UserProperty symbol = (UserProperty) resolutionContext.program.getSymbol(name);
     if (symbol == null) {
       throw new RuntimeException("'" + name + "' is not defined");
     }
-    symbol.validate(resolutionContext.programValidationContext);
+    symbol.validate(resolutionContext);
     Object value = symbol.getStaticValue();
 
       if (!(value instanceof InstantiableType)) {

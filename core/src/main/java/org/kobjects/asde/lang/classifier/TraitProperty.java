@@ -1,8 +1,8 @@
 package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.function.FunctionType;
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
@@ -62,11 +62,6 @@ public class TraitProperty implements Property, ResolvedSymbol, StaticSymbol {
   }
 
   @Override
-  public GlobalSymbol.Scope getScope() {
-    return GlobalSymbol.Scope.PERSISTENT;
-  }
-
-  @Override
   public boolean isMutable() {
     return isInstanceField();
   }
@@ -109,5 +104,10 @@ public class TraitProperty implements Property, ResolvedSymbol, StaticSymbol {
   @Override
   public void set(EvaluationContext context, Object instance, Object value) {
     ((Classifier) Types.of(instance)).getPropertyDescriptor(name).set(context, instance, value);
+  }
+
+
+  @Override
+  public void validate(PropertyValidationContext parentValidationContext) {
   }
 }

@@ -96,6 +96,17 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
         /* staticValue */ null);
   }
 
+
+  public void setProperty(boolean isInstanceField, boolean isMutable, String propertyName, Node initializer) {
+    setProperty(
+        isInstanceField,
+        isMutable,
+        /* fixedType= */ null,
+        propertyName,
+        initializer,
+        /* staticValue */ null);
+  }
+
   public void setUninitializedProperty(String propertyName, Type type) {
     setProperty(
         /* isInstanceField= */ true,
@@ -118,15 +129,18 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
 
 
   public void validate(PropertyValidationContext classValidationContext) {
+    System.out.println("Userclass validation " + declaringSymbol);
     resolvedInitializers.clear();
-    Collection<UserProperty> userProperties = getUserProperties();
-    for (UserProperty property : userProperties) {
-      if (property.isInstanceField) {
-          property.validate(classValidationContext);
+    Collection<? extends Property> properties = getAllProperties();
+    for (Property property : properties) {
+      if (property.isInstanceField()) {
+        System.out.println(" - instance field " + property.getName());
+        property.validate(classValidationContext);
       }
     }
-    for (UserProperty property : userProperties) {
-      if (!property.isInstanceField) {
+    for (Property property : properties) {
+      if (!property.isInstanceField()) {
+        System.out.println(" - non instance field " + property.getName());
         property.validate(classValidationContext);
       }
     }
@@ -176,6 +190,10 @@ public class UserClass implements Classifier, InstantiableType, Declaration, Sym
   @Override
   public String toString() {
     return declaringSymbol == null ? super.toString() : declaringSymbol.getName();
+  }
+
+  public void remove(String name) {
+    propertyMap.remove(name);
   }
 
 }

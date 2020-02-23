@@ -96,7 +96,11 @@ public class InvokeMethod extends Node {
 
   // Shouldn't throw, as it's used outside validation!
   public Type returnType() {
-    return ((FunctionType) resolvedProperty.getType()).getReturnType();
+    if (resolvedProperty == null) {
+      return null;
+    }
+    FunctionType functionType = (FunctionType) resolvedProperty.getType();
+    return functionType == null ? null : functionType.getReturnType();
   }
 
   @Override

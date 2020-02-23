@@ -14,7 +14,6 @@ import org.kobjects.asde.android.ide.Dimensions;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.lang.function.Callable;
-import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.type.Types;
@@ -179,7 +178,7 @@ public class HelpDialog {
     addSubtitle(subtitle);
 
     for (StaticSymbol s : mainActivity.program.getSymbols()) {
-      if (s.getScope() == GlobalSymbol.Scope.BUILTIN && filter.test(s)) {
+      if (filter.test(s)) {
         AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
         appendLink(asb, s);
         addParagraph(asb.build());

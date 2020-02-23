@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.classifier;
 
+import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
@@ -22,4 +23,6 @@ public interface Property {
   Object getStaticValue();
 
   Node getInitializer();
+
+  void validate(PropertyValidationContext validationContext);
 }

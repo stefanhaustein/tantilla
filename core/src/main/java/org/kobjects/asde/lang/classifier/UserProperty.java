@@ -1,6 +1,5 @@
 package org.kobjects.asde.lang.classifier;
 
-import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.symbol.Declaration;
@@ -51,7 +50,9 @@ public class UserProperty implements Property, StaticSymbol {
   }
 
   // May also be called from ClassValidationContext.
-  void validate(PropertyValidationContext classValidationContext) {
+  public void validate(PropertyValidationContext classValidationContext) {
+    System.out.println("Validating user property: " + name);
+
     UserFunction userFunction =
         (!isInstanceField && initializer == null && staticValue instanceof UserFunction)
         ? (UserFunction) staticValue
@@ -59,14 +60,18 @@ public class UserProperty implements Property, StaticSymbol {
     PropertyValidationContext context = new PropertyValidationContext(classValidationContext.programValidationContext, PropertyValidationContext.ResolutionMode.PROGRAM, this, userFunction);
 
     if (userFunction != null) {
+      System.out.println(" - " + name + " is userFunction");
       userFunction.validate(context);
     } else  {
       if (initializer != null) {
+        System.out.println(" - " + name + " has initializer");
         initializer.resolve(context, 0);
       } else if (staticValue instanceof UserClass) {
+        System.out.println(" - " + name + " is user class");
         ((UserClass) staticValue).validate(context);
       }
       if (isInstanceField) {
+        System.out.println(" - " + name + " is instance field");
         fieldIndex = owner.resolvedInitializers.size();
         owner.resolvedInitializers.add(initializer);
       }
@@ -77,6 +82,7 @@ public class UserProperty implements Property, StaticSymbol {
 
     this.errors = context.errors;
     this.dependencies = context.dependencies;
+    classValidationContext.dependencies.addAll(context.dependencies);
     classValidationContext.errors.putAll(context.errors);
   }
 
@@ -113,12 +119,6 @@ public class UserProperty implements Property, StaticSymbol {
   @Override
   public Node getInitializer() {
     return initializer;
-  }
-
-
-  @Override
-  public GlobalSymbol.Scope getScope() {
-    return GlobalSymbol.Scope.PERSISTENT;
   }
 
   @Override

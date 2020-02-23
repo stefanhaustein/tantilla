@@ -43,6 +43,9 @@ public class Identifier extends SymbolNode {
   }
 
   public Type returnType() {
+    if (resolved == null) {
+      throw new RuntimeException("Unresolved: " + name);
+    }
     return  resolved.getType();
   }
 

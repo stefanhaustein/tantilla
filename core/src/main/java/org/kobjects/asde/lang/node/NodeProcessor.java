@@ -4,7 +4,6 @@ import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.Consumer;
 import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.function.UserFunction;
-import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.symbol.StaticSymbol;
@@ -55,7 +54,7 @@ public class NodeProcessor {
 
   public void processProgram(Program program) {
     synchronized (program) {
-      for (GlobalSymbol symbol : program.getSymbols()) {
+      for (StaticSymbol symbol : program.getSymbols()) {
         processSymbol(symbol);
       }
 

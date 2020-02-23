@@ -122,13 +122,15 @@ public class ProgramParser {
           }
         } else if (tokenizer.tryConsume("class")) {
           String className = tokenizer.consumeIdentifier();
-          currentClass = (UserClass) program.getSymbol(className).getStaticValue();
+          currentClass = (UserClass) program.mainModule.getPropertyDescriptor(className).getStaticValue();
+          // currentClass = (UserClass) program.getSymbol(className).getStaticValue();
           if (!tokenizer.tryConsume(":")) {
             throw new RuntimeException("':' expected.");
           }
         } else if (tokenizer.tryConsume("trait")) {
           String interfaceName = tokenizer.consumeIdentifier();
-          Trait currentTrait = (Trait) (program.getSymbol(interfaceName)).getStaticValue();
+          Trait currentTrait = (Trait) program.mainModule.getPropertyDescriptor(interfaceName).getStaticValue();
+ //         Trait currentTrait = (Trait) (program.getSymbol(interfaceName)).getStaticValue();
           if (!tokenizer.tryConsume(":")) {
             throw new RuntimeException("':' expected.");
           }

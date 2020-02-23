@@ -2,7 +2,6 @@ package org.kobjects.asde.lang.runtime;
 
 import org.kobjects.asde.lang.classifier.Instance;
 import org.kobjects.asde.lang.function.UserFunction;
-import org.kobjects.asde.lang.program.GlobalSymbol;
 import org.kobjects.asde.lang.program.ProgramControl;
 
 public class EvaluationContext {
@@ -71,9 +70,6 @@ public class EvaluationContext {
         return dataStack.data[stackTop + index];
     }
 
-    public GlobalSymbol.Scope getSymbolScope() {
-        return currentLine == -2 ? GlobalSymbol.Scope.PERSISTENT : GlobalSymbol.Scope.TRANSIENT;
-    }
 
     public void ensureExtraStackSpace(int localVariableCount) {
         dataStack.ensureSize(stackTop + localVariableCount);
