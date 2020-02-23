@@ -6,7 +6,6 @@ import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.statement.Statement;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 
 
 /**
@@ -40,7 +39,7 @@ public class NodeProcessor {
   }
 
 
-  public void processSymbol(StaticSymbol symbol) {
+  public void processSymbol(UserProperty symbol) {
     if (symbol.getStaticValue() instanceof UserClass) {
       processClass((UserClass) symbol.getStaticValue());
     }
@@ -54,7 +53,7 @@ public class NodeProcessor {
 
   public void processProgram(Program program) {
     synchronized (program) {
-      for (StaticSymbol symbol : program.getSymbols()) {
+      for (UserProperty symbol : program.mainModule.getUserProperties()) {
         processSymbol(symbol);
       }
 

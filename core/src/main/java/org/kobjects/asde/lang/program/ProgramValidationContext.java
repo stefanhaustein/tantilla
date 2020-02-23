@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.program;
 
-import org.kobjects.asde.lang.symbol.StaticSymbol;
+import org.kobjects.asde.lang.classifier.UserProperty;
+
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -8,7 +9,7 @@ import java.util.LinkedHashSet;
 public class ProgramValidationContext {
     final LinkedHashSet<String> dependencyChain = new LinkedHashSet<>();
     public final Program program;
-    final HashSet<StaticSymbol> validated = new HashSet<>();
+    final HashSet<UserProperty> validated = new HashSet<>();
 
     public ProgramValidationContext(Program program) {
         this.program = program;

@@ -2,7 +2,6 @@ package org.kobjects.asde.lang.io;
 
 import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.function.UserFunction;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 
 import java.io.InputStream;
 import java.io.OutputStream;

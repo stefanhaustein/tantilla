@@ -27,7 +27,6 @@ import org.kobjects.asde.lang.runtime.ForcedStopException;
 import org.kobjects.asde.lang.io.Format;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.statement.Statement;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.runtime.WrappedExecutionException;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;

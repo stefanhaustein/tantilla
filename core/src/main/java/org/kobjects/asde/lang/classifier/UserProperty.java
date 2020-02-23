@@ -2,7 +2,6 @@ package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.node.Node;
@@ -13,11 +12,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class UserProperty implements Property, StaticSymbol {
+public class UserProperty implements Property {
   UserClass owner;
   String name;
   Map<Node, Exception> errors = Collections.emptyMap();
-  Set<StaticSymbol> dependencies;
+  Set<UserProperty> dependencies;
   Type fixedType;
   Object staticValue;
   Node initializer;
@@ -100,7 +99,6 @@ public class UserProperty implements Property, StaticSymbol {
     return fieldIndex;
   }
 
-  @Override
   public UserClass getOwner() {
     return owner;
   }
@@ -125,7 +123,6 @@ public class UserProperty implements Property, StaticSymbol {
     return staticValue == null;
   }
 
-  @Override
   public  boolean isConstant() {
     return !isMutable();
   }
@@ -135,18 +132,16 @@ public class UserProperty implements Property, StaticSymbol {
     return isInstanceField;
   }
 
-  @Override
   public void setName(String newName) {
     name = newName;
   }
 
-  @Override
-  public void init(EvaluationContext evaluationContext, HashSet<StaticSymbol> initialized) {
+  public void init(EvaluationContext evaluationContext, HashSet<UserProperty> initialized) {
     if (initialized.contains(this)) {
       return;
     }
     if (dependencies != null) {
-      for (StaticSymbol dep : dependencies) {
+      for (UserProperty dep : dependencies) {
         dep.init(evaluationContext, initialized);
       }
     }

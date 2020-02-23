@@ -5,7 +5,6 @@ import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;
@@ -164,15 +163,8 @@ public class UserClass implements Classifier, InstantiableType, DeclaredBy {
     this.declaringSymbol = declaringSymbol;
   }
 
-  public StaticSymbol getSymbol(String name) {
-    return (StaticSymbol) propertyMap.get(name);
-  }
 
-  public void removeSymbol(StaticSymbol symbol) {
-    propertyMap.remove(symbol.getName());
-  }
-
-  public void addSymbol(StaticSymbol symbol) {
+  public void addSymbol(UserProperty symbol) {
     propertyMap.put(symbol.getName(), (UserProperty) symbol);
   }
 

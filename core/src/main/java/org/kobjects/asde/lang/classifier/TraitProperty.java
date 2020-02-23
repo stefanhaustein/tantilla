@@ -5,7 +5,6 @@ import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;
 
@@ -13,7 +12,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 
-public class TraitProperty implements Property, ResolvedSymbol, StaticSymbol {
+public class TraitProperty implements Property, ResolvedSymbol {
   private final Trait owner;
   private String name;
   private Type type;
@@ -35,10 +34,6 @@ public class TraitProperty implements Property, ResolvedSymbol, StaticSymbol {
     throw new RuntimeException("NYI");
   }
 
-  @Override
-  public Trait getOwner() {
-    return owner;
-  }
 
   @Override
   public Map<Node, Exception> getErrors() {
@@ -75,13 +70,11 @@ public class TraitProperty implements Property, ResolvedSymbol, StaticSymbol {
     return !(type instanceof FunctionType);
   }
 
-  @Override
   public void setName(String newName) {
     this.name = newName;
   }
 
-  @Override
-  public void init(EvaluationContext evaluationContext, HashSet<StaticSymbol> initialized) {
+  public void init(EvaluationContext evaluationContext, HashSet<UserProperty> initialized) {
 
   }
 

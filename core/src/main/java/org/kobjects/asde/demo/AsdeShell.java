@@ -2,7 +2,6 @@ package org.kobjects.asde.demo;
 
 import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.program.Program;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.runtime.WrappedExecutionException;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
@@ -66,7 +65,7 @@ public class AsdeShell {
 
     private final BufferedReader reader;
     private UserFunction selectedFunction;
-    private StaticSymbol selectedSymbol;
+    private UserProperty selectedSymbol;
 
     StdioConsole(BufferedReader reader) {
       this.reader = reader;

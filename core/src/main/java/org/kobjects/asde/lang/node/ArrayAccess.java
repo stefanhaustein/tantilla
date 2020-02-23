@@ -1,12 +1,12 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.expressionparser.Tokenizer;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
@@ -28,7 +28,7 @@ public class ArrayAccess extends AssignableNode {
   }
 
   @Override
-  public void changeSignature(StaticSymbol symbol, int[] newOrder) {
+  public void changeSignature(UserProperty symbol, int[] newOrder) {
     Node base = children[0];
     if (!(base instanceof SymbolNode) || !((SymbolNode) base).matches(symbol, symbol.getName())) {
       return;

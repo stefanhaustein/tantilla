@@ -53,7 +53,7 @@ public class Command extends Statement {
           program.lastException.printStackTrace();
           program.lastException = null;
         } else {
-          program.println("\n" + program.getSymbols());
+          program.println("\n" + program.mainModule.getUserProperties());
 
         /*  for (int i = 0; i < program.arrays.length; i++) {
             if (!program.arrays[i].isEmpty()) {

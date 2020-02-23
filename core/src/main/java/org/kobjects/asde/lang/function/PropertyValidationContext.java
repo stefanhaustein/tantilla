@@ -2,13 +2,13 @@ package org.kobjects.asde.lang.function;
 
 
 import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramValidationContext;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.HashMap;
@@ -24,14 +24,14 @@ public class PropertyValidationContext {
   /** Will be null when validating symbols! */
   public final UserFunction userFunction;
 
-  private StaticSymbol symbol;
+  private Property symbol;
 
   private int localSymbolCount;
   private Block currentBlock;
-  public HashSet<StaticSymbol> dependencies = new HashSet<>();
+  public HashSet<UserProperty> dependencies = new HashSet<>();
   public final ProgramValidationContext programValidationContext;
 
-  public PropertyValidationContext(ProgramValidationContext programValidationContext, ResolutionMode mode, StaticSymbol symbol, UserFunction userFunction) {
+  public PropertyValidationContext(ProgramValidationContext programValidationContext, ResolutionMode mode, Property symbol, UserFunction userFunction) {
     this.programValidationContext = programValidationContext;
     this.program = programValidationContext.program;
     this.mode = mode;

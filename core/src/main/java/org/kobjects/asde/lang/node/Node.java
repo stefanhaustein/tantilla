@@ -1,9 +1,9 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.type.Type;
@@ -88,10 +88,10 @@ public abstract class Node {
     }
   }
 
-  public void rename(StaticSymbol symbol, String oldName, String newName) {
+  public void rename(UserProperty symbol, String oldName, String newName) {
   }
   
-  public void changeSignature(StaticSymbol symbol, int[] newOrder) {
+  public void changeSignature(UserProperty symbol, int[] newOrder) {
   }
 
   protected void appendLinked(AnnotatedStringBuilder asb, String s, Map<Node, Exception> errors, Object... annotations) {

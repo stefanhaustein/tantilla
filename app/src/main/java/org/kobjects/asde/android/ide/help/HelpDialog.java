@@ -13,8 +13,8 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.android.ide.Dimensions;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
+import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.function.Callable;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.EnumType;
@@ -84,10 +84,10 @@ public class HelpDialog {
   }
 
   void appendLink(AnnotatedStringBuilder asb, Object linked) {
-    if (linked instanceof StaticSymbol) {
-      StaticSymbol symbol = (StaticSymbol) linked;
+    if (linked instanceof UserProperty) {
+      UserProperty symbol = (UserProperty) linked;
       if (symbol.getStaticValue() instanceof Callable) {
-        appendFunctionLink(asb, (StaticSymbol) linked);
+        appendFunctionLink(asb, (UserProperty) linked);
       } else if (symbol.getStaticValue() instanceof Type) {
         appendLink(asb, symbol.getStaticValue());
       } else {
@@ -158,7 +158,7 @@ public class HelpDialog {
     }
   }
 
-  void appendFunctionLink(AnnotatedStringBuilder sb, StaticSymbol functionSymbol) {
+  void appendFunctionLink(AnnotatedStringBuilder sb, Property functionSymbol) {
     Callable function = (Callable) functionSymbol.getStaticValue();
 
     appendLink(sb, functionSymbol.getName(), functionSymbol);
@@ -174,10 +174,10 @@ public class HelpDialog {
   }
 
 
-  void addAll(String subtitle, Predicate<StaticSymbol> filter) {
+  void addAll(String subtitle, Predicate<Property> filter) {
     addSubtitle(subtitle);
 
-    for (StaticSymbol s : mainActivity.program.getSymbols()) {
+    for (Property s : mainActivity.program.mainModule.getAllProperties()) {
       if (filter.test(s)) {
         AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
         appendLink(asb, s);
@@ -220,8 +220,8 @@ public class HelpDialog {
 
 
   void renderObject(Object o) {
-    if (o instanceof StaticSymbol) {
-      StaticSymbol symbol = (StaticSymbol) o;
+    if (o instanceof Property) {
+      Property symbol = (Property) o;
       if (symbol.getStaticValue() instanceof Callable) {
         renderFunction(symbol);
       } else if (symbol.getStaticValue() instanceof Type) {
@@ -264,7 +264,7 @@ public class HelpDialog {
   }
 
 
-  void renderFunction(StaticSymbol functionSymbol) {
+  void renderFunction(Property functionSymbol) {
     Callable function = (Callable) functionSymbol.getStaticValue();
 
     alertDialog.setTitle("Function " + functionSymbol.getName());

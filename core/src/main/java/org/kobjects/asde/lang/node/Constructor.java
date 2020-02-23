@@ -45,7 +45,7 @@ public class Constructor extends Node {
 
   @Override
   protected void onResolve(PropertyValidationContext resolutionContext, int line) {
-    UserProperty symbol = (UserProperty) resolutionContext.program.mainModule.getSymbol(name);
+    UserProperty symbol = resolutionContext.program.mainModule.getUserProperty(name);
     if (symbol == null) {
       throw new RuntimeException("'" + name + "' is not defined");
     }

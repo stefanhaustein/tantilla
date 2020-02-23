@@ -13,7 +13,6 @@ import org.kobjects.asde.android.ide.symbol.DeleteFlow;
 import org.kobjects.asde.android.ide.classifier.PropertyFlow;
 import org.kobjects.asde.android.ide.symbol.RenameFlow;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.node.ArrayLiteral;

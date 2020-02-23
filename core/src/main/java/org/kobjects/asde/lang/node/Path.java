@@ -1,9 +1,9 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.PropertyValidationContext;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.EnumType;
 import org.kobjects.asde.lang.classifier.Classifier;
@@ -93,7 +93,7 @@ public class Path extends SymbolNode {
   }
 
   @Override
-  public boolean matches(StaticSymbol symbol, String oldName) {
+  public boolean matches(UserProperty symbol, String oldName) {
     return symbol == resolvedProperty;
   }
 }

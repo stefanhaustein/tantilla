@@ -9,7 +9,6 @@ import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramControl;
 import org.kobjects.asde.lang.program.ProgramValidationContext;
 import org.kobjects.asde.lang.statement.Statement;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.function.CodeLine;

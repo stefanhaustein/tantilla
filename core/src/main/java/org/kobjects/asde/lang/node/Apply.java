@@ -1,9 +1,9 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.io.SyntaxColor;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.function.FunctionType;
@@ -23,7 +23,7 @@ public class Apply extends Node {
 
 
   @Override
-  public void changeSignature(StaticSymbol symbol, int[] newOrder) {
+  public void changeSignature(UserProperty symbol, int[] newOrder) {
     Node base = children[0];
     if (!(base instanceof SymbolNode) || !((SymbolNode) base).matches(symbol, symbol.getName())) {
       return;

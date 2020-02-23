@@ -8,7 +8,6 @@ import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.classifier.DeclaredBy;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.function.BuiltinFunction;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.io.Console;
@@ -130,10 +129,10 @@ public class Program {
     }
     symbolMap = cleared; */
 
-    HashSet<StaticSymbol> initialized = new HashSet<>();
+    HashSet<UserProperty> initialized = new HashSet<>();
 
 
-    for (StaticSymbol symbol : mainModule.getUserProperties()) {
+    for (UserProperty symbol : mainModule.getUserProperties()) {
       symbol.init(evaluationContext, initialized);
     }
   }
@@ -153,10 +152,6 @@ public class Program {
     } else {
       tabPos = s.length() - cut - 1;
     }
-  }
-
-  public synchronized Iterable<StaticSymbol> getSymbols() {
-    return new ArrayList<>(mainModule.getUserProperties());
   }
 
   public synchronized void toString(AnnotatedStringBuilder sb) {
@@ -342,10 +337,6 @@ public class Program {
     if (main.getLineCount() > 0) {
       return false;
     }
-    for (StaticSymbol symbol : mainModule.getUserProperties()) {
-      // TODO
-      return false;
-    }
-    return true;
+    return mainModule.getUserProperties().isEmpty();
   }
 }

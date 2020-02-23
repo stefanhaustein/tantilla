@@ -3,11 +3,11 @@ package org.kobjects.asde.android.ide.symbol;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.lang.classifier.UserClass;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
+import org.kobjects.asde.lang.classifier.UserProperty;
 
 public class DeleteFlow {
 
-  public static void start(final MainActivity mainActivity, final StaticSymbol symbol) {
+  public static void start(final MainActivity mainActivity, final UserProperty symbol) {
 
     new InputFlowBuilder(mainActivity, "Delete '" + symbol.getName() + "'")
         .setConfirmationCheckbox("Yes, I am sure!")

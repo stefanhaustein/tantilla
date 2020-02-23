@@ -20,7 +20,6 @@ import org.kobjects.asde.android.ide.text.TextValidator;
 import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.function.UserFunction;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.statement.RemStatement;
 import org.kobjects.asde.lang.function.FunctionType;
@@ -36,7 +35,7 @@ public class FunctionSignatureFlow {
 
   final MainActivity mainActivity;
   private final Mode mode;
-  StaticSymbol symbol;
+  UserProperty symbol;
   String name;
   Type returnType;
   ArrayList<Parameter> originalParameterList;

@@ -2,7 +2,6 @@ package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.program.Program;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
 
@@ -21,18 +20,6 @@ public class Trait implements Classifier, DeclaredBy {
   @Override
   public void setDeclaredBy(UserProperty declaringSymbol) {
     this.declaringSymbol = declaringSymbol;
-  }
-
-  public StaticSymbol getSymbol(String name) {
-    return propertyMap.get(name);
-  }
-
-  public void removeSymbol(StaticSymbol symbol) {
-    propertyMap.remove(symbol.getName());
-  }
-
-  public void addSymbol(StaticSymbol symbol) {
-    propertyMap.put(symbol.getName(), (TraitProperty) symbol);
   }
 
   @Override

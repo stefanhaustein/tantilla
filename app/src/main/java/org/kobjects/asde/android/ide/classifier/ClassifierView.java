@@ -12,11 +12,8 @@ import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.symbol.SymbolListView;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.android.ide.symbol.ExpandListener;
-import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.UserClass;
-import org.kobjects.asde.lang.classifier.Trait;
 import org.kobjects.asde.lang.classifier.UserProperty;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 
 import java.util.ArrayList;
 import java.util.Collections;

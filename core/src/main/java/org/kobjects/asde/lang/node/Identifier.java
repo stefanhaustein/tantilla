@@ -1,10 +1,10 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
-import org.kobjects.asde.lang.symbol.StaticSymbol;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
@@ -60,15 +60,15 @@ public class Identifier extends SymbolNode {
 
 
   @Override
-  public void rename(StaticSymbol symbol, String oldName, String newName) {
+  public void rename(UserProperty symbol, String oldName, String newName) {
     if (matches(symbol, oldName)) {
       this.name = newName;
     }
   }
 
   @Override
-  public boolean matches(StaticSymbol symbol, String name) {
-    return resolved instanceof StaticSymbol && this.name.equals(name);
+  public boolean matches(UserProperty symbol, String name) {
+    return resolved instanceof UserProperty && this.name.equals(name);
   }
 
   public void setName(String s) {
