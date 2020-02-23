@@ -72,8 +72,4 @@ public abstract class NativeMethod implements Property, Callable {
   public void validate(PropertyValidationContext parentValidationContext) {
   }
 
-  @Override
-  public void validate() {
-  }
-
 }

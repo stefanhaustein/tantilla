@@ -63,10 +63,5 @@ public abstract class NativeProperty implements Property {
   @Override
   public void validate(PropertyValidationContext parentValidationContext) {
   }
-
-
-  @Override
-  public void validate() {
-  }
-
+  
 }

@@ -50,10 +50,6 @@ public class TraitProperty implements Property, ResolvedSymbol {
     return null;
   }
 
-  @Override
-  public void validate() {
-
-  }
 
   @Override
   public boolean isMutable() {

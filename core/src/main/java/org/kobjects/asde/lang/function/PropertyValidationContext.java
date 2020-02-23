@@ -4,7 +4,6 @@ package org.kobjects.asde.lang.function;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.program.Program;
-import org.kobjects.asde.lang.program.ProgramValidationContext;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.symbol.ResolvedSymbol;
@@ -15,27 +14,28 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class PropertyValidationContext {
-  public enum ResolutionMode {PROGRAM, INTERACTIVE};
 
-  public final Program program;
+  public static PropertyValidationContext createRootContext(Program program) {
+    return new PropertyValidationContext(program, null, null, null);
+  }
+
   public HashMap<Node, Exception> errors = new HashMap<>();
-  public final ResolutionMode mode;
 
   /** Will be null when validating symbols! */
   public final UserFunction userFunction;
 
-  private Property symbol;
+  private Property property;
 
   private int localSymbolCount;
   private Block currentBlock;
   public HashSet<UserProperty> dependencies = new HashSet<>();
-  public final ProgramValidationContext programValidationContext;
+  private PropertyValidationContext parentContext;
+  public Program program;
 
-  public PropertyValidationContext(ProgramValidationContext programValidationContext, ResolutionMode mode, Property symbol, UserFunction userFunction) {
-    this.programValidationContext = programValidationContext;
-    this.program = programValidationContext.program;
-    this.mode = mode;
-    this.symbol = symbol;
+  private PropertyValidationContext(Program program, PropertyValidationContext parentContext, Property property, UserFunction userFunction) {
+    this.program = program;
+    this.parentContext = parentContext;
+    this.property = property;
     this.userFunction = userFunction;
     startBlock(null);
     if (userFunction != null) {
@@ -43,6 +43,10 @@ public class PropertyValidationContext {
         currentBlock.localSymbols.put(userFunction.parameterNames[i], new LocalSymbol(localSymbolCount++, userFunction.getType().getParameterType(i), false));
       }
     }
+  }
+
+  public static PropertyValidationContext createForFunction(UserFunction userFunction) {
+    return new PropertyValidationContext(userFunction.program, null, null, userFunction);
   }
 
   public void startBlock(BlockStatement startStatement) {
@@ -57,9 +61,6 @@ public class PropertyValidationContext {
 
 
   public ResolvedSymbol resolveVariableDeclaration(String name, Type type, boolean constant) {
-    if (mode != ResolutionMode.PROGRAM) {
-      return resolveVariableAssignment(name, type, false);
-    }
     if (currentBlock.localSymbols.containsKey(name)) {
       throw new RuntimeException("Local variable named '" + name + "' already exists");
     }
@@ -130,14 +131,6 @@ public class PropertyValidationContext {
       };
     }
 
-    /*
-    if (classValidationContext != null) {
-      resolved = classValidationContext.resolve(name);
-      if (resolved != null) {
-        return resolved;
-      }
-    }
-     */
 
     return null;
   }
@@ -154,4 +147,10 @@ public class PropertyValidationContext {
     return currentBlock;
   }
 
+  public PropertyValidationContext createChildContext(Property property) {
+    UserFunction userFunction = (!property.isMutable()
+        && !property.isInstanceField() && property.getStaticValue() instanceof UserFunction) ?
+        (UserFunction) property.getStaticValue() : null;
+    return new PropertyValidationContext(this.program, this, property, userFunction);
+  }
 }

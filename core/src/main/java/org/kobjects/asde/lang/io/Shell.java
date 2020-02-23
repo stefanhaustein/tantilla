@@ -7,7 +7,6 @@ import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramControl;
-import org.kobjects.asde.lang.program.ProgramValidationContext;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 import org.kobjects.asde.lang.function.UserFunction;
@@ -105,8 +104,8 @@ public class Shell {
                     wrapper.appendStatement(statement);
                 }
 
-                ProgramValidationContext programValidationContext = new ProgramValidationContext(program);
-                PropertyValidationContext propertyValidationContext = new PropertyValidationContext(programValidationContext, PropertyValidationContext.ResolutionMode.INTERACTIVE, null, wrapper);
+
+                PropertyValidationContext propertyValidationContext = PropertyValidationContext.createForFunction(wrapper);
                 wrapper.validate(propertyValidationContext);
 
                 if (propertyValidationContext.errors.size() > 0) {

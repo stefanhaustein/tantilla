@@ -239,10 +239,7 @@ public class Program {
   }
 
   public synchronized void validate() {
-    ProgramValidationContext context = new ProgramValidationContext(this);
-
-    PropertyValidationContext moduleValidationContext = new PropertyValidationContext(context, PropertyValidationContext.ResolutionMode.PROGRAM, null, null);
-    mainModule.validate(moduleValidationContext);
+    mainModule.validate(PropertyValidationContext.createRootContext(this));
   }
 
   public synchronized void addBuiltin(String name, Object value) {
@@ -306,7 +303,7 @@ public class Program {
               return;
             }
             if (notificationPendingForSymbol != null) {
-              notificationPendingForSymbol.validate();
+              notificationPendingForSymbol.validate(PropertyValidationContext.createRootContext(Program.this));
               for (UserPropertyChangeListener changeListener : programChangeListeners) {
                 changeListener.propertyDefinitionChanged(notificationPendingForSymbol);
               }

@@ -39,24 +39,16 @@ public class UserProperty implements Property {
       }
   }
 
-
-  @Override
-  public void validate() {
-    if (owner.declaringSymbol != null) {
-      owner.declaringSymbol.validate();
-    }
-  }
-
   // May also be called from ClassValidationContext.
-  public void validate(PropertyValidationContext classValidationContext) {
+  public void validate(PropertyValidationContext parentValidationContext) {
     System.out.println("Validating user property: " + name);
+
+    PropertyValidationContext context = parentValidationContext.createChildContext(this);
 
     UserFunction userFunction =
         (!isInstanceField && initializer == null && staticValue instanceof UserFunction)
-        ? (UserFunction) staticValue
+            ? (UserFunction) staticValue
             : null;
-    PropertyValidationContext context = new PropertyValidationContext(classValidationContext.programValidationContext, PropertyValidationContext.ResolutionMode.PROGRAM, this, userFunction);
-
     if (userFunction != null) {
       System.out.println(" - " + name + " is userFunction");
       userFunction.validate(context);
@@ -80,8 +72,8 @@ public class UserProperty implements Property {
 
     this.errors = context.errors;
     this.dependencies = context.dependencies;
-    classValidationContext.dependencies.addAll(context.dependencies);
-    classValidationContext.errors.putAll(context.errors);
+  //  parentValidationContext.dependencies.addAll(context.dependencies);
+  //  parentValidationContext.errors.putAll(context.errors);
   }
 
 
