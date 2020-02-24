@@ -49,19 +49,20 @@ public abstract class NativeProperty implements Property {
     throw new UnsupportedOperationException("Not static.");
   }
 
-
+/*
   @Override
   public Map<Node, Exception> getErrors() {
     return Collections.emptyMap();
   }
 
+  /*
   @Override
   public Node getInitializer() {
     throw new UnsupportedOperationException();
-  }
+  } */
 
   @Override
   public void validate(PropertyValidationContext parentValidationContext) {
   }
-  
+
 }

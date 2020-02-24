@@ -1,13 +1,13 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.function.LocalSymbol;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.TypeImpl;
 
@@ -16,8 +16,8 @@ import java.util.Map;
 
 public class ForStatement extends BlockStatement {
   private final String variableName;
-  ResolvedSymbol resolvedVariable;
-  ResolvedSymbol resolvedIterator;
+  LocalSymbol resolvedVariable;
+  LocalSymbol resolvedIterator;
   int resolvedNextLine;
   int resolvedForLine;
 
@@ -36,8 +36,8 @@ public class ForStatement extends BlockStatement {
       throw new RuntimeException("in expression must result in a list");
     }
     ListType arrayType = (ListType) children[0].returnType();
-    resolvedIterator = resolutionContext.resolveVariableDeclaration(variableName + "-iterator", ITERATOR, false);
-    resolvedVariable = resolutionContext.resolveVariableDeclaration(variableName, arrayType.elementType, false);
+    resolvedIterator = resolutionContext.declareLocalVariable(variableName + "-iterator", ITERATOR, false);
+    resolvedVariable = resolutionContext.declareLocalVariable(variableName, arrayType.elementType, false);
   }
 
   @Override

@@ -4,9 +4,7 @@ package org.kobjects.asde.lang.function;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.program.Program;
-import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.statement.BlockStatement;
-import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Type;
 
@@ -60,80 +58,16 @@ public class PropertyValidationContext {
   }
 
 
-  public ResolvedSymbol resolveVariableDeclaration(String name, Type type, boolean constant) {
+  public LocalSymbol declareLocalVariable(String name, Type type, boolean mutable) {
     if (currentBlock.localSymbols.containsKey(name)) {
       throw new RuntimeException("Local variable named '" + name + "' already exists");
     }
-    LocalSymbol result = new LocalSymbol(localSymbolCount++, type, constant);
+    LocalSymbol result = new LocalSymbol(localSymbolCount++, type, mutable);
     currentBlock.localSymbols.put(name, result);
     return result;
   }
 
-  public ResolvedSymbol resolveVariableAssignment(String name, Type type) {
-    return resolveVariableAssignment(name, type, true);
-  }
 
-  private ResolvedSymbol resolveVariableAssignment(String name, Type type, boolean addDependency) {
-
-    ResolvedSymbol resolved = resolveVariableAccess(name, addDependency, true);
-    // Doesn't check for assigning to constants here because this is also called from
-    // resolveVariableDeclaration handling the initial assignment, so that part is checked in
-    // AssignStatement.
-
-
-    if (resolved.getType() != null && !resolved.getType().isAssignableFrom(type)) {
-      throw new RuntimeException("Cannot assign value of type " + type + " to " + name + " of type " + resolved.getType());
-    }
-
-    return resolved;
-  }
-
-  public ResolvedSymbol resolveVariableAccess(String name) {
-    return resolveVariableAccess(name, true, false);
-  }
-
-  private ResolvedSymbol resolveVariableAccess(String name, boolean addDependency, boolean forAssignment) {
-
-    // Block level
-
-    // System.out.println("resolveVariableAccess " + (classValidationContext == null ? "" : (classValidationContext.classImplementation + ".")) + name);
-
-    ResolvedSymbol resolved = currentBlock.get(name);
-    if (resolved != null) {
-      return resolved;
-    }
-
-    // Members
-
-
-    Property property = program.mainModule.getPropertyDescriptor(name);
-    if (property != null) {
-      return new ResolvedSymbol() {
-        @Override
-        public Object get(EvaluationContext evaluationContext) {
-          return property.get(evaluationContext, null);
-        }
-
-        @Override
-        public void set(EvaluationContext evaluationContext, Object value) {
-          property.set(evaluationContext, null, value);
-        }
-
-        @Override
-        public Type getType() {
-          return property.getType();
-        }
-
-        @Override
-        public boolean isConstant() {
-          return !property.isMutable();
-        }
-      };
-    }
-
-
-    return null;
-  }
 
   public void addError(Node node, Exception e) {
     errors.put(node, e);
@@ -153,4 +87,5 @@ public class PropertyValidationContext {
         (UserFunction) property.getStaticValue() : null;
     return new PropertyValidationContext(this.program, this, property, userFunction);
   }
+
 }

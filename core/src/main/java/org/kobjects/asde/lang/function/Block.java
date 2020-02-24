@@ -14,7 +14,7 @@ public class Block {
     this.startStatement = startStatement;
   }
 
-  LocalSymbol get(String name) {
+  public LocalSymbol get(String name) {
     LocalSymbol result = localSymbols.get(name);
     return (result == null && parent != null) ? parent.get(name) : result;
   }

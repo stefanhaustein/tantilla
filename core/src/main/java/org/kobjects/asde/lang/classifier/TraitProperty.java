@@ -4,7 +4,6 @@ import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.PropertyValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.symbol.ResolvedSymbol;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;
 
@@ -12,7 +11,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 
-public class TraitProperty implements Property, ResolvedSymbol {
+public class TraitProperty implements Property {
   private final Trait owner;
   private String name;
   private Type type;
@@ -24,31 +23,21 @@ public class TraitProperty implements Property, ResolvedSymbol {
     this.type = type;
   }
 
-  @Override
-  public Object get(EvaluationContext evaluationContext) {
-    throw new RuntimeException("NYI");
-  }
-
-  @Override
-  public void set(EvaluationContext evaluationContext, Object value) {
-    throw new RuntimeException("NYI");
-  }
-
-
-  @Override
+/*  @Override
   public Map<Node, Exception> getErrors() {
     return errors;
-  }
+  }*/
 
   @Override
   public Object getStaticValue() {
     return null;
   }
 
+  /*
   @Override
   public Node getInitializer() {
     return null;
-  }
+  }*/
 
 
   @Override
@@ -56,10 +45,6 @@ public class TraitProperty implements Property, ResolvedSymbol {
     return isInstanceField();
   }
 
-  @Override
-  public boolean isConstant() {
-    return !isMutable();
-  }
   @Override
   public boolean isInstanceField() {
     // Hack

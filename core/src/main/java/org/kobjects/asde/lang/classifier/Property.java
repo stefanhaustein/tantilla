@@ -5,10 +5,15 @@ import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 
+import java.util.Collections;
 import java.util.Map;
 
 public interface Property {
-  Map<Node, Exception> getErrors();
+
+  default Map<Node, Exception> getErrors() {
+    return Collections.emptyMap();
+  }
+
   String getName();
   Type getType();
 
@@ -22,7 +27,11 @@ public interface Property {
 
   Object getStaticValue();
 
-  Node getInitializer();
+  // Node getInitializer();
 
   void validate(PropertyValidationContext validationContext);
+
+  default void setStaticValue(Object value) {
+    throw new UnsupportedOperationException();
+  }
 }

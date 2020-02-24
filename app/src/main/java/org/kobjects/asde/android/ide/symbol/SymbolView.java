@@ -5,7 +5,7 @@ import android.widget.LinearLayout;
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
-import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.classifier.UserProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +16,12 @@ public abstract class SymbolView extends LinearLayout {
   public SymbolTitleView titleView;
   List<ExpandListener> expandListeners = new ArrayList<>();
   public boolean expanded;
-  public Property symbol;
+  public UserProperty symbol;
 
   protected ExpandableList contentView;
 
 
-  protected SymbolView(MainActivity mainActivity, Property symbol) {
+  protected SymbolView(MainActivity mainActivity, UserProperty symbol) {
     super(mainActivity);
     this.mainActivity = mainActivity;
     this.symbol = symbol;

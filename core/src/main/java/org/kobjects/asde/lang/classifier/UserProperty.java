@@ -95,7 +95,6 @@ public class UserProperty implements Property {
     return owner;
   }
 
-  @Override
   public Map<Node, Exception> getErrors() {
     return errors;
   }
@@ -105,7 +104,6 @@ public class UserProperty implements Property {
     return staticValue;
   }
 
-  @Override
   public Node getInitializer() {
     return initializer;
   }

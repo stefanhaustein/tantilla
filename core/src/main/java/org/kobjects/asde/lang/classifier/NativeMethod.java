@@ -58,15 +58,16 @@ public abstract class NativeMethod implements Property, Callable {
     return this;
   }
 
+  /*
   @Override
   public Map<Node, Exception> getErrors() {
     return Collections.emptyMap();
   }
 
-  @Override
+/*  @Override
   public Node getInitializer() {
     throw new UnsupportedOperationException();
-  }
+  }*/
 
   @Override
   public void validate(PropertyValidationContext parentValidationContext) {
