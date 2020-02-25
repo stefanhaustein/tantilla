@@ -5,7 +5,7 @@ import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.function.PropertyValidationContext;
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.type.Type;
 
@@ -41,7 +41,7 @@ public class Apply extends Node {
   }
 
   @Override
-  protected void onResolve(PropertyValidationContext resolutionContext, int line) {
+  protected void onResolve(ValidationContext resolutionContext, int line) {
     if (!(children[0].returnType() instanceof FunctionType)) {
       throw new RuntimeException("Can't apply parameters to " + children[0].returnType());
     }

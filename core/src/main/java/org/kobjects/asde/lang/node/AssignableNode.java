@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.function.PropertyValidationContext;
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Type;
 
 public abstract class AssignableNode extends Node {
@@ -10,7 +10,7 @@ public abstract class AssignableNode extends Node {
         super(children);
     }
 
-    public abstract void resolveForAssignment(PropertyValidationContext resolutionContext, Type type, int line);
+    public abstract void resolveForAssignment(ValidationContext resolutionContext, Type type, int line);
 
     public abstract void set(EvaluationContext evaluationContext, Object value);
 

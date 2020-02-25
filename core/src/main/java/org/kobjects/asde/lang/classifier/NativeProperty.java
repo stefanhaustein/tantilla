@@ -1,12 +1,7 @@
 package org.kobjects.asde.lang.classifier;
 
-import org.kobjects.asde.lang.function.PropertyValidationContext;
-import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
-
-import java.util.Collections;
-import java.util.Map;
 
 public abstract class NativeProperty implements Property {
 
@@ -47,22 +42,6 @@ public abstract class NativeProperty implements Property {
   @Override
   public Object getStaticValue() {
     throw new UnsupportedOperationException("Not static.");
-  }
-
-/*
-  @Override
-  public Map<Node, Exception> getErrors() {
-    return Collections.emptyMap();
-  }
-
-  /*
-  @Override
-  public Node getInitializer() {
-    throw new UnsupportedOperationException();
-  } */
-
-  @Override
-  public void validate(PropertyValidationContext parentValidationContext) {
   }
 
 }

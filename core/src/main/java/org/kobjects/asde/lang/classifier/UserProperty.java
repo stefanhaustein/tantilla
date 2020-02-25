@@ -3,11 +3,12 @@ package org.kobjects.asde.lang.classifier;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.function.UserFunction;
-import org.kobjects.asde.lang.function.PropertyValidationContext;
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -39,11 +40,12 @@ public class UserProperty implements Property {
       }
   }
 
+  /*
   // May also be called from ClassValidationContext.
-  public void validate(PropertyValidationContext parentValidationContext) {
+  public void validate(ValidationContext parentValidationContext) {
     System.out.println("Validating user property: " + name);
 
-    PropertyValidationContext context = parentValidationContext.createChildContext(this);
+    ValidationContext context = parentValidationContext.createChildContext(this);
 
     UserFunction userFunction =
         (!isInstanceField && initializer == null && staticValue instanceof UserFunction)
@@ -74,6 +76,13 @@ public class UserProperty implements Property {
     this.dependencies = context.dependencies;
   //  parentValidationContext.dependencies.addAll(context.dependencies);
   //  parentValidationContext.errors.putAll(context.errors);
+  }
+
+   */
+  @Override
+  public void setDependenciesAndErrors(HashSet<UserProperty> dependencies, HashMap<Node, Exception> errors) {
+    this.dependencies = dependencies;
+    this.errors = errors;
   }
 
 

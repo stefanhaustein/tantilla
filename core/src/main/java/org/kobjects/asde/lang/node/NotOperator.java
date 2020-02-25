@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.asde.lang.function.PropertyValidationContext;
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
@@ -17,7 +17,7 @@ public class NotOperator extends Node {
   }
 
   @Override
-  protected void onResolve(PropertyValidationContext resolutionContext, int line) {
+  protected void onResolve(ValidationContext resolutionContext, int line) {
     boolean boolMode = Types.BOOL == children[0].returnType();
     if (!boolMode && Types.FLOAT != children[0].returnType()) {
       throw new RuntimeException("Boolean or Number parameter expected.");

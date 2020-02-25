@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.function.PropertyValidationContext;
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.classifier.InstantiableType;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.type.Type;
@@ -44,12 +44,12 @@ public class Constructor extends Node {
   }
 
   @Override
-  protected void onResolve(PropertyValidationContext resolutionContext, int line) {
+  protected void onResolve(ValidationContext resolutionContext, int line) {
     UserProperty symbol = resolutionContext.program.mainModule.getUserProperty(name);
     if (symbol == null) {
       throw new RuntimeException("'" + name + "' is not defined");
     }
-    symbol.validate(resolutionContext);
+    resolutionContext.addDependency(symbol);
     Object value = symbol.getStaticValue();
 
       if (!(value instanceof InstantiableType)) {

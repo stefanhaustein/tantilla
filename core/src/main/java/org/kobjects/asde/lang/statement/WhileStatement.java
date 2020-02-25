@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.function.PropertyValidationContext;
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.node.Node;
@@ -18,7 +18,7 @@ public class WhileStatement extends BlockStatement {
   }
 
   @Override
-  public void onResolveEnd(PropertyValidationContext resolutionContext, EndStatement endStatement, int endLine) {
+  public void onResolveEnd(ValidationContext resolutionContext, EndStatement endStatement, int endLine) {
     resolvedEndLine = endLine;
   }
 
@@ -28,7 +28,7 @@ public class WhileStatement extends BlockStatement {
   }
 
   @Override
-  protected void onResolve(PropertyValidationContext resolutionContext, int line) {
+  protected void onResolve(ValidationContext resolutionContext, int line) {
     resolvedStartLine = line;
     if (children[0].returnType() != Types.BOOL) {
       throw new RuntimeException("Boolean condition expected.");

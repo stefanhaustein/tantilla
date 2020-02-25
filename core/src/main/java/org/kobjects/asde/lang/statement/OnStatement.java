@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.function.PropertyValidationContext;
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.program.ProgramControl;
 import org.kobjects.asde.lang.node.Node;
 
@@ -21,7 +21,7 @@ public class OnStatement extends BlockStatement  {
 
 
   @Override
-  protected void onResolve(PropertyValidationContext resolutionContext, int line) {
+  protected void onResolve(ValidationContext resolutionContext, int line) {
     resolutionContext.startBlock(this);
     listenableSubexpressions.clear();
     findListenableSubexpressions(children);
@@ -59,7 +59,7 @@ public class OnStatement extends BlockStatement  {
   }
 
   @Override
-  public void onResolveEnd(PropertyValidationContext resolutionContext, EndStatement endStatement, int endLine) {
+  public void onResolveEnd(ValidationContext resolutionContext, EndStatement endStatement, int endLine) {
     resolvedEndLine = endLine;
   }
 

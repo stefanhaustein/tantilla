@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.UserProperty;
-import org.kobjects.asde.lang.function.PropertyValidationContext;
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.list.ListType;
@@ -46,7 +46,7 @@ public class ArrayAccess extends AssignableNode {
   }
 
   @Override
-  public void resolveForAssignment(PropertyValidationContext resolutionContext, Type type, int line) {
+  public void resolveForAssignment(ValidationContext resolutionContext, Type type, int line) {
     resolve(resolutionContext, line);
 
     if (!(children[0].returnType() instanceof ListType)) {
@@ -75,7 +75,7 @@ public class ArrayAccess extends AssignableNode {
   }
 
   @Override
-  protected void onResolve(PropertyValidationContext resolutionContext, int line) {
+  protected void onResolve(ValidationContext resolutionContext, int line) {
     kind = Kind.ERROR;
     if (children[0].returnType() instanceof ListType) {
       kind = Kind.ARRAY_ACCES;

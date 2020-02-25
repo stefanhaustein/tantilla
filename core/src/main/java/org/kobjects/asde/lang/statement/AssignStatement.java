@@ -4,7 +4,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.function.PropertyValidationContext;
+import org.kobjects.asde.lang.function.ValidationContext;
 
 import java.util.Map;
 
@@ -17,7 +17,7 @@ public class AssignStatement extends Statement {
   }
 
   @Override
-  public boolean resolve(PropertyValidationContext resolutionContext, int line) {
+  public boolean resolve(ValidationContext resolutionContext, int line) {
     block = resolutionContext.getCurrentBlock();
     if (!children[1].resolve(resolutionContext, line)) {
       return false;
@@ -34,7 +34,7 @@ public class AssignStatement extends Statement {
 
 
   @Override
-  protected void onResolve(PropertyValidationContext resolutionContext, int line) {
+  protected void onResolve(ValidationContext resolutionContext, int line) {
     if (((AssignableNode) children[0]).isConstant()) {
       throw new RuntimeException("Cannot assign to a constant.");
     }

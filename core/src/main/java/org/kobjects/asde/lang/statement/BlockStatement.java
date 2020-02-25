@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 
-import org.kobjects.asde.lang.function.PropertyValidationContext;
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 
@@ -15,6 +15,6 @@ public abstract class BlockStatement extends Statement {
     super(children);
   }
 
-  public abstract void onResolveEnd(PropertyValidationContext resolutionContext, EndStatement endStatement, int line);
+  public abstract void onResolveEnd(ValidationContext resolutionContext, EndStatement endStatement, int line);
   abstract void evalEnd(EvaluationContext context);
 }

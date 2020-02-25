@@ -5,7 +5,7 @@ import org.kobjects.asde.lang.Consumer;
 import org.kobjects.asde.lang.classifier.Module;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.UserProperty;
-import org.kobjects.asde.lang.function.PropertyValidationContext;
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.classifier.DeclaredBy;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.BuiltinFunction;
@@ -239,7 +239,7 @@ public class Program {
   }
 
   public synchronized void validate() {
-    mainModule.validate(PropertyValidationContext.createRootContext(this));
+    mainModule.validate(ValidationContext.createRootContext(this));
   }
 
   public synchronized void addBuiltin(String name, Object value) {
@@ -303,7 +303,7 @@ public class Program {
               return;
             }
             if (notificationPendingForSymbol != null) {
-              notificationPendingForSymbol.validate(PropertyValidationContext.createRootContext(Program.this));
+              ValidationContext.createRootContext(Program.this).validateProperty(notificationPendingForSymbol);
               for (UserPropertyChangeListener changeListener : programChangeListeners) {
                 changeListener.propertyDefinitionChanged(notificationPendingForSymbol);
               }

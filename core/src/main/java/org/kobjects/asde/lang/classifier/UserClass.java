@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.function.Callable;
-import org.kobjects.asde.lang.function.PropertyValidationContext;
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
@@ -129,20 +129,22 @@ public class UserClass implements Classifier, InstantiableType, DeclaredBy {
   }
 
 
-  public void validate(PropertyValidationContext classValidationContext) {
+  public void validate(ValidationContext classValidationContext) {
     System.out.println("Userclass validation " + declaringSymbol);
     resolvedInitializers.clear();
     Collection<? extends Property> properties = getAllProperties();
     for (Property property : properties) {
       if (property.isInstanceField()) {
         System.out.println(" - instance field " + property.getName());
-        property.validate(classValidationContext);
+        classValidationContext.validateProperty(property);
+        ((UserProperty) property).fieldIndex = resolvedInitializers.size();
+        resolvedInitializers.add(property.getInitializer());
       }
     }
     for (Property property : properties) {
       if (!property.isInstanceField()) {
         System.out.println(" - non instance field " + property.getName());
-        property.validate(classValidationContext);
+        classValidationContext.validateProperty(property);
       }
     }
   }

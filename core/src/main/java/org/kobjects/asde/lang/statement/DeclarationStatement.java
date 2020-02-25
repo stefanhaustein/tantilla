@@ -6,7 +6,7 @@ import org.kobjects.asde.lang.function.LocalSymbol;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.function.PropertyValidationContext;
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
@@ -50,7 +50,7 @@ public class DeclarationStatement extends Statement {
     this.kind = kind;
   }
 
-  public void onResolve(PropertyValidationContext resolutionContext, int line) {
+  public void onResolve(ValidationContext resolutionContext, int line) {
     resolved = resolutionContext.declareLocalVariable(varName, children[0].returnType(), kind != Kind.CONST);
   }
 

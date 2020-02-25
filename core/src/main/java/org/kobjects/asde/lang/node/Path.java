@@ -3,7 +3,7 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.function.PropertyValidationContext;
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.EnumType;
 import org.kobjects.asde.lang.classifier.Classifier;
@@ -28,7 +28,7 @@ public class Path extends SymbolNode {
   }
 
   @Override
-  protected void onResolve(PropertyValidationContext resolutionContext, int line) {
+  protected void onResolve(ValidationContext resolutionContext, int line) {
     if (children[0].returnType() instanceof Classifier) {
       resolvedProperty = ((Classifier) children[0].returnType()).getPropertyDescriptor(pathName);
       if (resolvedProperty == null) {
@@ -69,7 +69,7 @@ public class Path extends SymbolNode {
   }
 
   @Override
-  public void resolveForAssignment(PropertyValidationContext resolutionContext, Type type, int line) {
+  public void resolveForAssignment(ValidationContext resolutionContext, Type type, int line) {
     resolve(resolutionContext, line);
 
     // TODO: Check support...

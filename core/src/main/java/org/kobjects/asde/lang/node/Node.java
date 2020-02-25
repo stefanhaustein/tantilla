@@ -5,7 +5,7 @@ import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.asde.lang.function.PropertyValidationContext;
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Collections;
@@ -22,9 +22,9 @@ public abstract class Node {
     this.children = children == null || children.length == 0 ? EMPTY_ARRAY : children;
   }
 
-  protected abstract void onResolve(PropertyValidationContext resolutionContext, int line);
+  protected abstract void onResolve(ValidationContext resolutionContext, int line);
 
-  public boolean resolve(PropertyValidationContext resolutionContext, int line) {
+  public boolean resolve(ValidationContext resolutionContext, int line) {
     for (Node child: children) {
       if (!child.resolve(resolutionContext, line)) {
         return false;

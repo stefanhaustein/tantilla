@@ -5,7 +5,7 @@ import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.function.LocalSymbol;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.function.PropertyValidationContext;
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
@@ -27,7 +27,7 @@ public class Identifier extends SymbolNode {
     this.name = name;
   }
 
-  public void onResolve(PropertyValidationContext resolutionContext, int line) {
+  public void onResolve(ValidationContext resolutionContext, int line) {
     resolvedLocalVariable = resolutionContext.getCurrentBlock().get(name);
     if (resolvedLocalVariable != null) {
       resolvedKind = Kind.LOCAL_VARIABLE;
@@ -49,7 +49,7 @@ public class Identifier extends SymbolNode {
   }
 
   @Override
-  public void resolveForAssignment(PropertyValidationContext resolutionContext, Type type, int line) {
+  public void resolveForAssignment(ValidationContext resolutionContext, Type type, int line) {
     onResolve(resolutionContext, line);
     if (!mutable) {
       throw new RuntimeException("Can't assign to immutable variable '" + name + "'");

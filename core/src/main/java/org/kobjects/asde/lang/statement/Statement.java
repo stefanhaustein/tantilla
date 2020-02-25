@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.statement;
 
 
 import org.kobjects.asde.lang.function.Block;
-import org.kobjects.asde.lang.function.PropertyValidationContext;
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.Type;
@@ -33,7 +33,7 @@ public abstract class Statement extends Node {
   }
 
   @Override
-  public boolean resolve(PropertyValidationContext resolutionContext, int line) {
+  public boolean resolve(ValidationContext resolutionContext, int line) {
     block = resolutionContext.getCurrentBlock();
     return super.resolve(resolutionContext, line);
   }

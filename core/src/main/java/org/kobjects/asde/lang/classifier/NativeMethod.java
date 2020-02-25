@@ -2,13 +2,9 @@ package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.FunctionType;
-import org.kobjects.asde.lang.function.PropertyValidationContext;
-import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
-
-import java.util.Collections;
-import java.util.Map;
 
 public abstract class NativeMethod implements Property, Callable {
   FunctionType type;
@@ -67,10 +63,10 @@ public abstract class NativeMethod implements Property, Callable {
 /*  @Override
   public Node getInitializer() {
     throw new UnsupportedOperationException();
-  }*/
-
-  @Override
-  public void validate(PropertyValidationContext parentValidationContext) {
   }
 
+  @Override
+  public void validate(ValidationContext parentValidationContext) {
+  }
+*/
 }

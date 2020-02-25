@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.function.FunctionType;
-import org.kobjects.asde.lang.function.PropertyValidationContext;
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
@@ -55,9 +55,6 @@ public class TraitProperty implements Property {
     this.name = newName;
   }
 
-  public void init(EvaluationContext evaluationContext, HashSet<UserProperty> initialized) {
-
-  }
 
   @Override
   public String getName() {
@@ -79,9 +76,4 @@ public class TraitProperty implements Property {
     ((Classifier) Types.of(instance)).getPropertyDescriptor(name).set(context, instance, value);
   }
 
-
-
-  @Override
-  public void validate(PropertyValidationContext parentValidationContext) {
-  }
 }
