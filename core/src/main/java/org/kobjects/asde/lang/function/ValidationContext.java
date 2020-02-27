@@ -35,7 +35,7 @@ public class ValidationContext {
 
   private int localSymbolCount;
   private Block currentBlock;
-  public HashSet<UserProperty> dependencies = new HashSet<>();
+  public HashSet<Property> dependencies = new HashSet<>();
   private ValidationContext parentContext;
   public Program program;
 
@@ -152,8 +152,8 @@ public class ValidationContext {
     return new ValidationContext(this.program, this, property, userFunction);
   }
 
-  public void addDependency(UserProperty symbol) {
+  public void validateAndAddDependency(Property symbol) {
     dependencies.add(symbol);
-
+    validateProperty(symbol);
   }
 }

@@ -34,8 +34,12 @@ public class Path extends SymbolNode {
       if (resolvedProperty == null) {
         throw new RuntimeException("Property '" + pathName + "' not found in " + children[0].returnType());
       }
+      resolutionContext.validateAndAddDependency(resolvedProperty);
       if (resolvedProperty.getType() == null) {
         throw new RuntimeException("Type of property '" + resolvedProperty + "' is null.");
+      }
+      if (!resolvedProperty.isInstanceField()) {
+        throw new RuntimeException("No-static Instance property expected. Please use " + children[0].returnType() + "." + resolvedProperty + " for a static reference instead.");
       }
       return;
     }

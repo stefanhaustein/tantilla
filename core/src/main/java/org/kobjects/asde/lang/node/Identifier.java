@@ -38,9 +38,10 @@ public class Identifier extends SymbolNode {
         resolvedKind = Kind.UNRESOLVED;
         throw new RuntimeException("Variable not found: '" + name + "'");
       }
+      resolutionContext.validateAndAddDependency(resolvedRootProperty);
       if (resolvedRootProperty.isInstanceField()) {
         resolvedKind = Kind.UNRESOLVED;
-        // Should be excluded elsewhere...
+        // Modules can't have non-static properties...
         throw new IllegalStateException();
       }
       mutable = resolvedRootProperty.isMutable();

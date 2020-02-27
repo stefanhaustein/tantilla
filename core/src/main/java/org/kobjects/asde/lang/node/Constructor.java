@@ -49,7 +49,7 @@ public class Constructor extends Node {
     if (symbol == null) {
       throw new RuntimeException("'" + name + "' is not defined");
     }
-    resolutionContext.addDependency(symbol);
+    resolutionContext.validateAndAddDependency(symbol);
     Object value = symbol.getStaticValue();
 
       if (!(value instanceof InstantiableType)) {

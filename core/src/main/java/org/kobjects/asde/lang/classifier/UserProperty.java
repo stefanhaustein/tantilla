@@ -17,7 +17,7 @@ public class UserProperty implements Property {
   UserClass owner;
   String name;
   Map<Node, Exception> errors = Collections.emptyMap();
-  Set<UserProperty> dependencies;
+  Set<Property> dependencies;
   Type fixedType;
   Object staticValue;
   Node initializer;
@@ -80,7 +80,7 @@ public class UserProperty implements Property {
 
    */
   @Override
-  public void setDependenciesAndErrors(HashSet<UserProperty> dependencies, HashMap<Node, Exception> errors) {
+  public void setDependenciesAndErrors(HashSet<Property> dependencies, HashMap<Node, Exception> errors) {
     this.dependencies = dependencies;
     this.errors = errors;
   }
@@ -140,7 +140,7 @@ public class UserProperty implements Property {
       return;
     }
     if (dependencies != null) {
-      for (UserProperty dep : dependencies) {
+      for (Property dep : dependencies) {
         dep.init(evaluationContext, initialized);
       }
     }
@@ -158,8 +158,6 @@ public class UserProperty implements Property {
   public String toString() {
     return getName() + " -> " + getType();
   }
-
-
 
   @Override
   public Object get(EvaluationContext context, Object instance) {

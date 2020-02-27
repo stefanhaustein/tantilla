@@ -41,9 +41,12 @@ public interface Property {
     return null;
   };
 
-  default void setDependenciesAndErrors(HashSet<UserProperty> dependencies, HashMap<Node, Exception> errors) {
+  default void setDependenciesAndErrors(HashSet<Property> dependencies, HashMap<Node, Exception> errors) {
     if (dependencies.size() > 0 || errors.size() > 0) {
       throw new UnsupportedOperationException("Dependencies or errors not expected for " + getName() + " of type " + getClass() + " dependencies: " + dependencies + " errors: " + errors);
     }
+  }
+
+  default void init(EvaluationContext evaluationContext, HashSet<UserProperty> initialized) {
   }
 }
