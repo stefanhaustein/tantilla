@@ -1,8 +1,8 @@
 package org.kobjects.asde.lang.node;
 
-import org.kobjects.asde.lang.classifier.UserClass;
+import org.kobjects.asde.lang.classifier.Struct;
 import org.kobjects.asde.lang.Consumer;
-import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.statement.Statement;
@@ -32,16 +32,16 @@ public class NodeProcessor {
     }
   }
 
-  public void processClass(UserClass classImplementation) {
-    for (UserProperty property : classImplementation.getUserProperties()) {
+  public void processClass(Struct classImplementation) {
+    for (GenericProperty property : classImplementation.getUserProperties()) {
       processSymbol(property);
     }
   }
 
 
-  public void processSymbol(UserProperty symbol) {
-    if (symbol.getStaticValue() instanceof UserClass) {
-      processClass((UserClass) symbol.getStaticValue());
+  public void processSymbol(GenericProperty symbol) {
+    if (symbol.getStaticValue() instanceof Struct) {
+      processClass((Struct) symbol.getStaticValue());
     }
     if (symbol.getStaticValue() instanceof UserFunction) {
       processCallableUnit((UserFunction) symbol.getStaticValue());
@@ -53,7 +53,7 @@ public class NodeProcessor {
 
   public void processProgram(Program program) {
     synchronized (program) {
-      for (UserProperty symbol : program.mainModule.getUserProperties()) {
+      for (GenericProperty symbol : program.mainModule.getUserProperties()) {
         processSymbol(symbol);
       }
 

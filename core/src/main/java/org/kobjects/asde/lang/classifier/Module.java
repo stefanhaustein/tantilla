@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Module extends UserClass {
+public class Module extends Struct {
   HashMap<String, Object> builtins = new HashMap<>();
 
   public Module(Program program) {
@@ -16,7 +16,7 @@ public class Module extends UserClass {
 
   public void addBuiltin(String name, Object value) {
     builtins.put(name, value);
-    putProperty(UserProperty.createStatic(this, name, value));
+    putProperty(GenericProperty.createStatic(this, name, value));
   }
 
   public Map<String, Object> builtins() {
@@ -25,11 +25,11 @@ public class Module extends UserClass {
 
 
   @Override
-  public Collection<UserProperty> getUserProperties() {
-    ArrayList<UserProperty> userProperties = new ArrayList<>();
+  public Collection<GenericProperty> getUserProperties() {
+    ArrayList<GenericProperty> userProperties = new ArrayList<>();
     for (Property property : propertyMap.values()) {
-      if (property instanceof UserProperty && !builtins.containsKey(property.getName())) {
-        userProperties.add((UserProperty) property);
+      if (property instanceof GenericProperty && !builtins.containsKey(property.getName())) {
+        userProperties.add((GenericProperty) property);
       }
     }
     return userProperties;

@@ -18,7 +18,7 @@ public class Trait implements Classifier, DeclaredBy {
   }
 
   @Override
-  public void setDeclaredBy(UserProperty declaringSymbol) {
+  public void setDeclaredBy(GenericProperty declaringSymbol) {
     this.declaringSymbol = declaringSymbol;
   }
 

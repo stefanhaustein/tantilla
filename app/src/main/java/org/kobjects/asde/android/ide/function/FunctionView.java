@@ -16,7 +16,7 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.symbol.DeleteFlow;
 import org.kobjects.asde.android.ide.symbol.RenameFlow;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
-import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.type.Types;
@@ -28,7 +28,7 @@ public class FunctionView extends SymbolView {
 
   private Selection selection;
 
-  public FunctionView(final MainActivity mainActivity, UserProperty symbol) {
+  public FunctionView(final MainActivity mainActivity, GenericProperty symbol) {
     super(mainActivity, symbol);
     this.userFunction = (UserFunction) symbol.getStaticValue();
 

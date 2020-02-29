@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.function.LocalSymbol;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -24,7 +24,7 @@ public class DeclarationStatement extends Statement {
 
 
   @Override
-  public void rename(UserProperty symbol, String oldName, String newName) {
+  public void rename(GenericProperty symbol, String oldName, String newName) {
     /*if (symbol == resolved && oldName.equals(varName)) {
       varName = newName;
     }*/

@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class UserProperty implements Property {
+public class GenericProperty implements Property {
   Classifier owner;
   String name;
   Map<Node, Exception> errors = Collections.emptyMap();
@@ -25,7 +25,7 @@ public class UserProperty implements Property {
   boolean isMutable;
 
   public static Property createMethod(Classifier owner, String functionName, Callable methodImplementation) {
-    return new UserProperty(
+    return new GenericProperty(
         owner,
         /* isInstanceField= */ false,
         /* isMutable= */ false,
@@ -36,7 +36,7 @@ public class UserProperty implements Property {
   }
 
   public static Property createWithInitializer(Classifier owner, String name, Node initializer) {
-    return new UserProperty(
+    return new GenericProperty(
         owner,
         /* isInstanceField= */ true,
         /* isMutable= */ true,
@@ -47,8 +47,8 @@ public class UserProperty implements Property {
   }
 
 
-  public static UserProperty createWithInitializer(Classifier owner, boolean isInstanceField, boolean isMutable, String propertyName, Node initializer) {
-    return new UserProperty(
+  public static GenericProperty createWithInitializer(Classifier owner, boolean isInstanceField, boolean isMutable, String propertyName, Node initializer) {
+    return new GenericProperty(
         owner,
         isInstanceField,
         isMutable,
@@ -58,8 +58,8 @@ public class UserProperty implements Property {
         /* staticValue */ null);
   }
 
-  public static UserProperty createUninitialized(Classifier owner, String propertyName, Type type) {
-    return new UserProperty(
+  public static GenericProperty createUninitialized(Classifier owner, String propertyName, Type type) {
+    return new GenericProperty(
         owner,
         /* isInstanceField= */ true,
         /* isMutable */ true,
@@ -69,8 +69,8 @@ public class UserProperty implements Property {
         /* staticValue= */ null);
   }
 
-  public static UserProperty createStatic(Classifier owner, String propertyName, Object value) {
-    return new UserProperty(
+  public static GenericProperty createStatic(Classifier owner, String propertyName, Object value) {
+    return new GenericProperty(
         owner,
         /* isInstanceField= */ false,
         /* isMutable */ false,
@@ -84,7 +84,7 @@ public class UserProperty implements Property {
 
 
 
-  UserProperty(Classifier owner, boolean isInstanceField, boolean isMutable, Type fixedType, String name, Node initializer, Object staticValue) {
+  GenericProperty(Classifier owner, boolean isInstanceField, boolean isMutable, Type fixedType, String name, Node initializer, Object staticValue) {
     this.owner = owner;
     this.isInstanceField = isInstanceField;
     this.isMutable = isMutable;
@@ -193,7 +193,7 @@ public class UserProperty implements Property {
     name = newName;
   }
 
-  public void init(EvaluationContext evaluationContext, HashSet<UserProperty> initialized) {
+  public void init(EvaluationContext evaluationContext, HashSet<GenericProperty> initialized) {
     if (initialized.contains(this)) {
       return;
     }

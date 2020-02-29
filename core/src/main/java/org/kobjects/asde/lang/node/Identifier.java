@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.function.LocalSymbol;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.ValidationContext;
@@ -111,14 +111,14 @@ public class Identifier extends SymbolNode {
 
 
   @Override
-  public void rename(UserProperty symbol, String oldName, String newName) {
+  public void rename(GenericProperty symbol, String oldName, String newName) {
     if (matches(symbol, oldName)) {
       this.name = newName;
     }
   }
 
   @Override
-  public boolean matches(UserProperty symbol, String name) {
+  public boolean matches(GenericProperty symbol, String name) {
     return false;
   }
 

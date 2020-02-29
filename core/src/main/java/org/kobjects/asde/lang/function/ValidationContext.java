@@ -2,8 +2,7 @@ package org.kobjects.asde.lang.function;
 
 
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.UserClass;
-import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.classifier.Struct;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.node.Node;
@@ -96,8 +95,8 @@ public class ValidationContext {
       // Recursion is ok.
       resolved.add(property);
 
-      if (!property.isInstanceField() && property.getInitializer() == null && property.getStaticValue() instanceof UserClass) {
-        ((UserClass) property.getStaticValue()).validate(this);
+      if (!property.isInstanceField() && property.getInitializer() == null && property.getStaticValue() instanceof Struct) {
+        ((Struct) property.getStaticValue()).validate(this);
       }
     }
 

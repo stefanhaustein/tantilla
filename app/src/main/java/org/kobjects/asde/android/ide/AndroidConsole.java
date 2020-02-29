@@ -22,7 +22,7 @@ import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.android.ide.widget.IconButton;
-import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.runtime.ForcedStopException;
 import org.kobjects.asde.lang.io.Format;
 import org.kobjects.asde.lang.function.UserFunction;
@@ -247,7 +247,7 @@ public class AndroidConsole implements Console {
   }
 
   @Override
-  public void edit(UserProperty symbol) {
+  public void edit(GenericProperty symbol) {
     mainActivity.runOnUiThread(() -> mainActivity.programView.selectImpl(symbol));
   }
 

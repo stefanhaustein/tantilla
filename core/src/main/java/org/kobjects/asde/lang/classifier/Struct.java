@@ -1,34 +1,32 @@
 package org.kobjects.asde.lang.classifier;
 
-import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
-import org.kobjects.asde.lang.type.Types;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.TreeMap;
 
-public class UserClass implements Classifier, InstantiableType, DeclaredBy {
+public class Struct implements Classifier, InstantiableType, DeclaredBy {
 
   final Program program;
   public final TreeMap<String, Property> propertyMap = new TreeMap<>();
   ArrayList<Node> resolvedInitializers = new ArrayList<>();
   Property declaringSymbol;
 
-  public UserClass(Program program) {
+  public Struct(Program program) {
     this.program = program;
   }
 
-  public Collection<UserProperty> getUserProperties() {
-    ArrayList<UserProperty> userProperties = new ArrayList<>();
+  public Collection<GenericProperty> getUserProperties() {
+    ArrayList<GenericProperty> userProperties = new ArrayList<>();
     for (Property property : propertyMap.values()) {
-      if (property instanceof UserProperty) {
-        userProperties.add((UserProperty) property);
+      if (property instanceof GenericProperty) {
+        userProperties.add((GenericProperty) property);
       }
     }
     return userProperties;
@@ -39,8 +37,8 @@ public class UserClass implements Classifier, InstantiableType, DeclaredBy {
     return propertyMap.get(name);
   }
 
-  public UserProperty getUserProperty(String name) {
-    return (UserProperty) propertyMap.get(name);
+  public GenericProperty getUserProperty(String name) {
+    return (GenericProperty) propertyMap.get(name);
   }
 
   @Override
@@ -72,7 +70,7 @@ public class UserClass implements Classifier, InstantiableType, DeclaredBy {
       if (property.isInstanceField()) {
         System.out.println(" - instance field " + property.getName());
         classValidationContext.validateProperty(property);
-        ((UserProperty) property).fieldIndex = resolvedInitializers.size();
+        ((GenericProperty) property).fieldIndex = resolvedInitializers.size();
         resolvedInitializers.add(property.getInitializer());
       }
     }
@@ -98,13 +96,13 @@ public class UserClass implements Classifier, InstantiableType, DeclaredBy {
 
 
   @Override
-  public void setDeclaredBy(UserProperty declaringSymbol) {
+  public void setDeclaredBy(GenericProperty declaringSymbol) {
     this.declaringSymbol = declaringSymbol;
   }
 
 
-  public void addSymbol(UserProperty symbol) {
-    propertyMap.put(symbol.getName(), (UserProperty) symbol);
+  public void addSymbol(GenericProperty symbol) {
+    propertyMap.put(symbol.getName(), (GenericProperty) symbol);
   }
 
   @Override

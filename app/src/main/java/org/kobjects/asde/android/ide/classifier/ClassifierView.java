@@ -12,8 +12,8 @@ import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.symbol.SymbolListView;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.android.ide.symbol.ExpandListener;
-import org.kobjects.asde.lang.classifier.UserClass;
-import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.classifier.Struct;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +38,7 @@ public class ClassifierView extends SymbolView {
   };
 
 
-  public ClassifierView(MainActivity mainActivity, UserProperty symbol) {
+  public ClassifierView(MainActivity mainActivity, GenericProperty symbol) {
     super(mainActivity, symbol);
 
     titleView.setTypeIndicator(R.drawable.outline_widgets_24, Colors.LIGHT_BLUE, false);
@@ -46,11 +46,11 @@ public class ClassifierView extends SymbolView {
     titleView.setMoreClickListener(clicked -> {
       PopupMenu popupMenu = new PopupMenu(mainActivity, clicked);
       popupMenu.getMenu().add("Add Property").setOnMenuItemClickListener(item -> {
-        PropertyFlow.createProperty(mainActivity, (UserClass) symbol.getStaticValue());
+        PropertyFlow.createProperty(mainActivity, (Struct) symbol.getStaticValue());
         return true;
       });
       popupMenu.getMenu().add("Add Method").setOnMenuItemClickListener(item -> {
-        FunctionSignatureFlow.createMethod(mainActivity, (UserClass) symbol.getStaticValue());
+        FunctionSignatureFlow.createMethod(mainActivity, (Struct) symbol.getStaticValue());
         return true;
       });
       popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {
@@ -84,9 +84,9 @@ public class ClassifierView extends SymbolView {
       return;
     }
 
-    Iterable<? extends UserProperty> symbols;
-    if (symbol.getStaticValue() instanceof UserClass) {
-      symbols = ((UserClass) symbol.getStaticValue()).getUserProperties();
+    Iterable<? extends GenericProperty> symbols;
+    if (symbol.getStaticValue() instanceof Struct) {
+      symbols = ((Struct) symbol.getStaticValue()).getUserProperties();
     } else {
       symbols = new ArrayList<>();
    //   symbols = ((Trait) symbol.getStaticValue()).propertyMap.values();

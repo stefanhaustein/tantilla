@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.function;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.classifier.DeclaredBy;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -29,7 +29,7 @@ public class UserFunction implements Callable, DeclaredBy {
   public String[] parameterNames;
   private List<Statement> code = new ArrayList<>();
   public int localVariableCount;
-  private UserProperty declaringSymbol;
+  private GenericProperty declaringSymbol;
 
   public UserFunction(Program program, FunctionType type, String... parameterNames) {
     this.program = program;
@@ -166,7 +166,7 @@ public class UserFunction implements Callable, DeclaredBy {
   }
 
 
-  public void setDeclaredBy(UserProperty symbol) {
+  public void setDeclaredBy(GenericProperty symbol) {
     this.declaringSymbol = symbol;
   }
 
@@ -174,7 +174,7 @@ public class UserFunction implements Callable, DeclaredBy {
     return declaringSymbol instanceof Property;
   }
 
-  public UserProperty getDeclaringSymbol() {
+  public GenericProperty getDeclaringSymbol() {
     return declaringSymbol;
   }
 

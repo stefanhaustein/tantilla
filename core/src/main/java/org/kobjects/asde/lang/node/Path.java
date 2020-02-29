@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Types;
@@ -97,7 +97,7 @@ public class Path extends SymbolNode {
   }
 
   @Override
-  public boolean matches(UserProperty symbol, String oldName) {
+  public boolean matches(GenericProperty symbol, String oldName) {
     return symbol == resolvedProperty;
   }
 }

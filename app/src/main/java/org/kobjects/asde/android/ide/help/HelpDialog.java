@@ -13,7 +13,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.android.ide.Dimensions;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
-import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.type.Types;
@@ -84,10 +84,10 @@ public class HelpDialog {
   }
 
   void appendLink(AnnotatedStringBuilder asb, Object linked) {
-    if (linked instanceof UserProperty) {
-      UserProperty symbol = (UserProperty) linked;
+    if (linked instanceof GenericProperty) {
+      GenericProperty symbol = (GenericProperty) linked;
       if (symbol.getStaticValue() instanceof Callable) {
-        appendFunctionLink(asb, (UserProperty) linked);
+        appendFunctionLink(asb, (GenericProperty) linked);
       } else if (symbol.getStaticValue() instanceof Type) {
         appendLink(asb, symbol.getStaticValue());
       } else {

@@ -1,6 +1,6 @@
 package org.kobjects.asde.demo;
 
-import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.runtime.WrappedExecutionException;
 import org.kobjects.asde.lang.io.Console;
@@ -65,7 +65,7 @@ public class AsdeShell {
 
     private final BufferedReader reader;
     private UserFunction selectedFunction;
-    private UserProperty selectedSymbol;
+    private GenericProperty selectedSymbol;
 
     StdioConsole(BufferedReader reader) {
       this.reader = reader;
@@ -137,7 +137,7 @@ public class AsdeShell {
     }
 
     @Override
-    public void edit(UserProperty symbol) {
+    public void edit(GenericProperty symbol) {
       this.selectedSymbol = symbol;
       if (symbol.getStaticValue() instanceof UserFunction) {
         selectedFunction = (UserFunction) symbol.getStaticValue();

@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.io;
 
-import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.function.UserFunction;
 
 import java.io.InputStream;
@@ -33,7 +33,7 @@ public interface Console {
 
     void delete(int line);
     void edit(int i);
-    void edit(UserProperty symbol);
+    void edit(GenericProperty symbol);
 
     UserFunction getSelectedFunction();
 

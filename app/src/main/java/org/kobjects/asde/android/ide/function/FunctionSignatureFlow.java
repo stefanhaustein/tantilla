@@ -18,8 +18,8 @@ import org.kobjects.asde.android.ide.widget.TypeSpinner;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.text.TextValidator;
 import org.kobjects.asde.lang.classifier.Classifier;
-import org.kobjects.asde.lang.classifier.UserClass;
-import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.classifier.Struct;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.statement.RemStatement;
@@ -36,7 +36,7 @@ public class FunctionSignatureFlow {
 
   final MainActivity mainActivity;
   private final Mode mode;
-  UserProperty symbol;
+  GenericProperty symbol;
   String name;
   Type returnType;
   ArrayList<Parameter> originalParameterList;
@@ -45,7 +45,7 @@ public class FunctionSignatureFlow {
   UserFunction userFunction;
   Classifier classImplementation;
 
-  public static void changeSignature(MainActivity mainActivity, UserProperty symbol, UserFunction userFunction) {
+  public static void changeSignature(MainActivity mainActivity, GenericProperty symbol, UserFunction userFunction) {
     FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CHANGE_SIGNATURE, userFunction.getType().getReturnType());
     flow.symbol = symbol;
     flow.name = symbol.getName();
@@ -61,7 +61,7 @@ public class FunctionSignatureFlow {
     flow.editFunctionParameters();
   }
 
-  public static void createMethod(MainActivity mainActivity, UserClass classImplementation) {
+  public static void createMethod(MainActivity mainActivity, Struct classImplementation) {
     FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CREATE_MEMBER, Types.VOID);
     flow.classImplementation = classImplementation;
     flow.createCallableUnit();
@@ -366,7 +366,7 @@ public class FunctionSignatureFlow {
     userFunction.appendStatement(remStatement);
 
     if (mode == Mode.CREATE_MEMBER) {
-      classImplementation.putProperty(UserProperty.createMethod(classImplementation, name, userFunction));
+      classImplementation.putProperty(GenericProperty.createMethod(classImplementation, name, userFunction));
     } else {
       mainActivity.program.setDeclaration(name, userFunction);
     }

@@ -6,11 +6,9 @@ import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.android.ide.symbol.PropertyNameValidator;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.UserClass;
-import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.ProgramListener;
-import org.kobjects.asde.lang.statement.DeclarationStatement;
 
 public class PropertyFlow {
 
@@ -59,7 +57,7 @@ public class PropertyFlow {
       Node parsed =  mainActivity.program.parser.parseExpression(result[0]);
       switch (mode) {
         case CREATE_PROPERTY:
-          owner.putProperty(UserProperty.createWithInitializer(owner, name, parsed));
+          owner.putProperty(GenericProperty.createWithInitializer(owner, name, parsed));
           mainActivity.program.sendProgramEvent(ProgramListener.Event.CHANGED);
           break;
         case EDIT_INITIALIZER:

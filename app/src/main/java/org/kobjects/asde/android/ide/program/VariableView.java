@@ -14,7 +14,7 @@ import org.kobjects.asde.android.ide.classifier.PropertyFlow;
 import org.kobjects.asde.android.ide.symbol.RenameFlow;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.lang.list.ListType;
-import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.node.ArrayLiteral;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
@@ -29,7 +29,7 @@ public class VariableView extends SymbolView {
     Object cache = this;
     MainActivity mainActivity;
 
-    public VariableView(MainActivity mainActivity, UserProperty symbol) {
+    public VariableView(MainActivity mainActivity, GenericProperty symbol) {
         super(mainActivity, symbol);
         this.mainActivity = mainActivity;
         this.symbol = symbol;
@@ -38,8 +38,8 @@ public class VariableView extends SymbolView {
         titleView.setMoreClickListener(view -> {
             PopupMenu popupMenu = new PopupMenu(getContext(), view);
             popupMenu.getMenu().add("Edit").setOnMenuItemClickListener(item -> {
-                if (symbol instanceof UserProperty) {
-                    PropertyFlow.editInitializer(mainActivity, (UserProperty) symbol);
+                if (symbol instanceof GenericProperty) {
+                    PropertyFlow.editInitializer(mainActivity, (GenericProperty) symbol);
                 } else {
                     mainActivity.controlView.codeEditText.setText(String.valueOf(symbol.getInitializer()));
                 }

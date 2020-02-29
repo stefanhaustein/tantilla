@@ -1,9 +1,7 @@
 package org.kobjects.asde.lang.classifier;
 
-import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Collections;
@@ -50,7 +48,7 @@ public interface Property {
     }
   }
 
-  default void init(EvaluationContext evaluationContext, HashSet<UserProperty> initialized) {
+  default void init(EvaluationContext evaluationContext, HashSet<GenericProperty> initialized) {
   }
 
   default void setInitializer(Node node) {

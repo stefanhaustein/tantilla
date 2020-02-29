@@ -4,7 +4,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Consumer;
 import org.kobjects.asde.lang.classifier.Module;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.classifier.DeclaredBy;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -129,10 +129,10 @@ public class Program {
     }
     symbolMap = cleared; */
 
-    HashSet<UserProperty> initialized = new HashSet<>();
+    HashSet<GenericProperty> initialized = new HashSet<>();
 
 
-    for (UserProperty symbol : mainModule.getUserProperties()) {
+    for (GenericProperty symbol : mainModule.getUserProperties()) {
       symbol.init(evaluationContext, initialized);
     }
   }
@@ -155,13 +155,13 @@ public class Program {
   }
 
   public synchronized void toString(AnnotatedStringBuilder sb) {
-    for (UserProperty symbol : mainModule.getUserProperties()) {
+    for (GenericProperty symbol : mainModule.getUserProperties()) {
       if (!(symbol.getStaticValue() instanceof UserFunction)) {
         sb.append(symbol.getStaticValue().toString()).append('\n');
       }
     }
 
-    for (UserProperty symbol : mainModule.getUserProperties()) {
+    for (GenericProperty symbol : mainModule.getUserProperties()) {
       if (symbol.getStaticValue() instanceof UserFunction) {
         ((UserFunction) symbol.getStaticValue()).toString(sb, symbol.getName(), symbol.getErrors());
       }
@@ -251,11 +251,11 @@ public class Program {
 
 
   public synchronized void setDeclaration(String name, DeclaredBy declaration) {
-    mainModule.putProperty(UserProperty.createStatic(mainModule, name, declaration));
+    mainModule.putProperty(GenericProperty.createStatic(mainModule, name, declaration));
   }
 
   public synchronized void setPersistentInitializer(String name, DeclarationStatement expr) {
-    mainModule.putProperty(UserProperty.createWithInitializer(
+    mainModule.putProperty(GenericProperty.createWithInitializer(
         mainModule,
         false,
         expr.kind == DeclarationStatement.Kind.VAR,

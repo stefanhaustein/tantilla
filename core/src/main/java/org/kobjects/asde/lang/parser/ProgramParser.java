@@ -1,9 +1,9 @@
 package org.kobjects.asde.lang.parser;
 
 
-import org.kobjects.asde.lang.classifier.UserClass;
+import org.kobjects.asde.lang.classifier.Struct;
 import org.kobjects.asde.lang.classifier.Trait;
-import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.Program;
@@ -34,7 +34,7 @@ public class ProgramParser {
 
   public void parseProgram(BufferedReader reader) throws IOException {
     UserFunction currentFunction = null;
-    UserClass currentClass = null;
+    Struct currentClass = null;
     ArrayList<String> lines = new ArrayList<>();
     boolean legacyMode;
     int depth = 0;
@@ -52,7 +52,7 @@ public class ProgramParser {
           int cut = line.lastIndexOf(':');
           String className = line.substring(6, cut).trim();
           System.out.println("class forward declaration: '" + className + "'");
-          program.setDeclaration(className, new UserClass(program));
+          program.setDeclaration(className, new Struct(program));
         } else if (line.startsWith("trait ")) {
           int cut = line.lastIndexOf(':');
           String interfaceName = line.substring("trait".length() + 1, cut).trim();
@@ -114,7 +114,7 @@ public class ProgramParser {
           }
           currentFunction = new UserFunction(program, functionType, parameterNames.toArray(new String[0]));
           if (currentClass != null) {
-            currentClass.putProperty(UserProperty.createMethod(currentClass, functionName, currentFunction));
+            currentClass.putProperty(GenericProperty.createMethod(currentClass, functionName, currentFunction));
           } else if (functionName.equals("main")) {
             // Implicitly discarding what we have just created...
             currentFunction = program.main;
@@ -123,7 +123,7 @@ public class ProgramParser {
           }
         } else if (tokenizer.tryConsume("class")) {
           String className = tokenizer.consumeIdentifier();
-          currentClass = (UserClass) program.mainModule.getProperty(className).getStaticValue();
+          currentClass = (Struct) program.mainModule.getProperty(className).getStaticValue();
           // currentClass = (UserClass) program.getSymbol(className).getStaticValue();
           if (!tokenizer.tryConsume(":")) {
             throw new RuntimeException("':' expected.");
@@ -144,10 +144,10 @@ public class ProgramParser {
             String name = tokenizer.consumeIdentifier();
             if (tokenizer.tryConsume("=")) {
               Node initilaizer = statementParser.expressionParser.parse(tokenizer);
-              currentClass.putProperty(UserProperty.createWithInitializer(currentClass, name, initilaizer));
+              currentClass.putProperty(GenericProperty.createWithInitializer(currentClass, name, initilaizer));
             } else if (tokenizer.tryConsume(":")) {
               Type type = statementParser.parseType(tokenizer);
-              currentClass.putProperty(UserProperty.createUninitialized(
+              currentClass.putProperty(GenericProperty.createUninitialized(
                   currentClass,
                   name,
                   type));

@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.classifier.InstantiableType;
@@ -45,7 +45,7 @@ public class Constructor extends Node {
 
   @Override
   protected void onResolve(ValidationContext resolutionContext, int line) {
-    UserProperty symbol = resolutionContext.program.mainModule.getUserProperty(name);
+    GenericProperty symbol = resolutionContext.program.mainModule.getUserProperty(name);
     if (symbol == null) {
       throw new RuntimeException("'" + name + "' is not defined");
     }
@@ -61,8 +61,8 @@ public class Constructor extends Node {
       arraySize = 0;
 
       for (Property property : instantiableType.getAllProperties()) {
-        if (property instanceof UserProperty) {
-          UserProperty descriptor = (UserProperty) property;
+        if (property instanceof GenericProperty) {
+          GenericProperty descriptor = (GenericProperty) property;
           Integer childIndex = nameIndexMap.get(descriptor.getName());
           if (childIndex != null) {
             if (!property.getType().isAssignableFrom(children[childIndex].returnType())) {
