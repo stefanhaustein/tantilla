@@ -111,14 +111,14 @@ public class Identifier extends SymbolNode {
 
 
   @Override
-  public void rename(GenericProperty symbol, String oldName, String newName) {
+  public void rename(Property symbol, String oldName, String newName) {
     if (matches(symbol, oldName)) {
       this.name = newName;
     }
   }
 
   @Override
-  public boolean matches(GenericProperty symbol, String name) {
+  public boolean matches(Property symbol, String name) {
     return false;
   }
 

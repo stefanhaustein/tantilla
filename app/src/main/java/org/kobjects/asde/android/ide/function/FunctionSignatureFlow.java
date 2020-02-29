@@ -18,8 +18,8 @@ import org.kobjects.asde.android.ide.widget.TypeSpinner;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.text.TextValidator;
 import org.kobjects.asde.lang.classifier.Classifier;
-import org.kobjects.asde.lang.classifier.Struct;
 import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.statement.RemStatement;
@@ -36,7 +36,7 @@ public class FunctionSignatureFlow {
 
   final MainActivity mainActivity;
   private final Mode mode;
-  GenericProperty symbol;
+  Property property;
   String name;
   Type returnType;
   ArrayList<Parameter> originalParameterList;
@@ -45,9 +45,9 @@ public class FunctionSignatureFlow {
   UserFunction userFunction;
   Classifier classImplementation;
 
-  public static void changeSignature(MainActivity mainActivity, GenericProperty symbol, UserFunction userFunction) {
+  public static void changeSignature(MainActivity mainActivity, Property symbol, UserFunction userFunction) {
     FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CHANGE_SIGNATURE, userFunction.getType().getReturnType());
-    flow.symbol = symbol;
+    flow.property = symbol;
     flow.name = symbol.getName();
     flow.userFunction = userFunction;
     flow.originalParameterList = new ArrayList<>();
@@ -61,9 +61,9 @@ public class FunctionSignatureFlow {
     flow.editFunctionParameters();
   }
 
-  public static void createMethod(MainActivity mainActivity, Struct classImplementation) {
+  public static void createMethod(MainActivity mainActivity, Classifier classifier) {
     FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CREATE_MEMBER, Types.VOID);
-    flow.classImplementation = classImplementation;
+    flow.classImplementation = classifier;
     flow.createCallableUnit();
   }
 
@@ -351,7 +351,7 @@ public class FunctionSignatureFlow {
     userFunction.setType(new FunctionType(returnType, types));
 
     if (moved) {
-      mainActivity.program.processNodes(node -> node.changeSignature(symbol, oldIndices));
+      mainActivity.program.processNodes(node -> node.changeSignature(property, oldIndices));
     }
 
     mainActivity.program.notifyProgramChanged();

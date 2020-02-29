@@ -97,7 +97,7 @@ public class Path extends SymbolNode {
   }
 
   @Override
-  public boolean matches(GenericProperty symbol, String oldName) {
+  public boolean matches(Property symbol, String oldName) {
     return symbol == resolvedProperty;
   }
 }

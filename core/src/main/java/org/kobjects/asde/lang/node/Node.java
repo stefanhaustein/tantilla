@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.type.Types;
@@ -88,10 +88,10 @@ public abstract class Node {
     }
   }
 
-  public void rename(GenericProperty symbol, String oldName, String newName) {
+  public void rename(Property symbol, String oldName, String newName) {
   }
   
-  public void changeSignature(GenericProperty symbol, int[] newOrder) {
+  public void changeSignature(Property symbol, int[] newOrder) {
   }
 
   protected void appendLinked(AnnotatedStringBuilder asb, String s, Map<Node, Exception> errors, Object... annotations) {

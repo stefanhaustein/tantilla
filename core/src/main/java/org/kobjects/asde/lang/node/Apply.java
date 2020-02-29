@@ -2,6 +2,7 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -23,7 +24,7 @@ public class Apply extends Node {
 
 
   @Override
-  public void changeSignature(GenericProperty symbol, int[] newOrder) {
+  public void changeSignature(Property symbol, int[] newOrder) {
     Node base = children[0];
     if (!(base instanceof SymbolNode) || !((SymbolNode) base).matches(symbol, symbol.getName())) {
       return;
