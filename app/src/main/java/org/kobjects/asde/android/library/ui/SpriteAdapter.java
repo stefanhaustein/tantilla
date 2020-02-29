@@ -40,7 +40,7 @@ public class SpriteAdapter implements Animated, Typed {
 
   static {
     TYPE.addProperties(
-        new NativeProperty("x", "x-position", Types.FLOAT) {
+        new NativeProperty(TYPE, "x", "x-position", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((SpriteAdapter) instance).sprite.getX();
@@ -51,7 +51,7 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setX(((Double) value).floatValue());
           }
         },
-        new NativeProperty("y", "y-position", Types.FLOAT) {
+        new NativeProperty(TYPE, "y", "y-position", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((SpriteAdapter) instance).sprite.getY();
@@ -62,7 +62,7 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setY(((Double) value).floatValue());
           }
         },
-        new NativeProperty("z", "z-position", Types.FLOAT) {
+        new NativeProperty(TYPE, "z", "z-position", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((SpriteAdapter) instance).sprite.getZ();
@@ -73,7 +73,7 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setZ(((Double) value).floatValue());
           }
         },
-        new NativeProperty("size", "size", Types.FLOAT) {
+        new NativeProperty(TYPE, "size", "size", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((SpriteAdapter) instance).sprite.getSize();
@@ -84,7 +84,7 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setSize(((Double) value).floatValue());
           }
         },
-        new NativeProperty("angle", "angle", Types.FLOAT) {
+        new NativeProperty(TYPE, "angle", "angle", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((SpriteAdapter) instance).sprite.getAngle();
@@ -95,7 +95,7 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setAngle(((Double) value).floatValue());
           }
         },
-        new NativeProperty("opacity", "Sprite opacity ranging from 0 to 1", Types.FLOAT) {
+        new NativeProperty(TYPE, "opacity", "Sprite opacity ranging from 0 to 1", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((SpriteAdapter) instance).sprite.getOpacity();
@@ -106,7 +106,7 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setOpacity(((Double) value).floatValue());
           }
         },
-        new NativeProperty("dx", "x-component of the velocity", Types.FLOAT) {
+        new NativeProperty(TYPE, "dx", "x-component of the velocity", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((SpriteAdapter) instance).sprite.getDx();
@@ -117,7 +117,7 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setDx(((Double) value).floatValue());
           }
         },
-        new NativeProperty("dy", "y-component of the velocity", Types.FLOAT) {
+        new NativeProperty(TYPE, "dy", "y-component of the velocity", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((SpriteAdapter) instance).sprite.getDy();
@@ -128,7 +128,7 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setDy(((Double) value).floatValue());
           }
         },
-        new NativeProperty("speed", "speed", Types.FLOAT) {
+        new NativeProperty(TYPE, "speed", "speed", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((SpriteAdapter) instance).sprite.getSpeed();
@@ -139,7 +139,7 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setSpeed(((Double) value).floatValue());
           }
         },
-        new NativeProperty("rotation", "rotation speed", Types.FLOAT) {
+        new NativeProperty(TYPE, "rotation", "rotation speed", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((SpriteAdapter) instance).sprite.getRotation();
@@ -150,7 +150,7 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setRotation(((Double) value).floatValue());
           }
         },
-        new NativeProperty("grow", "growth", Types.FLOAT) {
+        new NativeProperty(TYPE, "grow", "growth", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((SpriteAdapter) instance).sprite.getGrow();
@@ -161,7 +161,7 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setGrow(((Double) value).floatValue());
           }
         },
-        new NativeProperty("fade", "fading speed", Types.FLOAT) {
+        new NativeProperty(TYPE, "fade", "fading speed", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((SpriteAdapter) instance).sprite.getFade();
@@ -172,7 +172,7 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setFade(((Double) value).floatValue());
           }
         },
-        new NativeProperty("direction", "Moving direction", Types.FLOAT) {
+        new NativeProperty(TYPE, "direction", "Moving direction", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((SpriteAdapter) instance).sprite.getDirection();
@@ -183,7 +183,7 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setDirection(((Double) value).floatValue());
           }
         },
-        new NativeProperty("bubble", "Text bubble", TextBoxType.TYPE) {
+        new NativeProperty(TYPE, "bubble", "Text bubble", TextBoxType.TYPE) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return ((SpriteAdapter) instance).sprite.getBubble();
@@ -194,7 +194,7 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setBubble(((TextBox) value));
           }
         },
-        new NativeProperty("label", "Text label", TextBoxType.TYPE) {
+        new NativeProperty(TYPE, "label", "Text label", TextBoxType.TYPE) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return ((SpriteAdapter) instance).sprite.getLabel();
@@ -206,7 +206,7 @@ public class SpriteAdapter implements Animated, Typed {
           }
         },
 
-        new NativeProperty("face", "Sprite Emoji face", Types.STR) {
+        new NativeProperty(TYPE, "face", "Sprite Emoji face", Types.STR) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return ((SpriteAdapter) instance).sprite.getFace();
@@ -217,7 +217,7 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setFace((String) value);
           }
         },
-        new NativeProperty("anchor", "Anchor for relative positioning", TYPE) {
+        new NativeProperty(TYPE, "anchor", "Anchor for relative positioning", TYPE) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return ((SpriteAdapter) instance).sprite.getAnchor().getTag();
@@ -229,7 +229,7 @@ public class SpriteAdapter implements Animated, Typed {
           }
         },
 
-        new NativeProperty("edgeMode", "EdgeMode", EDGE_MODE) {
+        new NativeProperty(TYPE, "edgeMode", "EdgeMode", EDGE_MODE) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return ((SpriteAdapter) instance).sprite.getEdgeMode();
@@ -241,7 +241,7 @@ public class SpriteAdapter implements Animated, Typed {
           }
         },
 
-        new NativeProperty("xAlign", "X-Align", ScreenType.X_ALIGN) {
+        new NativeProperty(TYPE, "xAlign", "X-Align", ScreenType.X_ALIGN) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return ((SpriteAdapter) instance).sprite.getXAlign();
@@ -253,7 +253,7 @@ public class SpriteAdapter implements Animated, Typed {
           }
         },
 
-        new NativeProperty("yAlign", "Y-Align", ScreenType.Y_ALIGN) {
+        new NativeProperty(TYPE, "yAlign", "Y-Align", ScreenType.Y_ALIGN) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return ((SpriteAdapter) instance).sprite.getYAlign();
@@ -265,14 +265,14 @@ public class SpriteAdapter implements Animated, Typed {
           }
         },
 
-        new NativeReadonlyProperty("collisions", "List of colliding sprites", new ListType(TYPE)) {
+        new NativeReadonlyProperty(TYPE, "collisions", "List of colliding sprites", new ListType(TYPE)) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return ((SpriteAdapter) instance).collisionsArray;
           }
         },
 
-        new NativeMethod("say", "Creats a bubble with the given text.", Types.VOID, TYPE, Types.STR) {
+        new NativeMethod(TYPE, "say", "Creats a bubble with the given text.", Types.VOID, TYPE, Types.STR) {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
             SpriteAdapter self = (SpriteAdapter) evaluationContext.getParameter(0);

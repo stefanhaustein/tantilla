@@ -40,7 +40,7 @@ public class DpadAdapter implements Typed {
         for (int i = 0; i < BUTTON_NAMES.length; i++) {
             final int index = i;
             TYPE.addProperties(
-                new NativeProperty(BUTTON_NAMES[i], "True if the '"+ BUTTON_NAMES[i] + "' button is pressed", Types.BOOL) {
+                new NativeProperty(TYPE, BUTTON_NAMES[i], "True if the '"+ BUTTON_NAMES[i] + "' button is pressed", Types.BOOL) {
                     @Override
                     public Object get(EvaluationContext context, Object instance) {
                         return ((DpadAdapter) instance).buttonState[index];
@@ -53,7 +53,7 @@ public class DpadAdapter implements Typed {
                 });
         }
         TYPE.addProperties(
-            new NativeProperty("visible", "True if the dpad is currently shown.", Types.BOOL) {
+            new NativeProperty(TYPE, "visible", "True if the dpad is currently shown.", Types.BOOL) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return ((DpadAdapter) instance).dpad.getVisible();

@@ -10,6 +10,8 @@ public interface Classifier extends Type {
 
   Collection<? extends Property> getAllProperties();
 
+  void putProperty(Property property);
+
   CharSequence getDocumentation();
 }
 

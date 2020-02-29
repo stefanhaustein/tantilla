@@ -15,7 +15,7 @@ public class TextBoxType {
     static {
         Types.addClass(TextBox.class, TYPE);
         TYPE.addProperties(
-            new NativeProperty("x", "x-position", Types.FLOAT) {
+            new NativeProperty(TYPE, "x", "x-position", Types.FLOAT) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return (double) ((TextBox) instance).getX();
@@ -26,7 +26,7 @@ public class TextBoxType {
                     ((TextBox) instance).setX(((Double) value).floatValue());
                 }
             },
-            new NativeProperty("y", "y-position", Types.FLOAT) {
+            new NativeProperty(TYPE, "y", "y-position", Types.FLOAT) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return (double) ((TextBox) instance).getY();
@@ -37,7 +37,7 @@ public class TextBoxType {
                     ((TextBox) instance).setY(((Double) value).floatValue());
                 }
             },
-            new NativeProperty("z", "z-position", Types.FLOAT) {
+            new NativeProperty(TYPE, "z", "z-position", Types.FLOAT) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return (double) ((TextBox) instance).getZ();
@@ -48,7 +48,7 @@ public class TextBoxType {
                     ((TextBox) instance).setZ(((Double) value).floatValue());
                 }
             },
-            new NativeProperty("size", "size", Types.FLOAT) {
+            new NativeProperty(TYPE, "size", "size", Types.FLOAT) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return (double) ((TextBox) instance).getSize();
@@ -59,7 +59,7 @@ public class TextBoxType {
                     ((TextBox) instance).setSize(((Double) value).floatValue());
                 }
             },
-            new NativeProperty("cornerRadius", "Radius of the text box corners.", Types.FLOAT) {
+            new NativeProperty(TYPE, "cornerRadius", "Radius of the text box corners.", Types.FLOAT) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return (double) ((TextBox) instance).getCornerRadius();
@@ -70,7 +70,7 @@ public class TextBoxType {
                     ((TextBox) instance).setCornerRadius(((Double) value).floatValue());
                 }
             },
-            new NativeProperty("lineWidth", "Width of the border line.", Types.FLOAT) {
+            new NativeProperty(TYPE, "lineWidth", "Width of the border line.", Types.FLOAT) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return (double) ((TextBox) instance).getLineWidth();
@@ -82,7 +82,7 @@ public class TextBoxType {
                 }
             },
 
-            new NativeProperty("lineColor", "Color used for the text box outline", Types.FLOAT) {
+            new NativeProperty(TYPE, "lineColor", "Color used for the text box outline", Types.FLOAT) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return (double) ((TextBox) instance).getLineColor();
@@ -93,7 +93,7 @@ public class TextBoxType {
                     ((TextBox) instance).setLineColor((int) ((Double) value).doubleValue());
                 }
             },
-            new NativeProperty("textColor", "Color used for the text content", Types.FLOAT) {
+            new NativeProperty(TYPE, "textColor", "Color used for the text content", Types.FLOAT) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return (double) ((TextBox) instance).getTextColor();
@@ -104,7 +104,7 @@ public class TextBoxType {
                     ((TextBox) instance).setTextColor((int) ((Double) value).doubleValue());
                 }
             },
-            new NativeProperty("fillColor", "Color used to fill the text box background", Types.FLOAT) {
+            new NativeProperty(TYPE, "fillColor", "Color used to fill the text box background", Types.FLOAT) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return (double) ((TextBox) instance).getFillColor();
@@ -116,7 +116,7 @@ public class TextBoxType {
                 }
             },
 
-            new NativeProperty("anchor", "Anchor for relative positioning", TYPE) {
+            new NativeProperty(TYPE, "anchor", "Anchor for relative positioning", TYPE) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return ((TextBox) instance).getAnchor().getTag();
@@ -128,7 +128,7 @@ public class TextBoxType {
                 }
             },
 
-            new NativeProperty("xAlign", "X-Align", ScreenType.X_ALIGN) {
+            new NativeProperty(TYPE, "xAlign", "X-Align", ScreenType.X_ALIGN) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return ((TextBox) instance).getXAlign();
@@ -140,7 +140,7 @@ public class TextBoxType {
                 }
             },
 
-            new NativeProperty("yAlign", "Y-Align", ScreenType.Y_ALIGN) {
+            new NativeProperty(TYPE, "yAlign", "Y-Align", ScreenType.Y_ALIGN) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return ((TextBox) instance).getYAlign();
@@ -152,7 +152,7 @@ public class TextBoxType {
                 }
             },
 
-            new NativeProperty("text", "Sprite Emoji face", Types.STR) {
+            new NativeProperty(TYPE, "text", "Sprite Emoji face", Types.STR) {
                 @Override
                 public Object get(EvaluationContext context, Object instance) {
                     return ((TextBox) instance).getText();

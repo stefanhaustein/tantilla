@@ -9,6 +9,7 @@ import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.symbol.ExpandListener;
 import org.kobjects.asde.android.ide.symbol.SymbolListView;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.android.ide.MainActivity;
@@ -25,7 +26,7 @@ public class ProgramView extends SymbolListView {
   public FunctionView currentFunctionView;
   public SymbolView currentSymbolView;
   int syncRequestCount;
-  UserProperty expandOnSync;
+  Property expandOnSync;
   private final ExpandListener expandListener = new ExpandListener() {
     @Override
     public void notifyExpanding(SymbolView symbolView, boolean animated) {

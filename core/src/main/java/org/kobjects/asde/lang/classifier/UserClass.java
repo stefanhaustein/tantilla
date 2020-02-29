@@ -49,6 +49,11 @@ public class UserClass implements Classifier, InstantiableType, DeclaredBy {
   }
 
   @Override
+  public void putProperty(Property property) {
+    propertyMap.put(property.getName(), property);
+  }
+
+  @Override
   public CharSequence getDocumentation() {
     return null;
   }
@@ -78,23 +83,11 @@ public class UserClass implements Classifier, InstantiableType, DeclaredBy {
 
 
   public void setMethod(String functionName, Callable methodImplementation) {
-    setProperty(
-        /* isInstanceField= */ false,
-        /* isMutable= */ false,
-        methodImplementation.getType(),
-        functionName,
-        /* initializer= */ null,
-        methodImplementation);
+    putProperty(UserProperty.createMethod(this, functionName, methodImplementation));
   }
 
   public void setProperty(String propertyName, Node initializer) {
-    setProperty(
-        /* isInstanceField= */ true,
-        /* isMutable= */ true,
-        /* fixedType= */ null,
-        propertyName,
-        initializer,
-        /* staticValue */ null);
+    putProperty(UserProperty.createWithInitializer(this, propertyName, initializer));
   }
 
 

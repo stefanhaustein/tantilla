@@ -50,7 +50,7 @@ public class ListType implements Classifier {
   public Property getPropertyDescriptor(String name) {
     switch (name) {
       case "clear":
-        return new NativeMethod("clear", "Remove all elements from the list.", Types.VOID, ListType.this) {
+        return new NativeMethod(ListType.this, "clear", "Remove all elements from the list.", Types.VOID, ListType.this) {
         @Override
         public Object call(EvaluationContext evaluationContext, int paramCount) {
           ListImpl list = (ListImpl) evaluationContext.getParameter(0);
@@ -59,7 +59,7 @@ public class ListType implements Classifier {
         }
       };
       case "append":
-        return new NativeMethod("append", "Appends an element to the list", Types.VOID, ListType.this, elementType) {
+        return new NativeMethod(ListType.this, "append", "Appends an element to the list", Types.VOID, ListType.this, elementType) {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
             ListImpl list = (ListImpl) evaluationContext.getParameter(0);
@@ -69,7 +69,7 @@ public class ListType implements Classifier {
           }
         };
       case "remove":
-        return new NativeMethod("remove", "Removes the first occurrence of the given object from the list", Types.VOID, ListType.this, elementType) {
+        return new NativeMethod(ListType.this, "remove", "Removes the first occurrence of the given object from the list", Types.VOID, ListType.this, elementType) {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
             ListImpl list = (ListImpl) evaluationContext.getParameter(0);
@@ -79,7 +79,7 @@ public class ListType implements Classifier {
           }
         };
       case "size":
-        return new NativeReadonlyProperty("size", "The size of the list.", Types.FLOAT) {
+        return new NativeReadonlyProperty(ListType.this,"size", "The size of the list.", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((ListImpl) instance).length();
@@ -99,6 +99,11 @@ public class ListType implements Classifier {
     result.add(getPropertyDescriptor("size"));
     result.add(getPropertyDescriptor("clear"));
     return result;
+  }
+
+  @Override
+  public void putProperty(Property property) {
+    throw new UnsupportedOperationException();
   }
 
   @Override

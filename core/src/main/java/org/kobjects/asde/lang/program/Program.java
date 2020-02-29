@@ -73,7 +73,7 @@ public class Program {
   public boolean hasUnsavedChanges;
 
   private boolean notificationPending;
-  private UserProperty notificationPendingForSymbol;
+  private Property notificationPendingForSymbol;
   private Timer notificationTimer = new Timer();
   public Module mainModule = new Module(this);
 
@@ -285,7 +285,7 @@ public class Program {
     }
   }
 
-  synchronized void deferNotification(UserProperty symbol) {
+  synchronized void deferNotification(Property symbol) {
     if (loading) {
       return;
     }
@@ -324,7 +324,7 @@ public class Program {
   }
 
 
-  public void notifySymbolChanged(UserProperty property) {
+  public void notifySymbolChanged(Property property) {
     deferNotification(property);
   }
 

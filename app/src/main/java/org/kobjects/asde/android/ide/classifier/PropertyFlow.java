@@ -4,8 +4,11 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.text.ExpressionValidator;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.android.ide.symbol.PropertyNameValidator;
+import org.kobjects.asde.lang.classifier.Classifier;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.classifier.UserProperty;
+import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.ProgramListener;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 
@@ -14,23 +17,23 @@ public class PropertyFlow {
   enum Mode {EDIT_INITIALIZER, CREATE_PROPERTY};
 
 
-  public static void editInitializer(final MainActivity mainActivity, final UserProperty symbol) {
+  public static void editInitializer(final MainActivity mainActivity, final Property symbol) {
     new PropertyFlow(mainActivity, Mode.EDIT_INITIALIZER, symbol.getOwner(), symbol).showInitializerDialog();
   }
 
-  public static void createProperty(final MainActivity mainActivity, final UserClass owner) {
+  public static void createProperty(final MainActivity mainActivity, final Classifier owner) {
     new PropertyFlow(mainActivity, Mode.CREATE_PROPERTY, owner, null).showNameDialog();
   }
 
 
   private final MainActivity mainActivity;
   private final Mode mode;
-  private final UserClass owner;
-  private final UserProperty symbol;
+  private final Classifier owner;
+  private final Property symbol;
 
   private String name;
 
-  PropertyFlow(MainActivity mainActivity, Mode mode, UserClass owner, UserProperty symbol) {
+  PropertyFlow(MainActivity mainActivity, Mode mode, Classifier owner, Property symbol) {
     this.mainActivity = mainActivity;
     this.mode = mode;
     this.owner = owner;
@@ -53,10 +56,10 @@ public class PropertyFlow {
     InputFlowBuilder builder = new InputFlowBuilder(mainActivity, "Property " + name);
     builder.addInput("Initial value", mode == Mode.EDIT_INITIALIZER ? symbol.getInitializer().toString() : null, new ExpressionValidator(mainActivity));
     builder.start(result -> {
-      DeclarationStatement parsed = (DeclarationStatement) mainActivity.program.parser.parseExpression(result[0]);
+      Node parsed =  mainActivity.program.parser.parseExpression(result[0]);
       switch (mode) {
         case CREATE_PROPERTY:
-          owner.setProperty(name, parsed);
+          owner.putProperty(UserProperty.createWithInitializer(owner, name, parsed));
           mainActivity.program.sendProgramEvent(ProgramListener.Event.CHANGED);
           break;
         case EDIT_INITIALIZER:

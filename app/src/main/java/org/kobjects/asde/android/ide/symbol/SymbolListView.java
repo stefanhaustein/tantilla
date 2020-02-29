@@ -5,6 +5,7 @@ import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.classifier.ClassifierView;
 import org.kobjects.asde.android.ide.program.VariableView;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.classifier.Classifier;
@@ -23,7 +24,7 @@ public class SymbolListView extends ExpandableList {
     this.mainActivity = mainActivity;
   }
 
-  public SymbolView findViewBySymbol(UserProperty symbol) {
+  public SymbolView findViewBySymbol(Property symbol) {
     return symbolViewMap.get(symbol);
   }
 
@@ -34,7 +35,7 @@ public class SymbolListView extends ExpandableList {
    * @param returnViewForSymbol Return the view for this symbol.
    * @return
    */
-  public SymbolView synchronizeTo(Iterable<? extends UserProperty> symbolList, ExpandListener expandListener, UserProperty returnViewForSymbol) {
+  public SymbolView synchronizeTo(Iterable<? extends UserProperty> symbolList, ExpandListener expandListener, Property returnViewForSymbol) {
 
     System.out.println("########  synchronizeTo: " + symbolList);
 

@@ -52,6 +52,13 @@ public class Trait implements Classifier, DeclaredBy {
     return new MetaType(this);
   }
 
+  public void putProperty(Property property) {
+    if (!(property instanceof TraitProperty)) {
+      throw new RuntimeException("TraitProperty required");
+    }
+    propertyMap.put(property.getName(), (TraitProperty) property);
+  }
+
   public void addProperty(String name, Type type) {
     propertyMap.put(name, new TraitProperty(this, name, type));
   }

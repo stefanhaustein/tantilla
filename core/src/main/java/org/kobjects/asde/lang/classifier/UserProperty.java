@@ -1,9 +1,7 @@
 package org.kobjects.asde.lang.classifier;
 
+import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.statement.DeclarationStatement;
-import org.kobjects.asde.lang.function.UserFunction;
-import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Type;
 
@@ -14,7 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class UserProperty implements Property {
-  UserClass owner;
+  Classifier owner;
   String name;
   Map<Node, Exception> errors = Collections.emptyMap();
   Set<Property> dependencies;
@@ -25,8 +23,29 @@ public class UserProperty implements Property {
   boolean isInstanceField;
   boolean isMutable;
 
+  public static Property createMethod(Classifier owner, String functionName, Callable methodImplementation) {
+    return new UserProperty(
+        owner,
+        /* isInstanceField= */ false,
+        /* isMutable= */ false,
+        methodImplementation.getType(),
+        functionName,
+        /* initializer= */ null,
+        methodImplementation);
+  }
 
-  UserProperty(UserClass owner, boolean isInstanceField, boolean isMutable, Type fixedType, String name, Node initializer, Object staticValue) {
+  public static Property createWithInitializer(Classifier owner, String name, Node initializer) {
+    return new UserProperty(
+        owner,
+        /* isInstanceField= */ true,
+        /* isMutable= */ true,
+        /* fixedType= */ null,
+        name,
+        initializer,
+        /* staticValue */ null);
+  }
+
+  UserProperty(Classifier owner, boolean isInstanceField, boolean isMutable, Type fixedType, String name, Node initializer, Object staticValue) {
     this.owner = owner;
     this.isInstanceField = isInstanceField;
     this.isMutable = isMutable;
@@ -100,7 +119,7 @@ public class UserProperty implements Property {
     return fieldIndex;
   }
 
-  public UserClass getOwner() {
+  public Classifier getOwner() {
     return owner;
   }
 
@@ -150,7 +169,7 @@ public class UserProperty implements Property {
     initialized.add(this);
   }
 
-  public void setInitializer(DeclarationStatement initializer) {
+  public void setInitializer(Node initializer) {
     this.initializer = initializer;
   }
 

@@ -14,7 +14,7 @@ public class PenType {
   static {
     Types.addClass(Pen.class, TYPE);
     TYPE.addProperties(
-        new NativeProperty("fillColor", "The current fill color for this pen.", Types.FLOAT) {
+        new NativeProperty(TYPE, "fillColor", "The current fill color for this pen.", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((Pen) instance).getFillColor();
@@ -25,7 +25,7 @@ public class PenType {
             ((Pen) instance).setFillColor((int) ((Double) value).longValue());
           }
         },
-        new NativeProperty("strokeColor", "The current line color for this pen.", Types.FLOAT) {
+        new NativeProperty(TYPE, "strokeColor", "The current line color for this pen.", Types.FLOAT) {
            @Override
            public Object get(EvaluationContext context, Object instance) {
               return (double) ((Pen) instance).getLineColor();
@@ -36,7 +36,7 @@ public class PenType {
              ((Pen) instance).setLineColor((int) ((Double) value).longValue());
            }
         },
-        new NativeProperty("textSize", "The text size.", Types.FLOAT) {
+        new NativeProperty(TYPE, "textSize", "The text size.", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return (double) ((Pen) instance).getTextSize();
@@ -47,7 +47,7 @@ public class PenType {
             ((Pen) instance).setTextSize(((Double) value).floatValue());
           }
         },
-        new NativeMethod(
+        new NativeMethod(TYPE,
             "clear",
             "Clear the rectangle determined by the four coordinates",
             Types.VOID, TYPE,
@@ -63,7 +63,7 @@ public class PenType {
             return null;
           }
         },
-        new NativeMethod(
+        new NativeMethod(TYPE,
             "rect",
             "Draw the rectangle determined by the four coordinates",
             Types.VOID, TYPE,
@@ -79,7 +79,7 @@ public class PenType {
             return null;
           }
         },
-        new NativeMethod(
+        new NativeMethod(TYPE,
             "line",
             "Draw the line determined by the four coordinates",
             Types.VOID, TYPE,
@@ -95,7 +95,7 @@ public class PenType {
             return null;
           }
         },
-        new NativeMethod(
+        new NativeMethod(TYPE,
             "write",
             "Write the given text at the given coordinates",
             Types.VOID, TYPE,

@@ -9,8 +9,8 @@ import java.util.Map;
 
 public abstract class NativeReadonlyProperty extends NativeProperty {
 
-  public NativeReadonlyProperty(String name, String description, Type type) {
-    super(name, description, type);
+  public NativeReadonlyProperty(Classifier owner, String name, String description, Type type) {
+    super(owner, name, description, type);
   }
 
   @Override

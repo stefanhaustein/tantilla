@@ -2,24 +2,29 @@ package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.FunctionType;
-import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 
 public abstract class NativeMethod implements Property, Callable {
+  Classifier owner;
   FunctionType type;
   String name;
 
-  public NativeMethod(String name, String description, Type returnType, Type... parameterTypes) {
+  public NativeMethod(Classifier owner, String name, String description, Type returnType, Type... parameterTypes) {
+    this.owner = owner;
     this.type = new FunctionType(returnType, parameterTypes);
     this.name = name;
+  }
+
+  @Override
+  public Classifier getOwner() {
+    return owner;
   }
 
   @Override
   public String getName() {
     return name;
   }
-
 
   @Override
   public Object get(EvaluationContext context, Object instance) {

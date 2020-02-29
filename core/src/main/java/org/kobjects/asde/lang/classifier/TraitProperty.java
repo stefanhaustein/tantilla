@@ -23,6 +23,11 @@ public class TraitProperty implements Property {
     this.type = type;
   }
 
+  @Override
+  public Trait getOwner() {
+    return owner;
+  }
+
 /*  @Override
   public Map<Node, Exception> getErrors() {
     return errors;

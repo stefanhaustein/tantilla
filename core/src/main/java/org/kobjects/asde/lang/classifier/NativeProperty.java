@@ -5,12 +5,19 @@ import org.kobjects.asde.lang.type.Type;
 
 public abstract class NativeProperty implements Property {
 
+  private final Classifier owner;
   private final String name;
   private final Type type;
 
-  public NativeProperty(String name, String description, Type type) {
+  public NativeProperty(Classifier owner, String name, String description, Type type) {
+    this.owner = owner;
     this.name = name;
     this.type = type;
+  }
+
+  @Override
+  public Classifier getOwner() {
+    return owner;
   }
 
   @Override

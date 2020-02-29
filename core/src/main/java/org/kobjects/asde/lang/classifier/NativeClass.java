@@ -33,6 +33,11 @@ public class NativeClass extends TypeImpl implements Classifier {
     return propertyDescriptors.values();
   }
 
+  @Override
+  public void putProperty(Property property) {
+    this.propertyDescriptors.put(property.getName(), property);
+  }
+
   public CharSequence getDocumentation() {
     return documentation;
   }
