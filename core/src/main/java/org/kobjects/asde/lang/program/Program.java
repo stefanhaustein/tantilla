@@ -251,11 +251,16 @@ public class Program {
 
 
   public synchronized void setDeclaration(String name, DeclaredBy declaration) {
-    mainModule.setStaticValue(name, declaration);
+    mainModule.putProperty(UserProperty.createStatic(mainModule, name, declaration));
   }
 
   public synchronized void setPersistentInitializer(String name, DeclarationStatement expr) {
-    mainModule.setProperty(false, expr.kind == DeclarationStatement.Kind.VAR, name, expr.children[0]);
+    mainModule.putProperty(UserProperty.createWithInitializer(
+        mainModule,
+        false,
+        expr.kind == DeclarationStatement.Kind.VAR,
+        name,
+        expr.children[0]));
   }
 
 

@@ -33,7 +33,7 @@ public class Identifier extends SymbolNode {
       resolvedKind = Kind.LOCAL_VARIABLE;
       mutable = resolvedLocalVariable.isMutable();
     } else {
-      resolvedRootProperty = resolutionContext.program.mainModule.getPropertyDescriptor(name);
+      resolvedRootProperty = resolutionContext.program.mainModule.getProperty(name);
       if (resolvedRootProperty == null) {
         resolvedKind = Kind.UNRESOLVED;
         throw new RuntimeException("Variable not found: '" + name + "'");

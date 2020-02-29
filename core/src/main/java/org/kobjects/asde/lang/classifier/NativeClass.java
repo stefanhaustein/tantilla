@@ -24,7 +24,7 @@ public class NativeClass extends TypeImpl implements Classifier {
     }
   }
 
-  public Property getPropertyDescriptor(String name) {
+  public Property getProperty(String name) {
     return propertyDescriptors.get(name);
   }
 

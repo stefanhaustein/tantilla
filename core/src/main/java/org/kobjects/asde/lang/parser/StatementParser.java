@@ -324,7 +324,7 @@ public class StatementParser {
       tokenizer.consume("]");
       return new ListType(elementType);
     }
-    Property symbol = program.mainModule.getPropertyDescriptor(typeName);
+    Property symbol = program.mainModule.getProperty(typeName);
     if (symbol == null) {
       throw new RuntimeException("Unrecognized type: " + typeName);
     }

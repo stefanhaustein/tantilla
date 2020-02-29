@@ -23,7 +23,7 @@ public class Trait implements Classifier, DeclaredBy {
   }
 
   @Override
-  public Property getPropertyDescriptor(String name) {
+  public Property getProperty(String name) {
     return propertyMap.get(name);
   }
 
@@ -74,7 +74,7 @@ public class Trait implements Classifier, DeclaredBy {
     Classifier otherInterface = (Classifier) other;
 
     for (TraitProperty propertyDescriptor : propertyMap.values()) {
-      Property otherDescriptor = otherInterface.getPropertyDescriptor(propertyDescriptor.getName());
+      Property otherDescriptor = otherInterface.getProperty(propertyDescriptor.getName());
       if (otherDescriptor == null) {
         System.out.println(toString() + " is not assignable from " + other + ": property '" + propertyDescriptor.getName() + " is missing");
         return false;

@@ -42,10 +42,10 @@ public class InvokeMethod extends Node {
 
     if (baseType instanceof MetaType && ((MetaType) baseType).getWrapped() instanceof Classifier) {
       skipChildren = 1;
-      resolvedProperty = ((Classifier) ((MetaType) baseType).getWrapped()).getPropertyDescriptor(name);
+      resolvedProperty = ((Classifier) ((MetaType) baseType).getWrapped()).getProperty(name);
     } else if (baseType instanceof Classifier) {
       skipChildren = 0;
-      resolvedProperty = ((Classifier) baseType).getPropertyDescriptor(name);
+      resolvedProperty = ((Classifier) baseType).getProperty(name);
     } else {
       throw new RuntimeException("Classifier or instance base expected");
     }

@@ -30,7 +30,7 @@ public class Path extends SymbolNode {
   @Override
   protected void onResolve(ValidationContext resolutionContext, int line) {
     if (children[0].returnType() instanceof Classifier) {
-      resolvedProperty = ((Classifier) children[0].returnType()).getPropertyDescriptor(pathName);
+      resolvedProperty = ((Classifier) children[0].returnType()).getProperty(pathName);
       if (resolvedProperty == null) {
         throw new RuntimeException("Property '" + pathName + "' not found in " + children[0].returnType());
       }

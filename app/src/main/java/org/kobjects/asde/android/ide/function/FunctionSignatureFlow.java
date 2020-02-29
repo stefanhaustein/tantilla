@@ -17,6 +17,7 @@ import org.kobjects.asde.android.ide.symbol.PropertyNameValidator;
 import org.kobjects.asde.android.ide.widget.TypeSpinner;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.text.TextValidator;
+import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.function.UserFunction;
@@ -42,7 +43,7 @@ public class FunctionSignatureFlow {
   ArrayList<Parameter> parameterList = new ArrayList<>();
   LinearLayout parameterListView;
   UserFunction userFunction;
-  UserClass classImplementation;
+  Classifier classImplementation;
 
   public static void changeSignature(MainActivity mainActivity, UserProperty symbol, UserFunction userFunction) {
     FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CHANGE_SIGNATURE, userFunction.getType().getReturnType());
@@ -365,7 +366,7 @@ public class FunctionSignatureFlow {
     userFunction.appendStatement(remStatement);
 
     if (mode == Mode.CREATE_MEMBER) {
-      classImplementation.setMethod(name, userFunction);
+      classImplementation.putProperty(UserProperty.createMethod(classImplementation, name, userFunction));
     } else {
       mainActivity.program.setDeclaration(name, userFunction);
     }

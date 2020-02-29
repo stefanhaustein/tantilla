@@ -20,7 +20,7 @@ public class PropertyNameValidator extends TextValidator {
         if (!Character.isJavaIdentifierStart(text.charAt(0))) {
             return "'" + text.charAt(0) + "' is not a valid name start character. Function names should start with a lowercase letter.";
         }
-        Property existing = classifier.getPropertyDescriptor(text);
+        Property existing = classifier.getProperty(text);
         if (existing != null) {
             System.out.println("Existing: " + existing);
             return "Name exists already.";

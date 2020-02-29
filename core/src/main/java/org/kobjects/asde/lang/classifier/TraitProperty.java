@@ -1,14 +1,12 @@
 package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.function.FunctionType;
-import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 
 public class TraitProperty implements Property {
@@ -73,12 +71,12 @@ public class TraitProperty implements Property {
 
   @Override
   public Object get(EvaluationContext context, Object instance) {
-    return ((Classifier) Types.of(instance)).getPropertyDescriptor(name).get(context, instance);
+    return ((Classifier) Types.of(instance)).getProperty(name).get(context, instance);
   }
 
   @Override
   public void set(EvaluationContext context, Object instance, Object value) {
-    ((Classifier) Types.of(instance)).getPropertyDescriptor(name).set(context, instance, value);
+    ((Classifier) Types.of(instance)).getProperty(name).set(context, instance, value);
   }
 
 }

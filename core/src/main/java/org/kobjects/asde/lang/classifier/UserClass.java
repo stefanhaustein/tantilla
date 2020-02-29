@@ -35,7 +35,7 @@ public class UserClass implements Classifier, InstantiableType, DeclaredBy {
   }
 
   @Override
-  public Property getPropertyDescriptor(String name) {
+  public Property getProperty(String name) {
     return propertyMap.get(name);
   }
 
@@ -61,64 +61,6 @@ public class UserClass implements Classifier, InstantiableType, DeclaredBy {
   @Override
   public Type getType() {
     return new MetaType(this);
-  }
-
-  void setProperty(
-      boolean isInstanceField,
-      boolean isMutable,
-      Type fixedType,
-      String name,
-      Node initializer,
-      Object staticValue) {
-    propertyMap.put(name, new UserProperty(
-            this,
-            isInstanceField,
-            isMutable,
-            fixedType,
-            name,
-            initializer,
-            staticValue));
-    program.notifyProgramChanged();
-  }
-
-
-  public void setMethod(String functionName, Callable methodImplementation) {
-    putProperty(UserProperty.createMethod(this, functionName, methodImplementation));
-  }
-
-  public void setProperty(String propertyName, Node initializer) {
-    putProperty(UserProperty.createWithInitializer(this, propertyName, initializer));
-  }
-
-
-  public void setProperty(boolean isInstanceField, boolean isMutable, String propertyName, Node initializer) {
-    setProperty(
-        isInstanceField,
-        isMutable,
-        /* fixedType= */ null,
-        propertyName,
-        initializer,
-        /* staticValue */ null);
-  }
-
-  public void setUninitializedProperty(String propertyName, Type type) {
-    setProperty(
-        /* isInstanceField= */ true,
-        /* isMutable */ true,
-        type,
-        propertyName,
-        /* initializer= */ null,
-        /* staticValue= */ null);
-  }
-
-  public void setStaticValue(String propertyName, Object value) {
-    setProperty(
-        /* isInstanceField= */ false,
-        /* isMutable */ false,
-        Types.of(value),
-        propertyName,
-        /* initializer= */ null,
-        /* staticValue= */ value);
   }
 
 

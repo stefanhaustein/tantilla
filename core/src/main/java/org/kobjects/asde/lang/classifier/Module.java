@@ -16,7 +16,7 @@ public class Module extends UserClass {
 
   public void addBuiltin(String name, Object value) {
     builtins.put(name, value);
-    setStaticValue(name, value);
+    putProperty(UserProperty.createStatic(this, name, value));
   }
 
   public Map<String, Object> builtins() {

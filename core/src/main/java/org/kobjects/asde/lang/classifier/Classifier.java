@@ -6,7 +6,7 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.Collection;
 
 public interface Classifier extends Type {
-  Property getPropertyDescriptor(String name);
+  Property getProperty(String name);
 
   Collection<? extends Property> getAllProperties();
 

@@ -3,6 +3,7 @@ package org.kobjects.asde.lang.parser;
 
 import org.kobjects.asde.lang.classifier.UserClass;
 import org.kobjects.asde.lang.classifier.Trait;
+import org.kobjects.asde.lang.classifier.UserProperty;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.Program;
@@ -113,7 +114,7 @@ public class ProgramParser {
           }
           currentFunction = new UserFunction(program, functionType, parameterNames.toArray(new String[0]));
           if (currentClass != null) {
-            currentClass.setMethod(functionName, currentFunction);
+            currentClass.putProperty(UserProperty.createMethod(currentClass, functionName, currentFunction));
           } else if (functionName.equals("main")) {
             // Implicitly discarding what we have just created...
             currentFunction = program.main;
@@ -122,14 +123,14 @@ public class ProgramParser {
           }
         } else if (tokenizer.tryConsume("class")) {
           String className = tokenizer.consumeIdentifier();
-          currentClass = (UserClass) program.mainModule.getPropertyDescriptor(className).getStaticValue();
+          currentClass = (UserClass) program.mainModule.getProperty(className).getStaticValue();
           // currentClass = (UserClass) program.getSymbol(className).getStaticValue();
           if (!tokenizer.tryConsume(":")) {
             throw new RuntimeException("':' expected.");
           }
         } else if (tokenizer.tryConsume("trait")) {
           String interfaceName = tokenizer.consumeIdentifier();
-          Trait currentTrait = (Trait) program.mainModule.getPropertyDescriptor(interfaceName).getStaticValue();
+          Trait currentTrait = (Trait) program.mainModule.getProperty(interfaceName).getStaticValue();
  //         Trait currentTrait = (Trait) (program.getSymbol(interfaceName)).getStaticValue();
           if (!tokenizer.tryConsume(":")) {
             throw new RuntimeException("':' expected.");
@@ -143,10 +144,13 @@ public class ProgramParser {
             String name = tokenizer.consumeIdentifier();
             if (tokenizer.tryConsume("=")) {
               Node initilaizer = statementParser.expressionParser.parse(tokenizer);
-              currentClass.setProperty(name, initilaizer);
+              currentClass.putProperty(UserProperty.createWithInitializer(currentClass, name, initilaizer));
             } else if (tokenizer.tryConsume(":")) {
               Type type = statementParser.parseType(tokenizer);
-              currentClass.setUninitializedProperty(name, type);
+              currentClass.putProperty(UserProperty.createUninitialized(
+                  currentClass,
+                  name,
+                  type));
             } else {
               throw new RuntimeException("= or : expected after property name");
             }

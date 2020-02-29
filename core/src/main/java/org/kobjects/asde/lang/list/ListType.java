@@ -47,7 +47,7 @@ public class ListType implements Classifier {
   }
 
   @Override
-  public Property getPropertyDescriptor(String name) {
+  public Property getProperty(String name) {
     switch (name) {
       case "clear":
         return new NativeMethod(ListType.this, "clear", "Remove all elements from the list.", Types.VOID, ListType.this) {
@@ -94,10 +94,10 @@ public class ListType implements Classifier {
   public Collection<? extends Property> getAllProperties() {
     ArrayList<Property> result = new ArrayList<>();
 
-    result.add(getPropertyDescriptor("append"));
-    result.add(getPropertyDescriptor("remove"));
-    result.add(getPropertyDescriptor("size"));
-    result.add(getPropertyDescriptor("clear"));
+    result.add(getProperty("append"));
+    result.add(getProperty("remove"));
+    result.add(getProperty("size"));
+    result.add(getProperty("clear"));
     return result;
   }
 

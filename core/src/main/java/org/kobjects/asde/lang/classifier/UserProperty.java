@@ -4,6 +4,7 @@ import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.type.Types;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,6 +45,44 @@ public class UserProperty implements Property {
         initializer,
         /* staticValue */ null);
   }
+
+
+  public static UserProperty createWithInitializer(Classifier owner, boolean isInstanceField, boolean isMutable, String propertyName, Node initializer) {
+    return new UserProperty(
+        owner,
+        isInstanceField,
+        isMutable,
+        /* fixedType= */ null,
+        propertyName,
+        initializer,
+        /* staticValue */ null);
+  }
+
+  public static UserProperty createUninitialized(Classifier owner, String propertyName, Type type) {
+    return new UserProperty(
+        owner,
+        /* isInstanceField= */ true,
+        /* isMutable */ true,
+        type,
+        propertyName,
+        /* initializer= */ null,
+        /* staticValue= */ null);
+  }
+
+  public static UserProperty createStatic(Classifier owner, String propertyName, Object value) {
+    return new UserProperty(
+        owner,
+        /* isInstanceField= */ false,
+        /* isMutable */ false,
+        Types.of(value),
+        propertyName,
+        /* initializer= */ null,
+        /* staticValue= */ value);
+  }
+
+
+
+
 
   UserProperty(Classifier owner, boolean isInstanceField, boolean isMutable, Type fixedType, String name, Node initializer, Object staticValue) {
     this.owner = owner;
