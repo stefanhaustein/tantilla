@@ -1,7 +1,5 @@
 package org.kobjects.asde.lang.node;
 
-
-import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Property;
 
 /**
@@ -14,6 +12,5 @@ public abstract class SymbolNode extends AssignableNode {
   }
 
   public abstract boolean matches(Property symbol, String name);
-
 
 }

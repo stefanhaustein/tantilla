@@ -217,10 +217,10 @@ def main():
    grid[20][i] = 8
   end
 
-  drawAll
-  newPiece
-  newPiece
-  drawPiece
+  drawAll()
+  newPiece()
+  newPiece()
+  drawPiece()
   var timer = 0
 
   while not gameOver:

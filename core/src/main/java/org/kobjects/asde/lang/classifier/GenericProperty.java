@@ -213,11 +213,6 @@ public class GenericProperty implements Property {
   }
 
   @Override
-  public String toString() {
-    return getName() + " -> " + getType();
-  }
-
-  @Override
   public Object get(EvaluationContext context, Object instance) {
     return isInstanceField ? ((Instance) instance).properties[fieldIndex] : staticValue;
   }
@@ -227,5 +222,17 @@ public class GenericProperty implements Property {
     ((Instance) instance).properties[fieldIndex] = value;
   }
 
+  @Override
+  public void setStaticValue(Object value) {
+    if (!isMutable || isInstanceField) {
+      throw new IllegalStateException("Property " + this + (isInstanceField ? " is an instance field (= not static)!" : " is not mutable!"));
+    }
+    this.staticValue = value;
+  }
+
+  @Override
+  public String toString() {
+    return Property.toString(this);
+  }
 
 }

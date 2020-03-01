@@ -101,13 +101,6 @@ public class Command extends Statement {
         }
         break;
 
-      case TRON:
-        evaluationContext.control.setTrace(true);
-        break;
-      case TROFF:
-        evaluationContext.control.setTrace(false);
-        break;
-
     }
     return null;
   }

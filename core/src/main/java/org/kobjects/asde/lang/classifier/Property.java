@@ -11,6 +11,10 @@ import java.util.Map;
 
 public interface Property {
 
+  static String toString(Property property) {
+    return property.getClass().getSimpleName() + " " + property.getOwner() + "." + property.getName() + " (type: " + property.getType() + ")";
+  }
+
   Classifier getOwner();
 
   default Map<Node, Exception> getErrors() {
@@ -35,7 +39,7 @@ public interface Property {
  // void validate(ValidationContext validationContext);
 
   default void setStaticValue(Object value) {
-    throw new UnsupportedOperationException();
+    throw new RuntimeException(toString(this) + " does not support setting a static value.");
   }
 
   default Node getInitializer() {
@@ -44,7 +48,7 @@ public interface Property {
 
   default void setDependenciesAndErrors(HashSet<Property> dependencies, HashMap<Node, Exception> errors) {
     if (dependencies.size() > 0 || errors.size() > 0) {
-      throw new UnsupportedOperationException("Dependencies or errors not expected for " + getName() + " of type " + getClass() + " dependencies: " + dependencies + " errors: " + errors);
+      throw new UnsupportedOperationException("Dependencies or errors not expected for " + toString(this) + "; dependencies: " + dependencies + " errors: " + errors);
     }
   }
 
@@ -52,6 +56,7 @@ public interface Property {
   }
 
   default void setInitializer(Node node) {
-    throw new RuntimeException("This property does not support initializers: " + getClass());
+    throw new RuntimeException(toString(this) + "' does not support initializers.");
   }
+
 }

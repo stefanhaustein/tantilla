@@ -23,7 +23,6 @@ public class ProgramControl {
     }
 
     public State state = State.ENDED;
-    boolean trace;
 
     public ProgramControl(Program program) {
         this.program = program;
@@ -148,7 +147,4 @@ public class ProgramControl {
         }
     }
 
-    public void setTrace(boolean trace) {
-        this.trace = trace;
-    }
 }
