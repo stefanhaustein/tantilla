@@ -34,11 +34,18 @@ public class ValidationContext {
 
   private int localSymbolCount;
   private Block currentBlock;
-  public HashSet<Property> dependencies = new HashSet<>();
+  public HashSet<Property> initializationDependencies = new HashSet<>();
   private ValidationContext parentContext;
   public Program program;
 
   private Set<Property> resolved;
+
+  /**
+   * True when resoling initializations. Determines whether dependencies are collected in
+   * initializationDependencies. The distinction is important to allow circular references
+   * outside of static initializaiton (e.g. recursive functions or functions calling each other).
+   */
+  private boolean inPropertyInitialization = true;
 
   private ValidationContext(Program program, ValidationContext parentContext, Property property, UserFunction userFunction) {
     this.program = program;
@@ -78,7 +85,9 @@ public class ValidationContext {
   }
 
   public void validateProperty(Property property) {
-    createChildContext(property).validate();
+    if (!resolved.contains(property)) {
+      createChildContext(property).validate();
+    }
   }
 
   private void validate() {
@@ -100,12 +109,14 @@ public class ValidationContext {
       }
     }
 
+    inPropertyInitialization = false;
+
     if (userFunction != null) {
       userFunction.validate(this);
     }
 
     if (property != null) {
-      property.setDependenciesAndErrors(dependencies, errors);
+      property.setDependenciesAndErrors(initializationDependencies, errors);
     }
   }
 
@@ -152,7 +163,9 @@ public class ValidationContext {
   }
 
   public void validateAndAddDependency(Property symbol) {
-    dependencies.add(symbol);
+    if (inPropertyInitialization) {
+      initializationDependencies.add(symbol);
+    }
     validateProperty(symbol);
   }
 }

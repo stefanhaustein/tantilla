@@ -16,7 +16,7 @@ public class GenericProperty implements Property {
   Classifier owner;
   String name;
   Map<Node, Exception> errors = Collections.emptyMap();
-  Set<Property> dependencies;
+  Set<Property> initializationDependencies;
   Type fixedType;
   Object staticValue;
   Node initializer;
@@ -139,7 +139,7 @@ public class GenericProperty implements Property {
    */
   @Override
   public void setDependenciesAndErrors(HashSet<Property> dependencies, HashMap<Node, Exception> errors) {
-    this.dependencies = dependencies;
+    this.initializationDependencies = dependencies;
     this.errors = errors;
   }
 
@@ -197,8 +197,8 @@ public class GenericProperty implements Property {
     if (initialized.contains(this)) {
       return;
     }
-    if (dependencies != null) {
-      for (Property dep : dependencies) {
+    if (initializationDependencies != null) {
+      for (Property dep : initializationDependencies) {
         dep.init(evaluationContext, initialized);
       }
     }
