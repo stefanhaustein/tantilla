@@ -74,14 +74,12 @@ public class Struct implements Classifier, InstantiableType, DeclaredBy {
         resolvedInitializers.add(property.getInitializer());
       }
     }
-    // TODO: remove?
-    /*
     for (Property property : properties) {
       if (!property.isInstanceField()) {
         System.out.println(" - non instance field " + property.getName());
         classValidationContext.validateProperty(property);
       }
-    }*/
+    }
   }
 
   @Override

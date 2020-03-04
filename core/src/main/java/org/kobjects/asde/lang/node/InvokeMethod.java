@@ -78,8 +78,9 @@ public class InvokeMethod extends Node {
     Object base = children[0].eval(evaluationContext);
     Callable function = (Callable) resolvedProperty.get(evaluationContext, base);
     evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
-    if (children.length > function.getLocalVariableCount()) {
-      throw new RuntimeException("Too many params for " + function);
+    // This check should be redundant here -- checked in resolve already...?
+    if (children.length > function.getType().getParameterCount()) {
+      throw new RuntimeException("Expected " + function.getType().getParameterCount() + " parameter but got " + children.length + " for " + function);
      }
     // Push is important here, as parameter evaluation might also run apply().
     if (skipChildren == 0) {

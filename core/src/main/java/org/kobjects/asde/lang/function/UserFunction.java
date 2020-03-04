@@ -135,6 +135,9 @@ public class UserFunction implements Callable, DeclaredBy {
   }
 
   public String toString() {
+    if (declaringSymbol != null) {
+      return declaringSymbol.toString();
+    }
     AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
     toString(asb, null, Collections.emptyMap());
     return asb.toString();

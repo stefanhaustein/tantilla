@@ -149,9 +149,24 @@ public class GenericProperty implements Property {
     return name;
   }
 
+  /**
+   * May return null if the initializer is not resolved yet.
+   */
   @Override
   public Type getType() {
-    return initializer != null ? initializer.returnType() : fixedType;
+    if (fixedType != null) {
+      return fixedType;
+    }
+    if (initializer != null) {
+      try {
+        return initializer.returnType();
+      } catch (Exception e) {
+        // Safer than making sure all nodes don't throw when asking for an unresolved return value.
+        // TODO: Might make sense to have a special type for this case instead of null.
+        e.printStackTrace();
+      }
+    }
+    return null;
   }
 
   public int getFieldIndex() {

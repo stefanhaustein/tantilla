@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.classifier;
 
 
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Collection;
@@ -20,6 +21,12 @@ public interface Classifier extends Type {
 
   default void remove(Property property) {
     throw new UnsupportedOperationException();
+  }
+
+  default void validate(ValidationContext validationContext) {
+    for(Property property : getAllProperties()) {
+      validationContext.validateProperty(property);
+    }
   }
 }
 

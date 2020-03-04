@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.function;
 
 
+import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.Struct;
 import org.kobjects.asde.lang.program.Program;
@@ -45,7 +46,7 @@ public class ValidationContext {
    * initializationDependencies. The distinction is important to allow circular references
    * outside of static initializaiton (e.g. recursive functions or functions calling each other).
    */
-  private boolean inPropertyInitialization = true;
+  private boolean inPropertyInitialization;
 
   private ValidationContext(Program program, ValidationContext parentContext, Property property, UserFunction userFunction) {
     this.program = program;
@@ -98,18 +99,20 @@ public class ValidationContext {
 
       Node initializer = property.getInitializer();
       if (property.getInitializer() != null) {
+        inPropertyInitialization = true;
         initializer.resolve(this, 0);
+        inPropertyInitialization = false;
       }
 
-      // Recursion is ok.
+      // Recursion is ok starting here
       resolved.add(property);
 
-      if (!property.isInstanceField() && property.getInitializer() == null && property.getStaticValue() instanceof Struct) {
-        ((Struct) property.getStaticValue()).validate(this);
+      if (!property.isInstanceField() && property.getInitializer() == null && property.getStaticValue() instanceof Classifier) {
+        ((Classifier) property.getStaticValue()).validate(this);
       }
     }
 
-    inPropertyInitialization = false;
+
 
     if (userFunction != null) {
       userFunction.validate(this);

@@ -240,9 +240,7 @@ public class Program {
 
   public synchronized void validate() {
     ValidationContext validationContext = ValidationContext.createRootContext(this);
-    for (Property property : mainModule.getAllProperties()) {
-      validationContext.validateProperty(property);
-    }
+    mainModule.validate(validationContext);
   }
 
   public synchronized void addBuiltin(String name, Object value) {
