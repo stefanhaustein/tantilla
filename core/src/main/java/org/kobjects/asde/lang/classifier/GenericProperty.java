@@ -163,7 +163,7 @@ public class GenericProperty implements Property {
       } catch (Exception e) {
         // Safer than making sure all nodes don't throw when asking for an unresolved return value.
         // TODO: Might make sense to have a special type for this case instead of null.
-        e.printStackTrace();
+        // e.printStackTrace();
       }
     }
     return null;
@@ -192,7 +192,7 @@ public class GenericProperty implements Property {
 
   @Override
   public boolean isMutable() {
-    return staticValue == null;
+    return isMutable;
   }
 
   public  boolean isConstant() {

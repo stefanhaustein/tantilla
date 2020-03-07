@@ -13,6 +13,7 @@ import org.kobjects.asde.android.ide.symbol.DeleteFlow;
 import org.kobjects.asde.android.ide.classifier.PropertyFlow;
 import org.kobjects.asde.android.ide.symbol.RenameFlow;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
+import org.kobjects.asde.lang.classifier.Module;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.node.ArrayLiteral;
@@ -33,8 +34,9 @@ public class VariableView extends SymbolView {
         super(mainActivity, symbol);
         this.mainActivity = mainActivity;
         this.symbol = symbol;
-//        titleView.setTypeIndicator(symbol instanceof PropertyDescriptor ? 'p': symbol.isConstant() ? 'C' : 'V', Colors.DARK_ORANGE);
-        titleView.setTypeIndicator(symbol.isConstant() ? R.drawable.alpha_c : R.drawable.variable, Colors.DARK_ORANGE, symbol instanceof Property);
+        boolean isTopLevel = symbol.getOwner() instanceof Module;
+       titleView.setTypeIndicator((!symbol.isInstanceField() && !isTopLevel ? "static\n" : "") + (symbol.isMutable() ? "mut" : "const"), Colors.DARK_ORANGE, !isTopLevel);
+ //       titleView.setTypeIndicator(symbol.isConstant() ? R.drawable.alpha_c : R.drawable.variable, Colors.DARK_ORANGE, symbol instanceof Property);
         titleView.setMoreClickListener(view -> {
             PopupMenu popupMenu = new PopupMenu(getContext(), view);
             popupMenu.getMenu().add("Edit").setOnMenuItemClickListener(item -> {

@@ -14,7 +14,6 @@ public class PropertyFlow {
 
   enum Mode {EDIT_INITIALIZER, CREATE_PROPERTY};
 
-
   public static void editInitializer(final MainActivity mainActivity, final Property symbol) {
     new PropertyFlow(mainActivity, Mode.EDIT_INITIALIZER, symbol.getOwner(), symbol).showInitializerDialog();
   }

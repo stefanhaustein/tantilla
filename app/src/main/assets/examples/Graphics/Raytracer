@@ -1,26 +1,26 @@
-const WHITE = newColor(1,1,1)
-const BLACK = newColor(0,0,0)
-const GREY = newColor(0.5, 0.5, 0.5)
+const WHITE = Color.new(1,1,1)
+const BLACK = Color.new(0,0,0)
+const GREY = Color.new(0.5, 0.5, 0.5)
 
 class Vector:
- var x = 0
- var y = 0
- var z = 0
+ x: float
+ y: float
+ z: float
 
-# def new(x: float, y: float, z: float) -> Vector:
-#   return Vector{x: x, y: y, z: z}
-# end
+ def new(x: float, y: float, z: float) -> Vector:
+   return Vector{x: x, y: y, z: z}
+ end
 
  def times(self, k: float) -> Vector:
-  return newVector(k * self.x, k * self.y, k * self.z)
+  return Vector.new(k * self.x, k * self.y, k * self.z)
  end
 
  def minus(self, v2: Vector) -> Vector:
-  return newVector(self.x - v2.x, self.y - v2.y, self.z - v2.z)
+  return Vector.new(self.x - v2.x, self.y - v2.y, self.z - v2.z)
  end
 
  def plus(self, v2: Vector) -> Vector:
-  return newVector(self.x + v2.x, self.y + v2.y, self.z + v2.z)
+  return Vector.new(self.x + v2.x, self.y + v2.y, self.z + v2.z)
  end
 
  def dot(self, v2: Vector) -> float:
@@ -36,14 +36,11 @@ class Vector:
  end
 
  def cross(self, v2: Vector) -> Vector:
-  return newVector(self.y * v2.z - self.z * v2.y, self.z * v2.x - self.x * v2.z, self.x * v2.y - self.y * v2.x)
+  return Vector.new(self.y * v2.z - self.z * v2.y, self.z * v2.x - self.x * v2.z, self.x * v2.y - self.y * v2.x)
  end
 
 end
 
-def newVector(x: float, y: float, z: float) -> Vector:
-  return Vector{x: x, y: y, z: z}
-end
 
 def toByte(n: float) -> float:
  if n <= 0:
@@ -55,20 +52,26 @@ def toByte(n: float) -> float:
 end
 
 class Color:
- var r = 0
- var g = 0
- var b = 0
+ static const BLACK = Color.new(0,0,0)
+
+ r: float
+ g: float
+ b: float
+
+ def new(r: float, g: float, b: float) -> Color:
+   return Color{r: r, g: g, b: b}
+ end
 
  def scale(self, k: float) -> Color:
-  return newColor(k * self.r, k * self.g, k * self.b)
+  return Color.new(k * self.r, k * self.g, k * self.b)
  end
 
  def plus(self, c2: Color) -> Color:
-  return newColor(self.r + c2.r, self.g + c2.g, self.b + c2.b)
+  return Color.new(self.r + c2.r, self.g + c2.g, self.b + c2.b)
  end
 
  def times(self, c2: Color) -> Color:
-  return newColor(self.r * c2.r, self.g * c2.g, self.b * c2.b)
+  return Color.new(self.r * c2.r, self.g * c2.g, self.b * c2.b)
  end
 
  def toDrawingColor(self) -> float:
@@ -78,65 +81,65 @@ class Color:
 end
 
 
-def newColor(r: float, g: float, b: float) -> Color:
- return Color{r: r, g: g, b: b}
-end
-
 class Camera:
- var pos: Vector
- var forward: Vector
- var right: Vector
- var up: Vector
-end
+  pos: Vector
+  forward: Vector
+  right: Vector
+  up: Vector
 
-def newCamera(pos: Vector, lookAt: Vector) -> Camera:
- var down = newVector(0, -1, 0)
- var forward = lookAt.minus(pos).norm()
- var right = forward.cross(down).norm().times(1.5)
- var up = forward.cross(right).norm().times(1.5)
- return Camera{pos: pos, forward: forward, right: right, up: up}
+ def new(pos: Vector, lookAt: Vector) -> Camera:
+   var down = Vector.new(0, -1, 0)
+   var forward = lookAt.minus(pos).norm()
+   var right = forward.cross(down).norm().times(1.5)
+   var up = forward.cross(right).norm().times(1.5)
+   return Camera{pos: pos, forward: forward, right: right, up: up}
+ end
+
 end
 
 class Ray:
- var start: Vector
- var dir: Vector
+ start: Vector
+ dir: Vector
+
+ def new(start: Vector, dir: Vector) -> Ray:
+  return Ray{start: start, dir: dir}
+ end
 end
 
-def newRay(start: Vector, dir: Vector) -> Ray:
- return Ray{start: start, dir: dir}
-end
 
 class Intersection:
- var thing: Thing
- var ray: Ray
- var dist: float
+ thing: Thing
+ ray: Ray
+ dist: float
+
+ def new(t: Thing, r: Ray, dist: float) -> Intersection:
+  return Intersection{thing: t, ray: r, dist: dist}
+ end
 end
 
-def newIntersection(t: Thing, r: Ray, dist: float) -> Intersection:
- return Intersection{thing: t, ray: r, dist: dist}
-end
 
 trait Surface:
+ roughness: float
  def diffuse(self, pos: Vector) -> Color
  def specular(self, pos: Vector) ->  Color
  def reflect(self, pos: Vector) -> float
- var roughness: float
 end
 
 trait Thing:
+ surface: Surface
  def normal(self, pos: Vector) -> Vector
  def intersect(self, ray: Ray) -> Intersection
- var surface: Surface
 end
 
 class Light:
- var pos: Vector
- var color: Color
+ pos: Vector
+ color: Color
+
+ def new(pos: Vector, color: Color) -> Light:
+  return Light{pos: pos, color: color}
+ end
 end
 
-def newLight(pos: Vector, color: Color) -> Light:
- return Light{pos: pos, color: color}
-end
 
 class Scene:
  var things: List[Thing]
@@ -149,6 +152,10 @@ class Sphere:
  var center: Vector
  var radius2: float
  var surface: Surface
+
+ def new(center: Vector, radius: float, s: Surface) -> Sphere:
+   return Sphere{center: center, radius2: radius * radius, surface: s}
+ end
 
  def normal(self, pos: Vector) -> Vector:
   return pos.minus(self.center).norm()
@@ -164,19 +171,20 @@ class Sphere:
      dist = v - sqrt(disc)
    end
   end
-  return newIntersection(self, r, dist)
+  return Intersection.new(self, r, dist)
  end
 
 end
 
-def newSphere(center: Vector, radius: float, s: Surface) -> Sphere:
- return Sphere{center: center, radius2: radius * radius, surface: s}
-end
 
 class Plane:
- var norm: Vector
- var offset: float
- var surface: Surface
+ norm: Vector
+ offset: float
+ surface: Surface
+
+ def new(normal: Vector, offset: float, s: Surface) -> Plane:
+  return Plane{norm: normal, offset: offset, surface: s}
+ end
 
  def normal(self, pos: Vector) -> Vector:
   return self.norm
@@ -188,17 +196,14 @@ class Plane:
   if denom <= 0:
     dist = (self.norm.dot(r.start) + self.offset) / (-denom)
   end
-  return newIntersection(self, r, dist)
+  return Intersection.new(self, r, dist)
  end
 
 end
 
-def newPlane(normal: Vector, offset: float, s: Surface) -> Plane:
- return Plane{norm: normal, offset: offset, surface: s}
-end
 
 class Shiny:
- var roughness = 250
+ roughness = 250
 
  def diffuse(self, pos: Vector) -> Color:
   return WHITE
@@ -215,7 +220,7 @@ class Shiny:
 end
 
 class Checkerboard:
- var roughness = 150
+ roughness = 150
 
  def diffuse(self, pos: Vector) -> Color:
   if (100000 + floor(pos.z) + floor(pos.x)) % 2 != 0 :
@@ -281,13 +286,13 @@ class RayTracer:
  end
 
  def getReflectionColor(self, t: Thing, pos: Vector, normal: Vector, rd: Vector, s: Scene, depth: float) -> Color:
-  return self.traceRay(newRay(pos, rd), s, depth + 1).scale(t.surface.reflect(pos))
+  return self.traceRay(Ray.new(pos, rd), s, depth + 1).scale(t.surface.reflect(pos))
  end
 
  def addLight(self, t: Thing, pos: Vector, norm: Vector, rd: Vector, s: Scene, col: Color, l: Light) -> Color:
   var ldis = l.pos.minus(pos)
   var livec = ldis.norm()
-  var nearIsect = self.testRay(newRay(pos, livec), s)
+  var nearIsect = self.testRay(Ray.new(pos, livec), s)
   var isInShadow = (nearIsect <= ldis.mag())
   if isInShadow :
    return col
@@ -325,7 +330,7 @@ class RayTracer:
      if y % 2 == 0:
        yy = -yy
      end
-     var color = self.traceRay(newRay(s.camera.pos, self.getPoint(x, yy, s.camera)), s, 0)
+     var color = self.traceRay(Ray.new(s.camera.pos, self.getPoint(x, yy, s.camera)), s, 0)
      p.fillColor = color.toDrawingColor()
      p.rect(x, yy, 1.5, 1.5)
    end
@@ -334,9 +339,9 @@ class RayTracer:
 
 end
 
-const defaultThings = List[Thing][newPlane(newVector(0,1,0), 0, Checkerboard{}), newSphere(newVector(0,1,-0.25), 1, Shiny{}), newSphere(newVector(-1,0.5,1.5),0.5, Shiny{})]
-const defaultLights = [newLight(newVector(-2,2.5,0), newColor(0.49,0.07,0.07)), newLight(newVector(1.5,2.5,1.5), newColor(0.07,0.07,0.49)), newLight(newVector(1.5,2.5,-1.5), newColor(0.07,0.49,0.071)), newLight(newVector(0,3.5,0), newColor(0.21,0.21,0.35))]
-const defaultCamera = newCamera(newVector(3,2,4), newVector(-1,0.5,0))
+const defaultThings = List[Thing][Plane.new(Vector.new(0,1,0), 0, Checkerboard{}), Sphere.new(Vector.new(0,1,-0.25), 1, Shiny{}), Sphere.new(Vector.new(-1,0.5,1.5),0.5, Shiny{})]
+const defaultLights = [Light.new(Vector.new(-2,2.5,0), Color.new(0.49,0.07,0.07)), Light.new(Vector.new(1.5,2.5,1.5), Color.new(0.07,0.07,0.49)), Light.new(Vector.new(1.5,2.5,-1.5), Color.new(0.07,0.49,0.071)), Light.new(Vector.new(0,3.5,0), Color.new(0.21,0.21,0.35))]
+const defaultCamera = Camera.new(Vector.new(3,2,4), Vector.new(-1,0.5,0))
 const defaultScene = Scene{background: BLACK, things: defaultThings, lights: defaultLights, camera: defaultCamera}
 
 def main():

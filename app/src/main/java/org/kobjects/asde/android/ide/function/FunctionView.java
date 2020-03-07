@@ -17,6 +17,7 @@ import org.kobjects.asde.android.ide.symbol.DeleteFlow;
 import org.kobjects.asde.android.ide.symbol.RenameFlow;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.classifier.Module;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.type.Types;
@@ -34,11 +35,10 @@ public class FunctionView extends SymbolView {
 
     boolean isMain = userFunction == userFunction.program.main;
     boolean isVoid = userFunction.getType().getReturnType() == Types.VOID;
-    boolean isMethod = userFunction.isMethod();
+    boolean isMethod = !(userFunction.getDeclaringSymbol().getOwner() instanceof Module);
 
-
-      titleView.setTypeIndicator(
-          isMain ? R.drawable.playlist_play : R.drawable.function_variant,
+    titleView.setTypeIndicator(
+          "def",
           isMain ? Colors.PRIMARY_FILTER : Colors.DARK_PURPLE,
           isMethod);
 

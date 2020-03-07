@@ -11,7 +11,6 @@ import org.kobjects.asde.lang.program.ProgramControl;
 import org.kobjects.asde.lang.runtime.WrappedExecutionException;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.type.Types;
 
 import java.util.ArrayList;
@@ -171,10 +170,6 @@ public class UserFunction implements Callable, DeclaredBy {
 
   public void setDeclaredBy(GenericProperty symbol) {
     this.declaringSymbol = symbol;
-  }
-
-  public boolean isMethod() {
-    return declaringSymbol instanceof Property;
   }
 
   public GenericProperty getDeclaringSymbol() {

@@ -52,8 +52,7 @@ public class SymbolTitleView extends LinearLayout {
 
   }
 
-  public void setTypeIndicator(char c, int color) {
-    boolean small = c == Character.toLowerCase(c);
+  public void setTypeIndicator(String s, int color, boolean small) {
 
     if (typeView != null) {
       removeView(typeView);
@@ -62,8 +61,10 @@ public class SymbolTitleView extends LinearLayout {
 
     TextView typeView = new AppCompatTextView(getContext());
       typeView.setGravity(Gravity.CENTER);
-      typeView.setTextSize(20);
-      typeView.setTypeface(Typeface.MONOSPACE);
+      typeView.setTextSize((s.length() == 1 ? 24 : s.length() <= 3 ? 16: 12) * (small ? 0.8f : 1));
+      if (!small) {
+        typeView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+      }
       int size = Dimensions.dpToPx(getContext(), 48);
       LayoutParams typeLayoutParams =  new LayoutParams(size, size);
       typeLayoutParams.gravity = Gravity.TOP;
@@ -74,7 +75,7 @@ public class SymbolTitleView extends LinearLayout {
     int padding = Dimensions.dpToPx(getContext(), small ? 10 : 6);
 
     typeView.setBackground(new InsetDrawable(shape, padding));
-    typeView.setText(String.valueOf(c));
+    typeView.setText(s);
     /*  if (small) {
       typeView.setPadding(Dimensions.dpToPx(getContext(), 8), 0, 0, 0);
     }*/

@@ -140,11 +140,20 @@ public class ProgramParser {
 
         } else if (!tokenizer.tryConsume("")) {
           if (currentClass != null) {
-            tokenizer.consume("var");
+            boolean instanceField = !tokenizer.tryConsume("static");
+            boolean mutable = tokenizer.tryConsume("var") || tokenizer.tryConsume("mut");
+            if (!mutable) {
+              tokenizer.tryConsume("const");
+            }
+
+            if (!instanceField && mutable) {
+              throw new RuntimeException("static and mutable can't be combined");
+            }
+
             String name = tokenizer.consumeIdentifier();
             if (tokenizer.tryConsume("=")) {
               Node initilaizer = statementParser.expressionParser.parse(tokenizer);
-              currentClass.putProperty(GenericProperty.createWithInitializer(currentClass, name, initilaizer));
+              currentClass.putProperty(GenericProperty.createWithInitializer(currentClass, instanceField, mutable, name, initilaizer));
             } else if (tokenizer.tryConsume(":")) {
               Type type = statementParser.parseType(tokenizer);
               currentClass.putProperty(GenericProperty.createUninitialized(
@@ -190,13 +199,12 @@ public class ProgramParser {
         ArrayList<String> parameterNames = new ArrayList();
         FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames, trait);
         trait.addProperty(functionName, functionType);
-      } else if (tokenizer.tryConsume("var")) {
+      } else {
+        boolean mutable = tokenizer.tryConsume("var") || tokenizer.tryConsume("mut");
         String name = tokenizer.consumeIdentifier();
         tokenizer.consume(":");
         Type type = statementParser.parseType(tokenizer);
         trait.addProperty(name, type);
-      } else {
-        throw new RuntimeException("def or var expected!");
       }
     }
     return index;

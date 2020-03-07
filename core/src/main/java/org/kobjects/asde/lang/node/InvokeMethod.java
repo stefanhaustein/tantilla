@@ -79,7 +79,7 @@ public class InvokeMethod extends Node {
     Callable function = (Callable) resolvedProperty.get(evaluationContext, base);
     evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
     // This check should be redundant here -- checked in resolve already...?
-    if (children.length > function.getType().getParameterCount()) {
+    if (children.length - skipChildren > function.getType().getParameterCount()) {
       throw new RuntimeException("Expected " + function.getType().getParameterCount() + " parameter but got " + children.length + " for " + function);
      }
     // Push is important here, as parameter evaluation might also run apply().

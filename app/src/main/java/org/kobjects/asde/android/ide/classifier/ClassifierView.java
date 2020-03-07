@@ -14,6 +14,7 @@ import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.android.ide.symbol.ExpandListener;
 import org.kobjects.asde.lang.classifier.Struct;
 import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.classifier.Trait;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +42,11 @@ public class ClassifierView extends SymbolView {
   public ClassifierView(MainActivity mainActivity, GenericProperty symbol) {
     super(mainActivity, symbol);
 
-    titleView.setTypeIndicator(R.drawable.outline_widgets_24, Colors.LIGHT_BLUE, false);
+    if (symbol.getStaticValue() instanceof Trait) {
+      titleView.setTypeIndicator("T", Colors.LIGHT_GREEN, false);
+    } else {
+      titleView.setTypeIndicator("C", Colors.LIGHT_BLUE, false);
+    }
 
     titleView.setMoreClickListener(clicked -> {
       PopupMenu popupMenu = new PopupMenu(mainActivity, clicked);
