@@ -1,5 +1,5 @@
 def main():
- var p = screen.newPen()
+ let p = screen.newPen()
  while true:
   p.strokeColor = 0xff000000+(random()*0xffffff)
   p.line(random()*400-200,random()*400-200,random()*400-200,random()*400-200)

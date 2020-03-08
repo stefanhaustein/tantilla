@@ -1,7 +1,6 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.LocalSymbol;
 import org.kobjects.asde.lang.io.SyntaxColor;
@@ -16,7 +15,7 @@ import java.util.Map;
 public class DeclarationStatement extends Statement {
 
   public enum Kind {
-    VAR, CONST
+    MUT, LET
   }
 
   public final Kind kind;
@@ -52,7 +51,7 @@ public class DeclarationStatement extends Statement {
   }
 
   public void onResolve(ValidationContext resolutionContext, int line) {
-    resolved = resolutionContext.declareLocalVariable(varName, children[0].returnType(), kind != Kind.CONST);
+    resolved = resolutionContext.declareLocalVariable(varName, children[0].returnType(), kind != Kind.LET);
   }
 
   public Object evalValue(EvaluationContext evaluationContext) {

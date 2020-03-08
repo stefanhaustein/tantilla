@@ -6,7 +6,6 @@ import org.kobjects.asde.lang.classifier.Module;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.function.ValidationContext;
-import org.kobjects.asde.lang.classifier.DeclaredBy;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.BuiltinFunction;
 import org.kobjects.asde.lang.function.UserFunction;
@@ -256,7 +255,7 @@ public class Program {
     mainModule.putProperty(GenericProperty.createWithInitializer(
         mainModule,
         false,
-        expr.kind == DeclarationStatement.Kind.VAR,
+        expr.kind == DeclarationStatement.Kind.MUT,
         name,
         expr.children[0]));
   }

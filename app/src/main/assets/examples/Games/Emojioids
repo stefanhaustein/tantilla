@@ -1,13 +1,14 @@
-var ship = screen.newSprite()
-var gameOver = False
-var score = 0
-var scoreDisplay = screen.newTextBox()
-var gameOverDisplay = screen.newTextBox()
-var continueDisplay = screen.newTextBox()
-var asteroids = List[Sprite][]
+const ship = screen.newSprite()
+const scoreDisplay = screen.newTextBox()
+const gameOverDisplay = screen.newTextBox()
+const continueDisplay = screen.newTextBox()
+const asteroids = List[Sprite][]
+
+mut gameOver = False
+mut score = 0
 
 def newAsteroid(x: float, y: float, size: float, direction: float, speed: float):
- var asteroid = screen.newSprite()
+ let asteroid = screen.newSprite()
  asteroids.append(asteroid)
  asteroid.face = "🥔"
  asteroid.x = x
@@ -48,7 +49,7 @@ def breakAsteroid(asteroid: Sprite):
 end
 
 def shoot():
- var shot = screen.newSprite()
+ let shot = screen.newSprite()
  shot.size = 5
  shot.face = "🔴"
  shot.direction = ship.angle + 45

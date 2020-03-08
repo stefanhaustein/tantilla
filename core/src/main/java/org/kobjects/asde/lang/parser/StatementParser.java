@@ -60,6 +60,8 @@ public class StatementParser {
 
     switch (name.toLowerCase()) {
       case "const":
+      case "let":
+      case "mut":
       case "var":
         result.add(parseDeclaration(tokenizer));
         return;
@@ -236,10 +238,12 @@ public class StatementParser {
 
   DeclarationStatement parseDeclaration(Tokenizer tokenizer) {
     DeclarationStatement.Kind kind;
-    if (tokenizer.tryConsume("var")) {
-      kind = DeclarationStatement.Kind.VAR;
+    if (tokenizer.tryConsume("var") || tokenizer.tryConsume("mut")) {
+      kind = DeclarationStatement.Kind.MUT;
+    } else if (tokenizer.tryConsume("let")) {
+      kind = tokenizer.tryConsume("mut") ? DeclarationStatement.Kind.MUT : DeclarationStatement.Kind.LET;
     } else if (tokenizer.tryConsume("const")) {
-      kind = DeclarationStatement.Kind.CONST;
+      kind = DeclarationStatement.Kind.LET;
     } else {
       throw new RuntimeException("var or const expected");
     }

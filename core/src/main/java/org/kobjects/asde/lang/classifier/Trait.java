@@ -64,8 +64,8 @@ public class Trait implements Classifier, DeclaredBy {
     propertyMap.put(property.getName(), (TraitProperty) property);
   }
 
-  public void addProperty(String name, Type type) {
-    propertyMap.put(name, new TraitProperty(this, name, type));
+  public void addProperty(boolean mutable, String name, Type type) {
+    propertyMap.put(name, new TraitProperty(this, mutable, name, type));
   }
 
   @Override

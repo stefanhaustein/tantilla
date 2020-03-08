@@ -86,10 +86,10 @@ class Camera:
   up: Vector
 
  def new(pos: Vector, lookAt: Vector) -> Camera:
-   var down = Vector.new(0, -1, 0)
-   var forward = lookAt.minus(pos).norm()
-   var right = forward.cross(down).norm().times(1.5)
-   var up = forward.cross(right).norm().times(1.5)
+   let down = Vector.new(0, -1, 0)
+   let forward = lookAt.minus(pos).norm()
+   let right = forward.cross(down).norm().times(1.5)
+   let up = forward.cross(right).norm().times(1.5)
    return Camera{pos: pos, forward: forward, right: right, up: up}
  end
 
@@ -160,11 +160,11 @@ class Sphere:
  end
 
  def intersect(self, r: Ray) -> Intersection:
-  var eo = self.center.minus(r.start)
-  var v = eo.dot(r.dir)
-  var dist = 1/0
+  let eo = self.center.minus(r.start)
+  let v = eo.dot(r.dir)
+  mut dist = 1/0
   if v >= 0 :
-   var disc = self.radius2 - (eo.dot(eo) - v * v)
+   let disc = self.radius2 - (eo.dot(eo) - v * v)
    if disc >= 0 :
      dist = v - sqrt(disc)
    end

@@ -1,8 +1,8 @@
 def main():
-  var bob = screen.newSprite()
+  let bob = screen.newSprite()
   bob.size = 50
-  var dx = 0.5
-  var dy = 0
+  mut dx = 0.5
+  mut dy = 0
   bob.yAlign = YAlign.BOTTOM
   bob.xAlign = XAlign.LEFT
   while true:

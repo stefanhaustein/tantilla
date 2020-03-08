@@ -1,17 +1,18 @@
-var grid = List[List[float]][]
-var allPieces = [[1, 0, 1, 1, 1, 2, 0, 2], [1, 0, 1, 1, 2, 1, 2, 2], [1, 0, 1, 1, 1, 2, 2, 2], [2, 0, 2, 1, 1, 1, 1, 2], [1, 0, 0, 1, 1, 1, 2, 1], [1, 0, 2, 0, 1, 1, 2, 1], [2, 0, 2, 1, 2, 2, 2, 3]]
-var pc = 0
-var pp = 0
-var p = screen.newPen()
-var pieceX = [0, 0, 0, 0]
-var pieceY = [0, 0, 0, 0]
-var previewX = [0, 0, 0, 0]
-var previewY = [0, 0, 0, 0]
-var px0 = 1
-var py0 = 0
-var score = 0
-var rows = 0
-var gameOver = false
+const grid = List[List[float]][]
+const allPieces = [[1, 0, 1, 1, 1, 2, 0, 2], [1, 0, 1, 1, 2, 1, 2, 2], [1, 0, 1, 1, 1, 2, 2, 2], [2, 0, 2, 1, 1, 1, 1, 2], [1, 0, 0, 1, 1, 1, 2, 1], [1, 0, 2, 0, 1, 1, 2, 1], [2, 0, 2, 1, 2, 2, 2, 3]]
+const p = screen.newPen()
+const pieceX = [0, 0, 0, 0]
+const pieceY = [0, 0, 0, 0]
+const previewX = [0, 0, 0, 0]
+const previewY = [0, 0, 0, 0]
+
+mut pc = 0
+mut pp = 0
+mut px0 = 1
+mut py0 = 0
+mut score = 0
+mut rows = 0
+mut gameOver = false
 
 def checkPosition(x: float, y: float) -> bool:
  for i in range(4):

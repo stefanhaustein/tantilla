@@ -12,12 +12,14 @@ import java.util.Map;
 
 public class TraitProperty implements Property {
   private final Trait owner;
+  private boolean mutable;
   private String name;
   private Type type;
   private Map<Node, Exception> errors = Collections.emptyMap();
 
-  TraitProperty(Trait owner, String name, Type type) {
+  TraitProperty(Trait owner, boolean mutable, String name, Type type) {
     this.owner = owner;
+    this.mutable = mutable;
     this.name = name;
     this.type = type;
   }
@@ -61,7 +63,7 @@ public class TraitProperty implements Property {
 
   @Override
   public boolean isMutable() {
-    return isInstanceField();
+    return mutable;
   }
 
   @Override

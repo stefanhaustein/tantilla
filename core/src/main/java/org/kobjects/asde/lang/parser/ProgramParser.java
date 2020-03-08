@@ -199,13 +199,16 @@ public class ProgramParser {
         String functionName = tokenizer.consumeIdentifier();
         ArrayList<String> parameterNames = new ArrayList();
         FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames, trait);
-        trait.addProperty(functionName, functionType);
+        trait.addProperty(false, functionName, functionType);
       } else {
         boolean mutable = tokenizer.tryConsume("var") || tokenizer.tryConsume("mut");
+        if (!mutable) {
+          tokenizer.tryConsume("const");
+        }
         String name = tokenizer.consumeIdentifier();
         tokenizer.consume(":");
         Type type = statementParser.parseType(tokenizer);
-        trait.addProperty(name, type);
+        trait.addProperty(mutable, name, type);
       }
     }
     return index;

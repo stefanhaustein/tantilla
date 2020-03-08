@@ -1,5 +1,5 @@
 def main():
- var ball = screen.newSprite()
+ let ball = screen.newSprite()
  ball.face = "🎱"
  ball.size = 30
  ball.edgeMode = EdgeMode.BOUNCE
@@ -7,7 +7,7 @@ def main():
  ball.dx = -57
  ball.dy = 31
  ball.say "EdgeMode.BOUNCE"
- var ghost = screen.newSprite()
+ let ghost = screen.newSprite()
  ghost.face = "👻"
  ghost.size = 30
  ghost.edgeMode = EdgeMode.WRAP
