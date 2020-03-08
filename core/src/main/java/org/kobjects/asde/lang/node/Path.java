@@ -14,9 +14,18 @@ import java.util.Map;
 
 
 public class Path extends SymbolNode {
+  enum ResolvedKind {
+    INSTANCE_FIELD,
+    STATIC_PROPERTY,
+    ENUM_LITERAL,
+    UNRESOLVED,
+    ERROR
+  }
+
   public String pathName;
   private Property resolvedProperty;
   private Object resolvedConstant;
+  private ResolvedKind resolvedKind = ResolvedKind.UNRESOLVED;
 
   public Path(Node left, Node right) {
     super(left);
@@ -28,6 +37,7 @@ public class Path extends SymbolNode {
 
   @Override
   protected void onResolve(ValidationContext resolutionContext, int line) {
+    resolvedKind = ResolvedKind.ERROR;
     if (children[0].returnType() instanceof Classifier) {
       resolvedProperty = ((Classifier) children[0].returnType()).getProperty(pathName);
       if (resolvedProperty == null) {
@@ -40,6 +50,7 @@ public class Path extends SymbolNode {
       if (!resolvedProperty.isInstanceField()) {
         throw new RuntimeException("No-static Instance property expected. Please use " + children[0].returnType() + "." + resolvedProperty + " for a static reference instead.");
       }
+      resolvedKind = ResolvedKind.INSTANCE_FIELD;
       return;
     }
 
@@ -48,21 +59,51 @@ public class Path extends SymbolNode {
       if (type instanceof EnumType) {
         EnumType enumType = (EnumType) type;
         resolvedConstant = enumType.getLiteral(pathName);
+        resolvedKind = ResolvedKind.ENUM_LITERAL;
+        return;
+      }
+      if (type instanceof Classifier) {
+        resolvedProperty = ((Classifier) type).getProperty(pathName);
+        if (resolvedProperty == null) {
+          throw new RuntimeException("Property '" + pathName + "' not found in " + children[0].returnType());
+        }
+        resolutionContext.validateAndAddDependency(resolvedProperty);
+        if (resolvedProperty.getType() == null) {
+          throw new RuntimeException("Type of property '" + resolvedProperty + "' is null.");
+        }
+        if (resolvedProperty.isInstanceField()) {
+          throw new RuntimeException("Static property expected for static reference.");
+        }
+        resolvedKind = ResolvedKind.STATIC_PROPERTY;
         return;
       }
     }
-
-    throw new RuntimeException("InstanceType or Enum expected as path base; got: " + children[0].returnType());
+    throw new RuntimeException("Classifier expected as path base; got: " + children[0].returnType());
   }
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
-    return resolvedConstant != null ? resolvedConstant : resolvedProperty.get(evaluationContext, children[0].eval(evaluationContext));
+    switch (resolvedKind) {
+      case INSTANCE_FIELD:
+        return resolvedProperty.get(evaluationContext, children[0].eval(evaluationContext));
+      case ENUM_LITERAL:
+        return resolvedConstant;
+      case STATIC_PROPERTY:
+        return resolvedProperty.getStaticValue();
+    }
+    throw new IllegalStateException("Resolved kind: " + resolvedKind);
   }
 
   @Override
   public Type returnType() {
-    return resolvedProperty != null ? resolvedProperty.getType() : Types.of(resolvedConstant);
+    switch (resolvedKind) {
+      case INSTANCE_FIELD:
+      case STATIC_PROPERTY:
+        return resolvedProperty.getType();
+      case ENUM_LITERAL:
+        return Types.of(resolvedConstant);
+    }
+    return null;
   }
 
   @Override

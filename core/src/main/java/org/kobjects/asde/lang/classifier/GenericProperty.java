@@ -221,6 +221,9 @@ public class GenericProperty implements Property {
       staticValue = initializer.eval(evaluationContext);
     }
     initialized.add(this);
+    for (Property property : owner.getAllProperties()) {
+      property.init(evaluationContext, initialized);
+    }
   }
 
   public void setInitializer(Node initializer) {
