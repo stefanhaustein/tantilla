@@ -94,8 +94,13 @@ public class Struct implements Classifier, InstantiableType, DeclaredBy {
 
 
   @Override
-  public void setDeclaredBy(GenericProperty declaringSymbol) {
+  public void setDeclaredBy(Property declaringSymbol) {
     this.declaringSymbol = declaringSymbol;
+  }
+
+  @Override
+  public Property getDeclaringSymbol() {
+    return declaringSymbol;
   }
 
 

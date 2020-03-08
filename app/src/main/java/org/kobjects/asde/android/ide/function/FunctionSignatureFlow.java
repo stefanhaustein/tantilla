@@ -20,6 +20,7 @@ import org.kobjects.asde.android.ide.text.TextValidator;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.statement.RemStatement;
@@ -42,10 +43,10 @@ public class FunctionSignatureFlow {
   ArrayList<Parameter> originalParameterList;
   ArrayList<Parameter> parameterList = new ArrayList<>();
   LinearLayout parameterListView;
-  UserFunction userFunction;
+  Callable userFunction;
   Classifier classImplementation;
 
-  public static void changeSignature(MainActivity mainActivity, Property symbol, UserFunction userFunction) {
+  public static void changeSignature(MainActivity mainActivity, Property symbol, Callable userFunction) {
     FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CHANGE_SIGNATURE, userFunction.getType().getReturnType());
     flow.property = symbol;
     flow.name = symbol.getName();
@@ -53,7 +54,7 @@ public class FunctionSignatureFlow {
     flow.originalParameterList = new ArrayList<>();
     for (int i = 0; i < userFunction.getType().getParameterCount(); i++) {
       Parameter parameter = new Parameter();
-      parameter.name = userFunction.parameterNames[i];
+      parameter.name = userFunction.getParameterName(i);
       parameter.type = userFunction.getType().getParameterType(i);
       flow.originalParameterList.add(parameter);
       flow.parameterList.add(parameter);
@@ -341,14 +342,15 @@ public class FunctionSignatureFlow {
     }
 
     Type[] types = new Type[count];
-    userFunction.parameterNames = new String[parameterList.size()];
+    String[] parameterNames = new String[parameterList.size()];
     for (int i = 0; i < parameterList.size(); i++) {
       Parameter parameter = parameterList.get(i);
-      userFunction.parameterNames[i] = parameter.name;
+      parameterNames[i] = parameter.name;
       types[i] = parameter.type;
     }
 
     userFunction.setType(new FunctionType(returnType, types));
+    userFunction.setParameterNames(parameterNames);
 
     if (moved) {
       mainActivity.program.processNodes(node -> node.changeSignature(property, oldIndices));

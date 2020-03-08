@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.function;
 
 import org.kobjects.annotatedtext.AnnotatedString;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -168,5 +169,10 @@ public enum Builtin implements Callable {
   @Override
   public AnnotatedString getDocumentation() {
     return documentation;
+  }
+
+  @Override
+  public Property getDeclaringSymbol() {
+    return null;
   }
 }

@@ -59,4 +59,7 @@ public interface Property {
     throw new RuntimeException(toString(this) + "' does not support initializers.");
   }
 
+  default void setName(String newName) {
+    throw new UnsupportedOperationException(toString(this) + "' does not support setName().");
+  }
 }

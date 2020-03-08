@@ -35,6 +35,7 @@ import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.android.library.ui.PenType;
 import org.kobjects.asde.android.library.ui.ScreenType;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.BuiltinFunction;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -240,6 +241,11 @@ public class MainActivity extends AppCompatActivity {
           }, "Pause the execution for the given number of seconds.", Types.VOID, Types.FLOAT));
 
     program.addBuiltin("play", new Callable() {
+      @Override
+      public Property getDeclaringSymbol() {
+        return null;
+      }
+
       @Override
       public FunctionType getType() {
         return new FunctionType(Types.VOID, Types.STR);

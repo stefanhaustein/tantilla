@@ -58,11 +58,11 @@ public class GenericProperty implements Property {
         /* staticValue */ null);
   }
 
-  public static GenericProperty createUninitialized(Classifier owner, String propertyName, Type type) {
+  public static GenericProperty createUninitialized(Classifier owner, boolean isMutable, String propertyName, Type type) {
     return new GenericProperty(
         owner,
         /* isInstanceField= */ true,
-        /* isMutable */ true,
+        isMutable,
         type,
         propertyName,
         /* initializer= */ null,
@@ -98,45 +98,6 @@ public class GenericProperty implements Property {
       }
   }
 
-  /*
-  // May also be called from ClassValidationContext.
-  public void validate(ValidationContext parentValidationContext) {
-    System.out.println("Validating user property: " + name);
-
-    ValidationContext context = parentValidationContext.createChildContext(this);
-
-    UserFunction userFunction =
-        (!isInstanceField && initializer == null && staticValue instanceof UserFunction)
-            ? (UserFunction) staticValue
-            : null;
-    if (userFunction != null) {
-      System.out.println(" - " + name + " is userFunction");
-      userFunction.validate(context);
-    } else  {
-      if (initializer != null) {
-        System.out.println(" - " + name + " has initializer");
-        initializer.resolve(context, 0);
-      } else if (staticValue instanceof UserClass) {
-        System.out.println(" - " + name + " is user class");
-        ((UserClass) staticValue).validate(context);
-      }
-      if (isInstanceField) {
-        System.out.println(" - " + name + " is instance field");
-        fieldIndex = owner.resolvedInitializers.size();
-        owner.resolvedInitializers.add(initializer);
-      }
-    }
-    if (context.errors.size() > 0) {
-      System.err.println("Validation errors for property " + name + ": " + context.errors);
-    }
-
-    this.errors = context.errors;
-    this.dependencies = context.dependencies;
-  //  parentValidationContext.dependencies.addAll(context.dependencies);
-  //  parentValidationContext.errors.putAll(context.errors);
-  }
-
-   */
   @Override
   public void setDependenciesAndErrors(HashSet<Property> dependencies, HashMap<Node, Exception> errors) {
     this.initializationDependencies = dependencies;
@@ -195,10 +156,6 @@ public class GenericProperty implements Property {
     return isMutable;
   }
 
-  public  boolean isConstant() {
-    return !isMutable();
-  }
-
   @Override
   public boolean isInstanceField() {
     return isInstanceField;
@@ -237,6 +194,9 @@ public class GenericProperty implements Property {
 
   @Override
   public void set(EvaluationContext context, Object instance, Object value) {
+    if (!isMutable || !isInstanceField) {
+      throw new IllegalStateException("Property " + this + (isInstanceField ? " is a static field!" : " is not mutable!"));
+    }
     ((Instance) instance).properties[fieldIndex] = value;
   }
 

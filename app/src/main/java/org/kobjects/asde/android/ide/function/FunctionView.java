@@ -18,6 +18,8 @@ import org.kobjects.asde.android.ide.symbol.RenameFlow;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Module;
+import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.type.Types;
@@ -25,15 +27,15 @@ import org.kobjects.asde.lang.type.Types;
 import java.util.ArrayList;
 
 public class FunctionView extends SymbolView {
-  public UserFunction userFunction;
+  public Callable userFunction;
 
   private Selection selection;
 
-  public FunctionView(final MainActivity mainActivity, GenericProperty symbol) {
+  public FunctionView(final MainActivity mainActivity, Property symbol) {
     super(mainActivity, symbol);
-    this.userFunction = (UserFunction) symbol.getStaticValue();
+    this.userFunction = (Callable) symbol.getStaticValue();
 
-    boolean isMain = userFunction == userFunction.program.main;
+    boolean isMain = userFunction == mainActivity.program.main;
     boolean isVoid = userFunction.getType().getReturnType() == Types.VOID;
     boolean isMethod = !(userFunction.getDeclaringSymbol().getOwner() instanceof Module);
 
@@ -67,7 +69,7 @@ public class FunctionView extends SymbolView {
 
     ArrayList<String> subtitles = new ArrayList<>();
     for (int i = 0; i < userFunction.getType().getParameterCount(); i++) {
-      subtitles.add(" " + userFunction.parameterNames[i] + ": " + userFunction.getType().getParameterType(i));
+      subtitles.add(" " + userFunction.getParameterName(i) + ": " + userFunction.getType().getParameterType(i));
     }
     if (!isVoid) {
       subtitles.add("-> " + userFunction.getType().getReturnType());
@@ -98,26 +100,27 @@ public class FunctionView extends SymbolView {
 
     int updated = 0;
 
-    for (Statement statement: userFunction.allLines()) {
-      if (index >= syncedTo) {
-        updated++;
-        CodeLineView codeLineView;
-        if (index < codeView.getChildCount()) {
-          codeLineView = (CodeLineView) codeView.getChildAt(index);
-        } else {
-          codeLineView = new CodeLineView(mainActivity, index % 2 == 1);
-          codeView.addView(codeLineView);
+    if (userFunction instanceof UserFunction) {
+      for (Statement statement : ((UserFunction) userFunction).allLines()) {
+        if (index >= syncedTo) {
+          updated++;
+          CodeLineView codeLineView;
+          if (index < codeView.getChildCount()) {
+            codeLineView = (CodeLineView) codeView.getChildAt(index);
+          } else {
+            codeLineView = new CodeLineView(mainActivity, index % 2 == 1);
+            codeView.addView(codeLineView);
+          }
+          codeLineView.setCodeLine(index + 1, statement, symbol.getErrors());
         }
-        codeLineView.setCodeLine(index + 1, statement, symbol.getErrors());
-      }
-      index++;
-      if (updated > 8) {
-        syncedTo += updated;
-        post(this::syncContent);
-        return;
+        index++;
+        if (updated > 8) {
+          syncedTo += updated;
+          post(this::syncContent);
+          return;
+        }
       }
     }
-
     syncedTo = 0;
 
     while (index < codeView.getChildCount()) {
@@ -284,7 +287,7 @@ public class FunctionView extends SymbolView {
       alertBuilder.setNegativeButton("Cancel", null);
       alertBuilder.setPositiveButton("Delete", (a, b) -> {
         for (int i = getEndIndex() - 1; i >= getStartIndex(); i--) {
-          userFunction.deleteLine(getCodeLineView(i).lineNumber);
+          ((UserFunction) userFunction).deleteLine(getCodeLineView(i).lineNumber);
           getContentView().removeViewAt(i);
         }
       });

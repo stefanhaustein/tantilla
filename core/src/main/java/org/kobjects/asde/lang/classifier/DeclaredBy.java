@@ -1,5 +1,5 @@
 package org.kobjects.asde.lang.classifier;
 
-public interface DeclaredBy {
-  void setDeclaredBy(GenericProperty declaringSymbol);
+public interface DeclaredBy extends HasDeclaringPropertyReference {
+ void setDeclaredBy(Property declaringSymbol);
 }

@@ -6,7 +6,8 @@ import org.kobjects.asde.android.ide.classifier.ClassifierView;
 import org.kobjects.asde.android.ide.program.VariableView;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.function.Callable;
+import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.classifier.Classifier;
 
@@ -16,7 +17,7 @@ import java.util.HashMap;
 
 public class SymbolListView extends ExpandableList {
   public HashMap<String, SymbolView> nameViewMap = new HashMap<>();
-  HashMap<GenericProperty, SymbolView> symbolViewMap = new HashMap<>();
+  HashMap<Property, SymbolView> symbolViewMap = new HashMap<>();
   private final MainActivity mainActivity;
 
   public SymbolListView(MainActivity mainActivity) {
@@ -35,7 +36,7 @@ public class SymbolListView extends ExpandableList {
    * @param returnViewForSymbol Return the view for this symbol.
    * @return
    */
-  public SymbolView synchronizeTo(Iterable<? extends GenericProperty> symbolList, ExpandListener expandListener, Property returnViewForSymbol) {
+  public SymbolView synchronizeTo(Iterable<? extends Property> symbolList, ExpandListener expandListener, Property returnViewForSymbol) {
 
     System.out.println("########  synchronizeTo: " + symbolList);
 
@@ -45,9 +46,9 @@ public class SymbolListView extends ExpandableList {
     SymbolView matchedView = null;
 
     HashMap<String, SymbolView> newNameViewMap = new HashMap<>();
-    HashMap<GenericProperty, SymbolView> newSymbolViewMap = new HashMap<>();
+    HashMap<Property, SymbolView> newSymbolViewMap = new HashMap<>();
 
-    for (GenericProperty symbol : symbolList) {
+    for (Property symbol : symbolList) {
       if (symbol == null) {
         continue;
       }
@@ -67,7 +68,7 @@ public class SymbolListView extends ExpandableList {
           if (matchedView == null && returnViewForSymbol != null) {
             matchedView = classifierView.getContentView().findViewBySymbol(returnViewForSymbol);
           }
-        } else if (symbol.getStaticValue() instanceof UserFunction) {
+        } else if (symbol.getType() instanceof FunctionType) {
           FunctionView functionView = new FunctionView(mainActivity, symbol);
           symbolView = functionView;
           functionView.addExpandListener(expandListener);

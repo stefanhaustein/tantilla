@@ -158,6 +158,7 @@ public class ProgramParser {
               Type type = statementParser.parseType(tokenizer);
               currentClass.putProperty(GenericProperty.createUninitialized(
                   currentClass,
+                  mutable,
                   name,
                   type));
             } else {

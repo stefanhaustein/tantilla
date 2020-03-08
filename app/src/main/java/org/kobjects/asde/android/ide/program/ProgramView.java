@@ -179,7 +179,7 @@ public class ProgramView extends SymbolListView {
   /**
    * Users should call console.edit(symbol) instead.
    */
-  public SymbolView selectImpl(GenericProperty symbol) {
+  public SymbolView selectImpl(Property symbol) {
     SymbolView targetView = null;
     if (currentSymbolView != null && currentSymbolView.symbol == symbol) {
       targetView = currentSymbolView;

@@ -23,6 +23,7 @@ import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.runtime.ForcedStopException;
 import org.kobjects.asde.lang.io.Format;
 import org.kobjects.asde.lang.function.UserFunction;
@@ -235,7 +236,7 @@ public class AndroidConsole implements Console {
       // Append moves the cursor to the end.
       mainActivity.controlView.codeEditText.setText("");
       if (functionView != null) {
-        UserFunction userFunction = functionView.userFunction;
+        UserFunction userFunction = (UserFunction) functionView.userFunction;
         Statement codeLine = userFunction.getLine((line-2)/2);
         if (codeLine != null) {
           mainActivity.controlView.codeEditText.append(line + " " + codeLine);
@@ -254,8 +255,9 @@ public class AndroidConsole implements Console {
   @Override
   public UserFunction getSelectedFunction() {
     return mainActivity.programView.currentFunctionView == null
+        || !(mainActivity.programView.currentFunctionView.userFunction instanceof UserFunction)
         ? mainActivity.program.main
-        : mainActivity.programView.currentFunctionView.userFunction;
+        : (UserFunction) mainActivity.programView.currentFunctionView.userFunction;
   }
 
 

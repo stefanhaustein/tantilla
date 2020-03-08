@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.function;
 
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 
@@ -29,6 +30,11 @@ public class BuiltinFunction implements Callable {
   @Override
   public Object call(EvaluationContext evaluationContext, int paramCount) {
     return callable.call(evaluationContext, paramCount);
+  }
+
+  @Override
+  public Property getDeclaringSymbol() {
+    return null;
   }
 
   public interface NativeImplementation {

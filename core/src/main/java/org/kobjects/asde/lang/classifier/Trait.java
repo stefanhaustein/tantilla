@@ -18,8 +18,13 @@ public class Trait implements Classifier, DeclaredBy {
   }
 
   @Override
-  public void setDeclaredBy(GenericProperty declaringSymbol) {
+  public void setDeclaredBy(Property declaringSymbol) {
     this.declaringSymbol = declaringSymbol;
+  }
+
+  @Override
+  public Property getDeclaringSymbol() {
+    return declaringSymbol;
   }
 
   @Override

@@ -2,6 +2,8 @@ package org.kobjects.asde.lang.function;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.classifier.HasDeclaringPropertyReference;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.classifier.DeclaredBy;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -28,7 +30,7 @@ public class UserFunction implements Callable, DeclaredBy {
   public String[] parameterNames;
   private List<Statement> code = new ArrayList<>();
   public int localVariableCount;
-  private GenericProperty declaringSymbol;
+  private Property declaringSymbol;
 
   public UserFunction(Program program, FunctionType type, String... parameterNames) {
     this.program = program;
@@ -49,6 +51,11 @@ public class UserFunction implements Callable, DeclaredBy {
     return type;
   }
 
+
+  @Override
+  public void setParameterNames(String[] names) {
+    this.parameterNames = names;
+  }
 
   /**
    * Calls this method with a new evaluationContext.
@@ -163,16 +170,18 @@ public class UserFunction implements Callable, DeclaredBy {
     return code.size();
   }
 
+  @Override
   public void setType(FunctionType functionType) {
     this.type = functionType;
   }
 
 
-  public void setDeclaredBy(GenericProperty symbol) {
+  @Override
+  public void setDeclaredBy(Property symbol) {
     this.declaringSymbol = symbol;
   }
 
-  public GenericProperty getDeclaringSymbol() {
+  public Property getDeclaringSymbol() {
     return declaringSymbol;
   }
 

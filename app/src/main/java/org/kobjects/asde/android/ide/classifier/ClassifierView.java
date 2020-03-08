@@ -12,6 +12,8 @@ import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.symbol.SymbolListView;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.android.ide.symbol.ExpandListener;
+import org.kobjects.asde.lang.classifier.Classifier;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.Struct;
 import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Trait;
@@ -39,7 +41,7 @@ public class ClassifierView extends SymbolView {
   };
 
 
-  public ClassifierView(MainActivity mainActivity, GenericProperty symbol) {
+  public ClassifierView(MainActivity mainActivity, Property symbol) {
     super(mainActivity, symbol);
 
     if (symbol.getStaticValue() instanceof Trait) {
@@ -89,9 +91,9 @@ public class ClassifierView extends SymbolView {
       return;
     }
 
-    Iterable<? extends GenericProperty> symbols;
-    if (symbol.getStaticValue() instanceof Struct) {
-      symbols = ((Struct) symbol.getStaticValue()).getUserProperties();
+    Iterable<? extends Property> symbols;
+    if (symbol.getStaticValue() instanceof Classifier) {
+      symbols = ((Classifier) symbol.getStaticValue()).getAllProperties();
     } else {
       symbols = new ArrayList<>();
    //   symbols = ((Trait) symbol.getStaticValue()).propertyMap.values();

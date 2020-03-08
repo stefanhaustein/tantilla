@@ -30,7 +30,7 @@ public class VariableView extends SymbolView {
     Object cache = this;
     MainActivity mainActivity;
 
-    public VariableView(MainActivity mainActivity, GenericProperty symbol) {
+    public VariableView(MainActivity mainActivity, Property symbol) {
         super(mainActivity, symbol);
         this.mainActivity = mainActivity;
         this.symbol = symbol;

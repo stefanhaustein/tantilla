@@ -248,8 +248,8 @@ public class Program {
   }
 
 
-  public synchronized void setDeclaration(String name, DeclaredBy declaration) {
-    mainModule.putProperty(GenericProperty.createStatic(mainModule, name, declaration));
+  public synchronized void setDeclaration(String name, Object staticValue) {
+    mainModule.putProperty(GenericProperty.createStatic(mainModule, name, staticValue));
   }
 
   public synchronized void setPersistentInitializer(String name, DeclarationStatement expr) {

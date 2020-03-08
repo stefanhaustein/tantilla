@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.classifier;
 
+import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -33,7 +34,22 @@ public class TraitProperty implements Property {
 
   @Override
   public Object getStaticValue() {
-    return null;
+    return new Callable() {
+      @Override
+      public Object call(EvaluationContext evaluationContext, int paramCount) {
+        throw new RuntimeException("NYI");
+      }
+
+      @Override
+      public FunctionType getType() {
+        return (FunctionType) TraitProperty.this.getType();
+      }
+
+      @Override
+      public Property getDeclaringSymbol() {
+        return TraitProperty.this;
+      }
+    };
   }
 
   /*
