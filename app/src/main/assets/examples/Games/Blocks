@@ -201,7 +201,7 @@ end
 
 def main():
  while True:
-  screen.cls
+  screen.cls()
   # Based on David Murray's code, see
   # http://www.the8bitguy.com/download-davids-software/
   gameOver = false
