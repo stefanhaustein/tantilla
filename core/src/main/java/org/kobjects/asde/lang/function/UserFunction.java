@@ -1,8 +1,6 @@
 package org.kobjects.asde.lang.function;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.GenericProperty;
-import org.kobjects.asde.lang.classifier.HasDeclaringPropertyReference;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.classifier.DeclaredBy;
@@ -178,6 +176,10 @@ public class UserFunction implements Callable, DeclaredBy {
 
   @Override
   public void setDeclaredBy(Property symbol) {
+    /* The main function gets re-attached....
+    if (declaringSymbol != null && declaringSymbol != symbol) {
+      throw new IllegalStateException("Can't attach this function to " + symbol + "; already attached to: " + declaringSymbol);
+    }*/
     this.declaringSymbol = symbol;
   }
 

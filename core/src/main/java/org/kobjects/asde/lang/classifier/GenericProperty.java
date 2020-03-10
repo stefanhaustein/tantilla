@@ -138,6 +138,7 @@ public class GenericProperty implements Property {
     return owner;
   }
 
+  @Override
   public Map<Node, Exception> getErrors() {
     return errors;
   }

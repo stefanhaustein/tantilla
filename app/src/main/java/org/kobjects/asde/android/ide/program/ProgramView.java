@@ -20,7 +20,7 @@ import java.util.Collections;
 
 public class ProgramView extends SymbolListView {
   boolean expanded;
-  public final FunctionView mainFunctionView;
+  public FunctionView mainFunctionView;
   private final MainActivity mainActivity;
   private CodeLineView highlightedLine;
   public FunctionView currentFunctionView;
@@ -44,12 +44,6 @@ public class ProgramView extends SymbolListView {
     super(context);
 
     this.mainActivity = context;
-
-    mainFunctionView = new FunctionView(context, mainActivity.program.main.getDeclaringSymbol());
-    mainFunctionView.addExpandListener(expandListener);
-    mainFunctionView.setExpanded(true, false);
-    currentFunctionView = mainFunctionView;
-    currentSymbolView = mainFunctionView;
 
     // Makes sense to handle this here because of shellControl -- just for mainControl
     // it would be easier to let RunControlView handle this.
@@ -125,6 +119,16 @@ public class ProgramView extends SymbolListView {
         (isDefaultSaveLocation ? "ASDE" : program.reference.name)
             + (program.legacyMode ? " (legacy mode)️" : "")
         + (mainActivity.isUnsaved() ? "*" : "")); */
+
+    if (mainFunctionView == null || mainFunctionView.symbol != mainActivity.program.main.getDeclaringSymbol()) {
+      mainFunctionView = new FunctionView(mainActivity, mainActivity.program.main.getDeclaringSymbol());
+      mainFunctionView.addExpandListener(expandListener);
+      mainFunctionView.setExpanded(true, false);
+
+      currentFunctionView = mainFunctionView;
+      currentSymbolView = mainFunctionView;
+
+    }
 
     if (!expanded) {
       synchronizeTo(Collections.emptyList(), expandListener, null);

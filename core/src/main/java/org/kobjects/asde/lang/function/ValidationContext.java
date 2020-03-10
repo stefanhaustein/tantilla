@@ -3,7 +3,6 @@ package org.kobjects.asde.lang.function;
 
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.Struct;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.node.Node;
@@ -92,34 +91,41 @@ public class ValidationContext {
   }
 
   private void validate() {
-    if (property != null) {
-      if (resolved.contains(property)) {
-        return;
+      if (property != null) {
+        if (resolved.contains(property)) {
+          return;
+        }
+
+        Node initializer = property.getInitializer();
+        if (property.getInitializer() != null) {
+          inPropertyInitialization = true;
+          initializer.resolve(this, 0);
+          inPropertyInitialization = false;
+        }
+
+        // Recursion is ok starting here
+        resolved.add(property);
+
+        if (!property.isInstanceField() && property.getInitializer() == null && property.getStaticValue() instanceof Classifier) {
+          ((Classifier) property.getStaticValue()).validate(this);
+        }
       }
 
-      Node initializer = property.getInitializer();
-      if (property.getInitializer() != null) {
-        inPropertyInitialization = true;
-        initializer.resolve(this, 0);
-        inPropertyInitialization = false;
+
+      if (userFunction != null) {
+        userFunction.validate(this);
       }
 
-      // Recursion is ok starting here
-      resolved.add(property);
-
-      if (!property.isInstanceField() && property.getInitializer() == null && property.getStaticValue() instanceof Classifier) {
-        ((Classifier) property.getStaticValue()).validate(this);
-      }
-    }
-
-
-
-    if (userFunction != null) {
-      userFunction.validate(this);
-    }
 
     if (property != null) {
       property.setDependenciesAndErrors(initializationDependencies, errors);
+    }
+
+    if (errors.size() != 0) {
+      System.out.println("Errors for property " + property + ":  ");
+      for (Throwable throwable : errors.values()) {
+        throwable.printStackTrace(System.out);
+      }
     }
   }
 
