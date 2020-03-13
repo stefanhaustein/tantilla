@@ -16,10 +16,6 @@ public  interface Callable extends Typed, HasDeclaringPropertyReference {
 
   default CharSequence getDocumentation() { return null; }
 
-  default String getParameterName(int index) {
-    return String.valueOf((char) ('a' + index));
-  }
-
   default void setType(FunctionType functionType) {
     throw new UnsupportedOperationException();
   }

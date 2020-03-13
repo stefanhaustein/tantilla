@@ -78,8 +78,9 @@ public class ValidationContext {
 
     startBlock(null);
     if (userFunction != null) {
-      for (int i = 0; i < userFunction.parameterNames.length; i++) {
-        currentBlock.localSymbols.put(userFunction.parameterNames[i], new LocalSymbol(localSymbolCount++, userFunction.getType().getParameterType(i), false));
+      FunctionType type = userFunction.type;
+      for (int i = 0; i < type.getParameterCount(); i++) {
+        currentBlock.localSymbols.put(type.getParameter(i).name, new LocalSymbol(localSymbolCount++, type.getParameterType(i), false));
       }
     }
   }

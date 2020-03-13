@@ -20,6 +20,7 @@ import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Module;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.Callable;
+import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.type.Types;
@@ -68,8 +69,9 @@ public class FunctionView extends SymbolView {
 
 
     ArrayList<String> subtitles = new ArrayList<>();
-    for (int i = 0; i < userFunction.getType().getParameterCount(); i++) {
-      subtitles.add(" " + userFunction.getParameterName(i) + ": " + userFunction.getType().getParameterType(i));
+    FunctionType type = userFunction.getType();
+    for (int i = 0; i < type.getParameterCount(); i++) {
+      subtitles.add(" " + type.getParameter(i).name + ": " + type.getParameter(i).type);
     }
     if (!isVoid) {
       subtitles.add("-> " + userFunction.getType().getReturnType());

@@ -25,15 +25,13 @@ public class UserFunction implements Callable, DeclaredBy {
 
   public final Program program;
   FunctionType type;
-  public String[] parameterNames;
   private List<Statement> code = new ArrayList<>();
   public int localVariableCount;
   private Property declaringSymbol;
 
-  public UserFunction(Program program, FunctionType type, String... parameterNames) {
+  public UserFunction(Program program, FunctionType type) {
     this.program = program;
     this.type = type;
-    this.parameterNames = parameterNames;
   }
 
   public void validate(ValidationContext validationContext) {
@@ -49,11 +47,6 @@ public class UserFunction implements Callable, DeclaredBy {
     return type;
   }
 
-
-  @Override
-  public void setParameterNames(String[] names) {
-    this.parameterNames = names;
-  }
 
   /**
    * Calls this method with a new evaluationContext.
@@ -108,20 +101,7 @@ public class UserFunction implements Callable, DeclaredBy {
     if (name != null) {
       sb.append("def ");
       sb.append(name);
-      sb.append("(");
-      for (int i = 0; i < parameterNames.length; i++) {
-        if (i != 0) {
-          sb.append(", ");
-        }
-        sb.append(type.getParameterType(i).toString());
-        sb.append(' ');
-        sb.append(parameterNames[i]);
-      }
-      sb.append(")");
-      if (!sub) {
-        sb.append(" -> ");
-        sb.append(type.getReturnType().toString());
-      }
+      sb.append(type.toString());
       sb.append(":\n");
     }
 

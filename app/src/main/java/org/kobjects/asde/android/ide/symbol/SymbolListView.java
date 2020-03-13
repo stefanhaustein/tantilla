@@ -54,9 +54,6 @@ public class SymbolListView extends ExpandableList {
       }
       // Qualified needs to be sufficiently specific to disallow cross-type mismatches
       String qualifiedName = symbol.getName() + " " + symbol.getType();
-      if (symbol.getStaticValue() instanceof UserFunction) {
-        qualifiedName += Arrays.toString(((UserFunction) symbol.getStaticValue()).parameterNames);
-      }
       SymbolView symbolView = nameViewMap.get(qualifiedName);
       if (symbolView != null) {
         symbolView.syncContent();

@@ -4,6 +4,7 @@ package org.kobjects.asde.lang.parser;
 import org.kobjects.asde.lang.classifier.Struct;
 import org.kobjects.asde.lang.classifier.Trait;
 import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.function.Parameter;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.Program;
@@ -107,12 +108,11 @@ public class ProgramParser {
         } else if (tokenizer.tryConsume("def")) {
           String functionName = tokenizer.consumeIdentifier();
           program.console.updateProgress("Parsing function " + functionName);
-          ArrayList<String> parameterNames = new ArrayList();
-          FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames, currentClass);
+          FunctionType functionType = parseFunctionSignature(tokenizer, currentClass);
           if (!tokenizer.tryConsume(":")) {
             throw new RuntimeException("':' expected.");
           }
-          currentFunction = new UserFunction(program, functionType, parameterNames.toArray(new String[0]));
+          currentFunction = new UserFunction(program, functionType);
           if (currentClass != null) {
             currentClass.putProperty(GenericProperty.createMethod(currentClass, functionName, currentFunction));
           } else if (functionName.equals("main")) {
@@ -198,7 +198,7 @@ public class ProgramParser {
       if (tokenizer.tryConsume("def")) {
         String functionName = tokenizer.consumeIdentifier();
         ArrayList<String> parameterNames = new ArrayList();
-        FunctionType functionType = parseFunctionSignature(tokenizer, parameterNames, trait);
+        FunctionType functionType = parseFunctionSignature(tokenizer, trait);
         trait.addProperty(false, functionName, functionType);
       } else {
         boolean mutable = tokenizer.tryConsume("var") || tokenizer.tryConsume("mut");
@@ -215,14 +215,13 @@ public class ProgramParser {
   }
 
 
-  private Type[] parseParameterList(Tokenizer tokenizer, ArrayList<String> parameterNames, Type self) {
+  private Parameter[] parseParameterList(Tokenizer tokenizer, Type self) {
     tokenizer.consume("(");
-    ArrayList<Type> parameterTypes = new ArrayList<>();
+    ArrayList<Parameter> parameters = new ArrayList<>();
     while (!tokenizer.tryConsume(")")) {
       String parameterName = tokenizer.consumeIdentifier();
-      parameterNames.add(parameterName);
       if (parameterName.equals("self")) {
-        if (parameterTypes.size() != 0) {
+        if (parameters.size() != 0) {
           throw new RuntimeException("self must be first parameter");
         }
         if (self == null) {
@@ -234,11 +233,11 @@ public class ProgramParser {
             throw new RuntimeException("Type mismatch for self. Expected: " + self + " got: " + parameterType);
           }
         }
-        parameterTypes.add(self);
+        parameters.add(Parameter.create("self", self));
       } else {
         tokenizer.consume(":");
         Type parameterType = statementParser.parseType(tokenizer);
-        parameterTypes.add(parameterType);
+        parameters.add(Parameter.create(parameterName, parameterType));
       }
       if (!tokenizer.tryConsume(",")) {
         if (tokenizer.tryConsume(")")) {
@@ -247,15 +246,15 @@ public class ProgramParser {
         throw new RuntimeException("',' or ')' expected.");
       }
     }
-    return parameterTypes.toArray(Type.EMPTY_ARRAY);
+    return parameters.toArray(Parameter.EMPTY_ARRAY);
   }
 
-  private FunctionType parseFunctionSignature(Tokenizer tokenizer, ArrayList<String> parameterNames, Type self) {
-    Type[] parameterTypes = parseParameterList(tokenizer, parameterNames, self);
+  private FunctionType parseFunctionSignature(Tokenizer tokenizer, Type self) {
+    Parameter[] parameterTypes = parseParameterList(tokenizer, self);
 
     Type returnType = tokenizer.tryConsume("->") ? statementParser.parseType(tokenizer) : Types.VOID;
 
-    return new FunctionType(returnType, parameterTypes);
+    return new FunctionType(returnType, parameterTypes.length, parameterTypes);
   }
 
 

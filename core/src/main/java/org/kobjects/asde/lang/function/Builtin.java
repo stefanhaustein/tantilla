@@ -95,10 +95,6 @@ public enum Builtin implements Callable {
     Builtin(String documentation, Type returnType, int minParams, Type... parameterTypes) {
       this.documentation = AnnotatedString.of(documentation);
       this.minParams = minParams;
-      Parameter[] parameters = new Parameter[parameterTypes.length];
-      for (int i = 0; i < parameters.length; i++) {
-        parameters[i] = new Parameter(String.valueOf((char) ('a' + i)), parameterTypes[i]);
-      }
       this.signature = new FunctionType(returnType, minParams, parameterTypes);
     }
 

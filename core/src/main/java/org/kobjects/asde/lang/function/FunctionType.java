@@ -5,12 +5,21 @@ import org.kobjects.asde.lang.type.Type;
 
 public class FunctionType implements Type {
   private final Type returnType;
-  private Type[] parameterTypes;
+  private Parameter[] parameters;
   private final int minParameterCount;
+
+  public FunctionType(Type returnType, int minParameterCount, Parameter... parameters) {
+    this.returnType = returnType;
+    this.parameters = parameters;
+    this.minParameterCount = minParameterCount;
+  }
 
   public FunctionType(Type returnType, int minParamCount, Type... parameterTypes) {
     this.returnType = returnType;
-    this.parameterTypes = parameterTypes;
+    this.parameters = new Parameter[parameterTypes.length];
+    for (int i = 0; i < parameters.length; i++) {
+      parameters[i] = Parameter.create(String.valueOf(((char) ('a' + i))), parameterTypes[i]);
+    }
     this.minParameterCount = minParamCount;
   }
 
@@ -23,23 +32,23 @@ public class FunctionType implements Type {
   }
 
   public Type getParameterType(int index) {
-    return parameterTypes[index];
+    return parameters[index].type;
   }
 
   public int getMinParameterCount() {
     return minParameterCount;
   }
   public int getParameterCount() {
-    return parameterTypes.length;
+    return parameters.length;
   }
 
   public String toString() {
     StringBuilder sb = new StringBuilder("(");
-    for (int i = 0; i < parameterTypes.length; i++) {
+    for (int i = 0; i < parameters.length; i++) {
       if (i > 0) {
         sb.append(", ");
       }
-      sb.append(parameterTypes[i].toString());
+      sb.append(parameters[i].toString());
     }
     sb.append(") -> ");
     sb.append(returnType.toString());
@@ -99,9 +108,10 @@ public class FunctionType implements Type {
     }
 
     return true;
-
-
   }
 
 
+  public Parameter getParameter(int i) {
+    return parameters[i];
+  }
 }

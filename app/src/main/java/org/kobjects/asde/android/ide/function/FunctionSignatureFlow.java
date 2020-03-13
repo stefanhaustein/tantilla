@@ -21,6 +21,7 @@ import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.Callable;
+import org.kobjects.asde.lang.function.Parameter;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.statement.RemStatement;
@@ -53,9 +54,7 @@ public class FunctionSignatureFlow {
     flow.userFunction = userFunction;
     flow.originalParameterList = new ArrayList<>();
     for (int i = 0; i < userFunction.getType().getParameterCount(); i++) {
-      Parameter parameter = new Parameter();
-      parameter.name = userFunction.getParameterName(i);
-      parameter.type = userFunction.getType().getParameterType(i);
+      Parameter parameter = userFunction.getType().getParameter(i);
       flow.originalParameterList.add(parameter);
       flow.parameterList.add(parameter);
     }
@@ -237,7 +236,7 @@ public class FunctionSignatureFlow {
 
 
   void editParameter(int index, boolean add) {
-    Parameter parameter = add ? new Parameter() : parameterList.get(index);
+    Parameter parameter = add ? Parameter.create("", Types.FLOAT) : parameterList.get(index);
 
     LinearLayout nameAndType = new LinearLayout(mainActivity);
     nameAndType.setOrientation(LinearLayout.VERTICAL);
@@ -264,10 +263,11 @@ public class FunctionSignatureFlow {
 
     alertBuilder.setNegativeButton("Cancel", null);
     alertBuilder.setPositiveButton(add? "Add" : "Ok", (a, b) -> {
-      parameter.name = nameInput.getEditText().getText().toString();
-      parameter.type = typeInput.getSelectedType();
+      Parameter updatedParameter = Parameter.create(nameInput.getEditText().getText().toString(), typeInput.getSelectedType());
       if (add) {
-        parameterList.add(index, parameter);
+        parameterList.add(updatedParameter);
+      } else {
+        parameterList.set(index, updatedParameter);
       }
       updateParameterList();
     });
@@ -309,21 +309,6 @@ public class FunctionSignatureFlow {
 
   }
 
-  Type[] getParameterTypeArray() {
-    Type[] result = new Type[parameterList.size()];
-    for (int i = 0; i < result.length; i++) {
-      result[i] = parameterList.get(i).type;
-    }
-    return result;
-  }
-
-  String[] getParameterNameArray() {
-    String[] result = new String[parameterList.size()];
-    for (int i = 0; i < result.length; i++) {
-      result[i] = parameterList.get(i).name;
-    }
-    return result;
-  }
 
 
   void commitRefactor() {
@@ -360,8 +345,8 @@ public class FunctionSignatureFlow {
   }
 
   void commitNewFunction() {
-    FunctionType functionType = new FunctionType(returnType, getParameterTypeArray());
-    UserFunction userFunction = new UserFunction(mainActivity.program, functionType, getParameterNameArray());
+    FunctionType functionType = new FunctionType(returnType, parameterList.size(), parameterList.toArray(Parameter.EMPTY_ARRAY));
+    UserFunction userFunction = new UserFunction(mainActivity.program, functionType);
 
     RemStatement remStatement = new RemStatement("This comment should document this function.");
 
