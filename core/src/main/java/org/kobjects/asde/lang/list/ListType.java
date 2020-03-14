@@ -112,6 +112,11 @@ public class ListType implements Classifier {
   }
 
   @Override
+  public void remove(String propertyName) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public boolean hasDefaultValue() {
     return false;
   }

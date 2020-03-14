@@ -335,7 +335,6 @@ public class FunctionSignatureFlow {
     }
 
     userFunction.setType(new FunctionType(returnType, types));
-    userFunction.setParameterNames(parameterNames);
 
     if (moved) {
       mainActivity.program.processNodes(node -> node.changeSignature(property, oldIndices));

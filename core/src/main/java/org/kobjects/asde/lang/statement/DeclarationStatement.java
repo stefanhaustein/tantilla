@@ -22,14 +22,6 @@ public class DeclarationStatement extends Statement {
   String varName;
   LocalSymbol resolved;
 
-
-  @Override
-  public void rename(Property symbol, String oldName, String newName) {
-    /*if (symbol == resolved && oldName.equals(varName)) {
-      varName = newName;
-    }*/
-  }
-
   @Override
   public Object eval(EvaluationContext evaluationContext) {
     resolved.set(evaluationContext, evalValue(evaluationContext));

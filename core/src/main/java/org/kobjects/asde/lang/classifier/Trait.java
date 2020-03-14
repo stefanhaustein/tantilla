@@ -69,6 +69,11 @@ public class Trait implements Classifier, DeclaredBy {
   }
 
   @Override
+  public void remove(String propertyName) {
+    propertyMap.remove(propertyName);
+  }
+
+  @Override
   public boolean isAssignableFrom(Type other) {
     if (other == this) {
       return true;

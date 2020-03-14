@@ -104,10 +104,6 @@ public class Struct implements Classifier, InstantiableType, DeclaredBy {
   }
 
 
-  public void addSymbol(GenericProperty symbol) {
-    propertyMap.put(symbol.getName(), (GenericProperty) symbol);
-  }
-
   @Override
   public boolean hasDefaultValue() {
     return false;

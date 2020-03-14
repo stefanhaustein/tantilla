@@ -9,18 +9,17 @@ import org.kobjects.asde.lang.classifier.GenericProperty;
 
 public class RenameFlow {
 
-  public static void start(MainActivity mainActivity, Property symbol) {
-    new InputFlowBuilder(mainActivity, "Rename '" + symbol.getName() + "'" )
-        .addInput("New Name", symbol.getName(), new PropertyNameValidator(symbol.getOwner()))
+  public static void start(MainActivity mainActivity, Property property) {
+    new InputFlowBuilder(mainActivity, "Rename '" + property.getName() + "'" )
+        .addInput("New Name", property.getName(), new PropertyNameValidator(property.getOwner()))
         .start(result -> {
           String newName = result[0].trim();
-          Classifier owner = symbol.getOwner();
-          String oldName = symbol.getName();
-          owner.remove(symbol);
-          symbol.setName(newName);
-          owner.putProperty(symbol);
+          Classifier owner = property.getOwner();
+          owner.remove(property.getName());
+          property.setName(newName);
+          owner.putProperty(property);
 
-          mainActivity.program.processNodes(node -> node.rename(symbol, oldName, newName));
+          mainActivity.program.processNodes(node -> node.rename(property));
         });
   }
 }

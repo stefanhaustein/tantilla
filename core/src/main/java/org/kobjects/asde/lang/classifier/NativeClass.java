@@ -41,5 +41,10 @@ public class NativeClass extends TypeImpl implements Classifier {
   public CharSequence getDocumentation() {
     return documentation;
   }
+
+  @Override
+  public void remove(String propertyName) {
+    throw new UnsupportedOperationException();
+  }
 }
 

@@ -19,8 +19,4 @@ public  interface Callable extends Typed, HasDeclaringPropertyReference {
   default void setType(FunctionType functionType) {
     throw new UnsupportedOperationException();
   }
-
-  default void setParameterNames(String[] parameterNames) {
-    throw new UnsupportedOperationException();
-  }
 }

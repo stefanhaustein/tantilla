@@ -19,16 +19,10 @@ public class NodeProcessor {
     this.action = action;
   }
 
-  public void processNode(Node node) {
-    for (Node child : node.children) {
-      processNode(child);
-    }
-    action.accept(node);
-  }
 
   public void processCallableUnit(UserFunction userFunction) {
     for (Statement statement : userFunction.allLines()) {
-      processNode(statement);
+      statement.process(action);
     }
   }
 
@@ -38,7 +32,6 @@ public class NodeProcessor {
     }
   }
 
-
   public void processSymbol(GenericProperty symbol) {
     if (symbol.getStaticValue() instanceof Struct) {
       processClass((Struct) symbol.getStaticValue());
@@ -47,7 +40,7 @@ public class NodeProcessor {
       processCallableUnit((UserFunction) symbol.getStaticValue());
     }
     if (symbol.getInitializer() != null) {
-      processNode(symbol.getInitializer());
+      symbol.getInitializer().process(action);
     }
   }
 

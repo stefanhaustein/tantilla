@@ -19,9 +19,7 @@ public interface Classifier extends Type {
 
   CharSequence getDocumentation();
 
-  default void remove(Property property) {
-    throw new UnsupportedOperationException();
-  }
+  void remove(String propertyName);
 
   default void validate(ValidationContext validationContext) {
     for(Property property : getAllProperties()) {

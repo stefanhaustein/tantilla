@@ -111,9 +111,9 @@ public class Identifier extends SymbolNode {
 
 
   @Override
-  public void rename(Property symbol, String oldName, String newName) {
-    if (matches(symbol, oldName)) {
-      this.name = newName;
+  public void rename(Property symbol) {
+    if (resolvedKind == Kind.ROOT_MODULE_PROPERTY && symbol == resolvedRootProperty) {
+      this.name = symbol.getName();
     }
   }
 

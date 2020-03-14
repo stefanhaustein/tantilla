@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.Consumer;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
@@ -88,7 +89,7 @@ public abstract class Node {
     }
   }
 
-  public void rename(Property symbol, String oldName, String newName) {
+  public void rename(Property symbol) {
   }
   
   public void changeSignature(Property symbol, int[] newOrder) {
@@ -112,4 +113,11 @@ public abstract class Node {
 
   public abstract Type returnType();
 
+
+  public void process(Consumer<Node> action) {
+    for (Node child : children) {
+      process(action);
+    }
+    action.accept(this);
+  }
 }
