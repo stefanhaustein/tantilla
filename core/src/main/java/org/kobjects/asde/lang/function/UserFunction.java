@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.function;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.Consumer;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.classifier.DeclaredBy;
@@ -206,6 +207,12 @@ public class UserFunction implements Callable, DeclaredBy {
     }
     if (declaringSymbol != null) {
       program.notifySymbolChanged(declaringSymbol);
+    }
+  }
+
+  public synchronized void processNodes(Consumer<Node> action) {
+    for (Statement statement : code) {
+      statement.process(action);
     }
   }
 

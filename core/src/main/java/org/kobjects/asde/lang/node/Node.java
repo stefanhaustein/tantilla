@@ -116,7 +116,7 @@ public abstract class Node {
 
   public void process(Consumer<Node> action) {
     for (Node child : children) {
-      process(action);
+      child.process(action);
     }
     action.accept(this);
   }

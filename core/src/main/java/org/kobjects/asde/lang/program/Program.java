@@ -12,7 +12,6 @@ import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.classifier.UserPropertyChangeListener;
 import org.kobjects.asde.lang.io.ProgramReference;
-import org.kobjects.asde.lang.node.NodeProcessor;
 import org.kobjects.asde.lang.parser.ProgramParser;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.node.Node;
@@ -91,7 +90,7 @@ public class Program {
   }
 
   public void processNodes(Consumer<Node> action) {
-    new NodeProcessor(action).processProgram(this);
+    mainModule.processNodes(action);
     notifyProgramChanged();
   }
 
