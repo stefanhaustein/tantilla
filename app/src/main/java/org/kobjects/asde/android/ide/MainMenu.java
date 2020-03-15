@@ -5,7 +5,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.PopupMenu;
 
-import org.kobjects.asde.android.ide.classifier.CreateClassFlow;
+import org.kobjects.asde.android.ide.classifier.CreateClassifierFlow;
 import org.kobjects.asde.android.ide.filepicker.AssetNode;
 import org.kobjects.asde.android.ide.filepicker.FilePicker;
 import org.kobjects.asde.android.ide.filepicker.FileNode;
@@ -14,12 +14,12 @@ import org.kobjects.asde.android.ide.filepicker.SimpleLeaf;
 import org.kobjects.asde.android.ide.filepicker.SimpleNode;
 import org.kobjects.asde.android.ide.function.FunctionSignatureFlow;
 import org.kobjects.asde.android.ide.help.HelpDialog;
+import org.kobjects.asde.android.ide.property.PropertyFlow;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
 
 import java.io.File;
-import java.util.ArrayList;
 
 public class MainMenu {
 
@@ -61,7 +61,14 @@ public class MainMenu {
   public static void showProjectMenu(MainActivity mainActivity, View menuButton) {
     PopupMenu popupMenu = new PopupMenu(mainActivity, menuButton);
     Menu projectMenu = popupMenu.getMenu();
+    fillProjectMenu(mainActivity, projectMenu);
 
+    popupMenu.show();
+
+  }
+
+
+  public static void fillProjectMenu(MainActivity mainActivity, Menu projectMenu) {
     ProgramReference programReference = mainActivity.program.reference;
 
     projectMenu.add("New" + (mainActivity.isUnsaved() ? "…" : "")).setOnMenuItemClickListener(item -> {
@@ -185,8 +192,6 @@ public class MainMenu {
       return true;
     }).setEnabled(!mainActivity.program.reference.name.isEmpty());
 
-    popupMenu.show();
-
   }
 
 
@@ -195,8 +200,8 @@ public class MainMenu {
     PopupMenu popupMenu = new PopupMenu(mainActivity, menuButton);
     Menu mainMenu = popupMenu.getMenu();
 
-//    Menu projectMenu = mainMenu.addSubMenu("Project");
-
+    Menu projectMenu = mainMenu.addSubMenu("Project");
+    fillProjectMenu(mainActivity, projectMenu);
 
     /*
     mainMenu.add("Examples…").setOnMenuItemClickListener(item -> {
@@ -229,14 +234,27 @@ public class MainMenu {
       return true;
     });;
 
+    Menu addMenu = mainMenu.addSubMenu("Add");
 
-
-   // Menu addMenu = mainMenu.addSubMenu("Edit");
-    mainMenu.add("Add Class…").setOnMenuItemClickListener(item -> {
-      CreateClassFlow.start(mainActivity);
+    addMenu.add("Add Constant…").setOnMenuItemClickListener(item -> {
+      PropertyFlow.createStaticProperty(mainActivity, mainActivity.program.mainModule, false);
       return true;
     });
-    mainMenu.add("Add Function…").setOnMenuItemClickListener(item -> {
+
+    addMenu.add("Add Variable…").setOnMenuItemClickListener(item -> {
+      PropertyFlow.createStaticProperty(mainActivity, mainActivity.program.mainModule, true);
+      return true;
+    });
+
+    addMenu.add("Add Class…").setOnMenuItemClickListener(item -> {
+      CreateClassifierFlow.start(mainActivity, CreateClassifierFlow.Kind.CLASS);
+      return true;
+    });
+    addMenu.add("Add Trait…").setOnMenuItemClickListener(item -> {
+      CreateClassifierFlow.start(mainActivity, CreateClassifierFlow.Kind.TRAIT);
+      return true;
+    });
+    addMenu.add("Add Function…").setOnMenuItemClickListener(item -> {
       FunctionSignatureFlow.createFunction(mainActivity);
       return true;
     });

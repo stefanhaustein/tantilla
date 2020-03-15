@@ -1,10 +1,11 @@
 package org.kobjects.asde.android.ide.classifier;
 
+import android.view.Menu;
 import android.widget.PopupMenu;
 
-import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
+import org.kobjects.asde.android.ide.property.PropertyFlow;
 import org.kobjects.asde.android.ide.symbol.DeleteFlow;
 import org.kobjects.asde.android.ide.function.FunctionSignatureFlow;
 import org.kobjects.asde.android.ide.symbol.RenameFlow;
@@ -15,7 +16,6 @@ import org.kobjects.asde.android.ide.symbol.ExpandListener;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.Struct;
-import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Trait;
 
 import java.util.ArrayList;
@@ -52,11 +52,22 @@ public class ClassifierView extends SymbolView {
 
     titleView.setMoreClickListener(clicked -> {
       PopupMenu popupMenu = new PopupMenu(mainActivity, clicked);
-      popupMenu.getMenu().add("Add Property").setOnMenuItemClickListener(item -> {
-        PropertyFlow.createProperty(mainActivity, (Struct) symbol.getStaticValue());
+
+      Menu addMenu = popupMenu.getMenu().addSubMenu("Add");
+
+      addMenu.add("Add Constant").setOnMenuItemClickListener(item -> {
+        PropertyFlow.createStaticProperty(mainActivity, (Struct) symbol.getStaticValue(), false);
         return true;
       });
-      popupMenu.getMenu().add("Add Method").setOnMenuItemClickListener(item -> {
+      addMenu.add("Add Immutable Property").setOnMenuItemClickListener(item -> {
+        PropertyFlow.createInstanceProperty(mainActivity, (Struct) symbol.getStaticValue(), false);
+        return true;
+      });
+      addMenu.add("Add Mutable Property").setOnMenuItemClickListener(item -> {
+        PropertyFlow.createInstanceProperty(mainActivity, (Struct) symbol.getStaticValue(), true);
+        return true;
+      });
+      addMenu.add("Add Method").setOnMenuItemClickListener(item -> {
         FunctionSignatureFlow.createMethod(mainActivity, (Struct) symbol.getStaticValue());
         return true;
       });

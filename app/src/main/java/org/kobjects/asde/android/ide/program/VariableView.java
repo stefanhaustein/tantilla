@@ -6,11 +6,10 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.symbol.DeleteFlow;
-import org.kobjects.asde.android.ide.classifier.PropertyFlow;
+import org.kobjects.asde.android.ide.property.PropertyFlow;
 import org.kobjects.asde.android.ide.symbol.RenameFlow;
 import org.kobjects.asde.android.ide.symbol.SymbolView;
 import org.kobjects.asde.lang.classifier.Module;

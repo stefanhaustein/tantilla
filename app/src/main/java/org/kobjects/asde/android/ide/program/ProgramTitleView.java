@@ -27,9 +27,9 @@ public class ProgramTitleView extends Toolbar {
 
     Toolbar.LayoutParams projectParams =new Toolbar.LayoutParams(Toolbar.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT);
     projectParams.gravity = Gravity.END;
-    IconButton projectButton = new IconButton(getContext(), R.drawable.baseline_folder_open_24);
+    /*IconButton projectButton = new IconButton(getContext(), R.drawable.baseline_folder_open_24);
     addView(projectButton, projectParams);
-    projectButton.setOnClickListener(view -> MainMenu.showProjectMenu(mainActivity, view));
+    projectButton.setOnClickListener(view -> MainMenu.showProjectMenu(mainActivity, view)); */
 
 
     setOnClickListener(view -> {

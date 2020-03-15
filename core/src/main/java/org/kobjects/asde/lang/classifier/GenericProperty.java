@@ -35,18 +35,6 @@ public class GenericProperty implements Property {
         methodImplementation);
   }
 
-  public static Property createWithInitializer(Classifier owner, String name, Node initializer) {
-    return new GenericProperty(
-        owner,
-        /* isInstanceField= */ true,
-        /* isMutable= */ true,
-        /* fixedType= */ null,
-        name,
-        initializer,
-        /* staticValue */ null);
-  }
-
-
   public static GenericProperty createWithInitializer(Classifier owner, boolean isInstanceField, boolean isMutable, String propertyName, Node initializer) {
     return new GenericProperty(
         owner,
