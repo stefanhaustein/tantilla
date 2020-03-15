@@ -2,7 +2,6 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.function.LocalSymbol;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.ValidationContext;
@@ -118,8 +117,8 @@ public class Identifier extends SymbolNode {
   }
 
   @Override
-  public boolean matches(Property symbol, String name) {
-    return false;
+  public Property getResolvedProperty() {
+    return resolvedKind == Kind.ROOT_MODULE_PROPERTY ? resolvedRootProperty : null;
   }
 
   public void setName(String s) {

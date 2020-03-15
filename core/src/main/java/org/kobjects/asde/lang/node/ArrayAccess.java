@@ -29,24 +29,6 @@ public class ArrayAccess extends AssignableNode {
   }
 
   @Override
-  public void changeSignature(Property symbol, int[] newOrder) {
-    Node base = children[0];
-    if (!(base instanceof SymbolNode) || !((SymbolNode) base).matches(symbol, symbol.getName())) {
-      return;
-    }
-    Node[] oldChildren = children;
-    children = new Node[newOrder.length + 1];
-    children[0] = base;
-    for (int i = 0; i < newOrder.length; i++) {
-      if (newOrder[i] != -1) {
-        children[i + 1] = oldChildren[newOrder[i] + 1];
-      } else {
-        children[i + 1] = new Identifier("placeholder" + i);
-      }
-    }
-  }
-
-  @Override
   public void resolveForAssignment(ValidationContext resolutionContext, Type type, int line) {
     resolve(resolutionContext, line);
 

@@ -326,15 +326,8 @@ public class FunctionSignatureFlow {
       }
     }
 
-    Type[] types = new Type[count];
-    String[] parameterNames = new String[parameterList.size()];
-    for (int i = 0; i < parameterList.size(); i++) {
-      Parameter parameter = parameterList.get(i);
-      parameterNames[i] = parameter.name;
-      types[i] = parameter.type;
-    }
 
-    userFunction.setType(new FunctionType(returnType, types));
+    userFunction.setType(new FunctionType(returnType, parameterList.size(), parameterList.toArray(Parameter.EMPTY_ARRAY)));
 
     if (moved) {
       mainActivity.program.processNodes(node -> node.changeSignature(property, oldIndices));

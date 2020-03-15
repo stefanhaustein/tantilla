@@ -11,6 +11,9 @@ public abstract class SymbolNode extends AssignableNode {
     super(children);
   }
 
-  public abstract boolean matches(Property symbol, String name);
+  /**
+   * Null if N/A
+   */
+  public abstract Property getResolvedProperty();
 
 }

@@ -131,13 +131,9 @@ public class Path extends SymbolNode {
     return resolvedConstant != null;
   }
 
-
+  @Override
   public Property getResolvedProperty() {
     return resolvedProperty;
   }
 
-  @Override
-  public boolean matches(Property symbol, String oldName) {
-    return symbol == resolvedProperty;
-  }
 }

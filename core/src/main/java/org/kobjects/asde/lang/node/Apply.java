@@ -26,7 +26,7 @@ public class Apply extends Node {
   @Override
   public void changeSignature(Property symbol, int[] newOrder) {
     Node base = children[0];
-    if (!(base instanceof SymbolNode) || !((SymbolNode) base).matches(symbol, symbol.getName())) {
+    if (!(base instanceof SymbolNode) || ((SymbolNode) base).getResolvedProperty() != symbol) {
       return;
     }
     Node[] oldChildren = children;

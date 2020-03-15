@@ -122,4 +122,23 @@ public class InvokeMethod extends Node {
     asb.append(")");
     asb.annotate(start, asb.length(), errors.get(this));
   }
+
+
+  @Override
+  public void changeSignature(Property symbol, int[] newOrder) {
+    if (resolvedProperty != symbol) {
+      return;
+    }
+
+    Node[] oldChildren = children;
+    children = new Node[newOrder.length];
+    for (int i = 0; i < newOrder.length; i++) {
+      if (newOrder[i] != -1) {
+        children[i] = oldChildren[newOrder[i] + 1];
+      } else {
+        children[i] = new Identifier("placeholder" + i);
+      }
+    }
+  }
+
 }
