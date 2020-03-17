@@ -15,12 +15,23 @@ public abstract class TextValidator {
 
   public class TextInputLayoutValidator implements TextWatcher {
     private final TextInputLayout textInputLayout;
+    public boolean enabled;
     String error;
 
     public boolean update() {
       afterTextChanged(textInputLayout.getEditText().getText());
       return error == null;
     }
+
+    public void setEnabled(boolean enabled) {
+      this.enabled = enabled;
+      if (!enabled) {
+        textInputLayout.setError(null);
+      } else {
+        update();
+      }
+    }
+
 
     public TextInputLayoutValidator(TextInputLayout textInputLayout) {
       this.textInputLayout = textInputLayout;
@@ -31,6 +42,9 @@ public abstract class TextValidator {
 
     @Override
     final public void afterTextChanged(Editable s) {
+      if (!enabled) {
+        return;
+      }
       String text = textInputLayout.getEditText().getText().toString();
       error = validate(text);
       textInputLayout.setError(error);

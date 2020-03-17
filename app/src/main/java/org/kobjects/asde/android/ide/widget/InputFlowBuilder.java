@@ -18,6 +18,10 @@ import org.kobjects.asde.android.ide.text.TextValidator;
 
 import java.util.ArrayList;
 
+/**
+ * Builder for simple input flows. Supports a message, labeled input, a confirmation checkbox
+ * and
+ */
 public class InputFlowBuilder {
   private final Context mainActivity;
   private final String title;

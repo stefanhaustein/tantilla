@@ -59,12 +59,8 @@ public class ClassifierView extends SymbolView {
         PropertyFlow.createStaticProperty(mainActivity, (Struct) symbol.getStaticValue(), false);
         return true;
       });
-      addMenu.add("Add Immutable Property").setOnMenuItemClickListener(item -> {
-        PropertyFlow.createInstanceProperty(mainActivity, (Struct) symbol.getStaticValue(), false);
-        return true;
-      });
-      addMenu.add("Add Mutable Property").setOnMenuItemClickListener(item -> {
-        PropertyFlow.createInstanceProperty(mainActivity, (Struct) symbol.getStaticValue(), true);
+      addMenu.add("Add Property").setOnMenuItemClickListener(item -> {
+        PropertyFlow.createInstanceProperty(mainActivity, (Struct) symbol.getStaticValue());
         return true;
       });
       addMenu.add("Add Method").setOnMenuItemClickListener(item -> {

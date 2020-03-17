@@ -172,8 +172,27 @@ public class GenericProperty implements Property {
     }
   }
 
+  @Override
   public void setInitializer(Node initializer) {
+    if (initializer == null) {
+      throw new NullPointerException();
+    }
     this.initializer = initializer;
+    this.fixedType = null;
+  }
+
+  @Override
+  public void setFixedType(Type type) {
+    if (type == null) {
+      throw new NullPointerException();
+    }
+    this.initializer = null;
+    this.fixedType = type;
+  }
+
+  @Override
+  public void setMutable(boolean mutable) {
+    this.isMutable = mutable;
   }
 
   @Override

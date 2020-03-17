@@ -56,10 +56,18 @@ public interface Property {
   }
 
   default void setInitializer(Node node) {
-    throw new RuntimeException(toString(this) + "' does not support initializers.");
+    throw new UnsupportedOperationException(toString(this) + "' does not support initializers.");
+  }
+
+  default void setFixedType(Type type) {
+    throw new UnsupportedOperationException(toString(this) + "' does not support fixed types.");
   }
 
   default void setName(String newName) {
     throw new UnsupportedOperationException(toString(this) + "' does not support setName().");
+  }
+
+  default void setMutable(boolean checked) {
+    throw new UnsupportedOperationException(toString(this) + "' does not support setMutable().");
   }
 }
