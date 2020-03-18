@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide.program;
+package org.kobjects.asde.android.ide.property;
 
 import android.graphics.Typeface;
 import android.view.ViewGroup;
@@ -25,11 +25,11 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.Collections;
 
 
-public class VariableView extends SymbolView {
+public class PropertyView extends SymbolView {
     Object cache = this;
     MainActivity mainActivity;
 
-    public VariableView(MainActivity mainActivity, Property symbol) {
+    public PropertyView(MainActivity mainActivity, Property symbol) {
         super(mainActivity, symbol);
         this.mainActivity = mainActivity;
         this.symbol = symbol;
@@ -39,11 +39,7 @@ public class VariableView extends SymbolView {
         titleView.setMoreClickListener(view -> {
             PopupMenu popupMenu = new PopupMenu(getContext(), view);
             popupMenu.getMenu().add("Edit").setOnMenuItemClickListener(item -> {
-                if (symbol instanceof GenericProperty) {
-                    PropertyFlow.editInitializer(mainActivity, (GenericProperty) symbol);
-                } else {
-                    mainActivity.controlView.codeEditText.setText(String.valueOf(symbol.getInitializer()));
-                }
+                PropertyFlow.editProperties(mainActivity, symbol);
                 return true;
             });
             popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {

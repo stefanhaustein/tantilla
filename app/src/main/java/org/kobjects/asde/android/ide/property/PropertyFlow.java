@@ -21,6 +21,8 @@ import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.Module;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.classifier.Trait;
+import org.kobjects.asde.lang.classifier.TraitProperty;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.ProgramListener;
 import org.kobjects.asde.lang.type.Type;
@@ -29,7 +31,7 @@ public class PropertyFlow {
 
 
 
-  public static void editInitializer(final MainActivity mainActivity, final Property symbol) {
+  public static void editProperties(final MainActivity mainActivity, final Property symbol) {
     new PropertyFlow(mainActivity, symbol.getOwner(), symbol, symbol.isInstanceField(), symbol.isMutable()).showInitializerDialog();
   }
 
@@ -77,6 +79,8 @@ public class PropertyFlow {
 
   private void showInitializerDialog() {
 
+    boolean isTrait = owner instanceof Trait;
+
     LinearLayout inputLayout = new LinearLayout(mainActivity);
     inputLayout.setOrientation(LinearLayout.VERTICAL);
 
@@ -91,15 +95,17 @@ public class PropertyFlow {
 
     final TextValidator.TextInputLayoutValidator validator = new ExpressionValidator(mainActivity).attach(textInputLayout);
 
-    final TypeSpinner typeSpinner = new TypeSpinner(mainActivity, "Initializer Expression:");
+    final TypeSpinner typeSpinner = new TypeSpinner(mainActivity, isTrait ? null  : "Initializer Expression:");
     if (isInstanceField) {
       inputLayout.addView(typeSpinner);
       typeSpinner.setOnItemSelectedListener(
         new AdapterView.OnItemSelectedListener() {
           @Override
           public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            textInputLayout.setEnabled(position == 0);
-            validator.setEnabled(position == 0);
+            if (!isTrait) {
+              textInputLayout.setEnabled(position == 0);
+              validator.setEnabled(position == 0);
+            }
           }
 
           @Override
@@ -116,7 +122,9 @@ public class PropertyFlow {
       label.setText("Initializer Expression:");
       inputLayout.addView(label);
     }
-    inputLayout.addView(textInputLayout);
+    if (!isTrait) {
+      inputLayout.addView(textInputLayout);
+    }
 
     CheckBox mutableCheckbox = new CheckBox(mainActivity);
     if (isInstanceField) {
@@ -139,21 +147,29 @@ public class PropertyFlow {
     alert.setNegativeButton("Cancel", null);
     alert.setPositiveButton("Ok", (a, b) -> {
       Type fixedType = typeSpinner.getSelectedType();
-      Node initializer = fixedType == null ?  mainActivity.program.parser.parseExpression(editText.getText().toString()) : null;
-
-      if (symbol == null) {
-        if (fixedType == null) {
-          owner.putProperty(GenericProperty.createWithInitializer(owner, isInstanceField, isMutable, name, initializer));
-        } else {
-          owner.putProperty(GenericProperty.createUninitialized(owner, isMutable, name, fixedType));
-        }
-      } else {
-        if (fixedType == null) {
-          symbol.setInitializer(initializer);
+      if (isTrait) {
+        if (symbol == null) {
+          owner.putProperty(TraitProperty.create((Trait) owner, isMutable, name, fixedType));
         } else {
           symbol.setFixedType(fixedType);
+          symbol.setMutable(mutableCheckbox.isChecked());
         }
-        symbol.setMutable(mutableCheckbox.isChecked());
+      } else {
+        Node initializer = fixedType == null ? mainActivity.program.parser.parseExpression(editText.getText().toString()) : null;
+        if (symbol == null) {
+          if (fixedType == null) {
+            owner.putProperty(GenericProperty.createWithInitializer(owner, isInstanceField, isMutable, name, initializer));
+          } else {
+            owner.putProperty(GenericProperty.createUninitialized(owner, isMutable, name, fixedType));
+          }
+        } else {
+          if (fixedType == null) {
+            symbol.setInitializer(initializer);
+          } else {
+            symbol.setFixedType(fixedType);
+          }
+          symbol.setMutable(mutableCheckbox.isChecked());
+        }
       }
       mainActivity.program.sendProgramEvent(ProgramListener.Event.CHANGED);
     });

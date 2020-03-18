@@ -3,15 +3,12 @@ package org.kobjects.asde.android.ide.symbol;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.classifier.ClassifierView;
-import org.kobjects.asde.android.ide.program.VariableView;
+import org.kobjects.asde.android.ide.property.PropertyView;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.FunctionType;
-import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.classifier.Classifier;
 
-import java.util.Arrays;
 import java.util.HashMap;
 
 
@@ -70,7 +67,7 @@ public class SymbolListView extends ExpandableList {
           symbolView = functionView;
           functionView.addExpandListener(expandListener);
         } else {
-          VariableView variableView = new VariableView(mainActivity, symbol);
+          PropertyView variableView = new PropertyView(mainActivity, symbol);
           variableView.addExpandListener(expandListener);
           symbolView = variableView;
         }
@@ -78,7 +75,7 @@ public class SymbolListView extends ExpandableList {
           matchedView = symbolView;
         }
       }
-      int index = (symbolView instanceof VariableView) ? varCount++ : getChildCount();
+      int index = (symbolView instanceof PropertyView) ? varCount++ : getChildCount();
 
       addView(symbolView, index);
       newNameViewMap.put(qualifiedName, symbolView);

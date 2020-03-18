@@ -24,6 +24,10 @@ public class TraitProperty implements Property {
     this.type = type;
   }
 
+  public static Property create(Trait owner, boolean isMutable, String name, Type fixedType) {
+    return new TraitProperty(owner, isMutable, name, fixedType);
+  }
+
   @Override
   public Trait getOwner() {
     return owner;
@@ -95,6 +99,16 @@ public class TraitProperty implements Property {
   @Override
   public void set(EvaluationContext context, Object instance, Object value) {
     ((Classifier) Types.of(instance)).getProperty(name).set(context, instance, value);
+  }
+
+  @Override
+  public void setFixedType(Type type) {
+    this.type = type;
+  }
+
+  @Override
+  public void setMutable(boolean mutable) {
+    this.mutable = mutable;
   }
 
 }

@@ -55,16 +55,18 @@ public class ClassifierView extends SymbolView {
 
       Menu addMenu = popupMenu.getMenu().addSubMenu("Add");
 
-      addMenu.add("Add Constant").setOnMenuItemClickListener(item -> {
-        PropertyFlow.createStaticProperty(mainActivity, (Struct) symbol.getStaticValue(), false);
-        return true;
-      });
+      if (symbol.getStaticValue() instanceof Struct) {
+        addMenu.add("Add Constant").setOnMenuItemClickListener(item -> {
+          PropertyFlow.createStaticProperty(mainActivity, (Struct) symbol.getStaticValue(), false);
+          return true;
+        });
+      }
       addMenu.add("Add Property").setOnMenuItemClickListener(item -> {
-        PropertyFlow.createInstanceProperty(mainActivity, (Struct) symbol.getStaticValue());
+        PropertyFlow.createInstanceProperty(mainActivity, (Classifier) symbol.getStaticValue());
         return true;
       });
       addMenu.add("Add Method").setOnMenuItemClickListener(item -> {
-        FunctionSignatureFlow.createMethod(mainActivity, (Struct) symbol.getStaticValue());
+        FunctionSignatureFlow.createMethod(mainActivity, (Classifier) symbol.getStaticValue());
         return true;
       });
       popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {
