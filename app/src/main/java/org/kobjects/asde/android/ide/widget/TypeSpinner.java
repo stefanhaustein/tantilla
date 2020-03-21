@@ -4,6 +4,7 @@ import androidx.appcompat.widget.AppCompatSpinner;
 import android.widget.ArrayAdapter;
 
 import org.kobjects.asde.android.ide.MainActivity;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.Type;
 
@@ -35,6 +36,11 @@ public class TypeSpinner extends AppCompatSpinner {
         addType(Types.FLOAT);
         addType(Types.STR);
 
+        for (Property property : mainActivity.program.mainModule.getAllProperties()) {
+            if (!property.isMutable() && property.getStaticValue() instanceof Type) {
+                addType((Type) property.getStaticValue());
+            }
+        }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(mainActivity, android.R.layout.simple_spinner_item, labelList);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
