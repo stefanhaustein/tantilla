@@ -15,7 +15,7 @@ public abstract class TextValidator {
 
   public class TextInputLayoutValidator implements TextWatcher {
     private final TextInputLayout textInputLayout;
-    public boolean enabled;
+    public boolean enabled = true;
     String error;
 
     public boolean update() {

@@ -246,10 +246,10 @@ public class FunctionSignatureFlow {
     nameLabel.setText("Parameter name");
     nameAndType.addView(nameLabel);
 
-    TextInputLayout nameInput = new TextInputLayout(mainActivity);
-    nameInput.addView(new EditText(mainActivity));
-    nameInput.getEditText().setText(parameter.name);
-    nameAndType.addView(nameInput);
+    TextInputLayout nameInputLayout = new TextInputLayout(mainActivity);
+    nameInputLayout.addView(new EditText(mainActivity));
+    nameInputLayout.getEditText().setText(parameter.name);
+    nameAndType.addView(nameInputLayout);
 
     TextView typeLabel = new TextView(mainActivity);
     typeLabel.setText("Parameter Type");
@@ -265,7 +265,7 @@ public class FunctionSignatureFlow {
 
     alertBuilder.setNegativeButton("Cancel", null);
     alertBuilder.setPositiveButton(add? "Add" : "Ok", (a, b) -> {
-      Parameter updatedParameter = Parameter.create(nameInput.getEditText().getText().toString(), typeInput.getSelectedType());
+      Parameter updatedParameter = Parameter.create(nameInputLayout.getEditText().getText().toString(), typeInput.getSelectedType());
       if (add) {
         parameterList.add(updatedParameter);
       } else {
@@ -285,8 +285,7 @@ public class FunctionSignatureFlow {
         return result;
       }
 
-      public String validateImpl(String text) {
-        System.err.println("Validation Text: '" + text + "' len: " + text.length());
+      private String validateImpl(String text) {
         if (text.isEmpty()) {
           return "Name must not be empty....";
         }
@@ -304,10 +303,19 @@ public class FunctionSignatureFlow {
             return "There is already a parameter with this name.";
           }
         }
-
+        typeInput.setEnabled(true);
+        if ("self".equals(text)) {
+          if (index != 0) {
+            return "Parameter name 'self' only permitted for the first parameter.";
+          }
+          typeInput.selectType(classifier);
+          typeInput.setEnabled(false);
+        } else if (classifier instanceof Trait && index == 0) {
+          return "First parameter must be 'self' for Trait methods.";
+        }
         return null;
       }
-    }.attach(nameInput);
+    }.attach(nameInputLayout);
 
   }
 
