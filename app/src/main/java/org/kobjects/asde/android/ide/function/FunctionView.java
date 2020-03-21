@@ -54,7 +54,7 @@ public class FunctionView extends SymbolView {
           return true;
         });
         menu.add("Change Signature").setOnMenuItemClickListener(item -> {
-          FunctionSignatureFlow.changeSignature(mainActivity, symbol, userFunction);
+          FunctionSignatureFlow.changeSignature(mainActivity, symbol);
           return true;
         });
       }

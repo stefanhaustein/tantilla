@@ -20,6 +20,8 @@ import org.kobjects.asde.android.ide.text.TextValidator;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.classifier.Trait;
+import org.kobjects.asde.lang.classifier.TraitProperty;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.Parameter;
 import org.kobjects.asde.lang.function.UserFunction;
@@ -40,21 +42,21 @@ public class FunctionSignatureFlow {
   private final Mode mode;
   Property property;
   String name;
-  Type returnType;
   ArrayList<Parameter> originalParameterList;
   ArrayList<Parameter> parameterList = new ArrayList<>();
   LinearLayout parameterListView;
-  Callable userFunction;
-  Classifier classImplementation;
+  Classifier classifier;
+  Type returnType;
 
-  public static void changeSignature(MainActivity mainActivity, Property symbol, Callable userFunction) {
-    FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CHANGE_SIGNATURE, userFunction.getType().getReturnType());
+  public static void changeSignature(MainActivity mainActivity, Property symbol) {
+    FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CHANGE_SIGNATURE, ((FunctionType) symbol.getType()).getReturnType());
     flow.property = symbol;
     flow.name = symbol.getName();
-    flow.userFunction = userFunction;
     flow.originalParameterList = new ArrayList<>();
-    for (int i = 0; i < userFunction.getType().getParameterCount(); i++) {
-      Parameter parameter = userFunction.getType().getParameter(i);
+    flow.classifier = symbol.getOwner();
+    FunctionType functionType = (FunctionType) symbol.getType();
+    for (int i = 0; i < functionType.getParameterCount(); i++) {
+      Parameter parameter = functionType.getParameter(i);
       flow.originalParameterList.add(parameter);
       flow.parameterList.add(parameter);
     }
@@ -63,7 +65,7 @@ public class FunctionSignatureFlow {
 
   public static void createMethod(MainActivity mainActivity, Classifier classifier) {
     FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CREATE_MEMBER, Types.VOID);
-    flow.classImplementation = classifier;
+    flow.classifier = classifier;
     flow.createCallableUnit();
   }
 
@@ -107,7 +109,7 @@ public class FunctionSignatureFlow {
 
 
     new PropertyNameValidator(
-            mode == Mode.CREATE_MEMBER ? classImplementation : mainActivity.program.mainModule) {
+            mode == Mode.CREATE_MEMBER ? classifier : mainActivity.program.mainModule) {
       @Override
       public String validate(String text) {
         String result = super.validate(text);
@@ -326,9 +328,12 @@ public class FunctionSignatureFlow {
       }
     }
 
-
-    userFunction.setType(new FunctionType(returnType, parameterList.size(), parameterList.toArray(Parameter.EMPTY_ARRAY)));
-
+    FunctionType functionType = new FunctionType(returnType, parameterList.size(), parameterList.toArray(Parameter.EMPTY_ARRAY));
+    if (classifier instanceof Trait) {
+      property.setFixedType(functionType);
+    } else {
+      ((UserFunction) property.getStaticValue()).setType(functionType);
+    }
     if (moved) {
       mainActivity.program.processNodes(node -> node.changeSignature(property, oldIndices));
     }
@@ -338,17 +343,18 @@ public class FunctionSignatureFlow {
 
   void commitNewFunction() {
     FunctionType functionType = new FunctionType(returnType, parameterList.size(), parameterList.toArray(Parameter.EMPTY_ARRAY));
-    UserFunction userFunction = new UserFunction(mainActivity.program, functionType);
 
-    RemStatement remStatement = new RemStatement("This comment should document this function.");
-
-    userFunction.appendStatement(remStatement);
-
-    if (mode == Mode.CREATE_MEMBER) {
-      classImplementation.putProperty(GenericProperty.createMethod(classImplementation, name, userFunction));
+    Property property;
+    if (classifier instanceof Trait) {
+      property = TraitProperty.create((Trait) classifier, false, name, functionType);
     } else {
-      mainActivity.program.setDeclaration(name, userFunction);
+      // Module or classifier
+      UserFunction userFunction = new UserFunction(mainActivity.program, functionType);
+      RemStatement remStatement = new RemStatement("This comment should document this function.");
+      userFunction.appendStatement(remStatement);
+      property = GenericProperty.createMethod(classifier, name, userFunction);
     }
+    classifier.putProperty(property);
     mainActivity.program.notifyProgramChanged();
   }
 
