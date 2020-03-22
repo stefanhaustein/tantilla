@@ -31,7 +31,7 @@ import org.kobjects.abcnotation.AbcScore;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.program.ProgramTitleView;
 import org.kobjects.asde.android.ide.program.ProgramView;
-import org.kobjects.asde.android.ide.symbol.SymbolView;
+import org.kobjects.asde.android.ide.property.PropertyView;
 import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.android.library.ui.PenType;
 import org.kobjects.asde.android.library.ui.ScreenType;
@@ -467,8 +467,8 @@ public class MainActivity extends AppCompatActivity {
     int displayWidth = display.getWidth();
     int displayHeight = display.getHeight();
 
-    if (programView.currentSymbolView != null) {
-      programView.currentSymbolView.setExpanded(false, false);
+    if (programView.currentPropertyView != null) {
+      programView.currentPropertyView.setExpanded(false, false);
     }
 
     if (fullScreenMode) {
@@ -649,8 +649,8 @@ public class MainActivity extends AppCompatActivity {
     if (owner != currentCodeViewOwner) {
       codeView.removeAllViews();
       codeView.setOnTouchListener(null);
-      if (currentCodeViewOwner instanceof SymbolView) {
-        ((SymbolView) currentCodeViewOwner).setExpanded(false, false);
+      if (currentCodeViewOwner instanceof PropertyView) {
+        ((PropertyView) currentCodeViewOwner).setExpanded(false, false);
       }
     }
     currentCodeViewOwner = owner;

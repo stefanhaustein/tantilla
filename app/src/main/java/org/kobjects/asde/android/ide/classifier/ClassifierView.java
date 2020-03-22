@@ -5,14 +5,14 @@ import android.widget.PopupMenu;
 
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.android.ide.property.PropertyFlow;
-import org.kobjects.asde.android.ide.symbol.DeleteFlow;
+import org.kobjects.asde.android.ide.field.FieldFlow;
+import org.kobjects.asde.android.ide.property.DeleteFlow;
 import org.kobjects.asde.android.ide.function.FunctionSignatureFlow;
-import org.kobjects.asde.android.ide.symbol.RenameFlow;
+import org.kobjects.asde.android.ide.property.PropertyListView;
+import org.kobjects.asde.android.ide.property.RenameFlow;
 import org.kobjects.asde.android.ide.function.FunctionView;
-import org.kobjects.asde.android.ide.symbol.SymbolListView;
-import org.kobjects.asde.android.ide.symbol.SymbolView;
-import org.kobjects.asde.android.ide.symbol.ExpandListener;
+import org.kobjects.asde.android.ide.property.PropertyView;
+import org.kobjects.asde.android.ide.property.ExpandListener;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.Struct;
@@ -21,20 +21,20 @@ import org.kobjects.asde.lang.classifier.Trait;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class ClassifierView extends SymbolView {
+public class ClassifierView extends PropertyView {
 
-  SymbolView currentSymbolView;
+  PropertyView currentPropertyView;
 
   public final ExpandListener expandListener = new ExpandListener() {
     @Override
-    public void notifyExpanding(SymbolView symbolView, boolean animated) {
-      if (symbolView != currentSymbolView) {
-        if (currentSymbolView != null) {
-          currentSymbolView.setExpanded(false, animated);
+    public void notifyExpanding(PropertyView propertyView, boolean animated) {
+      if (propertyView != currentPropertyView) {
+        if (currentPropertyView != null) {
+          currentPropertyView.setExpanded(false, animated);
         }
-        currentSymbolView = symbolView;
-        if (symbolView instanceof FunctionView) {
-          mainActivity.programView.currentFunctionView = (FunctionView) symbolView;
+        currentPropertyView = propertyView;
+        if (propertyView instanceof FunctionView) {
+          mainActivity.programView.currentFunctionView = (FunctionView) propertyView;
         }
       }
     }
@@ -57,12 +57,12 @@ public class ClassifierView extends SymbolView {
 
       if (symbol.getStaticValue() instanceof Struct) {
         addMenu.add("Add Constant").setOnMenuItemClickListener(item -> {
-          PropertyFlow.createStaticProperty(mainActivity, (Struct) symbol.getStaticValue(), false);
+          FieldFlow.createStaticProperty(mainActivity, (Struct) symbol.getStaticValue(), false);
           return true;
         });
       }
       addMenu.add("Add Property").setOnMenuItemClickListener(item -> {
-        PropertyFlow.createInstanceProperty(mainActivity, (Classifier) symbol.getStaticValue());
+        FieldFlow.createInstanceProperty(mainActivity, (Classifier) symbol.getStaticValue());
         return true;
       });
       addMenu.add("Add Method").setOnMenuItemClickListener(item -> {
@@ -82,12 +82,12 @@ public class ClassifierView extends SymbolView {
   }
 
   @Override
-  public SymbolListView getContentView() {
+  public PropertyListView getContentView() {
     if (contentView == null) {
-      contentView = new SymbolListView(mainActivity);
+      contentView = new PropertyListView(mainActivity);
       addView(contentView);
     }
-    return (SymbolListView) contentView;
+    return (PropertyListView) contentView;
   }
 
 
@@ -101,8 +101,8 @@ public class ClassifierView extends SymbolView {
     }
 
     Iterable<? extends Property> symbols;
-    if (symbol.getStaticValue() instanceof Classifier) {
-      symbols = ((Classifier) symbol.getStaticValue()).getAllProperties();
+    if (field.getStaticValue() instanceof Classifier) {
+      symbols = ((Classifier) field.getStaticValue()).getAllProperties();
     } else {
       symbols = new ArrayList<>();
    //   symbols = ((Trait) symbol.getStaticValue()).propertyMap.values();

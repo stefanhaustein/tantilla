@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide.property;
+package org.kobjects.asde.android.ide.field;
 
 import android.app.AlertDialog;
 import android.view.View;
@@ -15,10 +15,9 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.text.ExpressionValidator;
 import org.kobjects.asde.android.ide.text.TextValidator;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
-import org.kobjects.asde.android.ide.symbol.PropertyNameValidator;
+import org.kobjects.asde.android.ide.property.PropertyNameValidator;
 import org.kobjects.asde.android.ide.widget.TypeSpinner;
 import org.kobjects.asde.lang.classifier.Classifier;
-import org.kobjects.asde.lang.classifier.Module;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Trait;
@@ -27,20 +26,20 @@ import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.ProgramListener;
 import org.kobjects.asde.lang.type.Type;
 
-public class PropertyFlow {
+public class FieldFlow {
 
 
 
   public static void editProperties(final MainActivity mainActivity, final Property symbol) {
-    new PropertyFlow(mainActivity, symbol.getOwner(), symbol, symbol.isInstanceField(), symbol.isMutable()).showInitializerDialog();
+    new FieldFlow(mainActivity, symbol.getOwner(), symbol, symbol.isInstanceField(), symbol.isMutable()).showInitializerDialog();
   }
 
   public static void createStaticProperty(final MainActivity mainActivity, final Classifier owner, boolean isMutable) {
-    new PropertyFlow(mainActivity, owner, null, false, isMutable).showNameDialog();
+    new FieldFlow(mainActivity, owner, null, false, isMutable).showNameDialog();
   }
 
   public static void createInstanceProperty(final MainActivity mainActivity, final Classifier owner) {
-    new PropertyFlow(mainActivity, owner, null, true, false).showNameDialog();
+    new FieldFlow(mainActivity, owner, null, true, false).showNameDialog();
   }
 
 
@@ -53,7 +52,7 @@ public class PropertyFlow {
   private String name;
   private final String title;
 
-  PropertyFlow(MainActivity mainActivity, Classifier owner, Property symbol, boolean isInstanceField, boolean isMutable) {
+  FieldFlow(MainActivity mainActivity, Classifier owner, Property symbol, boolean isInstanceField, boolean isMutable) {
     this.mainActivity = mainActivity;
     this.isInstanceField = isInstanceField;
     this.isMutable = isMutable;

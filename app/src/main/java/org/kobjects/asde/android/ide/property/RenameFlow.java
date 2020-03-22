@@ -1,11 +1,9 @@
-package org.kobjects.asde.android.ide.symbol;
+package org.kobjects.asde.android.ide.property;
 
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.Struct;
-import org.kobjects.asde.lang.classifier.GenericProperty;
 
 public class RenameFlow {
 

@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide.symbol;
+package org.kobjects.asde.android.ide.property;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -19,14 +19,14 @@ import org.kobjects.asde.android.ide.widget.IconButton;
 
 import java.util.List;
 
-public class SymbolTitleView extends LinearLayout {
+public class PropertyTitleView extends LinearLayout {
 
   final LinearLayout vertical;
   final AppCompatTextView textView;
   View typeView;
   IconButton moreButton;
 
-  public SymbolTitleView(Context context, String name) {
+  public PropertyTitleView(Context context, String name) {
     super(context);
     // setBackgroundCol
 

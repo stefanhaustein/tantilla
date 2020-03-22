@@ -2,7 +2,7 @@ package org.kobjects.asde.android.ide.classifier;
 
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
-import org.kobjects.asde.android.ide.symbol.PropertyNameValidator;
+import org.kobjects.asde.android.ide.property.PropertyNameValidator;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.Struct;
 import org.kobjects.asde.lang.classifier.Trait;

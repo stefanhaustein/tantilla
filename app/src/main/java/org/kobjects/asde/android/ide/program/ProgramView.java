@@ -6,9 +6,9 @@ import android.view.ViewParent;
 import org.kobjects.asde.android.ide.classifier.ClassifierView;
 import org.kobjects.asde.android.ide.function.CodeLineView;
 import org.kobjects.asde.android.ide.function.FunctionView;
-import org.kobjects.asde.android.ide.symbol.ExpandListener;
-import org.kobjects.asde.android.ide.symbol.SymbolListView;
-import org.kobjects.asde.android.ide.symbol.SymbolView;
+import org.kobjects.asde.android.ide.property.ExpandListener;
+import org.kobjects.asde.android.ide.property.PropertyListView;
+import org.kobjects.asde.android.ide.property.PropertyView;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.Struct;
 import org.kobjects.asde.lang.classifier.GenericProperty;
@@ -18,24 +18,24 @@ import org.kobjects.asde.lang.runtime.StartStopListener;
 
 import java.util.Collections;
 
-public class ProgramView extends SymbolListView {
+public class ProgramView extends PropertyListView {
   boolean expanded;
   public FunctionView mainFunctionView;
   private final MainActivity mainActivity;
   private CodeLineView highlightedLine;
   public FunctionView currentFunctionView;
-  public SymbolView currentSymbolView;
+  public PropertyView currentPropertyView;
   int syncRequestCount;
   Property expandOnSync;
   private final ExpandListener expandListener = new ExpandListener() {
     @Override
-    public void notifyExpanding(SymbolView symbolView, boolean animated) {
-      if (symbolView != currentSymbolView) {
-        if (currentSymbolView != null) {
-          currentSymbolView.setExpanded(false, animated);
+    public void notifyExpanding(PropertyView propertyView, boolean animated) {
+      if (propertyView != currentPropertyView) {
+        if (currentPropertyView != null) {
+          currentPropertyView.setExpanded(false, animated);
         }
-        currentSymbolView = symbolView;
-        currentFunctionView = symbolView instanceof FunctionView ? (FunctionView) symbolView : mainFunctionView;
+        currentPropertyView = propertyView;
+        currentFunctionView = propertyView instanceof FunctionView ? (FunctionView) propertyView : mainFunctionView;
       }
     }
   };
@@ -90,8 +90,8 @@ public class ProgramView extends SymbolListView {
   }
 
   public void refreshImpl() {
-    for (SymbolView symbolView : nameViewMap.values()) {
-      symbolView.refresh();
+    for (PropertyView propertyView : nameViewMap.values()) {
+      propertyView.refresh();
     }
   }
 
@@ -120,13 +120,13 @@ public class ProgramView extends SymbolListView {
             + (program.legacyMode ? " (legacy mode)️" : "")
         + (mainActivity.isUnsaved() ? "*" : "")); */
 
-    if (mainFunctionView == null || mainFunctionView.symbol != mainActivity.program.main.getDeclaringSymbol()) {
+    if (mainFunctionView == null || mainFunctionView.field != mainActivity.program.main.getDeclaringSymbol()) {
       mainFunctionView = new FunctionView(mainActivity, mainActivity.program.main.getDeclaringSymbol());
       mainFunctionView.addExpandListener(expandListener);
       mainFunctionView.setExpanded(true, false);
 
       currentFunctionView = mainFunctionView;
-      currentSymbolView = mainFunctionView;
+      currentPropertyView = mainFunctionView;
 
     }
 
@@ -135,7 +135,7 @@ public class ProgramView extends SymbolListView {
       return;
     }
 
-    SymbolView expandView = synchronizeTo(mainActivity.program.mainModule.getUserProperties(), expandListener, expandOnSync);
+    PropertyView expandView = synchronizeTo(mainActivity.program.mainModule.getUserProperties(), expandListener, expandOnSync);
     addView(mainFunctionView);
 
     mainFunctionView.syncContent();
@@ -151,7 +151,7 @@ public class ProgramView extends SymbolListView {
 
   public void highlightImpl(UserFunction function, int lineNumber) {
     unHighlight();
-    SymbolView selectedView = selectImpl(function.getDeclaringSymbol());
+    PropertyView selectedView = selectImpl(function.getDeclaringSymbol());
     if (selectedView instanceof FunctionView) {
       FunctionView targetView = (FunctionView) selectedView;
       highlightedLine = targetView.findLineIndex(lineNumber);
@@ -183,20 +183,20 @@ public class ProgramView extends SymbolListView {
   /**
    * Users should call console.edit(symbol) instead.
    */
-  public SymbolView selectImpl(Property symbol) {
-    SymbolView targetView = null;
-    if (currentSymbolView != null && currentSymbolView.symbol == symbol) {
-      targetView = currentSymbolView;
+  public PropertyView selectImpl(Property symbol) {
+    PropertyView targetView = null;
+    if (currentPropertyView != null && currentPropertyView.field == symbol) {
+      targetView = currentPropertyView;
     } else {
       for (int i = 0; i < getChildCount(); i++) {
-        SymbolView childView = (SymbolView) getChildAt(i);
-        if (childView.symbol == symbol) {
+        PropertyView childView = (PropertyView) getChildAt(i);
+        if (childView.field == symbol) {
           targetView = childView;
           break;
         }
         if (childView instanceof ClassifierView) {
           ClassifierView classifierView = (ClassifierView) childView;
-          Struct classImplementation = (Struct) classifierView.symbol.getStaticValue();
+          Struct classImplementation = (Struct) classifierView.field.getStaticValue();
           GenericProperty symbolFound = null;
           for (GenericProperty descriptor : classImplementation.getUserProperties()) {
             if (descriptor == symbol) {

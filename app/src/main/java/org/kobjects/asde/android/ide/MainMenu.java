@@ -14,7 +14,7 @@ import org.kobjects.asde.android.ide.filepicker.SimpleLeaf;
 import org.kobjects.asde.android.ide.filepicker.SimpleNode;
 import org.kobjects.asde.android.ide.function.FunctionSignatureFlow;
 import org.kobjects.asde.android.ide.help.HelpDialog;
-import org.kobjects.asde.android.ide.property.PropertyFlow;
+import org.kobjects.asde.android.ide.field.FieldFlow;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
@@ -237,12 +237,12 @@ public class MainMenu {
     Menu addMenu = mainMenu.addSubMenu("Add");
 
     addMenu.add("Add Constant…").setOnMenuItemClickListener(item -> {
-      PropertyFlow.createStaticProperty(mainActivity, mainActivity.program.mainModule, false);
+      FieldFlow.createStaticProperty(mainActivity, mainActivity.program.mainModule, false);
       return true;
     });
 
     addMenu.add("Add Variable…").setOnMenuItemClickListener(item -> {
-      PropertyFlow.createStaticProperty(mainActivity, mainActivity.program.mainModule, true);
+      FieldFlow.createStaticProperty(mainActivity, mainActivity.program.mainModule, true);
       return true;
     });
 

@@ -10,13 +10,11 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
-import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.android.ide.symbol.DeleteFlow;
-import org.kobjects.asde.android.ide.symbol.RenameFlow;
-import org.kobjects.asde.android.ide.symbol.SymbolView;
-import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.android.ide.property.DeleteFlow;
+import org.kobjects.asde.android.ide.property.RenameFlow;
+import org.kobjects.asde.android.ide.property.PropertyView;
 import org.kobjects.asde.lang.classifier.Module;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.Callable;
@@ -27,7 +25,7 @@ import org.kobjects.asde.lang.type.Types;
 
 import java.util.ArrayList;
 
-public class FunctionView extends SymbolView {
+public class FunctionView extends PropertyView {
   public Callable userFunction;
 
   private Selection selection;
@@ -73,7 +71,7 @@ public class FunctionView extends SymbolView {
 
   void refreshSignature() {
     FunctionType type = userFunction.getType();
-    titleView.setTitle(symbol.getName() + "(" + (type.getParameterCount() == 0 ? ")" : ""));
+    titleView.setTitle(field.getName() + "(" + (type.getParameterCount() == 0 ? ")" : ""));
 
     boolean isVoid = userFunction.getType().getReturnType() == Types.VOID;
     ArrayList<String> subtitles = new ArrayList<>();
@@ -123,7 +121,7 @@ public class FunctionView extends SymbolView {
             codeLineView = new CodeLineView(mainActivity, index % 2 == 1);
             codeView.addView(codeLineView);
           }
-          codeLineView.setCodeLine(index + 1, statement, symbol.getErrors());
+          codeLineView.setCodeLine(index + 1, statement, field.getErrors());
         }
         index++;
         if (updated > 8) {

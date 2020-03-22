@@ -1,4 +1,4 @@
-package org.kobjects.asde.android.ide.symbol;
+package org.kobjects.asde.android.ide.property;
 
 import org.kobjects.asde.android.ide.text.TextValidator;
 import org.kobjects.asde.lang.classifier.Classifier;

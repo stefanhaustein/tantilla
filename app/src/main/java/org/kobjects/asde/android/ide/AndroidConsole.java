@@ -23,7 +23,6 @@ import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.lang.classifier.GenericProperty;
-import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.runtime.ForcedStopException;
 import org.kobjects.asde.lang.io.Format;
 import org.kobjects.asde.lang.function.UserFunction;
@@ -212,7 +211,7 @@ public class AndroidConsole implements Console {
   @Override
   public void delete(int line) {
     FunctionView functionView = mainActivity.programView.currentFunctionView;
-    mainActivity.program.deleteLine(functionView.symbol, line);
+    mainActivity.program.deleteLine(functionView.field, line);
   }
 
   int lineCount;
