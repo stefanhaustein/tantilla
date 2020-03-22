@@ -29,7 +29,7 @@ public class GenericProperty implements Property {
         owner,
         /* isInstanceField= */ false,
         /* isMutable= */ false,
-        methodImplementation.getType(),
+        /* fixedType= */ null,
         functionName,
         /* initializer= */ null,
         methodImplementation);
@@ -62,7 +62,7 @@ public class GenericProperty implements Property {
         owner,
         /* isInstanceField= */ false,
         /* isMutable */ false,
-        Types.of(value),
+        /* fixedType */ null,
         propertyName,
         /* initializer= */ null,
         /* staticValue= */ value);
@@ -115,7 +115,7 @@ public class GenericProperty implements Property {
         // e.printStackTrace();
       }
     }
-    return null;
+    return Types.of(staticValue);
   }
 
   public int getFieldIndex() {
@@ -178,6 +178,7 @@ public class GenericProperty implements Property {
       throw new NullPointerException();
     }
     this.initializer = initializer;
+    this.staticValue = null;
     this.fixedType = null;
   }
 
@@ -186,6 +187,7 @@ public class GenericProperty implements Property {
     if (type == null) {
       throw new NullPointerException();
     }
+    this.staticValue = null;
     this.initializer = null;
     this.fixedType = type;
   }

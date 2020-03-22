@@ -37,7 +37,6 @@ public class FunctionView extends SymbolView {
     this.userFunction = (Callable) symbol.getStaticValue();
 
     boolean isMain = userFunction == mainActivity.program.main;
-    boolean isVoid = userFunction.getType().getReturnType() == Types.VOID;
     boolean isMethod = !(userFunction.getDeclaringSymbol().getOwner() instanceof Module);
 
     titleView.setTypeIndicator(
@@ -67,11 +66,19 @@ public class FunctionView extends SymbolView {
       popup.show();
     });
 
+    refreshSignature();
+  }
 
-    ArrayList<String> subtitles = new ArrayList<>();
+  int syncedTo;
+
+  void refreshSignature() {
     FunctionType type = userFunction.getType();
+    titleView.setTitle(symbol.getName() + "(" + (type.getParameterCount() == 0 ? ")" : ""));
+
+    boolean isVoid = userFunction.getType().getReturnType() == Types.VOID;
+    ArrayList<String> subtitles = new ArrayList<>();
     for (int i = 0; i < type.getParameterCount(); i++) {
-      subtitles.add(" " + type.getParameter(i).name + ": " + type.getParameter(i).type);
+      subtitles.add(" " + type.getParameter(i).name + ": " + type.getParameter(i).type + (i == type.getParameterCount() - 1 ? ")" : ","));
     }
     if (!isVoid) {
       subtitles.add("-> " + userFunction.getType().getReturnType());
@@ -79,9 +86,12 @@ public class FunctionView extends SymbolView {
     titleView.setSubtitles(subtitles);
   }
 
-  int syncedTo;
-
   public void syncContent() {
+
+    // TODO: Ideally, this would be triggered by the function signature flow, which should get
+    //   a reference to the FunctionView....
+    refreshSignature();
+
     refresh();
 
     LinearLayout codeView = getContentView();

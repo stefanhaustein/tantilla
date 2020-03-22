@@ -52,6 +52,11 @@ public class SymbolTitleView extends LinearLayout {
 
   }
 
+  public void setTitle(String title) {
+    textView.setText(title);
+  }
+
+
   public void setTypeIndicator(String s, int color, boolean small) {
 
     if (typeView != null) {

@@ -125,16 +125,16 @@ public class InvokeMethod extends Node {
 
 
   @Override
-  public void changeSignature(Property symbol, int[] newOrder) {
+  public void reorderParameters(Property symbol, int[] oldIndices) {
     if (resolvedProperty != symbol) {
       return;
     }
 
     Node[] oldChildren = children;
-    children = new Node[newOrder.length];
-    for (int i = 0; i < newOrder.length; i++) {
-      if (newOrder[i] != -1) {
-        children[i] = oldChildren[newOrder[i] + 1];
+    children = new Node[oldIndices.length];
+    for (int i = 0; i < oldIndices.length; i++) {
+      if (oldIndices[i] != -1) {
+        children[i] = oldChildren[oldIndices[i] + 1];
       } else {
         children[i] = new Identifier("placeholder" + i);
       }

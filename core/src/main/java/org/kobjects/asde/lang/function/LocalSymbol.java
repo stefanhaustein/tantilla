@@ -4,7 +4,7 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 
 public class LocalSymbol {
-    private final int index;
+    public final int index;
     private final Type type;
     private final boolean mutable;
 

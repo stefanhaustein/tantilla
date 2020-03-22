@@ -49,8 +49,9 @@ public class SymbolListView extends ExpandableList {
       if (symbol == null) {
         continue;
       }
-      // Qualified needs to be sufficiently specific to disallow cross-type mismatches
-      String qualifiedName = symbol.getName() + " " + symbol.getType();
+      // TODO: Does the qualified name need to be sufficiently specific to disallow cross-type
+      // mismatches? Adding the type check will close changed function signatures.
+      String qualifiedName = symbol.getName(); // + " " + symbol.getType();
       SymbolView symbolView = nameViewMap.get(qualifiedName);
       if (symbolView != null) {
         symbolView.syncContent();

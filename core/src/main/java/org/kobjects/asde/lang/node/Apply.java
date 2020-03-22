@@ -24,17 +24,17 @@ public class Apply extends Node {
 
 
   @Override
-  public void changeSignature(Property symbol, int[] newOrder) {
+  public void reorderParameters(Property symbol, int[] oldIndices) {
     Node base = children[0];
     if (!(base instanceof SymbolNode) || ((SymbolNode) base).getResolvedProperty() != symbol) {
       return;
     }
     Node[] oldChildren = children;
-    children = new Node[newOrder.length + 1];
+    children = new Node[oldIndices.length + 1];
     children[0] = base;
-    for (int i = 0; i < newOrder.length; i++) {
-      if (newOrder[i] != -1) {
-        children[i + 1] = oldChildren[newOrder[i] + 1];
+    for (int i = 0; i < oldIndices.length; i++) {
+      if (oldIndices[i] != -1) {
+        children[i + 1] = oldChildren[oldIndices[i] + 1];
       } else {
         children[i + 1] = new Identifier("placeholder" + i);
       }

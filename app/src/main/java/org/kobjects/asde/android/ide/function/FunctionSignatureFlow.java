@@ -22,7 +22,6 @@ import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.Trait;
 import org.kobjects.asde.lang.classifier.TraitProperty;
-import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.Parameter;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.type.Types;
@@ -31,6 +30,7 @@ import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class FunctionSignatureFlow {
 
@@ -42,8 +42,7 @@ public class FunctionSignatureFlow {
   private final Mode mode;
   Property property;
   String name;
-  ArrayList<Parameter> originalParameterList;
-  ArrayList<Parameter> parameterList = new ArrayList<>();
+  ArrayList<ParameterWithOriginalIndex> parameterList = new ArrayList<>();
   LinearLayout parameterListView;
   Classifier classifier;
   Type returnType;
@@ -52,13 +51,11 @@ public class FunctionSignatureFlow {
     FunctionSignatureFlow flow = new FunctionSignatureFlow(mainActivity, Mode.CHANGE_SIGNATURE, ((FunctionType) symbol.getType()).getReturnType());
     flow.property = symbol;
     flow.name = symbol.getName();
-    flow.originalParameterList = new ArrayList<>();
     flow.classifier = symbol.getOwner();
     FunctionType functionType = (FunctionType) symbol.getType();
     for (int i = 0; i < functionType.getParameterCount(); i++) {
       Parameter parameter = functionType.getParameter(i);
-      flow.originalParameterList.add(parameter);
-      flow.parameterList.add(parameter);
+      flow.parameterList.add(new ParameterWithOriginalIndex(parameter, i));
     }
     flow.editFunctionParameters();
   }
@@ -122,7 +119,7 @@ public class FunctionSignatureFlow {
   private void updateParameterList() {
     parameterListView.removeAllViews();
     int index = 0;
-    for (Parameter parameter : parameterList) {
+    for (ParameterWithOriginalIndex parameter : parameterList) {
       final int finalIndex = index;
       LinearLayout parameterView = new LinearLayout(mainActivity);
 
@@ -133,12 +130,6 @@ public class FunctionSignatureFlow {
         updateParameterList();
       });
 
-            /*
-            IconButton addButton = new IconButton(mainActivity, R.drawable.baseline_add_24);
-            addButton.setOnClickListener(event -> {
-                editParameter(finalIndex, true);});
-            parameterView.addView(addButton);
-*/
       TextView textView = new TextView(mainActivity);
       textView.setText(parameter.name + ": " + parameter.type);
       LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
@@ -152,7 +143,7 @@ public class FunctionSignatureFlow {
         upButton.setEnabled(false);
       } else {
         upButton.setOnClickListener(event -> {
-          parameterList.remove(parameter);
+          parameterList.remove(finalIndex);
           parameterList.add(finalIndex - 1, parameter);
           updateParameterList();
         });
@@ -238,7 +229,7 @@ public class FunctionSignatureFlow {
 
 
   void editParameter(int index, boolean add) {
-    Parameter parameter = add ? Parameter.create("", Types.FLOAT) : parameterList.get(index);
+    final ParameterWithOriginalIndex parameter = add ? new ParameterWithOriginalIndex("", Types.FLOAT, -1) : parameterList.get(index);
 
     LinearLayout nameAndType = new LinearLayout(mainActivity);
     nameAndType.setOrientation(LinearLayout.VERTICAL);
@@ -265,11 +256,10 @@ public class FunctionSignatureFlow {
 
     alertBuilder.setNegativeButton("Cancel", null);
     alertBuilder.setPositiveButton(add? "Add" : "Ok", (a, b) -> {
-      Parameter updatedParameter = Parameter.create(nameInputLayout.getEditText().getText().toString(), typeInput.getSelectedType());
+      parameter.name = nameInputLayout.getEditText().getText().toString();
+      parameter.type = typeInput.getSelectedType();
       if (add) {
-        parameterList.add(updatedParameter);
-      } else {
-        parameterList.set(index, updatedParameter);
+        parameterList.add(parameter);
       }
       updateParameterList();
     });
@@ -298,7 +288,7 @@ public class FunctionSignatureFlow {
             return "'" + c + "' is not a valid function name character. Use letters, digits and underscores.";
           }
         }
-        for (Parameter other : parameterList) {
+        for (ParameterWithOriginalIndex other : parameterList) {
           if (other != parameter && other.name.equals(text)) {
             return "There is already a parameter with this name.";
           }
@@ -326,26 +316,34 @@ public class FunctionSignatureFlow {
 
     int count = parameterList.size();
     int[] oldIndices = new int[count];
-    boolean moved = count != originalParameterList.size();
-
+    Parameter[] parameters = new Parameter[count];
+    FunctionType oldType = (FunctionType) property.getType();
+    boolean moved = count != oldType.getParameterCount();
+    HashMap<String, String> renameMap = new HashMap<>();
     for (int i = 0; i < count; i++) {
-      int oldIndex = originalParameterList.indexOf(parameterList.get(i));
-      oldIndices[i] = oldIndex;
-      if (oldIndex != i) {
+      ParameterWithOriginalIndex parameter = parameterList.get(i);
+      if (parameter.originalIndex != -1) {
         moved = true;
+        if (!parameter.name.equals(oldType.getParameter(parameter.originalIndex).name)) {
+          renameMap.put(oldType.getParameter(parameter.originalIndex).name, parameter.name);
+        }
       }
+      oldIndices[i] = parameter.originalIndex;
+      parameters[i] = Parameter.create(parameter.name, parameter.type);
     }
 
-    FunctionType functionType = new FunctionType(returnType, parameterList.size(), parameterList.toArray(Parameter.EMPTY_ARRAY));
+    FunctionType newType = new FunctionType(returnType, count, parameters);
     if (classifier instanceof Trait) {
-      property.setFixedType(functionType);
+      property.setFixedType(newType);
     } else {
-      ((UserFunction) property.getStaticValue()).setType(functionType);
+      ((UserFunction) property.getStaticValue()).setType(newType);
     }
     if (moved) {
-      mainActivity.program.processNodes(node -> node.changeSignature(property, oldIndices));
+      mainActivity.program.processNodes(node -> node.reorderParameters(property, oldIndices));
     }
-
+    if (!renameMap.isEmpty() && property.getStaticValue() instanceof UserFunction) {
+      ((UserFunction) property.getStaticValue()).processNodes(node -> node.renameParameters(renameMap));
+    }
     mainActivity.program.notifyProgramChanged();
   }
 
@@ -364,6 +362,24 @@ public class FunctionSignatureFlow {
     }
     classifier.putProperty(property);
     mainActivity.program.notifyProgramChanged();
+  }
+
+  static class ParameterWithOriginalIndex {
+    final int originalIndex;
+    String name;
+    Type type;
+
+    ParameterWithOriginalIndex(String name, Type type, int originalIndex) {
+      this.name = name;
+      this.type = type;
+      this.originalIndex = originalIndex;
+    }
+
+    ParameterWithOriginalIndex(Parameter parameter, int originalIndex) {
+      this(parameter.name, parameter.type, originalIndex);
+    }
+
+
   }
 
 }

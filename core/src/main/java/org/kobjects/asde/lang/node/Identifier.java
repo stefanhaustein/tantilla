@@ -2,6 +2,7 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.LocalSymbol;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.ValidationContext;
@@ -123,5 +124,15 @@ public class Identifier extends SymbolNode {
 
   public void setName(String s) {
     name = s;
+  }
+
+  @Override
+  public void renameParameters(Map<String, String> renameMap) {
+    if (resolvedKind == Kind.LOCAL_VARIABLE) {
+      String renameTo = renameMap.get(name);
+      if (renameTo != null) {
+        setName(renameTo);
+      }
+    }
   }
 }
