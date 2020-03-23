@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
   public View rootView;
   ScrollView mainScrollView;
   ScrollView leftScrollView;
-  FloatingActionButton runButton;
+  //FloatingActionButton runButton;
   public ControlView controlView;
   public AndroidConsole console;
   public Program program;
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
     scrollContentView = new LinearLayout(this);
     scrollContentView.setOrientation(LinearLayout.VERTICAL);
 
-    runButton = new FloatingActionButton(this);
+ /*   runButton = new FloatingActionButton(this);
     runButton.setImageResource(R.drawable.ic_asde);
 //    runButton.setPadding(0, 0, 0, 0);
     runButton.setScaleType(ImageView.ScaleType.CENTER);
@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
 
 //    runButton.setScaleType(ImageView.ScaleType.CENTER);
   //  runButton.setSize(FloatingActionButton.SIZE_MINI);
-
+*/
     ColorDrawable divider = new ColorDrawable(0x0) {
       @Override
       public int getIntrinsicHeight() {
@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
     mainScrollView.addView(scrollContentView);
 
     leftScrollView = new ScrollView(this);
-    runControlView = new RunControlView(this, runButton);
+    runControlView = new RunControlView(this); //, runButton);
     controlView = new ControlView(this);
     screen = new Screen(this);
 
@@ -455,7 +455,7 @@ public class MainActivity extends AppCompatActivity {
     removeFromParent(runControlView);
     removeFromParent(resizableFrameLayout);
     removeFromParent(textOutputView);
-    removeFromParent(runButton);
+   // removeFromParent(runButton);
 
     if (leftScrollView != null) {
       leftScrollView.removeAllViews();
@@ -493,7 +493,7 @@ public class MainActivity extends AppCompatActivity {
       rootLayout.setDividerDrawable(new ColorDrawable(Colors.PRIMARY_LIGHT_FILTER));
       rootLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
 
-      boolean running = runButton.getVisibility() != View.VISIBLE;
+      boolean running = shell.mainControl.state == ProgramControl.State.RUNNING; //runButton.getVisibility() != View.VISIBLE;
 
       if (displayHeight >= displayWidth) {
 
@@ -560,7 +560,7 @@ public class MainActivity extends AppCompatActivity {
           ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.RIGHT | Gravity.BOTTOM);
       runButtonParams.bottomMargin = Dimensions.dpToPx(this, -12);
       runButtonParams.rightMargin = Dimensions.dpToPx(this, 24);
-      mainView.addView(runButton, runButtonParams);
+     // mainView.addView(runButton, runButtonParams);
 
 
       if (windowMode && running) {
