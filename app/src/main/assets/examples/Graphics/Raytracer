@@ -48,9 +48,9 @@ def toByte(n: float) -> float:
 end
 
 class Color:
- static const BLACK = Color.new(0,0,0)
- static const WHITE = Color.new(1,1,1)
- static const GREY = Color.new(0.5, 0.5, 0.5)
+ const BLACK = Color.new(0,0,0)
+ const WHITE = Color.new(1,1,1)
+ const GREY = Color.new(0.5, 0.5, 0.5)
 
  r: float
  g: float
@@ -189,8 +189,8 @@ class Plane:
  end
 
  def intersect(self, r: Ray) -> Intersection:
-  var denom = self.norm.dot(r.dir)
-  var dist = 1/0
+  let denom = self.norm.dot(r.dir)
+  mut dist = 1/0
   if denom <= 0:
     dist = (self.norm.dot(r.start) + self.offset) / (-denom)
   end
@@ -244,13 +244,13 @@ end
 
 
 class RayTracer:
- var maxDepth = 5
- var defaultColor = Color.BLACK
+ maxDepth = 5
+ defaultColor = Color.BLACK
 
  def intersections(self, r: Ray, s: Scene) -> Intersection:
-  var closest = s.things[0].intersect(r)
+  mut closest = s.things[0].intersect(r)
   for i in range(1, s.things.size):
-   var inter = s.things[i].intersect(r)
+   let inter = s.things[i].intersect(r)
    if inter.dist < closest.dist :
      closest = inter
    end
@@ -263,7 +263,7 @@ class RayTracer:
  end
 
  def traceRay(self, r: Ray, s: Scene, depth: float) -> Color:
-  var isect = self.intersections(r, s)
+  let isect = self.intersections(r, s)
   if isect.dist == 1/0 :
    return s.background
   end
@@ -271,12 +271,12 @@ class RayTracer:
  end
 
  def shade(self, isect: Intersection, s: Scene, depth: float) -> Color:
-  var d = isect.ray.dir
-  var pos = d.times(isect.dist).plus(isect.ray.start)
-  var normal = isect.thing.normal(pos)
-  var reflectDir = d.minus(normal.times(2 * normal.dot(d)))
-  var naturalColor = s.background.plus(self.getNaturalColor(isect.thing, pos, normal, reflectDir, s))
-  var reflectedColor = Color.GREY
+  let d = isect.ray.dir
+  let pos = d.times(isect.dist).plus(isect.ray.start)
+  let normal = isect.thing.normal(pos)
+  let reflectDir = d.minus(normal.times(2 * normal.dot(d)))
+  let naturalColor = s.background.plus(self.getNaturalColor(isect.thing, pos, normal, reflectDir, s))
+  mut reflectedColor = Color.GREY
   if depth < self.maxDepth :
    reflectedColor = self.getReflectionColor(isect.thing, pos, normal, reflectDir, s, depth)
   end
@@ -288,20 +288,20 @@ class RayTracer:
  end
 
  def addLight(self, t: Thing, pos: Vector, norm: Vector, rd: Vector, s: Scene, col: Color, l: Light) -> Color:
-  var ldis = l.pos.minus(pos)
-  var livec = ldis.norm()
-  var nearIsect = self.testRay(Ray.new(pos, livec), s)
-  var isInShadow = (nearIsect <= ldis.mag())
+  let ldis = l.pos.minus(pos)
+  let livec = ldis.norm()
+  let nearIsect = self.testRay(Ray.new(pos, livec), s)
+  let isInShadow = (nearIsect <= ldis.mag())
   if isInShadow :
    return col
   end
-  var illum = livec.dot(norm)
-  var lcolor = self.defaultColor
+  let illum = livec.dot(norm)
+  mut lcolor = self.defaultColor
   if illum > 0 :
    lcolor = l.color.scale(illum)
   end
-  var specular = livec.dot(rd.norm())
-  var scolor = self.defaultColor
+  let specular = livec.dot(rd.norm())
+  mut scolor = self.defaultColor
   if specular > 0 :
    scolor = l.color.scale(specular ^ t.surface.roughness)
   end
@@ -309,7 +309,7 @@ class RayTracer:
  end
 
  def getNaturalColor(self, t: Thing, pos: Vector, norm: Vector, rd: Vector, s: Scene) -> Color:
-  var col = self.defaultColor
+  mut col = self.defaultColor
   for l in s.lights:
    col = self.addLight(t, pos, norm, rd, s, col, l)
   end
@@ -324,11 +324,11 @@ class RayTracer:
   p.strokeColor = 0
   for y in range(screenHeight):
    for x in range(-screenWidth / 2, screenWidth / 2):
-     var yy = floor(y / 2)
+     let yy = floor(y / 2)
      if y % 2 == 0:
        yy = -yy
      end
-     var color = self.traceRay(Ray.new(s.camera.pos, self.getPoint(x, yy, s.camera)), s, 0)
+     let color = self.traceRay(Ray.new(s.camera.pos, self.getPoint(x, yy, s.camera)), s, 0)
      p.fillColor = color.toDrawingColor()
      p.rect(x, yy, 1.5, 1.5)
    end
@@ -343,8 +343,8 @@ const defaultCamera = Camera.new(Vector.new(3,2,4), Vector.new(-1,0.5,0))
 const defaultScene = Scene{background: Color.BLACK, things: defaultThings, lights: defaultLights, camera: defaultCamera}
 
 def main():
- var p = screen.newPen()
- var rayTracer = RayTracer{}
+ let p = screen.newPen()
+ let rayTracer = RayTracer{}
  rayTracer.render(defaultScene, p, screen.width, screen.height)
 
 end

@@ -139,21 +139,13 @@ public class ProgramParser {
           i = parseTrait(currentTrait, lines, i);
 
         } else if (!tokenizer.tryConsume("")) {
+          boolean isConst = tokenizer.tryConsume("const");
+          boolean mutable = !isConst && tokenizer.tryConsume("mut");
+          String name = tokenizer.consumeIdentifier();
           if (currentClass != null) {
-            boolean instanceField = !tokenizer.tryConsume("static");
-            boolean mutable = tokenizer.tryConsume("var") || tokenizer.tryConsume("mut");
-            if (!mutable) {
-              tokenizer.tryConsume("const");
-            }
-
-            if (!instanceField && mutable) {
-              throw new RuntimeException("static and mutable can't be combined");
-            }
-
-            String name = tokenizer.consumeIdentifier();
             if (tokenizer.tryConsume("=")) {
               Node initilaizer = statementParser.expressionParser.parse(tokenizer);
-              currentClass.putProperty(GenericProperty.createWithInitializer(currentClass, instanceField, mutable, name, initilaizer));
+              currentClass.putProperty(GenericProperty.createWithInitializer(currentClass, !isConst, mutable, name, initilaizer));
             } else if (tokenizer.tryConsume(":")) {
               Type type = statementParser.parseType(tokenizer);
               currentClass.putProperty(GenericProperty.createUninitialized(
@@ -165,8 +157,10 @@ public class ProgramParser {
               throw new RuntimeException("= or : expected after property name");
             }
           } else {
-            DeclarationStatement declaration = statementParser.parseDeclaration(tokenizer);
-            program.setPersistentInitializer(declaration.getVarName(), declaration);
+            tokenizer.consume("=");
+            Node initilaizer = statementParser.expressionParser.parse(tokenizer);
+            // mutable is (currently?) redundant here...
+            program.mainModule.putProperty(GenericProperty.createWithInitializer(program.mainModule, false, !isConst, name, initilaizer));
           }
           // Push down?
           if (tokenizer.currentType != Tokenizer.TokenType.EOF) {
@@ -201,7 +195,7 @@ public class ProgramParser {
         FunctionType functionType = parseFunctionSignature(tokenizer, trait);
         trait.addProperty(false, functionName, functionType);
       } else {
-        boolean mutable = tokenizer.tryConsume("var") || tokenizer.tryConsume("mut");
+        boolean mutable = tokenizer.tryConsume("mut");
         if (!mutable) {
           tokenizer.tryConsume("const");
         }

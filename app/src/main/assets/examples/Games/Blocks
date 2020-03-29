@@ -59,8 +59,8 @@ end
 def drawPiece():
  setColor pc
  for i in range(4):
-  var x = px0 + pieceX[i]
-  var y = py0 + pieceY[i]
+  let x = px0 + pieceX[i]
+  let y = py0 + pieceY[i]
   grid[y][x] = pc
   p.rect x * 8 - 69, 91 - y * 8, 7, 7
  end
@@ -68,8 +68,8 @@ end
 
 def erasePiece():
  for i in range(4):
-   var x = px0 + pieceX[i]
-   var y = py0 + pieceY[i]
+   let x = px0 + pieceX[i]
+   let y = py0 + pieceY[i]
    grid[y][x] = 0
    p.clear x * 8 - 70, 90 - y * 8, 9, 9
  end
@@ -85,7 +85,7 @@ end
 def drawAll():
  for y in range(21):
   for x in range(1, 13):
-    var c = grid[y][x]
+    let c = grid[y][x]
     if c != 0:
       setColor c
       p.rect x * 8 - 69, 91 - y * 8, 7, 7
@@ -107,9 +107,9 @@ def dropGrid(cy: float):
 end
 
 def checkGrid():
- var dropCount = 0
+ mut dropCount = 0
  for cy in range(20):
-   var row = 0
+   mut row = 0
    for x in range(2, 12):
      if grid[cy][x] != 0 :
        row = row + 1
@@ -133,7 +133,7 @@ def newPiece():
  pc = pp
  definePiece
  erasePiece
- var savePc = pc
+ let savePc = pc
  pp = int(random() * 7) + 1
  pc = pp
  definePiece
@@ -165,7 +165,7 @@ end
 
 def moveDown():
  erasePiece
- var ok = checkPosition(px0, py0 + 1)
+ let ok = checkPosition(px0, py0 + 1)
  if ok :
    py0 = py0 + 1
  end
@@ -178,12 +178,12 @@ end
 
 def rotate():
  erasePiece
- var mx = 2
+ mut mx = 2
  if pc > 5:
    mx = 3
  end
  for i in range(4):
-  var x = pieceX[i]
+  let x = pieceX[i]
   pieceX[i] = mx - pieceY[i]
   pieceY[i] = x
  end
@@ -192,7 +192,7 @@ def rotate():
    return
  end
  for i in range(4):
-   var x = pieceX[i]
+   let x = pieceX[i]
    pieceX[i] = pieceY[i]
    pieceY[i] = mx - x
  end
@@ -222,7 +222,7 @@ def main():
   newPiece()
   newPiece()
   drawPiece()
-  var timer = 0
+  mut timer = 0
 
   while not gameOver:
 

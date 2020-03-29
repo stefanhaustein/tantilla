@@ -20,7 +20,7 @@ def newAsteroid(x: float, y: float, size: float, direction: float, speed: float)
  asteroid.edgeMode = EdgeMode.WRAP
  onchange asteroid.collisions:
    if asteroid.face == "🥔" :
-     var collisions = asteroid.collisions
+     let collisions = asteroid.collisions
      for other in collisions:
        if other.face == "🚀" :
          gameOver = True
@@ -42,7 +42,7 @@ def breakAsteroid(asteroid: Sprite):
  asteroids.remove(asteroid)
  score = score + 50 - asteroid.size
  if asteroid.size > 30 :
-   var angle = 60 * random()
+   let angle = 60 * random()
    newAsteroid asteroid.x, asteroid.y, asteroid.size - 10, asteroid.direction + angle, asteroid.speed * 1.5
    newAsteroid asteroid.x, asteroid.y, asteroid.size - 10, asteroid.direction - angle, asteroid.speed * 1.5
  end
