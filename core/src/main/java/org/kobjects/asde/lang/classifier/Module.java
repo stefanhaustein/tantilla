@@ -5,10 +5,12 @@ import org.kobjects.asde.lang.program.Program;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Module extends Struct {
-  HashMap<String, Object> builtins = new HashMap<>();
+  TreeMap<String, Object> builtins = new TreeMap<>();
 
   public Module(Program program) {
     super(program);
@@ -33,5 +35,13 @@ public class Module extends Struct {
       }
     }
     return userProperties;
+  }
+
+  public Collection<Property> getBuiltinProperties() {
+    LinkedHashSet<Property> result = new LinkedHashSet<>();
+    for (String key : builtins.keySet()) {
+      result.add(getProperty(key));
+    }
+    return result;
   }
 }

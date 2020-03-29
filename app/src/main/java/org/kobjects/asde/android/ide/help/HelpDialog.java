@@ -177,7 +177,7 @@ public class HelpDialog {
   void addAll(String subtitle, Predicate<Property> filter) {
     addSubtitle(subtitle);
 
-    for (Property s : mainActivity.program.mainModule.getAllProperties()) {
+    for (Property s : mainActivity.program.mainModule.getBuiltinProperties()) {
       if (filter.test(s)) {
         AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
         appendLink(asb, s);

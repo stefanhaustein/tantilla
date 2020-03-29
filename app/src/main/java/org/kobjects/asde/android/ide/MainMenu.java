@@ -102,7 +102,7 @@ public class MainMenu {
             mainActivity.load(new ProgramReference(node.getName(), node.getUrl(), node.isWritable()), true, false);
           }
         }).setTitle("Open")
-            .setRootNode(getRootNode(mainActivity, false))
+            .setRootNode(getRootNode(mainActivity, true))
             .setOptions(FilePicker.Option.SINGLE_CLICK)
             .show();
       });
@@ -200,6 +200,11 @@ public class MainMenu {
     PopupMenu popupMenu = new PopupMenu(mainActivity, menuButton);
     Menu mainMenu = popupMenu.getMenu();
 
+    mainMenu.add("Help").setOnMenuItemClickListener(item -> {
+      HelpDialog.showHelp(mainActivity);
+      return true;
+    });
+
     Menu projectMenu = mainMenu.addSubMenu("Project");
     fillProjectMenu(mainActivity, projectMenu);
 
@@ -217,10 +222,17 @@ public class MainMenu {
     });
      */
 
-    mainMenu.add("Help").setOnMenuItemClickListener(item -> {
-      HelpDialog.showHelp(mainActivity);
-      return true;
-    });
+    mainMenu.add("Examples…").setOnMenuItemClickListener(item -> {
+          confirmLosingUnsavedChanges(mainActivity, "Open Example", () -> {
+            new FilePicker(mainActivity, node -> {
+              mainActivity.load(new ProgramReference(node.getName(), node.getUrl(), node.isWritable()), true, false);
+            }).setTitle("Open")
+                .setRootNode(getExamplesNode(mainActivity))
+                .setOptions(FilePicker.Option.SINGLE_CLICK)
+                .show();
+            });
+          return true;
+        });
 
 
     Menu displayMenu = mainMenu.addSubMenu("Display");
