@@ -1,8 +1,6 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.GenericProperty;
-import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.list.ListImpl;
@@ -14,11 +12,13 @@ import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 
-// Not static for access to the variables.
+/**
+ * Note that slicing is handled separately, as it can be identified at compile time.
+ */
 public class ArrayAccess extends AssignableNode {
 
   enum Kind {
-    ERROR, ARRAY_ACCES, QUALIFIED_TYPE, LIST_CONSTRUCTOR
+    ERROR, ARRAY_ACCESS, QUALIFIED_TYPE, LIST_CONSTRUCTOR, STRING_ACCESS
   }
 
   Kind kind = Kind.ERROR;
@@ -60,8 +60,9 @@ public class ArrayAccess extends AssignableNode {
   @Override
   protected void onResolve(ValidationContext resolutionContext, int line) {
     kind = Kind.ERROR;
-    if (children[0].returnType() instanceof ListType) {
-      kind = Kind.ARRAY_ACCES;
+    Type type0 = children[0].returnType();
+    if (type0 instanceof ListType || type0 == Types.STR) {
+      kind = type0 == Types.STR ? Kind.STRING_ACCESS : Kind.ARRAY_ACCESS;
       if (children.length != 2) {
         throw new RuntimeException("Exactly one array index argument expected");
       }
@@ -88,9 +89,23 @@ public class ArrayAccess extends AssignableNode {
 
   public Object eval(EvaluationContext evaluationContext) {
     switch (kind) {
-      case ARRAY_ACCES:
+      case ARRAY_ACCESS: {
         ListImpl array = (ListImpl) children[0].eval(evaluationContext);
-        return array.get(children[1].evalInt(evaluationContext));
+        int index = children[1].evalInt(evaluationContext);
+        return array.get(index < 0 ? array.length() - index : index);
+      }
+      case STRING_ACCESS: {
+        String s = (String) children[0].eval(evaluationContext);
+        int index = children[1].evalInt(evaluationContext);
+        if (index < 0) {
+          index = s.codePointCount(0, s.length()) - index;
+        }
+        int pos = 0;
+        for (int i = 0; i < index; i++) {
+          pos += Character.charCount(s.codePointAt(pos));
+        }
+        return s.substring(pos, pos + Character.charCount(pos));
+      }
       case QUALIFIED_TYPE:
         return resolvedType;
       case LIST_CONSTRUCTOR:
@@ -106,7 +121,9 @@ public class ArrayAccess extends AssignableNode {
   // Shouldn't throw, as it's used outside validation!
   public Type returnType() {
     switch (kind) {
-      case ARRAY_ACCES:
+      case STRING_ACCESS:
+        return Types.STR;
+      case ARRAY_ACCESS:
         return ((ListType) children[0].returnType()).elementType;
       case QUALIFIED_TYPE:
         return new MetaType(resolvedType);

@@ -168,7 +168,6 @@ public class StatementParser {
     tokenizer.nextToken();
     switch (kind) {
       case EDIT:
-      case RUN:  // 0 or 1 param; Default is 0
       case SAVE:
         if (tokenizer.currentType != Tokenizer.TokenType.EOF &&
                 !tokenizer.currentValue.equals(";")) {

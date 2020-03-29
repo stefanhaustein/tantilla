@@ -13,11 +13,10 @@ import java.util.Map;
 public class Command extends Statement {
 
   public enum Kind {
-    CLEAR, CONTINUE,
     DELETE, DUMP,
     EDIT,
     LIST, LOAD,
-    RUN,SAVE, TRON, TROFF
+    SAVE
   }
 
   private final Kind kind;
@@ -36,14 +35,6 @@ public class Command extends Statement {
   public Object eval(EvaluationContext evaluationContext) {
     Program program = evaluationContext.control.program;
     switch (kind) {
-      case CONTINUE:
-        // This needs to go to the main control!!
-        evaluationContext.control.resume();
-
-      case CLEAR:
-        program.clear(evaluationContext);
-        break;
-
       case DELETE:
         program.console.delete(children[0].evalInt(evaluationContext));
         break;
@@ -86,12 +77,6 @@ public class Command extends Statement {
         }
         break;
 
-
-      case RUN:
-        program.clear(evaluationContext);
-
-        evaluationContext.currentLine = children.length == 0 ? 0 : (int) children[0].evalDouble(evaluationContext);
-        break;
 
       case SAVE:
         try {
