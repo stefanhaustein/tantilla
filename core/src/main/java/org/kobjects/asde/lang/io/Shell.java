@@ -18,8 +18,6 @@ import org.kobjects.asde.lang.function.FunctionType;
 import java.util.List;
 
 public class Shell {
-
-
     final Program program;
     final public ProgramControl mainControl;
     public final ProgramControl shellControl;

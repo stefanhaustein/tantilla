@@ -14,25 +14,71 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Arrays;
 
-public class AsdeShell {
+public class AsdeShell implements Console {
 
   public static void main(String[] args) throws IOException {
-    final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-    final StdioConsole console = new StdioConsole(reader);
-    final Program program = new Program(console);
-    final Shell shell = new Shell(program);
+    new Thread(() -> {
+      try {
+        ServerSocket serverSocket = new ServerSocket(2323);
+        while (true) {
+          Socket socket = serverSocket.accept();
+          new Thread(() -> {
+            try {
+              Reader reader = new InputStreamReader(socket.getInputStream(), "utf-8");
+              Writer writer = new OutputStreamWriter(socket.getOutputStream(), "utf-8");
+              new AsdeShell(reader, writer).run();
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
+          }).start();
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }).start();
 
-    System.out.println("  **** EXPRESSION PARSER BASIC DEMO V1 ****\n");
-    System.out.println("  " + (Runtime.getRuntime().totalMemory() / 1024) + "K SYSTEM  "
+    final Reader reader = new InputStreamReader(System.in, "utf-8");
+    final Writer writer = new OutputStreamWriter(System.out, "utf-8");
+
+    new AsdeShell(reader, writer).run();
+  }
+
+
+
+  private final BufferedReader reader;
+  private final PrintWriter writer;
+  private final Program program;
+  private final Shell shell;
+
+  private UserFunction selectedFunction;
+  private GenericProperty selectedSymbol;
+
+  AsdeShell(Reader reader, Writer writer) {
+    this.reader = new BufferedReader(reader);
+    this.writer = new PrintWriter(writer, true);
+    program = new Program(this);
+    shell = new Shell(program);
+    selectedFunction = program.main;
+  }
+
+  public void run() throws IOException {
+    writer.println("  **** EXPRESSION PARSER BASIC DEMO V1 ****\n");
+    writer.println("  " + (Runtime.getRuntime().totalMemory() / 1024) + "K SYSTEM  "
         + Runtime.getRuntime().freeMemory() + " BASIC BYTES FREE\n");
 
     boolean prompt = true;
 
     while (true) {
       if (prompt) {
-        System.out.println("\nREADY.");
+        writer.println("\nREADY.");
       }
       String line = reader.readLine();
       if (line == null) {
@@ -41,40 +87,34 @@ public class AsdeShell {
       prompt = true;
       try {
         shell.enter(line, result -> {
-          console.print(result == null ? "Ok" : String.valueOf(result));
+          print(result == null ? "Ok" : ("Result: " + result));
         });
       } catch (ParsingException e) {
         char[] fill = new char[e.start + 1];
         Arrays.fill(fill, ' ');
-        System.out.println(new String(fill) + '^');
-        System.out.println("?SYNTAX ERROR: " + e.getMessage());
+        writer.println(new String(fill) + '^');
+        writer.println("?SYNTAX ERROR: " + e.getMessage());
         program.lastException = e;
       } catch (WrappedExecutionException e) {
-        System.out.println("\nERROR in " + e.lineNumber + ": " + e.getMessage());
-        System.out.println("\nREADY.");
+        e.printStackTrace();
+        writer.println("\nERROR in " + e.lineNumber + ": " + e.getMessage());
+        writer.println("\nREADY.");
         program.lastException = e;
       } catch (Exception e) {
-        System.out.println("\nERROR in : " + e.getMessage());
-        System.out.println("\nREADY.");
+        e.printStackTrace();
+        writer.println("\nERROR: " + e);
+        writer.println("\nREADY.");
         program.lastException = e;
       }
     }
   }
 
-  static class StdioConsole implements Console {
 
-    private final BufferedReader reader;
-    private UserFunction selectedFunction;
-    private GenericProperty selectedSymbol;
 
-    StdioConsole(BufferedReader reader) {
-      this.reader = reader;
-    }
-
-    @Override
-    public void print(CharSequence s) {
-      System.out.print(s);
-    }
+  @Override
+  public void print(CharSequence s) {
+    writer.print(s);
+  }
 
     @Override
     public String input() {
@@ -154,5 +194,5 @@ public class AsdeShell {
       print(message + e);
     }
 
-  }
+
 }
