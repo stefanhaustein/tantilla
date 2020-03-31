@@ -70,38 +70,40 @@ public class AsdeShell implements Console {
   }
 
   public void run() throws IOException {
-    writer.println("  **** EXPRESSION PARSER BASIC DEMO V1 ****\n");
-    writer.println("  " + (Runtime.getRuntime().totalMemory() / 1024) + "K SYSTEM  "
-        + Runtime.getRuntime().freeMemory() + " BASIC BYTES FREE\n");
-
     boolean prompt = true;
-
     while (true) {
       if (prompt) {
-        writer.println("\nREADY.");
+        writer.println();
+        writer.print("> ");
+        writer.flush();
       }
       String line = reader.readLine();
       if (line == null) {
         break;
       }
-      prompt = true;
       try {
+        prompt = false;
         shell.enter(line, result -> {
-          print(result == null ? "Ok" : ("Result: " + result));
+          writer.println();
+          writer.print("> ");
+          writer.flush();
         });
       } catch (ParsingException e) {
+        prompt = true;
         char[] fill = new char[e.start + 1];
         Arrays.fill(fill, ' ');
         writer.println(new String(fill) + '^');
         writer.println("?SYNTAX ERROR: " + e.getMessage());
         program.lastException = e;
       } catch (WrappedExecutionException e) {
-        e.printStackTrace();
+        prompt = true;
+        e.printStackTrace(writer);
         writer.println("\nERROR in " + e.lineNumber + ": " + e.getMessage());
         writer.println("\nREADY.");
         program.lastException = e;
       } catch (Exception e) {
-        e.printStackTrace();
+        prompt = true;
+        e.printStackTrace(writer);
         writer.println("\nERROR: " + e);
         writer.println("\nREADY.");
         program.lastException = e;
