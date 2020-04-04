@@ -1,22 +1,22 @@
 package org.kobjects.asde.lang.io;
 
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.function.CodeLine;
 
 import java.util.HashMap;
 
 public class MultiValidationException extends RuntimeException {
-  private final CodeLine codeLine;
+  private final UserFunction code;
   private final HashMap<Node, Exception> errors;
 
-  public MultiValidationException(CodeLine codeLine, HashMap<Node, Exception> errors) {
-    super("Validateion Erros in:\n" + codeLine + "\n" + errors.values());
-    this.codeLine = codeLine;
+  public MultiValidationException(UserFunction code, HashMap<Node, Exception> errors) {
+    super("Validateion Erros in:\n" + code + "\n" + errors.values());
+    this.code = code;
     this.errors = errors;
   }
 
-  public CodeLine getCodeLine() {
-    return codeLine;
+  public UserFunction getCode() {
+    return code;
   }
 
   public HashMap<Node, Exception> getErrors() {

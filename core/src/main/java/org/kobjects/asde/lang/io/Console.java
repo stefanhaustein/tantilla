@@ -7,7 +7,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public interface Console {
-    enum ClearScreenType {
+  void prompt();
+
+  enum ClearScreenType {
         CLS_STATEMENT, CLEAR_STATEMENT, PROGRAM_CLOSED
     }
 

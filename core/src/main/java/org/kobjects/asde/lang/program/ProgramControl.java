@@ -1,13 +1,17 @@
 package org.kobjects.asde.lang.program;
 
 import org.kobjects.asde.lang.Consumer;
+import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.statement.Statement;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ProgramControl {
     Thread interpreterThread;
@@ -81,6 +85,9 @@ public class ProgramControl {
         EvaluationContext context = new EvaluationContext(this, program.main);
         try {
             program.clear(context);
+
+            program.main.getDeclaringSymbol().init(context, new HashSet<>());
+
             runAsync(() -> context.function.callImpl(context));
         } catch (Exception e) {
             program.console.showError("Error starting program", e);
@@ -99,15 +106,20 @@ public class ProgramControl {
     }
 
     // Called from the shell
-    public void runStatementsAsync(UserFunction wrapper, final ProgramControl programInterpreterControl, Consumer resultConsumer) {
+    public void initializeAndRunShellCode(UserFunction wrapper, final ProgramControl programInterpreterControl, Set<Property> initializationDependencies) {
         runAsync(() -> {
             EvaluationContext wrapperContext = new EvaluationContext(ProgramControl.this, wrapper);
+            HashSet<GenericProperty> initialized = new HashSet<>();
+            for (Property property : initializationDependencies) {
+                property.init(wrapperContext, initialized);
+            }
+
             wrapperContext.currentLine = -2;
                 Object result = runCodeLineImpl(wrapper.allLines().iterator().next(), wrapperContext);
                 if (wrapperContext.currentLine >= 0) {
                     programInterpreterControl.runAsync(wrapperContext.currentLine);
                 } else {
-                    resultConsumer.accept(result);
+                    program.console.prompt();
                 }
         });
     }

@@ -91,7 +91,7 @@ public class ValidationContext {
     }
   }
 
-  private void validate() {
+  public void validate() {
       if (property != null) {
         if (resolved.contains(property)) {
           return;
@@ -114,7 +114,9 @@ public class ValidationContext {
 
 
       if (userFunction != null) {
+        inPropertyInitialization = true;
         userFunction.validate(this);
+        inPropertyInitialization = false;
       }
 
 
@@ -129,7 +131,6 @@ public class ValidationContext {
       }
     }
   }
-
 
   public void startBlock(BlockStatement startStatement) {
     currentBlock = new Block(currentBlock, startStatement);

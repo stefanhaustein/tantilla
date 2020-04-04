@@ -83,11 +83,7 @@ public class AsdeShell implements Console {
       }
       try {
         prompt = false;
-        shell.enter(line, result -> {
-          writer.println();
-          writer.print("> ");
-          writer.flush();
-        });
+        shell.enter(line);
       } catch (ParsingException e) {
         prompt = true;
         char[] fill = new char[e.start + 1];
@@ -112,6 +108,13 @@ public class AsdeShell implements Console {
   }
 
 
+  @Override
+  public void prompt() {
+      writer.println();
+      writer.print("> ");
+      writer.flush();
+
+  }
 
   @Override
   public void print(CharSequence s) {
@@ -183,6 +186,7 @@ public class AsdeShell implements Console {
       this.selectedSymbol = symbol;
       if (symbol.getStaticValue() instanceof UserFunction) {
         selectedFunction = (UserFunction) symbol.getStaticValue();
+        print(selectedFunction.toString());
       }
     }
 

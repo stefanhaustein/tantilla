@@ -96,35 +96,33 @@ public class UserFunction implements Callable, DeclaredBy {
     }
   }
 
-
-  public synchronized void toString(AnnotatedStringBuilder sb, String name, Map<Node, Exception> errors) {
-    boolean sub = type.getReturnType() == Types.VOID;
-    if (name != null) {
+  public synchronized void toString(AnnotatedStringBuilder sb, Map<Node, Exception> errors) {
+    if (declaringSymbol != null) {
       sb.append("def ");
-      sb.append(name);
+      sb.append(declaringSymbol.getName());
+      sb.append(' ');
       sb.append(type.toString());
       sb.append(":\n");
     }
 
+    int lineNumber = 1;
     for (Statement statement : code) {
-      for (int i = 0; i < statement.getIndent(); i++) {
+      sb.append(String.valueOf(lineNumber++));
+      for (int i = -1; i < statement.getIndent(); i++) {
         sb.append(' ');
       }
       statement.toString(sb, errors, true);
       sb.append('\n');
     }
 
-    if (name != null) {
+    if (declaringSymbol != null) {
       sb.append("end\n\n");
     }
   }
 
   public String toString() {
-    if (declaringSymbol != null) {
-      return declaringSymbol.toString();
-    }
     AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-    toString(asb, null, Collections.emptyMap());
+    toString(asb, Collections.emptyMap());
     return asb.toString();
   }
 

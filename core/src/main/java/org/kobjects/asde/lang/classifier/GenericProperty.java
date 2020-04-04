@@ -158,6 +158,7 @@ public class GenericProperty implements Property {
     if (initialized.contains(this)) {
       return;
     }
+    initialized.add(this);
     if (initializationDependencies != null) {
       for (Property dep : initializationDependencies) {
         dep.init(evaluationContext, initialized);
@@ -166,9 +167,10 @@ public class GenericProperty implements Property {
     if (!isInstanceField && initializer != null) {
       staticValue = initializer.eval(evaluationContext);
     }
-    initialized.add(this);
-    for (Property property : owner.getAllProperties()) {
-      property.init(evaluationContext, initialized);
+    if (!(owner instanceof Module)) {
+      for (Property property : owner.getAllProperties()) {
+        property.init(evaluationContext, initialized);
+      }
     }
   }
 

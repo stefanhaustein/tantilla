@@ -127,12 +127,14 @@ public class Program {
     }
     symbolMap = cleared; */
 
+    /*
+
     HashSet<GenericProperty> initialized = new HashSet<>();
-
-
     for (GenericProperty symbol : mainModule.getUserProperties()) {
       symbol.init(evaluationContext, initialized);
     }
+
+     */
   }
 
 
@@ -161,7 +163,7 @@ public class Program {
 
     for (GenericProperty symbol : mainModule.getUserProperties()) {
       if (symbol.getStaticValue() instanceof UserFunction) {
-        ((UserFunction) symbol.getStaticValue()).toString(sb, symbol.getName(), symbol.getErrors());
+        ((UserFunction) symbol.getStaticValue()).toString(sb, symbol.getErrors());
       }
     }
   }
@@ -186,22 +188,6 @@ public class Program {
     writer.write(toString());
     writer.close();
     hasUnsavedChanges = false;
-  }
-
-
-  /**
-   * Generates persistent symbols for "standalone" declarations, i.e. declarations not
-   * inside a function. Called from the interactive shell and from program loading to process declarations.
-   * Because it's called from loading, it can't include validation.
-   */
-  public void processStandaloneDeclarations(CodeLine codeLine) {
-    for (int i = 0; i < codeLine.length(); i++) {
-      Node node = codeLine.get(i);
-      if (node instanceof DeclarationStatement) {
-        DeclarationStatement declaration = (DeclarationStatement) node;
-        setPersistentInitializer(declaration.getVarName(), declaration);
-      }
-    }
   }
 
 

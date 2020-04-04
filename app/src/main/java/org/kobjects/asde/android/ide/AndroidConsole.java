@@ -282,6 +282,10 @@ public class AndroidConsole implements Console {
   }
 
 
+  @Override
+  public void prompt() {
+    mainActivity.controlView.codeEditText.setText("");
+  }
 
   @Override
   public void print(final CharSequence chars) {
