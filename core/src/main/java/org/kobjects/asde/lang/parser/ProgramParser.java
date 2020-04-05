@@ -108,7 +108,7 @@ public class ProgramParser {
         } else if (tokenizer.tryConsume("def")) {
           String functionName = tokenizer.consumeIdentifier();
           program.console.updateProgress("Parsing function " + functionName);
-          FunctionType functionType = parseFunctionSignature(tokenizer, currentClass);
+          FunctionType functionType = statementParser.parseFunctionSignature(tokenizer, currentClass);
           if (!tokenizer.tryConsume(":")) {
             throw new RuntimeException("':' expected.");
           }
@@ -191,8 +191,7 @@ public class ProgramParser {
       }
       if (tokenizer.tryConsume("def")) {
         String functionName = tokenizer.consumeIdentifier();
-        ArrayList<String> parameterNames = new ArrayList();
-        FunctionType functionType = parseFunctionSignature(tokenizer, trait);
+        FunctionType functionType = statementParser.parseFunctionSignature(tokenizer, trait);
         trait.addProperty(false, functionName, functionType);
       } else {
         boolean mutable = tokenizer.tryConsume("mut");
@@ -209,47 +208,7 @@ public class ProgramParser {
   }
 
 
-  private Parameter[] parseParameterList(Tokenizer tokenizer, Type self) {
-    tokenizer.consume("(");
-    ArrayList<Parameter> parameters = new ArrayList<>();
-    while (!tokenizer.tryConsume(")")) {
-      String parameterName = tokenizer.consumeIdentifier();
-      if (parameterName.equals("self")) {
-        if (parameters.size() != 0) {
-          throw new RuntimeException("self must be first parameter");
-        }
-        if (self == null) {
-          throw new RuntimeException("The parameter name 'self' is reserved for class and trait methods.");
-        }
-        if (tokenizer.tryConsume(":")) {
-          Type parameterType = statementParser.parseType(tokenizer);
-          if (parameterType != self) {
-            throw new RuntimeException("Type mismatch for self. Expected: " + self + " got: " + parameterType);
-          }
-        }
-        parameters.add(Parameter.create("self", self));
-      } else {
-        tokenizer.consume(":");
-        Type parameterType = statementParser.parseType(tokenizer);
-        parameters.add(Parameter.create(parameterName, parameterType));
-      }
-      if (!tokenizer.tryConsume(",")) {
-        if (tokenizer.tryConsume(")")) {
-          break;
-        }
-        throw new RuntimeException("',' or ')' expected.");
-      }
-    }
-    return parameters.toArray(Parameter.EMPTY_ARRAY);
-  }
 
-  private FunctionType parseFunctionSignature(Tokenizer tokenizer, Type self) {
-    Parameter[] parameterTypes = parseParameterList(tokenizer, self);
-
-    Type returnType = tokenizer.tryConsume("->") ? statementParser.parseType(tokenizer) : Types.VOID;
-
-    return new FunctionType(returnType, parameterTypes.length, parameterTypes);
-  }
 
 
 }

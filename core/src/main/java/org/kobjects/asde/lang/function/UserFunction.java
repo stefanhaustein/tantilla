@@ -3,6 +3,7 @@ package org.kobjects.asde.lang.function;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Consumer;
 import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.classifier.DeclaredBy;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -97,26 +98,31 @@ public class UserFunction implements Callable, DeclaredBy {
   }
 
   public synchronized void toString(AnnotatedStringBuilder sb, Map<Node, Exception> errors) {
-    if (declaringSymbol != null) {
-      sb.append("def ");
+    if (declaringSymbol == null) {
+      for (int i = 0; i < code.size(); i++) {
+        if (i > 0) {
+          sb.append("; ");
+        }
+        code.get(i).toString(sb, errors, true);
+      }
+    } else {
+      sb.append("def ", SyntaxColor.KEYWORD);
       sb.append(declaringSymbol.getName());
-      sb.append(' ');
       sb.append(type.toString());
       sb.append(":\n");
-    }
-
-    int lineNumber = 1;
-    for (Statement statement : code) {
-      sb.append(String.valueOf(lineNumber++));
-      for (int i = -1; i < statement.getIndent(); i++) {
-        sb.append(' ');
+      int lineNumber = 1;
+      for (Statement statement : code) {
+        sb.append(String.valueOf(lineNumber++));
+        for (int i = -1; i < statement.getIndent(); i++) {
+          sb.append(' ');
+        }
+        statement.toString(sb, errors, true);
+        sb.append('\n');
       }
-      statement.toString(sb, errors, true);
-      sb.append('\n');
-    }
-
-    if (declaringSymbol != null) {
-      sb.append("end\n\n");
+      if (declaringSymbol != null) {
+        sb.append("end", SyntaxColor.HIDE);
+        sb.append("\n\n");
+      }
     }
   }
 

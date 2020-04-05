@@ -11,6 +11,7 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.TypeImpl;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public class ForStatement extends BlockStatement {
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
-    Iterator<Object> iterator = ((ListImpl) children[0].eval(evaluationContext)).iterator();
+    Iterator<Object> iterator = ((ListImpl) children[0].eval(evaluationContext)).defensiveCopy().iterator();
     if (!iterator.hasNext()) {
       evaluationContext.currentLine = resolvedNextLine + 1;
     } else {

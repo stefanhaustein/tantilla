@@ -3,6 +3,7 @@ package org.kobjects.asde.lang.io;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.asde.lang.Consumer;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.node.Node;
@@ -84,6 +85,7 @@ public class Shell {
             }
 
             // Line added, done here.
+            program.console.prompt();
             break;
           }
           // Not
@@ -93,6 +95,12 @@ public class Shell {
         // Fall-through intended
       default:
         // TODO: Check for def, class, trait, const
+        if (tokenizer.tryConsume("def")) {
+          processDef(tokenizer);
+          program.console.prompt();
+          break;
+        }
+
 
         List<Statement> statements = program.parser.parseStatementList(tokenizer, null);
 
@@ -128,6 +136,18 @@ public class Shell {
     }
   }
 
+  void processDef(Tokenizer tokenizer) {
+    String name = tokenizer.consumeIdentifier();
+    FunctionType functionType = program.parser.parseFunctionSignature(tokenizer, null);
+    UserFunction function = new UserFunction(program, functionType);
+    if (tokenizer.tryConsume(":")) {
+      for (Statement statement : program.parser.parseStatementList(tokenizer, function)) {
+        function.appendStatement(statement);
+      }
+    }
+    Property property = GenericProperty.createMethod(program.mainModule, name, function);
+    program.mainModule.putProperty(property);
+  }
 
 
 }

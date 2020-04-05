@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang.parser;
 
 import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.function.FunctionType;
+import org.kobjects.asde.lang.function.Parameter;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.node.InvokeMethod;
@@ -53,6 +55,49 @@ public class StatementParser {
     Tokenizer tokenizer = expressionParser.createTokenizer(unparsed);
     tokenizer.nextToken();
     return expressionParser.parse(tokenizer);
+  }
+
+
+  private Parameter[] parseParameterList(Tokenizer tokenizer, Type self) {
+    tokenizer.consume("(");
+    ArrayList<Parameter> parameters = new ArrayList<>();
+    while (!tokenizer.tryConsume(")")) {
+      String parameterName = tokenizer.consumeIdentifier();
+      if (parameterName.equals("self")) {
+        if (parameters.size() != 0) {
+          throw new RuntimeException("self must be first parameter");
+        }
+        if (self == null) {
+          throw new RuntimeException("The parameter name 'self' is reserved for class and trait methods.");
+        }
+        if (tokenizer.tryConsume(":")) {
+          Type parameterType = parseType(tokenizer);
+          if (parameterType != self) {
+            throw new RuntimeException("Type mismatch for self. Expected: " + self + " got: " + parameterType);
+          }
+        }
+        parameters.add(Parameter.create("self", self));
+      } else {
+        tokenizer.consume(":");
+        Type parameterType = parseType(tokenizer);
+        parameters.add(Parameter.create(parameterName, parameterType));
+      }
+      if (!tokenizer.tryConsume(",")) {
+        if (tokenizer.tryConsume(")")) {
+          break;
+        }
+        throw new RuntimeException("',' or ')' expected.");
+      }
+    }
+    return parameters.toArray(Parameter.EMPTY_ARRAY);
+  }
+
+  public FunctionType parseFunctionSignature(Tokenizer tokenizer, Type self) {
+    Parameter[] parameterTypes = parseParameterList(tokenizer, self);
+
+    Type returnType = tokenizer.tryConsume("->") ? parseType(tokenizer) : Types.VOID;
+
+    return new FunctionType(returnType, parameterTypes.length, parameterTypes);
   }
 
   void parseStatement(Tokenizer tokenizer, List<Statement> result, UserFunction parsingContext) {

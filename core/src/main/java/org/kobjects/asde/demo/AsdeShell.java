@@ -1,6 +1,10 @@
 package org.kobjects.asde.demo;
 
+import org.kobjects.annotatedtext.AnnotatedString;
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.annotatedtext.Span;
 import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.runtime.WrappedExecutionException;
 import org.kobjects.asde.lang.io.Console;
@@ -20,7 +24,11 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AsdeShell implements Console {
 
@@ -118,7 +126,48 @@ public class AsdeShell implements Console {
 
   @Override
   public void print(CharSequence s) {
+    if (s instanceof AnnotatedString) {
+      print((AnnotatedString) s);
+    }
     writer.print(s);
+  }
+
+  static <K, V> void addToListInMap(Map<K, List<V>> map, K key, V value) {
+    List<V> list = map.get(key);
+    if (list == null) {
+      list = new ArrayList<>();
+      map.put(key, list);
+    }
+    list.add(value);
+  }
+
+  public void print(AnnotatedString s) {
+    Map<Integer, List<Span>> spanMap = new HashMap<>();
+    for (Span span : s.spans()) {
+      addToListInMap(spanMap, span.start, span);
+      addToListInMap(spanMap, span.end, span);
+    }
+
+    for (int i = 0; i < s.length(); i++) {
+      List<Span> spanList = spanMap.get(i);
+      if (spanList != null) {
+        for (Span span : spanList) {
+          if (span.start == i) {
+            if (span.annotation == SyntaxColor.HIDE) {
+              writer.write("\033[0;37m");
+            } else if (span.annotation == SyntaxColor.KEYWORD) {
+              writer.write("\033[0;33m");
+            } else if (span.annotation == SyntaxColor.STRING) {
+              writer.write("\033[0;32m");
+            }
+          }
+          if (span.end == i) {
+            writer.write("\033[0;39m");
+          }
+        }
+      }
+      writer.write(s.charAt(i));
+    }
   }
 
     @Override
@@ -186,7 +235,9 @@ public class AsdeShell implements Console {
       this.selectedSymbol = symbol;
       if (symbol.getStaticValue() instanceof UserFunction) {
         selectedFunction = (UserFunction) symbol.getStaticValue();
-        print(selectedFunction.toString());
+        AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
+        selectedFunction.toString(asb, selectedSymbol.getErrors());
+        print(asb.build());
       }
     }
 

@@ -5,6 +5,7 @@ import org.kobjects.asde.lang.type.Typed;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class ListImpl implements Typed, Iterable<Object> {
 
@@ -93,6 +94,12 @@ public class ListImpl implements Typed, Iterable<Object> {
 
     public synchronized boolean contains(Object object) {
         return data.contains(object);
+    }
+
+    public synchronized  ArrayList<Object> defensiveCopy() {
+        ArrayList result = new ArrayList();
+        result.addAll(data);
+        return result;
     }
 
     public Iterator<Object> iterator() {
