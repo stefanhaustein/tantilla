@@ -1,10 +1,12 @@
 package org.kobjects.asde.lang.io;
 
+import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.annotatedtext.Annotations;
-import org.kobjects.asde.lang.Consumer;
+import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.Program;
@@ -17,12 +19,19 @@ import org.kobjects.asde.lang.type.Types;
 import org.kobjects.expressionparser.Tokenizer;
 import org.kobjects.asde.lang.function.FunctionType;
 
+import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 public class Shell {
   final Program program;
   final public ProgramControl mainControl;
   public final ProgramControl shellControl;
+
+  enum ShellCommand {
+    DEF, LOAD, SAVE, EDIT, LIST, DELETE
+  }
+
 
   public Shell(Program program) {
     this.program = program;
@@ -53,7 +62,7 @@ public class Shell {
 
 
   public void enter(String line) {
-    Property currentFunction = program.console.getSelectedFunction().getDeclaringSymbol();
+    Property currentFunction = program.console.getSelectedProperty();
     if (line.isEmpty()) {
       program.console.prompt();
       return;
@@ -86,7 +95,7 @@ public class Shell {
 
             // Line added, done here.
             program.console.prompt();
-            break;
+            return;
           }
           // Not
           tokenizer = program.parser.createTokenizer(line);
@@ -94,14 +103,17 @@ public class Shell {
         }
         // Fall-through intended
       default:
-        // TODO: Check for def, class, trait, const
-        if (tokenizer.tryConsume("def")) {
-          processDef(tokenizer);
-          program.console.prompt();
-          break;
+
+        if (tokenizer.currentType == Tokenizer.TokenType.IDENTIFIER) {
+          for (ShellCommand shellCommand : ShellCommand.values()) {
+            if (tokenizer.currentValue.equals(shellCommand.name().toLowerCase())) {
+              tokenizer.consumeIdentifier();
+              program.console.print(line + "\n");
+              processShellCommand(tokenizer, shellCommand);
+              return;
+            }
+          }
         }
-
-
         List<Statement> statements = program.parser.parseStatementList(tokenizer, null);
 
         for (int i = 0; i < statements.size(); i++) {
@@ -132,9 +144,106 @@ public class Shell {
         program.console.print(asb.build());
 
         shellControl.initializeAndRunShellCode(wrapper, mainControl, validationContext.initializationDependencies);
-        break;
     }
   }
+
+  Property tryConsumeProperty(Tokenizer tokenizer) {
+    if (tokenizer.currentType != Tokenizer.TokenType.IDENTIFIER) {
+      return null;
+    }
+    Classifier classifier = program.mainModule;
+
+    Property currentProperty;
+    do {
+      String identifier = tokenizer.consumeIdentifier();
+      currentProperty = classifier.getProperty(identifier);
+      if (!(currentProperty.getType() instanceof Classifier)) {
+        break;
+      }
+      classifier = (Classifier) currentProperty.getType();
+    } while (tokenizer.tryConsume("."));
+
+    return currentProperty;
+  }
+
+  void processShellCommand(Tokenizer tokenizer, ShellCommand shellCommand) {
+    switch (shellCommand) {
+      case DEF:
+        processDef(tokenizer);
+        break;
+
+
+      case DELETE:
+        if (tokenizer.currentType != Tokenizer.TokenType.NUMBER) {
+          throw new RuntimeException("Line Number expected for delete.");
+        }
+        program.console.delete(Integer.parseInt(tokenizer.currentValue));
+        tokenizer.nextToken();
+        break;
+
+      case EDIT:
+        if (tokenizer.currentType == Tokenizer.TokenType.NUMBER) {
+          program.console.edit(Integer.parseInt(tokenizer.currentValue));
+          tokenizer.nextToken();
+        } else {
+          Property target = tryConsumeProperty(tokenizer);
+          if (target == null) {
+            throw new RuntimeException("line number or identifier expected for edit.");
+          }
+        }
+        break;
+
+      case LOAD:
+        if (tokenizer.currentType != Tokenizer.TokenType.STRING) {
+          throw new RuntimeException("File (string) parameter expected for load.");
+        }
+        try {
+          program.load(program.console.nameToReference(tokenizer.currentValue));
+          tokenizer.nextToken();
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+        break;
+
+      case LIST: {
+        AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
+        Property target = tryConsumeProperty(tokenizer);
+        if (target == null) {
+          Classifier.list(asb, program.mainModule.getUserProperties(), "");
+        } else {
+          target.list(asb);
+        }
+        program.console.print(asb.build());
+        break;
+      }
+
+      case SAVE:
+        try {
+          ProgramReference reference;
+          switch (tokenizer.currentType) {
+            case EOF:
+              reference = program.reference;
+              break;
+            case STRING:
+              reference = program.console.nameToReference(tokenizer.currentValue);
+              tokenizer.nextToken();
+              break;
+            default:
+              throw new RuntimeException("No parameter or filename (string) parameter expected for save.");
+          }
+          program.save(reference);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+        break;
+
+    }
+    if (tokenizer.currentType != Tokenizer.TokenType.EOF) {
+      throw new RuntimeException("Leftover token: " + tokenizer);
+    }
+    program.console.prompt();
+  }
+
 
   void processDef(Tokenizer tokenizer) {
     String name = tokenizer.consumeIdentifier();

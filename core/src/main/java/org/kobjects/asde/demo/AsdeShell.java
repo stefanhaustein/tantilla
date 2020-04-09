@@ -3,7 +3,7 @@ package org.kobjects.asde.demo;
 import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.annotatedtext.Span;
-import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.runtime.WrappedExecutionException;
@@ -67,7 +67,7 @@ public class AsdeShell implements Console {
   private final Shell shell;
 
   private UserFunction selectedFunction;
-  private GenericProperty selectedSymbol;
+  private Property selectedProperty;
 
   AsdeShell(Reader reader, Writer writer) {
     this.reader = new BufferedReader(reader);
@@ -231,19 +231,13 @@ public class AsdeShell implements Console {
     }
 
     @Override
-    public void edit(GenericProperty symbol) {
-      this.selectedSymbol = symbol;
-      if (symbol.getStaticValue() instanceof UserFunction) {
-        selectedFunction = (UserFunction) symbol.getStaticValue();
-        AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-        selectedFunction.toString(asb, selectedSymbol.getErrors());
-        print(asb.build());
-      }
+    public void selectProperty(Property property) {
+      this.selectedProperty = property;
     }
 
     @Override
-    public UserFunction getSelectedFunction() {
-      return selectedFunction;
+    public Property getSelectedProperty() {
+      return selectedProperty;
     }
 
     @Override

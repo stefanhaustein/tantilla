@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang.classifier;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.ValidationContext;
+import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
@@ -83,6 +85,15 @@ public class Struct implements Classifier, InstantiableType, DeclaredBy {
   }
 
   @Override
+  public void toString(AnnotatedStringBuilder asb) {
+    asb.append("class", SyntaxColor.KEYWORD);
+    if (declaringSymbol != null) {
+      asb.append(' ');
+      asb.append(declaringSymbol.getName());
+    }
+  }
+
+  @Override
   public Instance createInstance(EvaluationContext evaluationContext, Object... ctorValues) {
     int fieldCount = resolvedInitializers.size();
     Object[] properties = new Object[fieldCount];
@@ -116,7 +127,9 @@ public class Struct implements Classifier, InstantiableType, DeclaredBy {
 
   @Override
   public String toString() {
-    return declaringSymbol == null ? super.toString() : declaringSymbol.getName();
+    AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
+    toString(asb);
+    return asb.toString();
   }
 
   public void remove(String name) {

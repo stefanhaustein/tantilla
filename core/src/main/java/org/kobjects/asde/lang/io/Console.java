@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.io;
 
 import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.UserFunction;
 
 import java.io.InputStream;
@@ -34,10 +35,10 @@ public interface Console {
     void endProgress();
 
     void delete(int line);
-    void edit(int i);
-    void edit(GenericProperty symbol);
+    void edit(int line);
+    void selectProperty(Property property);
 
-    UserFunction getSelectedFunction();
+    Property getSelectedProperty();
 
     void showError(String message, Exception e);
 }

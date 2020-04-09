@@ -23,6 +23,7 @@ import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.runtime.ForcedStopException;
 import org.kobjects.asde.lang.io.Format;
 import org.kobjects.asde.lang.function.UserFunction;
@@ -247,16 +248,17 @@ public class AndroidConsole implements Console {
   }
 
   @Override
-  public void edit(GenericProperty symbol) {
+  public void selectProperty(Property symbol) {
     mainActivity.runOnUiThread(() -> mainActivity.programView.selectImpl(symbol));
   }
 
   @Override
-  public UserFunction getSelectedFunction() {
-    return mainActivity.programView.currentFunctionView == null
+  public Property getSelectedProperty() {
+    return mainActivity.programView.currentPropertyView.field;
+/*    return mainActivity.programView.currentFunctionView == null
         || !(mainActivity.programView.currentFunctionView.userFunction instanceof UserFunction)
         ? mainActivity.program.main
-        : (UserFunction) mainActivity.programView.currentFunctionView.userFunction;
+        : (UserFunction) mainActivity.programView.currentFunctionView.userFunction;*/
   }
 
 

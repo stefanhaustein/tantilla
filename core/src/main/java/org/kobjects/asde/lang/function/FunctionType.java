@@ -1,7 +1,9 @@
 package org.kobjects.asde.lang.function;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.type.Types;
 
 public class FunctionType implements Type {
   private final Type returnType;
@@ -43,16 +45,23 @@ public class FunctionType implements Type {
   }
 
   public String toString() {
-    StringBuilder sb = new StringBuilder("(");
+    AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
+    toString(asb);
+    return asb.toString();
+  }
+
+  public void toString(AnnotatedStringBuilder asb) {
+    asb.append('(');
     for (int i = 0; i < parameters.length; i++) {
       if (i > 0) {
-        sb.append(", ");
+        asb.append(", ");
       }
-      sb.append(parameters[i].toString());
+      asb.append(parameters[i].toString());
     }
-    sb.append(") -> ");
-    sb.append(returnType.toString());
-    return sb.toString();
+    if (returnType != Types.VOID) {
+      asb.append(") -> ");
+      asb.append(returnType.toString());
+    }
   }
 
   @Override

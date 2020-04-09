@@ -15,4 +15,8 @@ public class Parameter {
     public static Parameter create(String name, Type type) {
         return new Parameter(name, type);
     }
+
+    public String toString() {
+        return name + ": " + type;
+    }
 }

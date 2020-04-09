@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang.classifier;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.FunctionType;
+import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
@@ -105,7 +107,17 @@ public class Trait implements Classifier, DeclaredBy {
 
   @Override
   public String toString() {
-    return declaringSymbol != null ? declaringSymbol.getName() : super.toString();
+    AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
+    toString(asb);
+    return asb.toString();
   }
 
+  @Override
+  public void toString(AnnotatedStringBuilder asb) {
+    asb.append("trait", SyntaxColor.KEYWORD);
+    if (declaringSymbol != null) {
+      asb.append(' ');
+      asb.append(declaringSymbol.getName());
+    }
+  }
 }

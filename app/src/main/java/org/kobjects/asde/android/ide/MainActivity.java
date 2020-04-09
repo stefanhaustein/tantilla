@@ -69,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
   static final FunctionType FUNCTION_VOID_0 = new FunctionType(Types.VOID);
 
   static final String[] HINTS = {
-      "Try the classic:\n\n  10 PRINT \"Hello\"\n  20 GOTO 10",
-      "ASDE is a simple programming environment for mobile devices.",
+      "Try the classic:\n\n  print \"Hello World\"",
+      "Tantilla is a simple programming environment for mobile devices.",
   };
 
   public static void removeFromParent(View view) {

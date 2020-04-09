@@ -13,7 +13,6 @@ import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.NegOperator;
 import org.kobjects.asde.lang.statement.AssignStatement;
 import org.kobjects.asde.lang.statement.BlockStatement;
-import org.kobjects.asde.lang.statement.Command;
 import org.kobjects.asde.lang.statement.ConditionStatement;
 import org.kobjects.asde.lang.statement.DebuggerStatement;
 import org.kobjects.asde.lang.statement.EndStatement;
@@ -156,15 +155,6 @@ public class StatementParser {
         result.add(parseFunctionReturn(tokenizer));
         return;
     }
-    for (Command.Kind kind : Command.Kind.values()) {
-      if (name.equalsIgnoreCase(kind.name())) {
-        if (parsingContext != null) {
-            throw tokenizer.exception("Interactive command '" + name + "' can't be used in programs.", null);
-        }
-        result.add(parseCommand(tokenizer, kind));
-        return;
-      }
-    }
 
     Node expression = expressionParser.parse(tokenizer);
     if (tokenizer.tryConsume("=")) {
@@ -208,26 +198,6 @@ public class StatementParser {
     }*/
   }
 
-
-  Command parseCommand(Tokenizer tokenizer, Command.Kind kind) {
-    tokenizer.nextToken();
-    switch (kind) {
-      case EDIT:
-      case SAVE:
-        if (tokenizer.currentType != Tokenizer.TokenType.EOF &&
-                !tokenizer.currentValue.equals(";")) {
-          return new Command(kind, expressionParser.parse(tokenizer));
-        }
-        return new Command(kind);
-
-      case DELETE:
-      case LOAD: // Exactly one param
-        return new Command(kind, expressionParser.parse(tokenizer));
-
-      default:
-        return new Command(kind);
-    }
-  }
 
   private void parseConditional(Tokenizer tokenizer, ConditionStatement.Kind kind, List<Statement> result) {
     tokenizer.nextToken();

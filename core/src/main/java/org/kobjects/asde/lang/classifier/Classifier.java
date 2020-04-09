@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang.classifier;
 
 
+import org.kobjects.annotatedtext.AnnotatedString;
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Consumer;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.function.ValidationContext;
@@ -14,6 +16,18 @@ import java.util.Collection;
  * generics (List).
  */
 public interface Classifier extends Type {
+
+  static void list(AnnotatedStringBuilder asb, Iterable<? extends Property> properties, String indent) {
+    for (Property property : properties) {
+      asb.append(indent);
+      if (!property.toString(asb)) {
+        asb.append(": [\u2026]");
+      }
+      asb.append("\n");
+    }
+  }
+
+
   Property getProperty(String name);
 
   Collection<? extends Property> getAllProperties();
@@ -45,5 +59,7 @@ public interface Classifier extends Type {
       }
     }
   }
+
+  void toString(AnnotatedStringBuilder asb);
 }
 
