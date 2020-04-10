@@ -6,40 +6,32 @@ import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;
 
 public class FunctionType implements Type {
-  private final Type returnType;
-  private Parameter[] parameters;
-  private final int minParameterCount;
 
-  public FunctionType(Type returnType, int minParameterCount, Parameter... parameters) {
-    this.returnType = returnType;
-    this.parameters = parameters;
-    this.minParameterCount = minParameterCount;
-  }
-
-  public FunctionType(Type returnType, int minParamCount, Type... parameterTypes) {
-    this.returnType = returnType;
-    this.parameters = new Parameter[parameterTypes.length];
+  public static FunctionType createFromTypes(Type returnType, Type... parameterTypes) {
+    Parameter[] parameters = new Parameter[parameterTypes.length];
     for (int i = 0; i < parameters.length; i++) {
       parameters[i] = Parameter.create(String.valueOf(((char) ('a' + i))), parameterTypes[i]);
     }
-    this.minParameterCount = minParamCount;
+    return new FunctionType(returnType, parameters);
   }
 
-  public FunctionType(Type returnType, Type... parameterTypes) {
-    this (returnType, parameterTypes.length, parameterTypes);
+  private final Type returnType;
+  private Parameter[] parameters;
+
+  public FunctionType(Type returnType, Parameter... parameters) {
+    this.returnType = returnType;
+    this.parameters = parameters;
   }
+
 
   public Type getReturnType() {
     return returnType;
   }
 
   public Type getParameterType(int index) {
-    return parameters[index].type;
+    return parameters[index].getType();
   }
 
-  public int getMinParameterCount() {
-    return minParameterCount;
-  }
   public int getParameterCount() {
     return parameters.length;
   }
@@ -104,10 +96,6 @@ public class FunctionType implements Type {
     }
     if (getParameterCount() != other.getParameterCount()) {
       System.out.println(this + " does not match " + other+ ": parameter count mismatch");
-      return false;
-    }
-    if (getMinParameterCount() != other.getMinParameterCount()) {
-      System.out.println(this + " does not match " + other+ ": min parameter count mismatch");
       return false;
     }
     for (int i = skip0 ? 1 : 0; i < getParameterCount(); i++) {

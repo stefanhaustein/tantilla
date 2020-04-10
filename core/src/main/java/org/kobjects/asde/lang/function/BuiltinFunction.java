@@ -13,7 +13,7 @@ public class BuiltinFunction implements Callable {
   public BuiltinFunction(NativeImplementation callable, CharSequence documentation, Type returnType, Type... args) {
     this.callable = callable;
     this.documentation = documentation;
-    this.functionType = new FunctionType(returnType, args);
+    this.functionType = FunctionType.createFromTypes(returnType, args);
   }
 
   @Override

@@ -77,7 +77,7 @@ public class FunctionView extends PropertyView {
     boolean isVoid = userFunction.getType().getReturnType() == Types.VOID;
     ArrayList<String> subtitles = new ArrayList<>();
     for (int i = 0; i < type.getParameterCount(); i++) {
-      subtitles.add(" " + type.getParameter(i).name + ": " + type.getParameter(i).type + (i == type.getParameterCount() - 1 ? ")" : ","));
+      subtitles.add(" " + type.getParameter(i).getName() + ": " + type.getParameter(i).getType() + (i == type.getParameterCount() - 1 ? ")" : ","));
     }
     if (!isVoid) {
       subtitles.add("-> " + userFunction.getType().getReturnType());

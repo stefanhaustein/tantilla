@@ -8,7 +8,7 @@ import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.node.InvokeMethod;
 import org.kobjects.asde.lang.node.Path;
 import org.kobjects.asde.lang.program.Program;
-import org.kobjects.asde.lang.node.Apply;
+import org.kobjects.asde.lang.node.Invoke;
 import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.NegOperator;
 import org.kobjects.asde.lang.statement.AssignStatement;
@@ -96,7 +96,7 @@ public class StatementParser {
 
     Type returnType = tokenizer.tryConsume("->") ? parseType(tokenizer) : Types.VOID;
 
-    return new FunctionType(returnType, parameterTypes.length, parameterTypes);
+    return new FunctionType(returnType, parameterTypes);
   }
 
   void parseStatement(Tokenizer tokenizer, List<Statement> result, UserFunction parsingContext) {
@@ -169,7 +169,7 @@ public class StatementParser {
         if (expression instanceof MathOperator && ((MathOperator) expression).kind == MathOperator.Kind.SUB) {
           params.add(expression.children[0]);
           params.add(new Group(new NegOperator(expression.children[1])));
-        } else if ((expression instanceof Apply || expression instanceof InvokeMethod) && expression.children.length == 2) {
+        } else if ((expression instanceof Invoke || expression instanceof InvokeMethod) && expression.children.length == 2) {
           params.add(expression.children[0]);
           params.add(new Group(expression.children[1]));
         } else {
@@ -189,7 +189,7 @@ public class StatementParser {
         params.set(0, path.children[0]);
         result.add(new VoidStatement(new InvokeMethod(path.pathName, params.toArray(Node.EMPTY_ARRAY))));
       } else {
-        result.add(new VoidStatement(new Apply(false, params.toArray(Node.EMPTY_ARRAY))));
+        result.add(new VoidStatement(new Invoke(false, params.toArray(Node.EMPTY_ARRAY))));
       }
     } else {//if (expression instanceof Path || expression instanceof Identifier){
       result.add(new VoidStatement(expression));

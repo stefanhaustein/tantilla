@@ -13,11 +13,12 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.Map;
 
 // Not static for access to the variables.
-public class Apply extends Node {
+public class Invoke extends Node {
 
   boolean parenthesis;
+  Node[] resolvedArguments;
 
-  public Apply(boolean parentesis, Node... children) {
+  public Invoke(boolean parentesis, Node... children) {
     super(children);
     this.parenthesis = parentesis;
   }
@@ -47,40 +48,23 @@ public class Apply extends Node {
       throw new RuntimeException("Can't apply parameters to " + children[0].returnType());
     }
     FunctionType resolved = (FunctionType) children[0].returnType();
-    // TODO: b/c optional params, add minParameterCount
-    if (children.length - 1 > resolved.getParameterCount() || children.length - 1 < resolved.getMinParameterCount()) {
-      throw new RuntimeException("Expected parameter count is "
-          + resolved.getMinParameterCount() + ".."
-          + resolved.getParameterCount() + " but got " + (children.length - 1) + " for " + this);
-    }
-    for (int i = 0; i < children.length - 1; i++) {
-      if (!resolved.getParameterType(i).isAssignableFrom(children[i+1].returnType())) {
-        throw new RuntimeException("Type mismatch for parameter " + i + ": expected: "
-            + resolved.getParameterType(i) + " actual: " + children[i+1].returnType() + " base type: " + resolved);
-      }
-    }
+    resolvedArguments = InvocationResolver.resolve(children, 1, resolved);
   }
 
   public Object eval(EvaluationContext evaluationContext) {
-        Object base = children[0].eval(evaluationContext);
-        if (!(base instanceof Callable)) {
-          throw new EvaluationException(this, "Can't apply parameters to " + base + " / " + children[0]);
-        }
-        Callable function = (Callable) base;
-        evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
-        if (children.length - 1 > function.getLocalVariableCount()) {
-          throw new RuntimeException("Too many params for " + function);
-        }
-        // Push is important here, as parameter evaluation might also run apply().
-        for (int i = 1; i < children.length; i++) {
-          evaluationContext.push(children[i].eval(evaluationContext));
-        }
-        evaluationContext.popN(children.length - 1);
-        try {
-          return function.call(evaluationContext, children.length - 1);
-        } catch (Exception e) {
-          throw new RuntimeException(e.getMessage() + " in " + children[0], e);
-        }
+    Callable function = (Callable) children[0].eval(evaluationContext);
+    evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
+    // Push is important here, as parameter evaluation might also run apply().
+    int count = resolvedArguments.length;
+    for (int i = 0; i < count; i++) {
+      evaluationContext.push(resolvedArguments[i].eval(evaluationContext));
+    }
+    evaluationContext.popN(count);
+    try {
+      return function.call(evaluationContext, count);
+    } catch (Exception e) {
+      throw new RuntimeException(e.getMessage() + " in " + children[0], e);
+    }
   }
 
   // Shouldn't throw, as it's used outside validation!

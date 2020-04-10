@@ -248,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
 
       @Override
       public FunctionType getType() {
-        return new FunctionType(Types.VOID, Types.STR);
+        return FunctionType.createFromTypes(Types.VOID, Types.STR);
       }
 
       @Override

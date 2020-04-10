@@ -4,48 +4,58 @@ import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.list.ListType;
+import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;
 
 public enum Builtin implements Callable {
-
-    ABS("Calculates the absolute value of the input.\n\nExamples:\n\n * abs(3.4) = 3.4\n * abs(-4) = 4\n * abs(0) = 0",
-        Types.FLOAT, Types.FLOAT),
-    ORD("Returns the code point value of the first character of the string\n\nExample:\n\n * ord(\"A\") = 65.",
-        Types.FLOAT, Types.STR),
-    ATAN2("Converts the given cartesian coordinates into the angle of the corresponding polar coordinates",
-        Types.FLOAT, Types.FLOAT, Types.FLOAT),
-    CHR("Returns a single-character string representing the given ASCII value.\n\nExample:\n\n * chr$(65) = \"A\"",
-        Types.STR, Types.FLOAT),
-    COS("Calculates the cosine of the parameter value.",
-        Types.FLOAT, Types.FLOAT),
-    EXP("Returns e raised to the power of the parameter value.",
-        Types.FLOAT, Types.FLOAT),
-    CEIL("Rounds up to the next higher integer",
-        Types.FLOAT, Types.FLOAT),
-    INT("Rounds down to the next lower integer",
+  ABS("Calculates the absolute value of the input.\n\nExamples:\n\n * abs(3.4) = 3.4\n * abs(-4) = 4\n * abs(0) = 0",
       Types.FLOAT, Types.FLOAT),
-    FLOOR("Rounds down to the next lower integer",
-        Types.FLOAT, 1, Types.FLOAT),
-    LEN("Returns the length of the given string.\n\nExample:\n\n * len(\"ABC\") = 3",
-        Types.FLOAT, 1, Types.STR),
-    LOG("Calculates the logarithm to the base e.",
-        Types.FLOAT, 1, Types.FLOAT),
-    RANGE("Returns a sequence of integers from the first parameter (inclusive) to the second parameter (exclusive)",
-        new ListType(Types.FLOAT), 1, Types.FLOAT, Types.FLOAT, Types.FLOAT),
+  ORD("Returns the code point value of the first character of the string\n\nExample:\n\n * ord(\"A\") = 65.",
+      Types.FLOAT, Types.STR),
+  ATAN2("Converts the given cartesian coordinates into the angle of the corresponding polar coordinates",
+      Types.FLOAT, Types.FLOAT, Types.FLOAT),
+  CHR("Returns a single-character string representing the given ASCII value.\n\nExample:\n\n * chr$(65) = \"A\"",
+      Types.STR, Types.FLOAT),
+  COS("Calculates the cosine of the parameter value.",
+      Types.FLOAT, Types.FLOAT),
+  EXP("Returns e raised to the power of the parameter value.",
+      Types.FLOAT, Types.FLOAT),
+  CEIL("Rounds up to the next higher integer",
+      Types.FLOAT, Types.FLOAT),
+  INT("Rounds down to the next lower integer",
+    Types.FLOAT, Types.FLOAT),
+  FLOOR("Rounds down to the next lower integer", Types.FLOAT, Types.FLOAT),
+  LEN("Returns the length of the given string.\n\nExample:\n\n * len(\"ABC\") = 3",
+        Types.FLOAT, Types.STR),
+  LOG("Calculates the logarithm to the base e.",
+        Types.FLOAT, Types.FLOAT),
+  RANGE(
+      "Returns a sequence of integers from the first parameter (inclusive) to the second parameter (exclusive)",
+      new ListType(Types.FLOAT),
+      Parameter.create("start", Types.FLOAT),
+      Parameter.create("end", new Literal(Double.NaN)),
+      Parameter.create("step", new Literal(1.0))),
     RANDOM("Returns a (pseudo-)random number in the range from 0 (inclusive) to 1 (exclusive)",
-        Types.FLOAT),
+        Types.FLOAT, Parameter.EMPTY_ARRAY),
     STR("Converts the given number to a string (similar to print).",
-        Types.STR, 1, Types.FLOAT),
+        Types.STR, Types.FLOAT),
     SQRT("Calculates the square root of the argument\n\nExample:\n\n * sqr(9) = 3",
-        Types.FLOAT ,1, Types.FLOAT),
+        Types.FLOAT, Types.FLOAT),
     SIN("Calculates the sine of the parameter value.", Types.FLOAT, Types.FLOAT),
     TAN("Calculates the tangent of the argument", Types.FLOAT, Types.FLOAT),
     FLOAT("Parses the argument as a floating point number. If this fails, the return value is 0.",
         Types.FLOAT, Types.STR);
 
+  private static Parameter[] typesToParams(Type[] parameterTypes) {
+    Parameter[] parameters = new Parameter[parameterTypes.length];
+    for (int i = 0; i < parameters.length; i++) {
+      parameters[i] = Parameter.create("" + ((char) (i + 'a')), parameterTypes[i]);
+    }
+    return parameters;
+  }
   private static int len(String s) {
     int pos = 0;
     int count = 0;
@@ -68,38 +78,16 @@ public enum Builtin implements Callable {
     return pos >= len ? "" : s.substring(pos);
   }
 
-  private static String right(String s, int count) {
-    return mid(s, len(s) - count + 1);
-  }
-
-  private static String mid(String s, int start, int count) {
-    int p0 = 0;
-    int len = s.length();
-    for (int i = 1; i < start && p0 < len; i++) {
-      int cp = Character.codePointAt(s, p0);
-      p0 += Character.charCount(cp);
-    }
-    int p1 = p0;
-    while (p1 < len && count > 0) {
-      int cp = Character.codePointAt(s, p1);
-      p1 += Character.charCount(cp);
-      count--;
-    }
-    return p0 >= len ? "" : s.substring(p0, Math.min(p1, len));
-  }
-
-  public int minParams;
   public FunctionType signature;
   private final AnnotatedString documentation;
 
-    Builtin(String documentation, Type returnType, int minParams, Type... parameterTypes) {
+    Builtin(String documentation, Type returnType, Parameter... parameters) {
       this.documentation = AnnotatedString.of(documentation);
-      this.minParams = minParams;
-      this.signature = new FunctionType(returnType, minParams, parameterTypes);
+      this.signature = new FunctionType(returnType, parameters);
     }
 
   Builtin(String documentation, Type returnType, Type... parameterTypes) {
-    this(documentation, returnType, parameterTypes.length, parameterTypes);
+    this(documentation, returnType, typesToParams(parameterTypes));
   }
 
 
@@ -141,10 +129,13 @@ public enum Builtin implements Callable {
       case STR:
         return Program.toString(evaluationContext.getParameter(0));
       case RANGE: {
-        double end = (Double) evaluationContext.getParameter(paramCount == 1 ? 0 : 1);
-        double start = paramCount < 2 ? 0 : (Double) evaluationContext.getParameter(0);
-        double step = paramCount < 3 ? 1 : (Double) evaluationContext.getParameter(2);
-
+        double start = (Double) evaluationContext.getParameter(0);
+        double end = (Double) evaluationContext.getParameter(1);
+        double step = (Double) evaluationContext.getParameter(2);
+        if (Double.isNaN(end)) {
+          end = start;
+          start = 0;
+        }
         Object[] values = new Object[(int) ((end - start) / step)];
         for (int i = 0; i < values.length; i++) {
           values[i] = Double.valueOf(start + i * step);

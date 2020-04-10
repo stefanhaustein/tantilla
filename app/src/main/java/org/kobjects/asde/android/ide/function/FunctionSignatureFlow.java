@@ -324,15 +324,15 @@ public class FunctionSignatureFlow {
       ParameterWithOriginalIndex parameter = parameterList.get(i);
       if (parameter.originalIndex != -1) {
         moved = true;
-        if (!parameter.name.equals(oldType.getParameter(parameter.originalIndex).name)) {
-          renameMap.put(oldType.getParameter(parameter.originalIndex).name, parameter.name);
+        if (!parameter.name.equals(oldType.getParameter(parameter.originalIndex).getName())) {
+          renameMap.put(oldType.getParameter(parameter.originalIndex).getName(), parameter.name);
         }
       }
       oldIndices[i] = parameter.originalIndex;
       parameters[i] = Parameter.create(parameter.name, parameter.type);
     }
 
-    FunctionType newType = new FunctionType(returnType, count, parameters);
+    FunctionType newType = new FunctionType(returnType, parameters);
     if (classifier instanceof Trait) {
       property.setFixedType(newType);
     } else {
@@ -348,7 +348,7 @@ public class FunctionSignatureFlow {
   }
 
   void commitNewFunction() {
-    FunctionType functionType = new FunctionType(returnType, parameterList.size(), parameterList.toArray(Parameter.EMPTY_ARRAY));
+    FunctionType functionType = new FunctionType(returnType, parameterList.toArray(Parameter.EMPTY_ARRAY));
 
     Property property;
     if (classifier instanceof Trait) {
@@ -376,7 +376,7 @@ public class FunctionSignatureFlow {
     }
 
     ParameterWithOriginalIndex(Parameter parameter, int originalIndex) {
-      this(parameter.name, parameter.type, originalIndex);
+      this(parameter.getName(), parameter.getType(), originalIndex);
     }
 
 

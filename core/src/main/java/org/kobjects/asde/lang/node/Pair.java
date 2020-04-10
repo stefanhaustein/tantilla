@@ -4,15 +4,15 @@ import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 
-public class Colon extends Node {
+public class Pair extends Node {
 
-  public Colon(Node left, Node right) {
+  public Pair(Node left, Node right) {
     super(left, right);
   }
 
   @Override
   protected void onResolve(ValidationContext resolutionContext, int line) {
-    throw new RuntimeException("colon not permitted in this context.");
+    throw new RuntimeException("pair not permitted in this context.");
   }
 
   @Override

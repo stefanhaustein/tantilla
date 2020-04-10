@@ -13,7 +13,9 @@ import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 
-// Not static for access to the variables.
+/**
+ * Theoretically, this could be merged with apply using a "dot syntax" flag, but
+ */
 public class InvokeMethod extends Node {
 
   public String name;
@@ -61,9 +63,9 @@ public class InvokeMethod extends Node {
 
     FunctionType functionType = (FunctionType) resolvedProperty.getType() ;
     // TODO: b/c optional params, add minParameterCount
-    if (children.length - skipChildren > functionType.getParameterCount() || children.length - skipChildren < functionType.getMinParameterCount()) {
+    if (children.length - skipChildren > functionType.getParameterCount() || children.length - skipChildren < functionType.getParameterCount()) {
       throw new RuntimeException("Expected parameter count is "
-          + functionType.getMinParameterCount() + ".."
+          + functionType.getParameterCount() + ".."
           + functionType.getParameterCount() + " but got " + (children.length - skipChildren) + " for " + this);
     }
     for (int i = skipChildren; i < children.length; i++) {

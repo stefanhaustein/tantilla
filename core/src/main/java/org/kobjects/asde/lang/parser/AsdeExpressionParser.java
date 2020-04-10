@@ -18,8 +18,8 @@ public class AsdeExpressionParser extends ExpressionParser<Node> {
 
   public AsdeExpressionParser(Program program) {
     super(new ExpressionBuilder(program));
-    addApplyBrackets(10,"(", ",", ")");
-    addOperators(OperatorType.SUFFIX, 10,"{", "[");
+//    addApplyBrackets(10,"(", ",", ")");
+    addOperators(OperatorType.SUFFIX, 10,"{", "[", "(");
     addGroupBrackets("(", null, ")");
     addGroupBrackets("[", ",", "]");
     addOperators(OperatorType.INFIX, 11, ".");

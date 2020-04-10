@@ -12,7 +12,7 @@ public abstract class NativeMethod implements Property, Callable {
 
   public NativeMethod(Classifier owner, String name, String description, Type returnType, Type... parameterTypes) {
     this.owner = owner;
-    this.type = new FunctionType(returnType, parameterTypes);
+    this.type = FunctionType.createFromTypes(returnType, parameterTypes);
     this.name = name;
   }
 

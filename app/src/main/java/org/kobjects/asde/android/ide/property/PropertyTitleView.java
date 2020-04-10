@@ -66,7 +66,7 @@ public class PropertyTitleView extends LinearLayout {
 
     TextView typeView = new AppCompatTextView(getContext());
       typeView.setGravity(Gravity.CENTER);
-      typeView.setTextSize((s.length() == 1 ? 24 : s.length() <= 3 ? 16: 12) * (small ? 0.8f : 1));
+      typeView.setTextSize((s.length() == 1 ? 24 :  12) * (small ? 0.8f : 1));
       if (!small) {
         typeView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
       }

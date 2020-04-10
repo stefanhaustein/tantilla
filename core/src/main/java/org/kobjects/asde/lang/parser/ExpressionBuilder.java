@@ -1,10 +1,10 @@
 package org.kobjects.asde.lang.parser;
 
 import org.kobjects.asde.lang.node.AndOperator;
-import org.kobjects.asde.lang.node.Apply;
+import org.kobjects.asde.lang.node.Invoke;
 import org.kobjects.asde.lang.node.ArrayAccess;
 import org.kobjects.asde.lang.node.ArrayLiteral;
-import org.kobjects.asde.lang.node.Colon;
+import org.kobjects.asde.lang.node.Pair;
 import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.ImpliedSliceValue;
 import org.kobjects.asde.lang.node.InvokeMethod;
@@ -38,6 +38,7 @@ class ExpressionBuilder extends Processor<Node> {
     this.program = program;
   }
 
+  /*
   @Override
   public Node apply(Tokenizer tokenizer, Node base, String bracket, List<Node> arguments) {
     Node[] children = new Node[arguments.size() + 1];
@@ -51,7 +52,7 @@ class ExpressionBuilder extends Processor<Node> {
     }
     children[0] = base;
     return new Apply(true, children);
-  }
+  }*/
 
   @Override
   public Node prefixOperator(Tokenizer tokenizer, String name, Node param) {
@@ -72,18 +73,31 @@ class ExpressionBuilder extends Processor<Node> {
   public Node suffixOperator(Tokenizer tokenizer, String name, Node base) {
     AsdeExpressionParser subParser = new AsdeExpressionParser(program);
     ArrayList<Node> children = new ArrayList<>();
-    if (name.equals("{")) {
-      if (!tokenizer.tryConsume("}")) {
+    boolean ctor = name.equals("{");
+    if (ctor || name.equals("(")) {
+      String end = ctor ? "}" : ")";
+      String pairing = ctor ? ":" : "=";
+
+      if (!tokenizer.tryConsume(end)) {
         do {
           Node child = subParser.parse(tokenizer);
-          if (tokenizer.tryConsume(":")) {
-            child = new Colon(child, subParser.parse(tokenizer));
+          if (tokenizer.tryConsume(pairing)) {
+            child = new Pair(child, subParser.parse(tokenizer));
           }
           children.add(child);
         } while (tokenizer.tryConsume(","));
-        tokenizer.consume("}");
+        tokenizer.consume(end);
       }
-      return Constructor.create(base, children);
+      if (ctor) {
+        return Constructor.create(base, children);
+      }
+      if (base instanceof Path) {
+        Path path = (Path) base;
+        children.add(0, path.children[0]);
+        return new InvokeMethod(path.pathName, children.toArray(Node.EMPTY_ARRAY));
+      }
+      children.add(0, base);
+      return new Invoke(true, children.toArray(Node.EMPTY_ARRAY));
     }
 
     children.add(base);
@@ -122,7 +136,7 @@ class ExpressionBuilder extends Processor<Node> {
   public Node infixOperator(Tokenizer tokenizer, String name, Node left, Node right) {
     switch (name) {
       case ":":
-        return new Colon(left, right);
+        return new Pair(left, right);
       case ".":
         return new Path(left, right);
       case "<":

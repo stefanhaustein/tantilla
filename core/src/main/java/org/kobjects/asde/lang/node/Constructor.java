@@ -33,7 +33,7 @@ public class Constructor extends Node {
     Node[] children = new Node[arguments.size()];
     HashMap<String, Integer> propertyIndexMap = new HashMap<>();
     for (int i = 0; i < arguments.size(); i++) {
-      if (!(arguments.get(i) instanceof Colon)) {
+      if (!(arguments.get(i) instanceof Pair)) {
         throw new RuntimeException("<field> : <expr> expected; got: '" + arguments.get(i) + "' (" + arguments.get(i).getClass().getSimpleName() + ")");
       }
       Node colon = arguments.get(i);

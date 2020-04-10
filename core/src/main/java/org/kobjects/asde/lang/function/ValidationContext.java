@@ -80,7 +80,7 @@ public class ValidationContext {
     if (userFunction != null) {
       FunctionType type = userFunction.type;
       for (int i = 0; i < type.getParameterCount(); i++) {
-        currentBlock.localSymbols.put(type.getParameter(i).name, new LocalSymbol(localSymbolCount++, type.getParameterType(i), false));
+        currentBlock.localSymbols.put(type.getParameter(i).getName(), new LocalSymbol(localSymbolCount++, type.getParameterType(i), false));
       }
     }
   }
@@ -106,6 +106,16 @@ public class ValidationContext {
 
         // Recursion is ok starting here
         resolved.add(property);
+
+        if (property.getType() instanceof FunctionType) {
+          FunctionType type = (FunctionType) property.getType();
+          for (int i = 0; i < type.getParameterCount(); i++) {
+            Node defaultValueExpression = type.getParameter(i).getDefaultValueExpression();
+            if (defaultValueExpression != null) {
+              defaultValueExpression.resolve(this, 0);
+            }
+          }
+        }
 
         if (!property.isInstanceField() && property.getInitializer() == null && property.getStaticValue() instanceof Classifier) {
           ((Classifier) property.getStaticValue()).validate(this);
