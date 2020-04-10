@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.text.InputType;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -263,24 +264,53 @@ public class AndroidConsole implements Console {
 
 
   private void printImpl(AnnotatedString s) {
-    if (pendingOutput == null) {
-      pendingOutput = new EmojiTextView(mainActivity);
-      pendingOutput.setTypeface(Typeface.MONOSPACE);
+    if (mainActivity.controlView.getParent() != null && mainActivity.controlView.getVisibility() == View.VISIBLE) {
 
-      mainActivity.textOutputView.addContent(pendingOutput);
-      postScrollIfAtEnd();
-    }
-    int cut = s.indexOf('\n');
-    if (cut == -1) {
-      pendingOutput.append(AnnotatedStringConverter.toSpanned(mainActivity, s, 0));
+      if (pendingOutput != null) {
+        mainActivity.controlView.resultView.setText(pendingOutput.getText());
+        pendingOutput = null;
+      }
+
+      EmojiTextView resultView = mainActivity.controlView.resultView;
+
+      int cut = s.indexOf('\n');
+      if (cut == -1) {
+        resultView.append(AnnotatedStringConverter.toSpanned(mainActivity, s, 0));
+      } else {
+        EmojiTextView newLine = new EmojiTextView(mainActivity);
+        newLine.setTypeface(Typeface.MONOSPACE);
+        newLine.setText(mainActivity.controlView.resultView.getText());
+        resultView.setText("");
+
+        newLine.append(AnnotatedStringConverter.toSpanned(mainActivity, s.subSequence(0, cut), 0));
+        mainActivity.textOutputView.addContent(newLine);
+        postScrollIfAtEnd();
+
+        if (cut < s.length() - 1) {
+          printImpl(s.subSequence(cut + 1, s.length()));
+        }
+      }
     } else {
-      pendingOutput.append(AnnotatedStringConverter.toSpanned(mainActivity, s.subSequence(0, cut), 0));
-      pendingOutput = null;
-      if (cut < s.length() - 1) {
-        printImpl(s.subSequence(cut + 1, s.length()));
+      if (pendingOutput == null) {
+        pendingOutput = new EmojiTextView(mainActivity);
+        pendingOutput.setTypeface(Typeface.MONOSPACE);
+        pendingOutput.setText(mainActivity.controlView.resultView.getText());
+        mainActivity.controlView.resultView.setText("");
+
+        mainActivity.textOutputView.addContent(pendingOutput);
+        postScrollIfAtEnd();
+      }
+      int cut = s.indexOf('\n');
+      if (cut == -1) {
+        pendingOutput.append(AnnotatedStringConverter.toSpanned(mainActivity, s, 0));
+      } else {
+        pendingOutput.append(AnnotatedStringConverter.toSpanned(mainActivity, s.subSequence(0, cut), 0));
+        pendingOutput = null;
+        if (cut < s.length() - 1) {
+          printImpl(s.subSequence(cut + 1, s.length()));
+        }
       }
     }
-
   }
 
 

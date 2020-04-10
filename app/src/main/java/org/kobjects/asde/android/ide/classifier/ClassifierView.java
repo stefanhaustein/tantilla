@@ -45,9 +45,9 @@ public class ClassifierView extends PropertyView {
     super(mainActivity, symbol);
 
     if (symbol.getStaticValue() instanceof Trait) {
-      titleView.setTypeIndicator("T", Colors.LIGHT_GREEN, false);
+      titleView.setTypeIndicator("trait", Colors.LIGHT_GREEN, false);
     } else {
-      titleView.setTypeIndicator("C", Colors.LIGHT_BLUE, false);
+      titleView.setTypeIndicator("class", Colors.LIGHT_BLUE, false);
     }
 
     titleView.setMoreClickListener(clicked -> {

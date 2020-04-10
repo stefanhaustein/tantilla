@@ -27,7 +27,7 @@ public abstract class PropertyView extends LinearLayout {
     this.field = symbol;
     setOrientation(VERTICAL);
 
-    titleView = new PropertyTitleView(mainActivity, symbol.getName().isEmpty() ? "Main" : symbol.getName());
+    titleView = new PropertyTitleView(mainActivity, symbol.getName());
     addView(titleView);
     titleView.setOnClickListener(clicked -> {
       setExpanded(!expanded, true);

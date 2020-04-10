@@ -1,11 +1,13 @@
 package org.kobjects.asde.android.ide.field;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.property.DeleteFlow;
@@ -32,8 +34,9 @@ public class FieldView extends PropertyView {
         this.mainActivity = mainActivity;
         this.field = symbol;
         boolean isTopLevel = symbol.getOwner() instanceof Module;
-       titleView.setTypeIndicator((!symbol.isInstanceField() && !isTopLevel ? "static\n" : "") + (symbol.isMutable() ? "mut" : "const"), Colors.DARK_ORANGE, !isTopLevel);
- //       titleView.setTypeIndicator(symbol.isConstant() ? R.drawable.alpha_c : R.drawable.variable, Colors.DARK_ORANGE, symbol instanceof Property);
+       titleView.setTypeIndicator(symbol.isInstanceField() ? (symbol.isMutable() ? "mut" : "[prop]") : (symbol.isMutable() ? "mut" : "const"), Colors.DARK_ORANGE, !isTopLevel);
+     //   titleView.setTypeIndicator(symbol.isMutable() ? R.drawable.baseline_lock_open_24 : symbol.isInstanceField() ? R.drawable.outline_lock_24 : R.drawable.baseline_lock_24
+      //      , Colors.DARK_PURPLE, !isTopLevel);
         titleView.setMoreClickListener(view -> {
             PopupMenu popupMenu = new PopupMenu(getContext(), view);
             popupMenu.getMenu().add("Edit").setOnMenuItemClickListener(item -> {

@@ -1,7 +1,6 @@
 package org.kobjects.asde.lang.classifier;
 
 
-import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Consumer;
 import org.kobjects.asde.lang.function.UserFunction;
@@ -39,13 +38,13 @@ public interface Classifier extends Type {
   void remove(String propertyName);
 
   default void validate(ValidationContext validationContext) {
-    for(Property property : getAllProperties()) {
+    for (Property property : getAllProperties()) {
       validationContext.validateProperty(property);
     }
   }
 
   default void processNodes(Consumer<Node> action) {
-    for (Property symbol :getAllProperties()) {
+    for (Property symbol : getAllProperties()) {
       if (!symbol.isInstanceField()) {
         if (symbol.getInitializer() != null) {
           symbol.getInitializer().process(action);
