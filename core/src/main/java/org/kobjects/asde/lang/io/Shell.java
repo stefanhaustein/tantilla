@@ -130,8 +130,7 @@ public class Shell {
           wrapper.appendStatement(statement);
         }
 
-        ValidationContext validationContext = ValidationContext.createForFunction(wrapper);
-        validationContext.validate();
+        ValidationContext validationContext = ValidationContext.validateShellInput(wrapper);
         System.out.println("init deps: " + validationContext.initializationDependencies);
 
         if (validationContext.errors.size() > 0) {

@@ -324,7 +324,7 @@ class RayTracer:
   p.strokeColor = 0
   for y in range(screenHeight):
    for x in range(-screenWidth / 2, screenWidth / 2):
-     let yy = floor(y / 2)
+     mut yy = floor(y / 2)
      if y % 2 == 0:
        yy = -yy
      end

@@ -107,9 +107,7 @@ public class Trait implements Classifier, DeclaredBy {
 
   @Override
   public String toString() {
-    AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-    toString(asb);
-    return asb.toString();
+    return getDeclaringSymbol() != null ? getDeclaringSymbol().getName() : super.toString();
   }
 
   @Override

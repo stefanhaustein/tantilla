@@ -37,11 +37,14 @@ public interface Classifier extends Type {
 
   void remove(String propertyName);
 
+  /*
   default void validate(ValidationContext validationContext) {
     for (Property property : getAllProperties()) {
       validationContext.validateProperty(property);
     }
   }
+
+   */
 
   default void processNodes(Consumer<Node> action) {
     for (Property symbol : getAllProperties()) {

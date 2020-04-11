@@ -13,7 +13,7 @@ import java.util.Map;
 // Not static for access to the variables.
 public class Identifier extends SymbolNode {
   enum Kind {
-    UNRESOLVED, LOCAL_VARIABLE, ROOT_MODULE_PROPERTY;
+    UNRESOLVED, LOCAL_VARIABLE, ROOT_MODULE_PROPERTY, ERROR;
   }
 
   String name;
@@ -29,18 +29,17 @@ public class Identifier extends SymbolNode {
 
   public void onResolve(ValidationContext resolutionContext, int line) {
     resolvedLocalVariable = resolutionContext.getCurrentBlock().get(name);
+    resolvedKind = Kind.ERROR;
     if (resolvedLocalVariable != null) {
-      resolvedKind = Kind.LOCAL_VARIABLE;
       mutable = resolvedLocalVariable.isMutable();
+      resolvedKind = Kind.LOCAL_VARIABLE;
     } else {
       resolvedRootProperty = resolutionContext.program.mainModule.getProperty(name);
       if (resolvedRootProperty == null) {
-        resolvedKind = Kind.UNRESOLVED;
         throw new RuntimeException("Variable not found: '" + name + "'");
       }
-      resolutionContext.validateAndAddDependency(resolvedRootProperty);
+      resolutionContext.validateProperty(resolvedRootProperty);
       if (resolvedRootProperty.isInstanceField()) {
-        resolvedKind = Kind.UNRESOLVED;
         // Modules can't have non-static properties...
         throw new IllegalStateException();
       }

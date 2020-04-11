@@ -1,11 +1,13 @@
 package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.function.Callable;
+import org.kobjects.asde.lang.node.EvaluationException;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,7 +18,7 @@ public class GenericProperty implements Property {
   Classifier owner;
   String name;
   Map<Node, Exception> errors = Collections.emptyMap();
-  Set<Property> initializationDependencies;
+  Set<Property> initializationDependencies = Collections.emptySet();
   Type fixedType;
   Object staticValue;
   Node initializer;
@@ -67,9 +69,6 @@ public class GenericProperty implements Property {
         /* initializer= */ null,
         /* staticValue= */ value);
   }
-
-
-
 
 
   GenericProperty(Classifier owner, boolean isInstanceField, boolean isMutable, Type fixedType, String name, Node initializer, Object staticValue) {
@@ -167,11 +166,6 @@ public class GenericProperty implements Property {
     if (!isInstanceField && initializer != null) {
       staticValue = initializer.eval(evaluationContext);
     }
-    if (!(owner instanceof Module)) {
-      for (Property property : owner.getAllProperties()) {
-        property.init(evaluationContext, initialized);
-      }
-    }
   }
 
   @Override
@@ -223,6 +217,11 @@ public class GenericProperty implements Property {
   @Override
   public String toString() {
     return Property.toString(this);
+  }
+
+  @Override
+  public Set<Property> getInitializationDependencies() {
+    return initializationDependencies;
   }
 
 }

@@ -43,7 +43,7 @@ public class Path extends SymbolNode {
       if (resolvedProperty == null) {
         throw new RuntimeException("Property '" + pathName + "' not found in " + children[0].returnType());
       }
-      resolutionContext.validateAndAddDependency(resolvedProperty);
+      resolutionContext.validateProperty(resolvedProperty);
       if (resolvedProperty.getType() == null) {
         throw new RuntimeException("Type of property '" + resolvedProperty + "' is null.");
       }
@@ -67,7 +67,7 @@ public class Path extends SymbolNode {
         if (resolvedProperty == null) {
           throw new RuntimeException("Property '" + pathName + "' not found in " + children[0].returnType());
         }
-        resolutionContext.validateAndAddDependency(resolvedProperty);
+        resolutionContext.validateProperty(resolvedProperty);
         if (resolvedProperty.getType() == null) {
           throw new RuntimeException("Type of property '" + resolvedProperty + "' is null.");
         }
@@ -85,13 +85,17 @@ public class Path extends SymbolNode {
   public Object eval(EvaluationContext evaluationContext) {
     switch (resolvedKind) {
       case INSTANCE_FIELD:
-        return resolvedProperty.get(evaluationContext, children[0].eval(evaluationContext));
+        Object instance = children[0].eval(evaluationContext);
+        if (instance == null) {
+          throw new EvaluationException(this, "path base is null.");
+        }
+        return resolvedProperty.get(evaluationContext, instance);
       case ENUM_LITERAL:
         return resolvedConstant;
       case STATIC_PROPERTY:
         return resolvedProperty.getStaticValue();
     }
-    throw new IllegalStateException("Resolved kind: " + resolvedKind);
+    throw new IllegalStateException(resolvedKind + ": " + this);
   }
 
   @Override

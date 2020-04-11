@@ -5,7 +5,7 @@ public class EvaluationException extends RuntimeException {
     public final Node node;
 
     public EvaluationException(Node node, String msg) {
-        super(msg);
+        super(msg + " in " + node);
         this.node = node;
     }
 }

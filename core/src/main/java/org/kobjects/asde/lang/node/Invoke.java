@@ -1,21 +1,32 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.classifier.Classifier;
+import org.kobjects.asde.lang.classifier.InstantiableType;
 import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.classifier.Struct;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.function.FunctionType;
+import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 
+import jdk.nashorn.internal.ir.ObjectNode;
+
 // Not static for access to the variables.
 public class Invoke extends Node {
 
+  enum Kind {
+    UNRESOLVED, CONSTRUCTOR, FUNCTION, ERROR
+  }
+
   boolean parenthesis;
   Node[] resolvedArguments;
+  Kind kind = Kind.UNRESOLVED;
 
   public Invoke(boolean parentesis, Node... children) {
     super(children);
@@ -43,32 +54,59 @@ public class Invoke extends Node {
 
   @Override
   protected void onResolve(ValidationContext resolutionContext, int line) {
-    if (!(children[0].returnType() instanceof FunctionType)) {
-      throw new RuntimeException("Can't apply parameters to " + children[0].returnType());
+    kind = Kind.ERROR;
+
+    Type baseType = children[0].returnType();
+    if (baseType instanceof FunctionType) {
+      FunctionType functionType = (FunctionType) children[0].returnType();
+      resolvedArguments = InvocationResolver.resolve(functionType, children, 1, true);
+      kind = Kind.FUNCTION;
+    } else if (baseType instanceof MetaType && ((MetaType) baseType).getWrapped() instanceof InstantiableType) {
+      InstantiableType instantiable = (InstantiableType) ((MetaType) baseType).getWrapped();
+      resolvedArguments = InvocationResolver.resolve(instantiable.getConstructorSignature(resolutionContext), children, 1, false);
+      kind = Kind.CONSTRUCTOR;
+    } else {
+      throw new RuntimeException("function or class required to apply parameters.");
     }
-    FunctionType resolved = (FunctionType) children[0].returnType();
-    resolvedArguments = InvocationResolver.resolve(resolved, children, 1, true);
   }
 
   public Object eval(EvaluationContext evaluationContext) {
-    Callable function = (Callable) children[0].eval(evaluationContext);
-    evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
-    // Push is important here, as parameter evaluation might also run apply().
-    int count = resolvedArguments.length;
-    for (int i = 0; i < count; i++) {
-      evaluationContext.push(resolvedArguments[i].eval(evaluationContext));
-    }
-    evaluationContext.popN(count);
-    try {
-      return function.call(evaluationContext, count);
-    } catch (Exception e) {
-      throw new RuntimeException(e.getMessage() + " in " + children[0], e);
+    switch (kind) {
+      case FUNCTION:
+        Callable function = (Callable) children[0].eval(evaluationContext);
+        evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
+        // Push is important here, as parameter evaluation might also run apply().
+        int count = resolvedArguments.length;
+        for (int i = 0; i < count; i++) {
+          evaluationContext.push(resolvedArguments[i].eval(evaluationContext));
+        }
+        evaluationContext.popN(count);
+        try {
+          return function.call(evaluationContext, count);
+        } catch (Exception e) {
+          throw new RuntimeException(e.getMessage() + " in " + children[0], e);
+        }
+      case CONSTRUCTOR:
+        Object[] values = new Object[resolvedArguments.length];
+        for (int i = 0; i < values.length; i++) {
+          values[i] = resolvedArguments[i].eval(evaluationContext);
+        }
+        return ((InstantiableType) ((MetaType) (children[0].returnType())).getWrapped()).createInstance(evaluationContext, values);
+      default:
+        throw new RuntimeException(kind + ": " + this);
     }
   }
 
   // Shouldn't throw, as it's used outside validation!
   public Type returnType() {
-    return ((FunctionType) children[0].returnType()).getReturnType();
+    switch (kind) {
+      case FUNCTION:
+        return ((FunctionType) children[0].returnType()).getReturnType();
+      case CONSTRUCTOR:
+        return ((MetaType) (children[0].returnType())).getWrapped();
+      default:
+        return null;
+    }
   }
 
   @Override

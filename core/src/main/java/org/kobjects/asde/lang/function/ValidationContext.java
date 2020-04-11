@@ -6,24 +6,36 @@ import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 public class ValidationContext {
-
   private static final boolean DEBUG = true;
 
-  public static ValidationContext createRootContext(Program program) {
-    return new ValidationContext(program, null, null, null);
+  enum State {
+    UNINITIALIZED,
+    SIGNATURE_RESOLVED,
+    FULLY_RESOLVED;
   }
 
-  public static ValidationContext createForFunction(UserFunction userFunction) {
-    return new ValidationContext(userFunction.program, null, null, userFunction);
+  public static void validateAll(Program program) {
+    new ValidationContext(program, null, null, null).validateMembers(program.mainModule);
   }
 
+  public static ValidationContext validateShellInput(UserFunction userFunction) {
+    ValidationContext result = new ValidationContext(userFunction.program, null, null, userFunction);
+    result.validate();
+    return result;
+  }
+
+  public static void reValidate(Program program, Property property) {
+    new ValidationContext(program, null, property, null).validate();
+  }
 
   public HashMap<Node, Exception> errors = new HashMap<>();
 
@@ -34,29 +46,29 @@ public class ValidationContext {
 
   private int localSymbolCount;
   private Block currentBlock;
+  private State state = State.UNINITIALIZED;
+
+  /**
+   * Properties with
+   */
   public HashSet<Property> initializationDependencies = new HashSet<>();
   private ValidationContext parentContext;
   public Program program;
 
-  private Set<Property> resolved;
-
-  /**
-   * True when resoling initializations. Determines whether dependencies are collected in
-   * initializationDependencies. The distinction is important to allow circular references
-   * outside of static initializaiton (e.g. recursive functions or functions calling each other).
-   */
-  private boolean inPropertyInitialization;
+  private HashMap<Property, ValidationContext> resolved;
+  ArrayList<Runnable> whenDone = new ArrayList();
 
   private ValidationContext(Program program, ValidationContext parentContext, Property property, UserFunction userFunction) {
     this.program = program;
     this.parentContext = parentContext;
     this.property = property;
-    this.userFunction = userFunction;
+    this.userFunction = userFunction != null ? userFunction : property != null && (!property.isMutable()
+        && !property.isInstanceField() && property.getStaticValue() instanceof UserFunction) ?
+        (UserFunction) property.getStaticValue() : null;
 
-    resolved = parentContext == null ? new HashSet<>() : parentContext.resolved;
+    resolved = parentContext == null ? new HashMap<>() : parentContext.resolved;
 
     ValidationContext parent = parentContext;
-
     while (parent != null) {
       if (DEBUG) {
         System.out.print(". ");
@@ -75,60 +87,55 @@ public class ValidationContext {
         System.out.println("(non-property)");
       }
     }
-
-    startBlock(null);
-    if (userFunction != null) {
-      FunctionType type = userFunction.type;
-      for (int i = 0; i < type.getParameterCount(); i++) {
-        currentBlock.localSymbols.put(type.getParameter(i).getName(), new LocalSymbol(localSymbolCount++, type.getParameterType(i), false));
-      }
-    }
   }
 
   public void validateProperty(Property property) {
-    if (!resolved.contains(property)) {
-      createChildContext(property).validate();
+    ValidationContext other = resolved.get(property);
+    if (other == null) {
+      other = createChildContext(property);
+      other.validate();
+    }
+    Runnable addInitializationDependencies = () -> {
+      if (!property.isInstanceField() && property.getInitializer() != null) {
+        initializationDependencies.add(property);
+      } else {
+        initializationDependencies.addAll(property.getInitializationDependencies());
+      }
+    };
+    if (other.state == State.FULLY_RESOLVED) {
+      addInitializationDependencies.run();
+    } else {
+      other.whenDone.add(addInitializationDependencies);
     }
   }
 
-  public void validate() {
-      if (property != null) {
-        if (resolved.contains(property)) {
-          return;
-        }
+  private void validate() {
+    startBlock(null);
 
-        Node initializer = property.getInitializer();
-        if (property.getInitializer() != null) {
-          inPropertyInitialization = true;
-          initializer.resolve(this, 0);
-          inPropertyInitialization = false;
+    if (userFunction != null) {
+      FunctionType type = userFunction.type;
+      for (int i = 0; i < type.getParameterCount(); i++) {
+        if (type.getParameter(i).getDefaultValueExpression() != null) {
+          type.getParameter(i).getDefaultValueExpression().resolve(this, 0);
         }
+        currentBlock.localSymbols.put(type.getParameter(i).getName(), new LocalSymbol(localSymbolCount++, type.getParameterType(i), false));
+      }
+    }
 
-        // Recursion is ok starting here
-        resolved.add(property);
-
-        if (property.getType() instanceof FunctionType) {
-          FunctionType type = (FunctionType) property.getType();
-          for (int i = 0; i < type.getParameterCount(); i++) {
-            Node defaultValueExpression = type.getParameter(i).getDefaultValueExpression();
-            if (defaultValueExpression != null) {
-              defaultValueExpression.resolve(this, 0);
-            }
-          }
-        }
-
-        if (!property.isInstanceField() && property.getInitializer() == null && property.getStaticValue() instanceof Classifier) {
-          ((Classifier) property.getStaticValue()).validate(this);
-        }
+    if (property != null) {
+      if (property.getInitializer() != null) {
+        property.getInitializer().resolve(this, 0);
       }
 
+      // Recursion should be ok from here on
+      resolved.put(property, this);
+    }
 
-      if (userFunction != null) {
-        inPropertyInitialization = true;
-        userFunction.validate(this);
-        inPropertyInitialization = false;
-      }
+    state = State.SIGNATURE_RESOLVED;
 
+    if (userFunction != null) {
+      userFunction.validate(this);
+    }
 
     if (property != null) {
       property.setDependenciesAndErrors(initializationDependencies, errors);
@@ -139,6 +146,12 @@ public class ValidationContext {
       for (Throwable throwable : errors.values()) {
         throwable.printStackTrace(System.out);
       }
+    }
+
+    state = State.FULLY_RESOLVED;
+
+    for (Runnable runnable : whenDone) {
+      runnable.run();
     }
   }
 
@@ -177,16 +190,24 @@ public class ValidationContext {
   }
 
   private ValidationContext createChildContext(Property property) {
-    UserFunction userFunction = (!property.isMutable()
-        && !property.isInstanceField() && property.getStaticValue() instanceof UserFunction) ?
-        (UserFunction) property.getStaticValue() : null;
-    return new ValidationContext(this.program, this, property, userFunction);
+    return new ValidationContext(this.program, this, property, null);
   }
 
-  public void validateAndAddDependency(Property symbol) {
-    if (inPropertyInitialization) {
-      initializationDependencies.add(symbol);
+
+
+  private void validateMembers(Classifier classifier) {
+    for (Property property : classifier.getAllProperties()) {
+      validateProperty(property);
+      if (!property.isInstanceField() && property.getStaticValue() instanceof Classifier) {
+        validateMembers((Classifier) (property.getStaticValue()));
+      }
     }
-    validateProperty(symbol);
   }
+
+
+  class ResolutionState {
+
+  }
+
+
 }

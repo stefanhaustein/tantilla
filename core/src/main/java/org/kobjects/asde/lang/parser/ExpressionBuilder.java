@@ -9,7 +9,6 @@ import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.ImpliedSliceValue;
 import org.kobjects.asde.lang.node.InvokeMethod;
 import org.kobjects.asde.lang.node.NegOperator;
-import org.kobjects.asde.lang.node.Constructor;
 import org.kobjects.asde.lang.node.Slice;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Literal;
@@ -90,9 +89,6 @@ class ExpressionBuilder extends Processor<Node> {
           children.add(child);
         } while (tokenizer.tryConsume(","));
         tokenizer.consume(end);
-      }
-      if (ctor) {
-        return Constructor.create(base, children);
       }
       if (base instanceof Path) {
         Path path = (Path) base;

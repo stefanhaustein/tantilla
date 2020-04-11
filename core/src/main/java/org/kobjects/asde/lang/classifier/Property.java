@@ -10,10 +10,12 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public interface Property {
 
@@ -108,6 +110,10 @@ public interface Property {
     } else {
       toString(asb);
     }
+  }
+
+  default Set<Property> getInitializationDependencies() {
+    return Collections.emptySet();
   }
 
 }

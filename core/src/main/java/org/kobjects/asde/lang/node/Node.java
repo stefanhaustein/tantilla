@@ -62,7 +62,7 @@ public abstract class Node {
     if (o instanceof Boolean) {
       return ((Boolean) o) ? 1.0 : 0.0;
     }
-    throw new EvaluationException(this, "Number expected.");
+    throw new EvaluationException(this, "Number expected; got: " + o);
   }
 
   public int evalInt(EvaluationContext evaluationContext) {
@@ -73,7 +73,7 @@ public abstract class Node {
     if (o instanceof Boolean) {
       return ((Boolean) o) ? 1 : 0;
     }
-    throw new EvaluationException(this, "Number expected.");
+    throw new EvaluationException(this, "Number expected; got: " + o);
   }
 
   public String evalString(EvaluationContext evaluationContext) {

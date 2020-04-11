@@ -2,6 +2,7 @@ package org.kobjects.asde.lang.program;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Consumer;
+import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.Module;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.GenericProperty;
@@ -17,7 +18,6 @@ import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.Builtin;
-import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.parser.StatementParser;
 import org.kobjects.asde.lang.function.FunctionType;
@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -223,8 +222,7 @@ public class Program {
   }
 
   public synchronized void validate() {
-    ValidationContext validationContext = ValidationContext.createRootContext(this);
-    mainModule.validate(validationContext);
+    ValidationContext.validateAll(this);
   }
 
   public synchronized void addBuiltin(String name, Object value) {
@@ -293,7 +291,7 @@ public class Program {
               return;
             }
             if (notificationPendingForSymbol != null) {
-              ValidationContext.createRootContext(Program.this).validateProperty(notificationPendingForSymbol);
+              ValidationContext.reValidate(Program.this, notificationPendingForSymbol);
               for (UserPropertyChangeListener changeListener : programChangeListeners) {
                 changeListener.propertyDefinitionChanged(notificationPendingForSymbol);
               }

@@ -55,7 +55,7 @@ public class InvokeMethod extends Node {
     if (resolvedProperty == null) {
       throw new RuntimeException("Property '" + name + "' not found in " + children[0].returnType());
     }
-    resolutionContext.validateAndAddDependency(resolvedProperty);
+    resolutionContext.validateProperty(resolvedProperty);
 
     if (!(resolvedProperty.getType() instanceof FunctionType)) {
       throw new RuntimeException("Type of property '" + resolvedProperty + "' is not callable.");
@@ -95,7 +95,7 @@ public class InvokeMethod extends Node {
      try {
        return function.call(evaluationContext, children.length - skipChildren);
      } catch (Exception e) {
-       throw new RuntimeException(e.getMessage() + " in " + children[0], e);
+       throw new RuntimeException(e.getMessage() + " in " + this, e);
      }
   }
 

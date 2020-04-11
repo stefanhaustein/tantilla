@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.function.FunctionType;
+import org.kobjects.asde.lang.function.Parameter;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.node.Node;
@@ -10,6 +12,7 @@ import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.TreeMap;
 
@@ -17,7 +20,9 @@ public class Struct implements Classifier, InstantiableType, DeclaredBy {
 
   final Program program;
   public final TreeMap<String, Property> propertyMap = new TreeMap<>();
-  ArrayList<Node> resolvedInitializers = new ArrayList<>();
+
+  // Theoretically, this could be handled by turning the meta-class into a function type.
+
   Property declaringSymbol;
 
   public Struct(Program program) {
@@ -39,9 +44,6 @@ public class Struct implements Classifier, InstantiableType, DeclaredBy {
     return propertyMap.get(name);
   }
 
-  public GenericProperty getUserProperty(String name) {
-    return (GenericProperty) propertyMap.get(name);
-  }
 
   @Override
   public Collection<? extends Property> getAllProperties() {
@@ -64,26 +66,6 @@ public class Struct implements Classifier, InstantiableType, DeclaredBy {
   }
 
 
-  public void validate(ValidationContext classValidationContext) {
-    System.out.println("Userclass validation " + declaringSymbol);
-    resolvedInitializers.clear();
-    Collection<? extends Property> properties = getAllProperties();
-    for (Property property : properties) {
-      if (property.isInstanceField()) {
-        System.out.println(" - instance field " + property.getName());
-        classValidationContext.validateProperty(property);
-        ((GenericProperty) property).fieldIndex = resolvedInitializers.size();
-        resolvedInitializers.add(property.getInitializer());
-      }
-    }
-    for (Property property : properties) {
-      if (!property.isInstanceField()) {
-        System.out.println(" - non instance field " + property.getName());
-        classValidationContext.validateProperty(property);
-      }
-    }
-  }
-
   @Override
   public void toString(AnnotatedStringBuilder asb) {
     asb.append("class", SyntaxColor.KEYWORD);
@@ -95,12 +77,30 @@ public class Struct implements Classifier, InstantiableType, DeclaredBy {
 
   @Override
   public Instance createInstance(EvaluationContext evaluationContext, Object... ctorValues) {
-    int fieldCount = resolvedInitializers.size();
-    Object[] properties = new Object[fieldCount];
-    for (int i = 0; i < fieldCount; i++) {
-      properties[i] = ctorValues !=null && ctorValues.length > i && ctorValues[i] != null ? ctorValues[i] : resolvedInitializers.get(i).eval(evaluationContext);
+    System.out.println("****** Create Instance of " + toString() + " Values: " + Arrays.toString(ctorValues));
+    return new Instance(this, ctorValues);
+  }
+
+  @Override
+  public FunctionType getConstructorSignature(ValidationContext validationContext) {
+    // Ideally, this would be cached. Might make sense to have a hidden property for the constructor.
+    ArrayList<Parameter> parameters = new ArrayList<>();
+    for (Property property : propertyMap.values()) {
+      if (property.isInstanceField()) {
+        validationContext.validateProperty(property);
+        ((GenericProperty) property).fieldIndex = parameters.size();
+        parameters.add(property.getInitializer() == null
+              ? Parameter.create(property.getName(), property.getType())
+              : Parameter.create(property.getName(), property.getInitializer()));
+      } else if (property.getInitializer() == null && property.getType() instanceof FunctionType) {
+        // We need to initialize all methods, too -- as they can be called via traits.
+        FunctionType functionType = (FunctionType) property.getType();
+        if (functionType.getParameterCount() > 0 && functionType.getParameter(0).getName().equals("self")) {
+          validationContext.validateProperty(property);
+        }
+      }
     }
-    return new Instance(this, properties);
+    return new FunctionType(this, parameters.toArray(Parameter.EMPTY_ARRAY));
   }
 
 
@@ -127,9 +127,7 @@ public class Struct implements Classifier, InstantiableType, DeclaredBy {
 
   @Override
   public String toString() {
-    AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-    toString(asb);
-    return asb.toString();
+    return getDeclaringSymbol() != null ? getDeclaringSymbol().getName() : super.toString();
   }
 
   public void remove(String name) {
