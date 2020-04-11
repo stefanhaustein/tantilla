@@ -33,12 +33,12 @@ public class Constructor extends Node {
     Node[] children = new Node[arguments.size()];
     HashMap<String, Integer> propertyIndexMap = new HashMap<>();
     for (int i = 0; i < arguments.size(); i++) {
-      if (!(arguments.get(i) instanceof Pair)) {
+      if (!(arguments.get(i) instanceof Named)) {
         throw new RuntimeException("<field> : <expr> expected; got: '" + arguments.get(i) + "' (" + arguments.get(i).getClass().getSimpleName() + ")");
       }
-      Node colon = arguments.get(i);
-      children[i] = colon.children[1];
-      propertyIndexMap.put(((Identifier) colon.children[0]).name, i);
+      Named colon = (Named) arguments.get(i);
+      children[i] = colon.children[0];
+      propertyIndexMap.put(colon.name, i);
     }
     return new Constructor(base.toString(), propertyIndexMap, children);
   }

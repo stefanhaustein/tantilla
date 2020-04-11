@@ -1,18 +1,22 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 
-public class Pair extends Node {
+import java.util.Map;
 
-  public Pair(Node left, Node right) {
-    super(left, right);
+public class Named extends Node {
+
+  public final String name;
+  public Named(String name, Node value) {
+    super(value);
+    this.name = name;
   }
 
   @Override
   protected void onResolve(ValidationContext resolutionContext, int line) {
-    throw new RuntimeException("pair not permitted in this context.");
   }
 
   @Override
@@ -23,5 +27,12 @@ public class Pair extends Node {
   @Override
   public Type returnType() {
     return null;
+  }
+
+
+  @Override
+  public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
+    appendLinked(asb, name + " = ", errors);
+    children[0].toString(asb, errors, preferAscii);
   }
 }

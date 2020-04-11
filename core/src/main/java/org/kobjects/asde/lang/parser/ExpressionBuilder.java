@@ -4,7 +4,7 @@ import org.kobjects.asde.lang.node.AndOperator;
 import org.kobjects.asde.lang.node.Invoke;
 import org.kobjects.asde.lang.node.ArrayAccess;
 import org.kobjects.asde.lang.node.ArrayLiteral;
-import org.kobjects.asde.lang.node.Pair;
+import org.kobjects.asde.lang.node.Named;
 import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.ImpliedSliceValue;
 import org.kobjects.asde.lang.node.InvokeMethod;
@@ -82,7 +82,10 @@ class ExpressionBuilder extends Processor<Node> {
         do {
           Node child = subParser.parse(tokenizer);
           if (tokenizer.tryConsume(pairing)) {
-            child = new Pair(child, subParser.parse(tokenizer));
+            if (!(child instanceof Identifier)) {
+              throw new RuntimeException("Identifier expected before " + pairing);
+            }
+            child = new Named(((Identifier) child).getName(), subParser.parse(tokenizer));
           }
           children.add(child);
         } while (tokenizer.tryConsume(","));
@@ -135,8 +138,8 @@ class ExpressionBuilder extends Processor<Node> {
   @Override
   public Node infixOperator(Tokenizer tokenizer, String name, Node left, Node right) {
     switch (name) {
-      case ":":
-        return new Pair(left, right);
+    /*  case ":":
+        return new Named(left, right); */
       case ".":
         return new Path(left, right);
       case "<":

@@ -111,4 +111,13 @@ public class FunctionType implements Type {
   public Parameter getParameter(int i) {
     return parameters[i];
   }
+
+  public int getParameterIndex(String name) {
+    for (int i = 0; i < parameters.length; i++) {
+      if (name.equals(parameters[i].getName())) {
+        return i;
+      }
+    }
+    return -1;
+  }
 }

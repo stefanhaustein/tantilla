@@ -1,7 +1,6 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.io.SyntaxColor;
@@ -48,7 +47,7 @@ public class Invoke extends Node {
       throw new RuntimeException("Can't apply parameters to " + children[0].returnType());
     }
     FunctionType resolved = (FunctionType) children[0].returnType();
-    resolvedArguments = InvocationResolver.resolve(children, 1, resolved);
+    resolvedArguments = InvocationResolver.resolve(resolved, children, 1, true);
   }
 
   public Object eval(EvaluationContext evaluationContext) {

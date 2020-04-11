@@ -36,7 +36,7 @@ public class AsdeExpressionParser extends ExpressionParser<Node> {
 
 
   public Tokenizer createTokenizer(String line) {
-    Tokenizer tokenizer = new Tokenizer(new Scanner(line), getSymbols(), "->", ";", ":", "}");
+    Tokenizer tokenizer = new Tokenizer(new Scanner(line), getSymbols(), "->", ";", ":", "}", "=");
     tokenizer.numberPattern = NUMBER_PATTERN;
     tokenizer.lineCommentPattern = LINE_COMMENT_PATTERN;
     return tokenizer;
