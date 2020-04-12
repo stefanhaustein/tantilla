@@ -117,14 +117,14 @@ end
 
 
 trait Surface:
- roughness: float
+ def roughness(self) -> float
  def diffuse(self, pos: Vector) -> Color
  def specular(self, pos: Vector) ->  Color
  def reflect(self, pos: Vector) -> float
 end
 
 trait Thing:
- surface: Surface
+ def surface(self) -> Surface
  def normal(self, pos: Vector) -> Vector
  def intersect(self, ray: Ray) -> Intersection
 end
@@ -149,10 +149,14 @@ end
 class Sphere:
  center: Vector
  radius2: float
- surface: Surface
+ surface_: Surface
+
+ def surface(self) -> Surface:
+   return self.surface_
+ end
 
  def new(center: Vector, radius: float, s: Surface) -> Sphere:
-   return Sphere{center: center, radius2: radius * radius, surface: s}
+   return Sphere{center: center, radius2: radius * radius, surface_: s}
  end
 
  def normal(self, pos: Vector) -> Vector:
@@ -178,10 +182,14 @@ end
 class Plane:
  norm: Vector
  offset: float
- surface: Surface
+ surface_: Surface
+
+ def surface(self) -> Surface:
+   return self.surface_
+ end
 
  def new(normal: Vector, offset: float, s: Surface) -> Plane:
-  return Plane{norm: normal, offset: offset, surface: s}
+  return Plane{norm: normal, offset: offset, surface_: s}
  end
 
  def normal(self, pos: Vector) -> Vector:
@@ -201,7 +209,9 @@ end
 
 
 class Shiny:
- roughness = 250
+ def roughness(self) -> float:
+  return 250
+ end
 
  def diffuse(self, pos: Vector) -> Color:
   return Color.WHITE
@@ -218,7 +228,9 @@ class Shiny:
 end
 
 class Checkerboard:
- roughness = 150
+ def roughness(self) -> float:
+   return 150
+ end
 
  def diffuse(self, pos: Vector) -> Color:
   if (100000 + floor(pos.z) + floor(pos.x)) % 2 != 0 :
@@ -284,7 +296,7 @@ class RayTracer:
  end
 
  def getReflectionColor(self, t: Thing, pos: Vector, normal: Vector, rd: Vector, s: Scene, depth: float) -> Color:
-  return self.traceRay(Ray.new(pos, rd), s, depth + 1).scale(t.surface.reflect(pos))
+  return self.traceRay(Ray.new(pos, rd), s, depth + 1).scale(t.surface().reflect(pos))
  end
 
  def addLight(self, t: Thing, pos: Vector, norm: Vector, rd: Vector, s: Scene, col: Color, l: Light) -> Color:
@@ -303,9 +315,9 @@ class RayTracer:
   let specular = livec.dot(rd.norm())
   mut scolor = self.defaultColor
   if specular > 0 :
-   scolor = l.color.scale(specular ^ t.surface.roughness)
+   scolor = l.color.scale(specular ^ t.surface().roughness())
   end
-  return col.plus(lcolor.times(t.surface.diffuse(pos))).plus(scolor.times(t.surface.specular(pos)))
+  return col.plus(lcolor.times(t.surface().diffuse(pos))).plus(scolor.times(t.surface().specular(pos)))
  end
 
  def getNaturalColor(self, t: Thing, pos: Vector, norm: Vector, rd: Vector, s: Scene) -> Color:

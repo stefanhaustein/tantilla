@@ -3,7 +3,7 @@ package org.kobjects.asde.android.ide.property;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.Struct;
+import org.kobjects.asde.lang.classifier.ClassType;
 
 public class DeleteFlow {
 
@@ -13,7 +13,7 @@ public class DeleteFlow {
         .setConfirmationCheckbox("Yes, I am sure!")
         .setPositiveLabel("Delete")
         .start(result -> {
-          ((Struct) symbol.getOwner()).remove(symbol.getName());
+          ((ClassType) symbol.getOwner()).remove(symbol.getName());
           mainActivity.program.notifyProgramChanged();
     });
   }

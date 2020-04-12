@@ -4,12 +4,11 @@ import org.kobjects.asde.lang.program.Program;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class Module extends Struct {
+public class Module extends ClassType {
   TreeMap<String, Object> builtins = new TreeMap<>();
 
   public Module(Program program) {

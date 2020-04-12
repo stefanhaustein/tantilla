@@ -5,7 +5,6 @@ import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.Parameter;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.io.SyntaxColor;
-import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.type.MetaType;
@@ -16,7 +15,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.TreeMap;
 
-public class Struct implements Classifier, InstantiableType, DeclaredBy {
+public class ClassType implements Classifier, InstantiableType, DeclaredBy {
 
   final Program program;
   public final TreeMap<String, Property> propertyMap = new TreeMap<>();
@@ -25,7 +24,7 @@ public class Struct implements Classifier, InstantiableType, DeclaredBy {
 
   Property declaringSymbol;
 
-  public Struct(Program program) {
+  public ClassType(Program program) {
     this.program = program;
   }
 
@@ -76,9 +75,9 @@ public class Struct implements Classifier, InstantiableType, DeclaredBy {
   }
 
   @Override
-  public Instance createInstance(EvaluationContext evaluationContext, Object... ctorValues) {
+  public ClassInstance createInstance(EvaluationContext evaluationContext, Object... ctorValues) {
     System.out.println("****** Create Instance of " + toString() + " Values: " + Arrays.toString(ctorValues));
-    return new Instance(this, ctorValues);
+    return new ClassInstance(this, ctorValues);
   }
 
   @Override

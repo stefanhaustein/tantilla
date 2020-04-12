@@ -1,13 +1,11 @@
 package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.function.Callable;
-import org.kobjects.asde.lang.node.EvaluationException;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -195,7 +193,7 @@ public class GenericProperty implements Property {
 
   @Override
   public Object get(EvaluationContext context, Object instance) {
-    return isInstanceField ? ((Instance) instance).properties[fieldIndex] : staticValue;
+    return isInstanceField ? ((ClassInstance) instance).properties[fieldIndex] : staticValue;
   }
 
   @Override
@@ -203,7 +201,7 @@ public class GenericProperty implements Property {
     if (!isMutable || !isInstanceField) {
       throw new IllegalStateException("Property " + this + (isInstanceField ? " is a static field!" : " is not mutable!"));
     }
-    ((Instance) instance).properties[fieldIndex] = value;
+    ((ClassInstance) instance).properties[fieldIndex] = value;
   }
 
   @Override

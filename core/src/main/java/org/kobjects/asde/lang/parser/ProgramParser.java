@@ -1,18 +1,15 @@
 package org.kobjects.asde.lang.parser;
 
 
-import org.kobjects.asde.lang.classifier.Struct;
+import org.kobjects.asde.lang.classifier.ClassType;
 import org.kobjects.asde.lang.classifier.Trait;
 import org.kobjects.asde.lang.classifier.GenericProperty;
-import org.kobjects.asde.lang.function.Parameter;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.statement.BlockStatement;
-import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.statement.UnparseableStatement;
-import org.kobjects.asde.lang.type.Types;
 import org.kobjects.expressionparser.Tokenizer;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.type.Type;
@@ -35,7 +32,7 @@ public class ProgramParser {
 
   public void parseProgram(BufferedReader reader) throws IOException {
     UserFunction currentFunction = null;
-    Struct currentClass = null;
+    ClassType currentClass = null;
     ArrayList<String> lines = new ArrayList<>();
     boolean legacyMode;
     int depth = 0;
@@ -53,7 +50,7 @@ public class ProgramParser {
           int cut = line.lastIndexOf(':');
           String className = line.substring(6, cut).trim();
           System.out.println("class forward declaration: '" + className + "'");
-          program.setDeclaration(className, new Struct(program));
+          program.setDeclaration(className, new ClassType(program));
         } else if (line.startsWith("trait ")) {
           int cut = line.lastIndexOf(':');
           String interfaceName = line.substring("trait".length() + 1, cut).trim();
@@ -123,7 +120,7 @@ public class ProgramParser {
           }
         } else if (tokenizer.tryConsume("class")) {
           String className = tokenizer.consumeIdentifier();
-          currentClass = (Struct) program.mainModule.getProperty(className).getStaticValue();
+          currentClass = (ClassType) program.mainModule.getProperty(className).getStaticValue();
           // currentClass = (UserClass) program.getSymbol(className).getStaticValue();
           if (!tokenizer.tryConsume(":")) {
             throw new RuntimeException("':' expected.");

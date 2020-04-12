@@ -4,7 +4,7 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.android.ide.property.PropertyNameValidator;
 import org.kobjects.asde.lang.classifier.Classifier;
-import org.kobjects.asde.lang.classifier.Struct;
+import org.kobjects.asde.lang.classifier.ClassType;
 import org.kobjects.asde.lang.classifier.Trait;
 
 public class CreateClassifierFlow {
@@ -18,7 +18,7 @@ public class CreateClassifierFlow {
         .addInput("Name", null, new PropertyNameValidator(mainActivity.program.mainModule))
         .setPositiveLabel("Create")
         .start(result -> {
-          Classifier clasifier = kind == Kind.CLASS ? new Struct(mainActivity.program) : new Trait(mainActivity.program);
+          Classifier clasifier = kind == Kind.CLASS ? new ClassType(mainActivity.program) : new Trait(mainActivity.program);
           mainActivity.program.setDeclaration(result[0], clasifier);
           mainActivity.program.notifyProgramChanged();
         });

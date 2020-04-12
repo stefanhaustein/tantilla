@@ -15,7 +15,7 @@ import org.kobjects.asde.android.ide.property.PropertyView;
 import org.kobjects.asde.android.ide.property.ExpandListener;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.Struct;
+import org.kobjects.asde.lang.classifier.ClassType;
 import org.kobjects.asde.lang.classifier.Trait;
 
 import java.util.ArrayList;
@@ -55,9 +55,9 @@ public class ClassifierView extends PropertyView {
 
       Menu addMenu = popupMenu.getMenu().addSubMenu("Add");
 
-      if (symbol.getStaticValue() instanceof Struct) {
+      if (symbol.getStaticValue() instanceof ClassType) {
         addMenu.add("Add Constant").setOnMenuItemClickListener(item -> {
-          FieldFlow.createStaticProperty(mainActivity, (Struct) symbol.getStaticValue(), false);
+          FieldFlow.createStaticProperty(mainActivity, (ClassType) symbol.getStaticValue(), false);
           return true;
         });
       }

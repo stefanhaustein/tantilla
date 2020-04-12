@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.runtime;
 
-import org.kobjects.asde.lang.classifier.Instance;
+import org.kobjects.asde.lang.classifier.ClassInstance;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.program.ProgramControl;
 
@@ -48,7 +48,7 @@ public class EvaluationContext {
     /**
      * Creates a new context for calling the given function.
      */
-    public EvaluationContext(EvaluationContext parentContext, UserFunction userFunction, Instance self) {
+    public EvaluationContext(EvaluationContext parentContext, UserFunction userFunction, ClassInstance self) {
         this.function = userFunction;
         this.control = parentContext.control;
         this.dataStack = parentContext.dataStack;

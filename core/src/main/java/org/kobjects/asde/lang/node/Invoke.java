@@ -1,10 +1,8 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.InstantiableType;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.Struct;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -14,8 +12,6 @@ import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
-
-import jdk.nashorn.internal.ir.ObjectNode;
 
 // Not static for access to the variables.
 public class Invoke extends Node {
