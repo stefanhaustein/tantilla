@@ -76,6 +76,9 @@ public class EvaluationContext {
     }
 
     public void push(Object value) {
+        if (value == null) {
+            throw new NullPointerException();
+        }
         dataStack.data[stackTop++] = value;
     }
 

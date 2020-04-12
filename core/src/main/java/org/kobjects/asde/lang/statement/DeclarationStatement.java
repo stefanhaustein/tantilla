@@ -50,9 +50,6 @@ public class DeclarationStatement extends Statement {
     return children[0].eval(evaluationContext);
   }
 
-  public Type getValueType() {
-    return children[0].returnType();
-  }
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {

@@ -93,11 +93,12 @@ public class TraitProperty implements Property {
 
   @Override
   public Object get(EvaluationContext context, Object instance) {
-    if (instance instanceof AdapterInstance) {
-      AdapterInstance adapterInstance = (AdapterInstance) instance;
-      return adapterInstance.adapterType.getProperty(name).get(context, adapterInstance.instance);
+    AdapterInstance adapterInstance = (AdapterInstance) instance;
+    Object value = adapterInstance.adapterType.getProperty(name).get(context, adapterInstance.instance);
+    if (value == null) {
+      throw new NullPointerException();
     }
-    return ((Classifier) Types.of(instance)).getProperty(name).get(context, instance);
+    return value;
   }
 
   @Override

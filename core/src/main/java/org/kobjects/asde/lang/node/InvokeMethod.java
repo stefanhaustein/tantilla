@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.classifier.AdapterInstance;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.FunctionType;
@@ -10,6 +11,7 @@ import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.type.Types;
 
 import java.util.Map;
 
@@ -19,14 +21,14 @@ import java.util.Map;
 public class InvokeMethod extends Node {
 
   public String name;
+  boolean isStaticCall;
   Property resolvedProperty;
-  int skipChildren;
+  Node[] resolvedArguments;
 
   public InvokeMethod(String name, Node... children) {
     super(children);
     this.name = name;
   }
-
 
   public void set(EvaluationContext evaluationContext, Object value) {
     Object base = children[0].eval(evaluationContext);
@@ -41,12 +43,13 @@ public class InvokeMethod extends Node {
   @Override
   protected void onResolve(ValidationContext resolutionContext, int line) {
     Type baseType = children[0].returnType();
+    int skipChildren;
 
     if (baseType instanceof MetaType && ((MetaType) baseType).getWrapped() instanceof Classifier) {
-      skipChildren = 1;
+      isStaticCall = true;
       resolvedProperty = ((Classifier) ((MetaType) baseType).getWrapped()).getProperty(name);
     } else if (baseType instanceof Classifier) {
-      skipChildren = 0;
+      isStaticCall = false;
       resolvedProperty = ((Classifier) baseType).getProperty(name);
     } else {
       throw new RuntimeException("Classifier or instance base expected");
@@ -62,38 +65,42 @@ public class InvokeMethod extends Node {
     }
 
     FunctionType functionType = (FunctionType) resolvedProperty.getType() ;
-    // TODO: b/c optional params, add minParameterCount
-    if (children.length - skipChildren > functionType.getParameterCount() || children.length - skipChildren < functionType.getParameterCount()) {
-      throw new RuntimeException("Expected parameter count is "
-          + functionType.getParameterCount() + ".."
-          + functionType.getParameterCount() + " but got " + (children.length - skipChildren) + " for " + this);
-    }
-    for (int i = skipChildren; i < children.length; i++) {
-      if (!functionType.getParameterType(i - skipChildren).isAssignableFrom(children[i].returnType())) {
-        throw new RuntimeException("Type mismatch for parameter " + i + ": expected: "
-            + functionType.getParameterType(i) + " actual: " + children[i].returnType() + " base type: " + functionType);
-      }
-    }
+    resolvedArguments = InvocationResolver.resolve(functionType, children, isStaticCall ? 1 : 0, true, resolutionContext);
   }
 
   public Object eval(EvaluationContext evaluationContext) {
-    Object base = children[0].eval(evaluationContext);
-    Callable function = (Callable) resolvedProperty.get(evaluationContext, base);
-    evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
-    // This check should be redundant here -- checked in resolve already...?
-    if (children.length - skipChildren > function.getType().getParameterCount()) {
-      throw new RuntimeException("Expected " + function.getType().getParameterCount() + " parameter but got " + children.length + " for " + function);
-     }
-    // Push is important here, as parameter evaluation might also run apply().
-    if (skipChildren == 0) {
-      evaluationContext.push(base);
+    Callable function;
+    if (isStaticCall) {
+      Object base = children[0].eval(evaluationContext);
+      function = (Callable) resolvedProperty.get(evaluationContext, base);
+      evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
+      for (int i = 0; i < resolvedArguments.length; i++) {
+        evaluationContext.push(resolvedArguments[i].eval(evaluationContext));
+      }
+    } else {
+      Object base = resolvedArguments[0].eval(evaluationContext);
+      function = (Callable) resolvedProperty.get(evaluationContext, base);
+      evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
+      if (base instanceof AdapterInstance) {
+        evaluationContext.push(((AdapterInstance) base).instance);
+      } else {
+        evaluationContext.push(base);
+      }
+      for (int i = 1; i < resolvedArguments.length; i++) {
+        Object arg = resolvedArguments[i].eval(evaluationContext);
+        if (arg == null) {
+          throw new EvaluationException(resolvedArguments[i], "Argument evaluates to null");
+        }
+        evaluationContext.push(arg);
+      }
     }
-    for (int i = 1; i < children.length; i++) {
-       evaluationContext.push(children[i].eval(evaluationContext));
-     }
-     evaluationContext.popN(children.length - skipChildren);
+     evaluationContext.popN(resolvedArguments.length);
      try {
-       return function.call(evaluationContext, children.length - skipChildren);
+       Object result = function.call(evaluationContext, resolvedArguments.length);
+       if (result == null && returnType() != Types.VOID) {
+         throw new NullPointerException("non-void method evaluation of " + function + " returns null");
+       }
+       return result;
      } catch (Exception e) {
        throw new RuntimeException(e.getMessage() + " in " + this, e);
      }

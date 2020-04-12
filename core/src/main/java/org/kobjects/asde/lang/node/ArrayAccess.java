@@ -18,11 +18,13 @@ import java.util.Map;
 public class ArrayAccess extends AssignableNode {
 
   enum Kind {
-    ERROR, ARRAY_ACCESS, QUALIFIED_TYPE, LIST_CONSTRUCTOR, STRING_ACCESS
+    UNRESOLVED, ARRAY_ACCESS, QUALIFIED_TYPE, LIST_CONSTRUCTOR, STRING_ACCESS, ERROR
   }
 
-  Kind kind = Kind.ERROR;
-  Type resolvedType;
+  Kind kind = Kind.UNRESOLVED;
+  Type resolvedElementType;
+  // Only used for LIST_CONSTRUCTOR
+  Node[] resolvedChildren;
 
   public ArrayAccess(Node... children) {
     super(children);
@@ -40,7 +42,6 @@ public class ArrayAccess extends AssignableNode {
       throw new RuntimeException("Expected type for assignment: " + type + " actual type: " + returnType());
     }
   }
-
 
   public void set(EvaluationContext evaluationContext, Object value) {
     Object base = children[0].eval(evaluationContext);
@@ -74,14 +75,18 @@ public class ArrayAccess extends AssignableNode {
       kind = Kind.QUALIFIED_TYPE;
       Tokenizer tokenizer = resolutionContext.program.parser.createTokenizer(toString());
       tokenizer.nextToken();
-      resolvedType = resolutionContext.program.parser.parseType(tokenizer);
+      resolvedElementType = resolutionContext.program.parser.parseType(tokenizer);
     } else if (children[0].returnType() instanceof MetaType) {
       kind = Kind.LIST_CONSTRUCTOR;
       Type inner = ((MetaType) children[0].returnType()).getWrapped();
       if (!(inner instanceof ListType)) {
         throw new RuntimeException("List type expected for list constructor");
       }
-      resolvedType = ((ListType) inner).elementType;
+      resolvedElementType = ((ListType) inner).elementType;
+      resolvedChildren = new Node[children.length - 1];
+      for (int i = 0; i < resolvedChildren.length; i++) {
+        resolvedChildren[i] = TraitCast.autoCast(children[i+1], resolvedElementType, resolutionContext);
+      }
     } else {
       throw new RuntimeException("Not a list: " + children[0] + " (" + children[0].returnType() + ") -- this: " + this);
     }
@@ -107,13 +112,13 @@ public class ArrayAccess extends AssignableNode {
         return s.substring(pos, pos + Character.charCount(pos));
       }
       case QUALIFIED_TYPE:
-        return resolvedType;
+        return resolvedElementType;
       case LIST_CONSTRUCTOR:
-        Object[] data = new Object[children.length - 1];
+        Object[] data = new Object[resolvedChildren.length];
         for (int i = 0; i < data.length; i++) {
-          data[i] = children[i+1].eval(evaluationContext);
+          data[i] = resolvedChildren[i].eval(evaluationContext);
         }
-        return new ListImpl(resolvedType, data);
+        return new ListImpl(resolvedElementType, data);
     }
     throw new IllegalStateException();
   }
@@ -126,9 +131,9 @@ public class ArrayAccess extends AssignableNode {
       case ARRAY_ACCESS:
         return ((ListType) children[0].returnType()).elementType;
       case QUALIFIED_TYPE:
-        return new MetaType(resolvedType);
+        return new MetaType(resolvedElementType);
       case LIST_CONSTRUCTOR:
-        return new ListType(resolvedType);
+        return new ListType(resolvedElementType);
       default:
         return null;
     }

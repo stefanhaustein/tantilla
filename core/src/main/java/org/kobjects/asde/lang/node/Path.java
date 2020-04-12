@@ -87,7 +87,7 @@ public class Path extends SymbolNode {
       case INSTANCE_FIELD:
         Object instance = children[0].eval(evaluationContext);
         if (instance == null) {
-          throw new EvaluationException(this, "path base is null.");
+          throw new EvaluationException(this, "path base is null");
         }
         return resolvedProperty.get(evaluationContext, instance);
       case ENUM_LITERAL:

@@ -80,9 +80,22 @@ public class ClassType implements Classifier, InstantiableType, DeclaredBy {
     return new ClassInstance(this, ctorValues);
   }
 
+  void validateAllMethods(Classifier classifier, ValidationContext validationContext) {
+    for (Property property : classifier.getAllProperties()) {
+      if (property.getInitializer() == null && property.getType() instanceof FunctionType) {
+        // We need to initialize all methods, too -- as they can be called via traits.
+        FunctionType functionType = (FunctionType) property.getType();
+        if (functionType.getParameterCount() > 0 && functionType.getParameter(0).getName().equals("self")) {
+          validationContext.validateProperty(property);
+        }
+      }
+    }
+  }
+
   @Override
   public FunctionType getConstructorSignature(ValidationContext validationContext) {
-    // Ideally, this would be cached. Might make sense to have a hidden property for the constructor.
+    // Ideally, this would be cached.
+    // TODO: Might make sense to have a hidden property for the constructor.
     ArrayList<Parameter> parameters = new ArrayList<>();
     for (Property property : propertyMap.values()) {
       if (property.isInstanceField()) {
@@ -91,11 +104,14 @@ public class ClassType implements Classifier, InstantiableType, DeclaredBy {
         parameters.add(property.getInitializer() == null
               ? Parameter.create(property.getName(), property.getType())
               : Parameter.create(property.getName(), property.getInitializer()));
-      } else if (property.getInitializer() == null && property.getType() instanceof FunctionType) {
-        // We need to initialize all methods, too -- as they can be called via traits.
-        FunctionType functionType = (FunctionType) property.getType();
-        if (functionType.getParameterCount() > 0 && functionType.getParameter(0).getName().equals("self")) {
-          validationContext.validateProperty(property);
+      }
+    }
+    validateAllMethods(this, validationContext);
+    for (Property property : validationContext.program.mainModule.getAllProperties()) {
+      if (property.getStaticValue() instanceof AdapterType) {
+        AdapterType adapterType = (AdapterType) property.getStaticValue();
+        if (adapterType.classifier == this) {
+          validateAllMethods(adapterType, validationContext);
         }
       }
     }

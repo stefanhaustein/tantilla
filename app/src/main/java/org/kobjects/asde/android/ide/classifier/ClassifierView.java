@@ -13,6 +13,7 @@ import org.kobjects.asde.android.ide.property.RenameFlow;
 import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.property.PropertyView;
 import org.kobjects.asde.android.ide.property.ExpandListener;
+import org.kobjects.asde.lang.classifier.AdapterType;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.ClassType;
@@ -46,6 +47,8 @@ public class ClassifierView extends PropertyView {
 
     if (symbol.getStaticValue() instanceof Trait) {
       titleView.setTypeIndicator("trait", Colors.LIGHT_GREEN, false);
+    } else if (symbol.getStaticValue() instanceof AdapterType){
+      titleView.setTypeIndicator("impl", Colors.LIGHT_CYAN, false);
     } else {
       titleView.setTypeIndicator("class", Colors.LIGHT_BLUE, false);
     }

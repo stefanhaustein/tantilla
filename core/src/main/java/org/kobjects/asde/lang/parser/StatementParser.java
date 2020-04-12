@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.parser;
 
+import org.kobjects.asde.lang.classifier.AdapterType;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.Parameter;
@@ -75,7 +76,7 @@ public class StatementParser {
             throw new RuntimeException("Type mismatch for self. Expected: " + self + " got: " + parameterType);
           }
         }
-        parameters.add(Parameter.create("self", self));
+        parameters.add(Parameter.create("self", self instanceof AdapterType ? ((AdapterType) self).classifier : self));
       } else {
         tokenizer.consume(":");
         Type parameterType = parseType(tokenizer);

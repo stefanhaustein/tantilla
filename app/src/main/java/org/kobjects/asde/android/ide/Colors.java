@@ -10,7 +10,7 @@ public class Colors {
   public static final int C64_BLUE = 0xff483aaa; // 0xff4444ee;
   public static final int DARK_BLUE = 0xff2c659a; // 0xff4444ee;
   public static final int LIGHT_BLUE = 0xff54adef; // 0xff4444ee;
-   // public static final int CYAN = 0xff66ffff;
+  public static final int LIGHT_CYAN = 0xff66b0a3;
     public static final int LIGHT_PURPLE = 0xffab8fd8; // 0xffee66ee;
   public static final int DARK_PURPLE = 0xff9366cd; // 0xffee66ee;
 

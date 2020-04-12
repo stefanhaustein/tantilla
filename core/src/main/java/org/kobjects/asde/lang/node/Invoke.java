@@ -55,11 +55,11 @@ public class Invoke extends Node {
     Type baseType = children[0].returnType();
     if (baseType instanceof FunctionType) {
       FunctionType functionType = (FunctionType) children[0].returnType();
-      resolvedArguments = InvocationResolver.resolve(functionType, children, 1, true);
+      resolvedArguments = InvocationResolver.resolve(functionType, children, 1, true, resolutionContext);
       kind = Kind.FUNCTION;
     } else if (baseType instanceof MetaType && ((MetaType) baseType).getWrapped() instanceof InstantiableType) {
       InstantiableType instantiable = (InstantiableType) ((MetaType) baseType).getWrapped();
-      resolvedArguments = InvocationResolver.resolve(instantiable.getConstructorSignature(resolutionContext), children, 1, false);
+      resolvedArguments = InvocationResolver.resolve(instantiable.getConstructorSignature(resolutionContext), children, 1, false, resolutionContext);
       kind = Kind.CONSTRUCTOR;
     } else {
       throw new RuntimeException("function or class required to apply parameters.");

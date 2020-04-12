@@ -2,10 +2,11 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.Parameter;
+import org.kobjects.asde.lang.function.ValidationContext;
 
 public class InvocationResolver {
 
-  static Node[] resolve(FunctionType signature, Node[] children, int offset, boolean permitPositional) {
+  static Node[] resolve(FunctionType signature, Node[] children, int offset, boolean permitPositional, ValidationContext context) {
     if (signature.getParameterCount() < children.length - offset) {
       throw new RuntimeException("Too many parameters. Expected " + signature.getParameterCount() + " but got " + children.length);
     }
@@ -31,11 +32,7 @@ public class InvocationResolver {
         parameterIndex = i;
       }
       Parameter parameter = signature.getParameter(parameterIndex);
-      if (!parameter.getType().isAssignableFrom(value.returnType())) {
-        throw new RuntimeException("Cannot assign parameter " + parameter.getName() + " of type " + parameter.getType()
-            + " from type " + value.returnType());
-      }
-      result[parameterIndex] = value;
+      result[parameterIndex] = TraitCast.autoCast(value, parameter.getType(), context);
     }
 
     for (int i = 0; i < result.length; i++) {

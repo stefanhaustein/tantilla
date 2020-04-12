@@ -151,13 +151,17 @@ class Sphere:
  radius2: float
  surface_: Surface
 
+ def new(center: Vector, radius: float, s: Surface) -> Sphere:
+   return Sphere{center: center, radius2: radius * radius, surface_: s}
+ end
+end
+
+impl Thing for Sphere:
+
  def surface(self) -> Surface:
    return self.surface_
  end
 
- def new(center: Vector, radius: float, s: Surface) -> Sphere:
-   return Sphere{center: center, radius2: radius * radius, surface_: s}
- end
 
  def normal(self, pos: Vector) -> Vector:
   return pos.minus(self.center).norm()
@@ -184,12 +188,14 @@ class Plane:
  offset: float
  surface_: Surface
 
- def surface(self) -> Surface:
-   return self.surface_
- end
-
  def new(normal: Vector, offset: float, s: Surface) -> Plane:
   return Plane{norm: normal, offset: offset, surface_: s}
+ end
+end
+
+impl Thing for Plane:
+ def surface(self) -> Surface:
+   return self.surface_
  end
 
  def normal(self, pos: Vector) -> Vector:
@@ -209,6 +215,9 @@ end
 
 
 class Shiny:
+end
+
+impl Surface for Shiny:
  def roughness(self) -> float:
   return 250
  end
@@ -228,6 +237,9 @@ class Shiny:
 end
 
 class Checkerboard:
+end
+
+impl Surface for Checkerboard:
  def roughness(self) -> float:
    return 150
  end
@@ -317,7 +329,9 @@ class RayTracer:
   if specular > 0 :
    scolor = l.color.scale(specular ^ t.surface().roughness())
   end
-  return col.plus(lcolor.times(t.surface().diffuse(pos))).plus(scolor.times(t.surface().specular(pos)))
+  let surf = t.surface()
+  let diff = surf.diffuse(pos)
+  return col.plus(lcolor.times(diff)).plus(scolor.times(t.surface().specular(pos)))
  end
 
  def getNaturalColor(self, t: Thing, pos: Vector, norm: Vector, rd: Vector, s: Scene) -> Color:
