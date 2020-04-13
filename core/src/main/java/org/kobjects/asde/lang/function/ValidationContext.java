@@ -1,8 +1,12 @@
 package org.kobjects.asde.lang.function;
 
 
+import org.kobjects.asde.lang.classifier.AdapterType;
 import org.kobjects.asde.lang.classifier.Classifier;
+import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.classifier.InstantiableType;
 import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.classifier.Trait;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.node.Node;
@@ -16,6 +20,7 @@ import java.util.Set;
 
 public class ValidationContext {
   private static final boolean DEBUG = true;
+
 
   enum State {
     UNINITIALIZED,
@@ -37,26 +42,27 @@ public class ValidationContext {
     new ValidationContext(program, null, property, null).validate();
   }
 
-  public HashMap<Node, Exception> errors = new HashMap<>();
+  // Shared across layers!
+  private final HashMap<Property, ValidationContext> resolved;
 
+  private final HashSet<Classifier> resolvedForInstantiation;
+
+  public final Program program;
   /** Will be null when validating symbols! */
   public final UserFunction userFunction;
+  private final Property property;
 
-  private Property property;
+  public final HashMap<Node, Exception> errors = new HashMap<>();
 
   private int localSymbolCount;
   private Block currentBlock;
   private State state = State.UNINITIALIZED;
 
-  /**
-   * Properties with
-   */
+
   public HashSet<Property> initializationDependencies = new HashSet<>();
   private ValidationContext parentContext;
-  public Program program;
-
-  private HashMap<Property, ValidationContext> resolved;
   ArrayList<Runnable> whenDone = new ArrayList();
+
 
   private ValidationContext(Program program, ValidationContext parentContext, Property property, UserFunction userFunction) {
     this.program = program;
@@ -66,7 +72,13 @@ public class ValidationContext {
         && !property.isInstanceField() && property.getStaticValue() instanceof UserFunction) ?
         (UserFunction) property.getStaticValue() : null;
 
-    resolved = parentContext == null ? new HashMap<>() : parentContext.resolved;
+    if (parentContext == null) {
+      resolved = new HashMap<>();
+      resolvedForInstantiation = new HashSet<>();
+    } else {
+      resolved = parentContext.resolved;
+      resolvedForInstantiation = parentContext.resolvedForInstantiation;
+    }
 
     ValidationContext parent = parentContext;
     while (parent != null) {
@@ -127,7 +139,7 @@ public class ValidationContext {
         property.getInitializer().resolve(this, 0);
       }
 
-      // Recursion should be ok from here on
+      // Recursion should be ok from here on
       resolved.put(property, this);
     }
 
@@ -138,6 +150,24 @@ public class ValidationContext {
     }
 
     if (property != null) {
+      if (property.getType() instanceof MetaType && property.getStaticValue() instanceof AdapterType) {
+        AdapterType adapterType = ((AdapterType) property.getStaticValue());
+        Set<String> missingMethodNames = adapterType.trait.getAllPropertyNames();
+        missingMethodNames.removeAll(adapterType.getAllPropertyNames());
+        if (!missingMethodNames.isEmpty()) {
+          errors.put(Node.NO_NODE, new RuntimeException("Missing trait methods: " + missingMethodNames));
+        }
+      }
+      if (property.getOwner() instanceof AdapterType) {
+        AdapterType adapterType = (AdapterType) property.getOwner();
+        Property traitProperty = adapterType.trait.getProperty(property.getName());
+        if (traitProperty == null) {
+          errors.put(Node.NO_NODE, new RuntimeException("Not a Trait property."));
+        } else if (!((FunctionType) property.getType()).equals((FunctionType) traitProperty.getType(), true)) {
+          errors.put(Node.NO_NODE, new RuntimeException("Signature does not match trait property signature: " + traitProperty.getType()));
+        }
+      }
+
       property.setDependenciesAndErrors(initializationDependencies, errors);
     }
 
@@ -205,9 +235,32 @@ public class ValidationContext {
   }
 
 
-  class ResolutionState {
+  private void validateAllMethods(Classifier classifier) {
+    for (Property property : classifier.getAllProperties()) {
+      if (property.getInitializer() == null && property.getType() instanceof FunctionType) {
 
+        FunctionType functionType = (FunctionType) property.getType();
+        if (functionType.getParameterCount() > 0 && functionType.getParameter(0).getName().equals("self")) {
+          validateProperty(property);
+        }
+      }
+    }
   }
 
 
+  public void addInstanceDependency(Classifier classifier) {
+    if (resolvedForInstantiation.contains(classifier)) {
+      return;
+    }
+    resolvedForInstantiation.add(classifier);
+    int fieldIndex = 0;
+    for (Property property : classifier.getAllProperties()) {
+      if (property.isInstanceField()) {
+        validateProperty(property);
+        ((GenericProperty) property).setFieldIndex(fieldIndex++);
+      }
+    }
+    // We need to initialize all methods, too -- as they can be called via traits.
+    validateAllMethods(classifier);
+  }
 }

@@ -9,6 +9,7 @@ import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.property.ExpandListener;
 import org.kobjects.asde.android.ide.property.PropertyListView;
 import org.kobjects.asde.android.ide.property.PropertyView;
+import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.ClassType;
 import org.kobjects.asde.lang.classifier.GenericProperty;
@@ -196,15 +197,15 @@ public class ProgramView extends PropertyListView {
         }
         if (childView instanceof ClassifierView) {
           ClassifierView classifierView = (ClassifierView) childView;
-          ClassType classImplementation = (ClassType) classifierView.field.getStaticValue();
-          GenericProperty symbolFound = null;
-          for (GenericProperty descriptor : classImplementation.getUserProperties()) {
+          Classifier classImplementation = (Classifier) classifierView.field.getStaticValue();
+          Property symbolFound = null;
+          for (Property descriptor : classImplementation.getAllProperties()) {
             if (descriptor == symbol) {
               symbolFound = descriptor;
               break;
             }
           }
-          targetView = classifierView.getContentView().synchronizeTo(classImplementation.getUserProperties(), classifierView.expandListener, symbolFound);
+          targetView = classifierView.getContentView().synchronizeTo(classImplementation.getAllProperties(), classifierView.expandListener, symbolFound);
           break;
         }
       }

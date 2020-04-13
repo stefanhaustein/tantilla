@@ -16,6 +16,24 @@ import java.util.Map;
 
 public abstract class Node {
 
+  // Used in error collections for property level errors.
+  public static Node NO_NODE = new Node() {
+    @Override
+    protected void onResolve(ValidationContext resolutionContext, int line) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Object eval(EvaluationContext evaluationContext) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Type returnType() {
+      throw new UnsupportedOperationException();
+    }
+  };
+
   public static final Node[] EMPTY_ARRAY = new Node[0];
 
   public Node[] children;
@@ -62,7 +80,7 @@ public abstract class Node {
     if (o instanceof Boolean) {
       return ((Boolean) o) ? 1.0 : 0.0;
     }
-    throw new EvaluationException(this, "Number expected; got: " + o);
+    throw new EvaluationException(this, "Number expected; got: " + o);
   }
 
   public int evalInt(EvaluationContext evaluationContext) {
@@ -73,7 +91,7 @@ public abstract class Node {
     if (o instanceof Boolean) {
       return ((Boolean) o) ? 1 : 0;
     }
-    throw new EvaluationException(this, "Number expected; got: " + o);
+    throw new EvaluationException(this, "Number expected; got: " + o);
   }
 
   public String evalString(EvaluationContext evaluationContext) {

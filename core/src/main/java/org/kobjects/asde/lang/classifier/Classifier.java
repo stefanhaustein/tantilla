@@ -9,6 +9,8 @@ import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Seems to make sense to keep this as an interface as long as we don't know what to do about
@@ -36,6 +38,14 @@ public interface Classifier extends Type {
   CharSequence getDocumentation();
 
   void remove(String propertyName);
+
+  default Set<String> getAllPropertyNames() {
+    TreeSet<String> result = new TreeSet<>();
+    for (Property property : getAllProperties()) {
+      result.add(property.getName());
+    }
+    return result;
+  }
 
   /*
   default void validate(ValidationContext validationContext) {

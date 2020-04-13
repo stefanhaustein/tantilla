@@ -73,7 +73,7 @@ public class StatementParser {
         if (tokenizer.tryConsume(":")) {
           Type parameterType = parseType(tokenizer);
           if (parameterType != self) {
-            throw new RuntimeException("Type mismatch for self. Expected: " + self + " got: " + parameterType);
+            throw new RuntimeException("Type mismatch for self. Expected: " + self + " got: " + parameterType);
           }
         }
         parameters.add(Parameter.create("self", self instanceof AdapterType ? ((AdapterType) self).classifier : self));
@@ -294,7 +294,7 @@ public class StatementParser {
     Node statement;
     do {
       while (tokenizer.tryConsume(";")) {
-        // result.add(new LegacyStatement(null));
+        // result.add(new LegacyStatement(null));
       }
       if (tokenizer.currentType == Tokenizer.TokenType.EOF) {
         break;

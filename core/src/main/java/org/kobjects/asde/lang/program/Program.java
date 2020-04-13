@@ -77,7 +77,7 @@ public class Program {
   public Program(Console console) {
     this.console = console;
     this.reference = console.nameToReference(null);
-    // Primitives can't be registered because of ambiguities with conversion functions!
+    // Primitives can't be registered because of ambiguities with conversion functions!
     addBuiltin("List", new ListType(Types.VOID));
     synchronized (this) {
       addBuiltin("input", new BuiltinFunction((a, b) -> console.input(), "Reads a string as input from the user.", Types.STR));
@@ -177,7 +177,7 @@ public class Program {
 
   public void save(ProgramReference programReference) throws IOException {
     if (!programReference.urlWritable) {
-      throw new IOException("Can't write to URL: " + programReference.url);
+      throw new IOException("Can't write to URL: " + programReference.url);
     }
     if (!programReference.equals(reference)) {
       reference = programReference;
@@ -214,7 +214,7 @@ public class Program {
       System.out.println("########  lading set to false");
       loading = false;
 
-      // change notification triggers validation
+      // change notification triggers validation
       sendProgramEvent(ProgramListener.Event.LOADED);
       notifyProgramChanged();
       hasUnsavedChanges = false;

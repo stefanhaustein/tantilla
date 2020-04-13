@@ -36,12 +36,13 @@ public class FunctionView extends PropertyView {
     this.userFunction = (Callable) symbol.getStaticValue();
 
     boolean isMain = userFunction == mainActivity.program.main;
-    boolean isMethod = !(userFunction.getDeclaringSymbol().getOwner() instanceof Module);
+    boolean topLevel = false;//(userFunction.getDeclaringSymbol().getOwner() instanceof Module);
+    boolean isMethod = userFunction.getType().getParameterCount() > 0 && userFunction.getType().getParameter(0).getName().equals("self");
 
     titleView.setTypeIndicator(
           "def",
-          isMain ? Colors.PRIMARY_FILTER : Colors.DARK_PURPLE,
-          isMethod);
+          isMethod ? Colors.LIGHT_PURPLE_RED : isMain ? Colors.PRIMARY_FILTER : Colors.YELLOW,
+          !topLevel);
 
     titleView.setMoreClickListener(clicked -> {
       PopupMenu popup = new PopupMenu(mainActivity, clicked);

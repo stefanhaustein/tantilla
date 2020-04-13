@@ -47,9 +47,9 @@ public class AdapterType implements Classifier {
   @Override
   public void toString(AnnotatedStringBuilder asb) {
     asb.append("impl ");
-    asb.append(trait.toString());
-    asb.append(" for ");
     asb.append(classifier.toString());
+    asb.append(" as ");
+    asb.append(trait.toString());
   }
 
   @Override
@@ -68,6 +68,6 @@ public class AdapterType implements Classifier {
   }
 
   public String toString() {
-    return trait + " for " + classifier;
+    return classifier + " as " + trait;
   }
 }

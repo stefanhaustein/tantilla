@@ -238,7 +238,7 @@ public class Shell {
 
     }
     if (tokenizer.currentType != Tokenizer.TokenType.EOF) {
-      throw new RuntimeException("Leftover token: " + tokenizer);
+      throw new RuntimeException("Leftover token: " + tokenizer);
     }
     program.console.prompt();
   }

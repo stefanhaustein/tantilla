@@ -23,7 +23,7 @@ public class ArrayAccess extends AssignableNode {
 
   Kind kind = Kind.UNRESOLVED;
   Type resolvedElementType;
-  // Only used for LIST_CONSTRUCTOR
+  // Only used for LIST_CONSTRUCTOR
   Node[] resolvedChildren;
 
   public ArrayAccess(Node... children) {
@@ -38,8 +38,8 @@ public class ArrayAccess extends AssignableNode {
       throw new RuntimeException("Array expected");
     }
 
-    if (!type.isAssignableFrom(returnType())) {
-      throw new RuntimeException("Expected type for assignment: " + type + " actual type: " + returnType());
+    if (!type.equals(returnType())) {
+      throw new RuntimeException("Expected type for assignment: " + type + " actual type: " + returnType());
     }
   }
 
@@ -71,7 +71,7 @@ public class ArrayAccess extends AssignableNode {
         throw new RuntimeException("Number argument expected for array access; got: " + children[1].returnType());
       }
     } else if (children[0].toString().equals("List")) {
-      // The reason for parsing the type is the ambiguity of float (conversion method vs. type).
+      // The reason for parsing the type is the ambiguity of float (conversion method vs. type).
       kind = Kind.QUALIFIED_TYPE;
       Tokenizer tokenizer = resolutionContext.program.parser.createTokenizer(toString());
       tokenizer.nextToken();
@@ -88,7 +88,7 @@ public class ArrayAccess extends AssignableNode {
         resolvedChildren[i] = TraitCast.autoCast(children[i+1], resolvedElementType, resolutionContext);
       }
     } else {
-      throw new RuntimeException("Not a list: " + children[0] + " (" + children[0].returnType() + ") -- this: " + this);
+      throw new RuntimeException("Not a list: " + children[0] + " (" + children[0].returnType() + ") -- this: " + this);
     }
   }
 
@@ -123,7 +123,7 @@ public class ArrayAccess extends AssignableNode {
     throw new IllegalStateException();
   }
 
-  // Shouldn't throw, as it's used outside validation!
+  // Shouldn't throw, as it's used outside validation!
   public Type returnType() {
     switch (kind) {
       case STRING_ACCESS:

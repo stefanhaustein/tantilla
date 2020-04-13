@@ -13,7 +13,7 @@ import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 
-// Not static for access to the variables.
+// Not static for access to the variables.
 public class Invoke extends Node {
 
   enum Kind {
@@ -59,7 +59,8 @@ public class Invoke extends Node {
       kind = Kind.FUNCTION;
     } else if (baseType instanceof MetaType && ((MetaType) baseType).getWrapped() instanceof InstantiableType) {
       InstantiableType instantiable = (InstantiableType) ((MetaType) baseType).getWrapped();
-      resolvedArguments = InvocationResolver.resolve(instantiable.getConstructorSignature(resolutionContext), children, 1, false, resolutionContext);
+      resolutionContext.addInstanceDependency(instantiable);
+      resolvedArguments = InvocationResolver.resolve(instantiable.getConstructorSignature(), children, 1, false, resolutionContext);
       kind = Kind.CONSTRUCTOR;
     } else {
       throw new RuntimeException("function or class required to apply parameters.");
@@ -71,7 +72,7 @@ public class Invoke extends Node {
       case FUNCTION:
         Callable function = (Callable) children[0].eval(evaluationContext);
         evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
-        // Push is important here, as parameter evaluation might also run apply().
+        // Push is important here, as parameter evaluation might also run apply().
         int count = resolvedArguments.length;
         for (int i = 0; i < count; i++) {
           evaluationContext.push(resolvedArguments[i].eval(evaluationContext));
@@ -93,7 +94,7 @@ public class Invoke extends Node {
     }
   }
 
-  // Shouldn't throw, as it's used outside validation!
+  // Shouldn't throw, as it's used outside validation!
   public Type returnType() {
     switch (kind) {
       case FUNCTION:

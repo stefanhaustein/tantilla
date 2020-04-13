@@ -146,14 +146,7 @@ public class FieldFlow {
     alert.setNegativeButton("Cancel", null);
     alert.setPositiveButton("Ok", (a, b) -> {
       Type fixedType = typeSpinner.getSelectedType();
-      if (isTrait) {
-        if (symbol == null) {
-          owner.putProperty(TraitProperty.create((Trait) owner, isMutable, name, fixedType));
-        } else {
-          symbol.setFixedType(fixedType);
-          symbol.setMutable(mutableCheckbox.isChecked());
-        }
-      } else {
+
         Node initializer = fixedType == null ? mainActivity.program.parser.parseExpression(editText.getText().toString()) : null;
         if (symbol == null) {
           if (fixedType == null) {
@@ -169,7 +162,7 @@ public class FieldFlow {
           }
           symbol.setMutable(mutableCheckbox.isChecked());
         }
-      }
+
       mainActivity.program.sendProgramEvent(ProgramListener.Event.CHANGED);
     });
 

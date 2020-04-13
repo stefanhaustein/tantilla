@@ -75,30 +75,24 @@ public class FunctionType implements Type {
   @Override
   public boolean equals(Object o) {
     if (!(o instanceof FunctionType)) {
-      System.out.println(this + " does not match " + o+ ": not a function type");
+      System.out.println(this + " does not match " + o+ ": not a function type");
       return false;
     }
     FunctionType other = (FunctionType) o;
-    return this.isAssignableFrom(other) && other.isAssignableFrom(this);
+    return equals(other, false);
   }
 
-  public boolean isAssignableFromType(Type otherType) {
-    if (!(otherType instanceof FunctionType)) {
-      return false;
-    }
-    return isAssignableFrom((FunctionType) otherType, false);
-  }
 
-  public boolean isAssignableFrom(FunctionType other, boolean skip0) {
+  public boolean equals(FunctionType other, boolean skipSelfType) {
     if (!returnType.equals(other.getReturnType())) {
-      System.out.println(this + " does not match " + other+ ": return type mismatch");
+      System.out.println(this + " does not match " + other+ ": return type mismatch");
       return false;
     }
     if (getParameterCount() != other.getParameterCount()) {
-      System.out.println(this + " does not match " + other+ ": parameter count mismatch");
+      System.out.println(this + " does not match " + other+ ": parameter count mismatch");
       return false;
     }
-    for (int i = skip0 ? 1 : 0; i < getParameterCount(); i++) {
+    for (int i = skipSelfType ? 1 : 0; i < getParameterCount(); i++) {
       if (!getParameterType(i).equals(other.getParameterType(i))) {
         return false;
       }
@@ -106,7 +100,6 @@ public class FunctionType implements Type {
 
     return true;
   }
-
 
   public Parameter getParameter(int i) {
     return parameters[i];
@@ -120,4 +113,5 @@ public class FunctionType implements Type {
     }
     return -1;
   }
+
 }

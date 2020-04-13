@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.function.Callable;
+import org.kobjects.asde.lang.node.EvaluationException;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Type;
@@ -29,7 +30,7 @@ public class GenericProperty implements Property {
         owner,
         /* isInstanceField= */ false,
         /* isMutable= */ false,
-        /* fixedType= */ null,
+        /* fixedType= */ null,
         functionName,
         /* initializer= */ null,
         methodImplementation);
@@ -40,7 +41,7 @@ public class GenericProperty implements Property {
         owner,
         isInstanceField,
         isMutable,
-        /* fixedType= */ null,
+        /* fixedType= */ null,
         propertyName,
         initializer,
         /* staticValue */ null);
@@ -49,23 +50,23 @@ public class GenericProperty implements Property {
   public static GenericProperty createUninitialized(Classifier owner, boolean isMutable, String propertyName, Type type) {
     return new GenericProperty(
         owner,
-        /* isInstanceField= */ true,
+        /* isInstanceField= */ true,
         isMutable,
         type,
         propertyName,
-        /* initializer= */ null,
-        /* staticValue= */ null);
+        /* initializer= */ null,
+        /* staticValue= */ null);
   }
 
   public static GenericProperty createStatic(Classifier owner, String propertyName, Object value) {
     return new GenericProperty(
         owner,
-        /* isInstanceField= */ false,
-        /* isMutable */ false,
-        /* fixedType */ null,
+        /* isInstanceField= */ false,
+        /* isMutable */ false,
+        /* fixedType */ null,
         propertyName,
-        /* initializer= */ null,
-        /* staticValue= */ value);
+        /* initializer= */ null,
+        /* staticValue= */ value);
   }
 
 
@@ -107,9 +108,9 @@ public class GenericProperty implements Property {
       try {
         return initializer.returnType();
       } catch (Exception e) {
-        // Safer than making sure all nodes don't throw when asking for an unresolved return value.
-        // TODO: Might make sense to have a special type for this case instead of null.
-        // e.printStackTrace();
+        // Safer than making sure all nodes don't throw when asking for an unresolved return value.
+        // TODO: Might make sense to have a special type for this case instead of null.
+        // e.printStackTrace();
       }
     }
     return Types.of(staticValue);
@@ -193,6 +194,9 @@ public class GenericProperty implements Property {
 
   @Override
   public Object get(EvaluationContext context, Object instance) {
+    if (instance instanceof AdapterInstance) {
+      throw new RuntimeException("Instance is adapter instance in " + owner + "." + name);
+    }
     return isInstanceField ? ((ClassInstance) instance).properties[fieldIndex] : staticValue;
   }
 
@@ -222,4 +226,7 @@ public class GenericProperty implements Property {
     return initializationDependencies;
   }
 
+  public void setFieldIndex(int i) {
+    fieldIndex = i;
+  }
 }

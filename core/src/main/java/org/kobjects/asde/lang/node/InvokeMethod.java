@@ -30,20 +30,9 @@ public class InvokeMethod extends Node {
     this.name = name;
   }
 
-  public void set(EvaluationContext evaluationContext, Object value) {
-    Object base = children[0].eval(evaluationContext);
-    ListImpl array = (ListImpl) base;
-    int[] indices = new int[children.length - 1];
-    for (int i = 1; i < children.length; i++) {
-      indices[i - 1] = children[i].evalInt(evaluationContext);
-    }
-    array.setValueAt(value, indices);
-  }
-
   @Override
   protected void onResolve(ValidationContext resolutionContext, int line) {
     Type baseType = children[0].returnType();
-    int skipChildren;
 
     if (baseType instanceof MetaType && ((MetaType) baseType).getWrapped() instanceof Classifier) {
       isStaticCall = true;
@@ -69,31 +58,12 @@ public class InvokeMethod extends Node {
   }
 
   public Object eval(EvaluationContext evaluationContext) {
-    Callable function;
-    if (isStaticCall) {
-      Object base = children[0].eval(evaluationContext);
-      function = (Callable) resolvedProperty.get(evaluationContext, base);
+    Callable function = (Callable) resolvedProperty.getStaticValue();
       evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
       for (int i = 0; i < resolvedArguments.length; i++) {
         evaluationContext.push(resolvedArguments[i].eval(evaluationContext));
       }
-    } else {
-      Object base = resolvedArguments[0].eval(evaluationContext);
-      function = (Callable) resolvedProperty.get(evaluationContext, base);
-      evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
-      if (base instanceof AdapterInstance) {
-        evaluationContext.push(((AdapterInstance) base).instance);
-      } else {
-        evaluationContext.push(base);
-      }
-      for (int i = 1; i < resolvedArguments.length; i++) {
-        Object arg = resolvedArguments[i].eval(evaluationContext);
-        if (arg == null) {
-          throw new EvaluationException(resolvedArguments[i], "Argument evaluates to null");
-        }
-        evaluationContext.push(arg);
-      }
-    }
+
      evaluationContext.popN(resolvedArguments.length);
      try {
        Object result = function.call(evaluationContext, resolvedArguments.length);
@@ -106,7 +76,7 @@ public class InvokeMethod extends Node {
      }
   }
 
-  // Shouldn't throw, as it's used outside validation!
+  // Shouldn't throw, as it's used outside validation!
   public Type returnType() {
     if (resolvedProperty == null) {
       return null;

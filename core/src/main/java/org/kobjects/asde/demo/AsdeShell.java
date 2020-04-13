@@ -97,7 +97,7 @@ public class AsdeShell implements Console {
         char[] fill = new char[e.start + 1];
         Arrays.fill(fill, ' ');
         writer.println(new String(fill) + '^');
-        writer.println("?SYNTAX ERROR: " + e.getMessage());
+        writer.println("?SYNTAX ERROR: " + e.getMessage());
         program.lastException = e;
       } catch (WrappedExecutionException e) {
         prompt = true;

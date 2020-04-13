@@ -18,7 +18,7 @@ public class ProgramControl {
     public final List<StartStopListener> startStopListeners = new ArrayList<>();
     public Program program;
 
-    // For debugger until we have something per thread.
+    // For debugger until we have something per thread.
     public EvaluationContext lastCreatedContext;
 
 

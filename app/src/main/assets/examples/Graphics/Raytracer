@@ -156,7 +156,7 @@ class Sphere:
  end
 end
 
-impl Thing for Sphere:
+impl Sphere as Thing:
 
  def surface(self) -> Surface:
    return self.surface_
@@ -193,7 +193,7 @@ class Plane:
  end
 end
 
-impl Thing for Plane:
+impl Plane as Thing:
  def surface(self) -> Surface:
    return self.surface_
  end
@@ -217,7 +217,7 @@ end
 class Shiny:
 end
 
-impl Surface for Shiny:
+impl Shiny as Surface:
  def roughness(self) -> float:
   return 250
  end
@@ -239,7 +239,7 @@ end
 class Checkerboard:
 end
 
-impl Surface for Checkerboard:
+impl Checkerboard as Surface:
  def roughness(self) -> float:
    return 150
  end

@@ -7,10 +7,6 @@ public interface Type extends Typed {
 
    Object getDefaultValue();
 
-   default boolean isAssignableFrom(Type other) {
-      return this.equals(other);
-   }
-
    default boolean supportsChangeListeners() {
       return false;
    }

@@ -19,16 +19,17 @@ public class TraitCast extends Node {
     }
 
     if (type instanceof ClassType && expectedType instanceof Trait) {
-      String adapterName = expectedType + " for " + type;
+      String adapterName = type + " as " + expectedType;
       Property property = context.program.mainModule.getProperty(adapterName);
       if (property == null) {
         throw new RuntimeException("Implementation of " + adapterName + " not found.");
       }
       AdapterType adapterType = (AdapterType) property.getStaticValue();
+      context.addInstanceDependency(adapterType);
       return new TraitCast(node, adapterType);
     }
 
-    throw new RuntimeException("Cannot assign value of type " + type + " to expected type " + expectedType);
+    throw new RuntimeException("Cannot assign value of type " + type + " to expected type " + expectedType);
   }
 
 

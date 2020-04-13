@@ -6,6 +6,7 @@ import org.kobjects.asde.lang.classifier.ClassType;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.Trait;
 import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.classifier.TraitProperty;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.Program;
@@ -51,12 +52,12 @@ public class ProgramParser {
         if (line.startsWith("class ")) {
           int cut = line.lastIndexOf(':');
           String className = line.substring(6, cut).trim();
-          System.out.println("class forward declaration: '" + className + "'");
+          System.out.println("class forward declaration: '" + className + "'");
           program.setDeclaration(className, new ClassType(program));
         } else if (line.startsWith("trait ")) {
           int cut = line.lastIndexOf(':');
           String interfaceName = line.substring("trait".length() + 1, cut).trim();
-          System.out.println("trait forward declaration: '" + interfaceName + "'");
+          System.out.println("trait forward declaration: '" + interfaceName + "'");
           program.setDeclaration(interfaceName, new Trait(program));
         }
         line = reader.readLine();
@@ -79,7 +80,7 @@ public class ProgramParser {
               if (statement instanceof BlockStatement) {
                 depth++;
               }
-              // might be both!
+              // might be both!
               if (statement.closesBlock()) {
                 depth--;
                 if (depth < 0) {
@@ -115,7 +116,7 @@ public class ProgramParser {
           if (currentClassifier != null) {
             currentClassifier.putProperty(GenericProperty.createMethod(currentClassifier, functionName, currentFunction));
           } else if (functionName.equals("main")) {
-            // Implicitly discarding what we have just created...
+            // Implicitly discarding what we have just created...
             currentFunction = program.main;
           } else {
             program.setDeclaration(functionName, currentFunction);
@@ -124,14 +125,14 @@ public class ProgramParser {
           String className = tokenizer.consumeIdentifier();
           tokenizer.consume(":");
           currentClassifier = (ClassType) program.mainModule.getProperty(className).getStaticValue();
-          // currentClass = (UserClass) program.getSymbol(className).getStaticValue();
+          // currentClass = (UserClass) program.getSymbol(className).getStaticValue();
         } else if (tokenizer.tryConsume("impl")) {
-          Trait trait = (Trait) statementParser.parseType(tokenizer);
-          tokenizer.consume("for");
           ClassType classType = (ClassType) statementParser.parseType(tokenizer);
+          tokenizer.consume("as");
+          Trait trait = (Trait) statementParser.parseType(tokenizer);
           tokenizer.consume(":");
           currentClassifier = new AdapterType(classType, trait);
-          program.setDeclaration(trait.toString() + " for " + classType.toString(), currentClassifier);
+          program.setDeclaration( currentClassifier.toString(), currentClassifier);
         } else if (tokenizer.tryConsume("trait")) {
           String interfaceName = tokenizer.consumeIdentifier();
           Trait currentTrait = (Trait) program.mainModule.getProperty(interfaceName).getStaticValue();
@@ -159,10 +160,10 @@ public class ProgramParser {
           } else {
             tokenizer.consume("=");
             Node initilaizer = statementParser.expressionParser.parse(tokenizer);
-            // mutable is (currently?) redundant here...
+            // mutable is (currently?) redundant here...
             program.mainModule.putProperty(GenericProperty.createWithInitializer(program.mainModule, false, !isConst, name, initilaizer));
           }
-          // Push down?
+          // Push down?
           if (tokenizer.currentType != Tokenizer.TokenType.EOF) {
             throw tokenizer.exception("Leftover input", null);
           }
@@ -174,7 +175,7 @@ public class ProgramParser {
 
 
     if (exceptions.size() > 0) {
-      throw new RuntimeException("Loading errors (see console): " + exceptions);
+      throw new RuntimeException("Loading errors (see console): " + exceptions);
     }
   }
 
@@ -192,16 +193,9 @@ public class ProgramParser {
       if (tokenizer.tryConsume("def")) {
         String functionName = tokenizer.consumeIdentifier();
         FunctionType functionType = statementParser.parseFunctionSignature(tokenizer, trait);
-        trait.addProperty(false, functionName, functionType);
+        trait.putProperty(TraitProperty.create(trait, functionName, functionType));
       } else {
-        boolean mutable = tokenizer.tryConsume("mut");
-        if (!mutable) {
-          tokenizer.tryConsume("const");
-        }
-        String name = tokenizer.consumeIdentifier();
-        tokenizer.consume(":");
-        Type type = statementParser.parseType(tokenizer);
-        trait.addProperty(mutable, name, type);
+       throw new RuntimeException("def or end expected.");
       }
     }
     return index;

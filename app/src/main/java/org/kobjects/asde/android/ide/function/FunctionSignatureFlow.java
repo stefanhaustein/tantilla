@@ -352,7 +352,7 @@ public class FunctionSignatureFlow {
 
     Property property;
     if (classifier instanceof Trait) {
-      property = TraitProperty.create((Trait) classifier, false, name, functionType);
+      property = TraitProperty.create((Trait) classifier, name, functionType);
     } else {
       // Module or classifier
       UserFunction userFunction = new UserFunction(mainActivity.program, functionType);

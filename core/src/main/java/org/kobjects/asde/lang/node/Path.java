@@ -120,7 +120,7 @@ public class Path extends SymbolNode {
   public void resolveForAssignment(ValidationContext resolutionContext, Type type, int line) {
     resolve(resolutionContext, line);
 
-    // TODO: Check support...
+    // TODO: Check support...
   }
 
 

@@ -6,5 +6,5 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 
 public interface InstantiableType extends Classifier {
   ClassInstance createInstance(EvaluationContext evaluationContext, Object... values);
-  FunctionType getConstructorSignature(ValidationContext validationContext);
+  FunctionType getConstructorSignature();
 }

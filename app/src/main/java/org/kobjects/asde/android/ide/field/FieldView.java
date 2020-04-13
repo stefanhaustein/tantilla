@@ -33,8 +33,9 @@ public class FieldView extends PropertyView {
         super(mainActivity, symbol);
         this.mainActivity = mainActivity;
         this.field = symbol;
-        boolean isTopLevel = symbol.getOwner() instanceof Module;
-       titleView.setTypeIndicator(symbol.isInstanceField() ? (symbol.isMutable() ? "mut" : "[prop]") : (symbol.isMutable() ? "mut" : "const"), Colors.DARK_ORANGE, !isTopLevel);
+        boolean isTopLevel = false;//symbol.getOwner() instanceof Module;
+       titleView.setTypeIndicator(symbol.isInstanceField() ? (symbol.isMutable() ? "mut" : "[prop]") : (symbol.isMutable() ? "mut" : "const"),
+           symbol.isInstanceField() ? symbol.isMutable() ? Colors.LIGHT_PURPLE : Colors.LIGHT_BLUE_PURPLE : symbol.isMutable() ? Colors.LIGHT_ORANGE : Colors.LIGHT_ORANGE_RED, !isTopLevel);
      //   titleView.setTypeIndicator(symbol.isMutable() ? R.drawable.baseline_lock_open_24 : symbol.isInstanceField() ? R.drawable.outline_lock_24 : R.drawable.baseline_lock_24
       //      , Colors.DARK_PURPLE, !isTopLevel);
         titleView.setMoreClickListener(view -> {

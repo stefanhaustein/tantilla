@@ -7,17 +7,21 @@ public class Colors {
   //  public final int accentLight;
 
     public static final int RED = 0xffdf2640; // 0xffee4444;
-  public static final int C64_BLUE = 0xff483aaa; // 0xff4444ee;
-  public static final int DARK_BLUE = 0xff2c659a; // 0xff4444ee;
-  public static final int LIGHT_BLUE = 0xff54adef; // 0xff4444ee;
+  public static final int LIGHT_ORANGE_RED = 0xffed6a38;
+  public static final int LIGHT_ORANGE = 0xfff2ae30; // 0xffeeaa44;
+  public static final int YELLOW = 0xfff6ce56; // 0xffcc8877;
+  public static final int YELLOW_GREEN = 0xffb5c057;
+  public static final int LIGHT_GREEN = 0xff79b358; // 0xff44ee44;
   public static final int LIGHT_CYAN = 0xff66b0a3;
-    public static final int LIGHT_PURPLE = 0xffab8fd8; // 0xffee66ee;
+  public static final int LIGHT_BLUE = 0xff54adef; // 0xff4444ee;
+  public static final int LIGHT_BLUE_PURPLE = 0xff7f9ee3;
+  public static final int LIGHT_PURPLE = 0xffab8fd8; // 0xffee66ee;
+  public static final int LIGHT_PURPLE_RED = 0xffc55a8c;
+
+  public static final int DARK_BLUE = 0xff2c659a; // 0xff4444ee;
   public static final int DARK_PURPLE = 0xff9366cd; // 0xffee66ee;
 
-  public static final int LIGHT_GREEN = 0xff79b358; // 0xff44ee44;
   public static final int DARK_GREEN = 0xff3b7217; // 0xff44ee44;
-    public static final int YELLOW = 0xfff6ce56; // 0xffcc8877;
-    public static final int LIGHT_ORANGE = 0xfff2ae30; // 0xffeeaa44;
   public static final int DARK_ORANGE = 0xffef9108;
   public static final int LIGHT_BROWN = 0xffda9f83;
   public static final int DARK_BROWN = 0xffda9f83;

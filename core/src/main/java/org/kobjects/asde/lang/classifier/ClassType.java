@@ -20,7 +20,7 @@ public class ClassType implements Classifier, InstantiableType, DeclaredBy {
   final Program program;
   public final TreeMap<String, Property> propertyMap = new TreeMap<>();
 
-  // Theoretically, this could be handled by turning the meta-class into a function type.
+  // Theoretically, this could be handled by turning the meta-class into a function type.
 
   Property declaringSymbol;
 
@@ -76,43 +76,19 @@ public class ClassType implements Classifier, InstantiableType, DeclaredBy {
 
   @Override
   public ClassInstance createInstance(EvaluationContext evaluationContext, Object... ctorValues) {
-    System.out.println("****** Create Instance of " + toString() + " Values: " + Arrays.toString(ctorValues));
+    System.out.println("****** Create Instance of " + toString() + " Values: " + Arrays.toString(ctorValues));
     return new ClassInstance(this, ctorValues);
   }
 
-  void validateAllMethods(Classifier classifier, ValidationContext validationContext) {
-    for (Property property : classifier.getAllProperties()) {
-      if (property.getInitializer() == null && property.getType() instanceof FunctionType) {
-        // We need to initialize all methods, too -- as they can be called via traits.
-        FunctionType functionType = (FunctionType) property.getType();
-        if (functionType.getParameterCount() > 0 && functionType.getParameter(0).getName().equals("self")) {
-          validationContext.validateProperty(property);
-        }
-      }
-    }
-  }
 
   @Override
-  public FunctionType getConstructorSignature(ValidationContext validationContext) {
-    // Ideally, this would be cached.
-    // TODO: Might make sense to have a hidden property for the constructor.
+  public FunctionType getConstructorSignature() {
     ArrayList<Parameter> parameters = new ArrayList<>();
     for (Property property : propertyMap.values()) {
       if (property.isInstanceField()) {
-        validationContext.validateProperty(property);
-        ((GenericProperty) property).fieldIndex = parameters.size();
         parameters.add(property.getInitializer() == null
-              ? Parameter.create(property.getName(), property.getType())
-              : Parameter.create(property.getName(), property.getInitializer()));
-      }
-    }
-    validateAllMethods(this, validationContext);
-    for (Property property : validationContext.program.mainModule.getAllProperties()) {
-      if (property.getStaticValue() instanceof AdapterType) {
-        AdapterType adapterType = (AdapterType) property.getStaticValue();
-        if (adapterType.classifier == this) {
-          validateAllMethods(adapterType, validationContext);
-        }
+            ? Parameter.create(property.getName(), property.getType())
+            : Parameter.create(property.getName(), property.getInitializer()));
       }
     }
     return new FunctionType(this, parameters.toArray(Parameter.EMPTY_ARRAY));

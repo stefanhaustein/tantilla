@@ -7,11 +7,17 @@ import org.kobjects.asde.android.ide.field.FieldView;
 import org.kobjects.asde.android.ide.property.ExpandListener;
 import org.kobjects.asde.android.ide.property.PropertyView;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
+import org.kobjects.asde.lang.classifier.ClassType;
 import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.classifier.Trait;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.classifier.Classifier;
+import org.kobjects.asde.lang.type.MetaType;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.TreeSet;
 
 
 public class PropertyListView extends ExpandableList {
@@ -28,6 +34,24 @@ public class PropertyListView extends ExpandableList {
     return symbolViewMap.get(symbol);
   }
 
+  private static int order(Property property) {
+    if (property.getType() instanceof MetaType && ((MetaType) property.getType()).getWrapped() instanceof Classifier) {
+      Classifier classifier = (Classifier) ((MetaType) property.getType()).getWrapped();
+      if (classifier instanceof Trait) {
+        return 4;
+      }
+      return 5;
+    }
+    if (property.isInstanceField()) {
+      return property.isMutable() ? 7 : 8;
+    }
+    if (property.getType() instanceof FunctionType) {
+      FunctionType functionType = (FunctionType) property.getType();
+      return functionType.getParameterCount() > 0  && functionType.getParameter(0).getName().equals("self") ? 9 : 3;
+    }
+    return property.isMutable() ? 2 : 1;
+  }
+
   /** 
    *
    * @param symbolList The new symbol list
@@ -40,14 +64,26 @@ public class PropertyListView extends ExpandableList {
     System.out.println("########  synchronizeTo: " + symbolList);
 
     removeAllViews();
-    int varCount = 0;
+    //int varCount = 0;
 
     PropertyView matchedView = null;
 
     HashMap<String, PropertyView> newNameViewMap = new HashMap<>();
     HashMap<Property, PropertyView> newSymbolViewMap = new HashMap<>();
 
-    for (Property symbol : symbolList) {
+    TreeSet<Property> sorted = new TreeSet<>(new Comparator<Property>() {
+      @Override
+      public int compare(Property p1, Property p2) {
+        int cmp = Integer.compare(order(p1), order(p2));
+        return cmp == 0 ? p1.getName().compareTo(p2.getName()) : cmp;
+      }
+    });
+    for (Property property : symbolList) {
+      sorted.add(property);
+    }
+
+
+    for (Property symbol : sorted) {
       if (symbol == null) {
         continue;
       }
@@ -78,7 +114,7 @@ public class PropertyListView extends ExpandableList {
           matchedView = propertyView;
         }
       }
-      int index = (propertyView instanceof FieldView) ? varCount++ : getChildCount();
+      int index = /*(propertyView instanceof FieldView) ? varCount++ :*/ getChildCount();
 
       addView(propertyView, index);
       newNameViewMap.put(qualifiedName, propertyView);

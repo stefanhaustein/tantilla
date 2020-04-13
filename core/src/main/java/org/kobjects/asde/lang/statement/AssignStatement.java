@@ -23,7 +23,7 @@ public class AssignStatement extends Statement {
       return false;
     }
     try {
-      // May fail if resolve above has failed.
+      // May fail if resolve above has failed.
       ((AssignableNode) children[0]).resolveForAssignment(resolutionContext, children[1].returnType(), line);
       onResolve(resolutionContext, line);
     } catch (Exception e) {

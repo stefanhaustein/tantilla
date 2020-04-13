@@ -97,6 +97,6 @@ public class ConditionStatement extends BlockStatement {
 
   @Override
   void evalEnd(EvaluationContext context) {
-    // Reached by normal execution of the last else/elif block
+    // Reached by normal execution of the last else/elif block
   }
 }

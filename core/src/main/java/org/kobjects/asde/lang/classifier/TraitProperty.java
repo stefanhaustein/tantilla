@@ -12,38 +12,31 @@ import java.util.Map;
 
 public class TraitProperty implements Property {
   private final Trait owner;
-  private boolean mutable;
   private String name;
-  private Type type;
-  private Map<Node, Exception> errors = Collections.emptyMap();
+  private FunctionType type;
+  private final Callable value;
 
-  TraitProperty(Trait owner, boolean mutable, String name, Type type) {
+  TraitProperty(Trait owner, String name, FunctionType type) {
+    if (type.getParameterCount() == 0 || !type.getParameter(0).getName().equals("self")) {
+      throw new RuntimeException("All trait properties must be methods.");
+    }
+
     this.owner = owner;
-    this.mutable = mutable;
     this.name = name;
     this.type = type;
-  }
-
-  public static Property create(Trait owner, boolean isMutable, String name, Type fixedType) {
-    return new TraitProperty(owner, isMutable, name, fixedType);
-  }
-
-  @Override
-  public Trait getOwner() {
-    return owner;
-  }
-
-/*  @Override
-  public Map<Node, Exception> getErrors() {
-    return errors;
-  }*/
-
-  @Override
-  public Object getStaticValue() {
-    return new Callable() {
+    this.value = new Callable() {
       @Override
       public Object call(EvaluationContext evaluationContext, int paramCount) {
-        throw new RuntimeException("NYI");
+        AdapterInstance adapterInstance = (AdapterInstance) evaluationContext.getParameter(0);
+
+        evaluationContext.push(adapterInstance.instance);
+        evaluationContext.popN(1);
+
+        Callable callable = (Callable) adapterInstance.adapterType.getProperty(name).getStaticValue();
+
+        evaluationContext.ensureExtraStackSpace(callable.getLocalVariableCount());
+
+        return callable.call(evaluationContext, paramCount);
       }
 
       @Override
@@ -58,24 +51,32 @@ public class TraitProperty implements Property {
     };
   }
 
-  /*
-  @Override
-  public Node getInitializer() {
-    return null;
-  }*/
+  public static Property create(Trait owner, String name, FunctionType type) {
+    return new TraitProperty(owner, name, type);
+  }
 
+  @Override
+  public Trait getOwner() {
+    return owner;
+  }
+
+
+  @Override
+  public Object getStaticValue() {
+    return value;
+  }
 
   @Override
   public boolean isMutable() {
-    return mutable;
+    return false;
   }
 
   @Override
   public boolean isInstanceField() {
-    // Hack
-    return !(type instanceof FunctionType);
+    return false;
   }
 
+  @Override
   public void setName(String newName) {
     this.name = newName;
   }
@@ -93,27 +94,17 @@ public class TraitProperty implements Property {
 
   @Override
   public Object get(EvaluationContext context, Object instance) {
-    AdapterInstance adapterInstance = (AdapterInstance) instance;
-    Object value = adapterInstance.adapterType.getProperty(name).get(context, adapterInstance.instance);
-    if (value == null) {
-      throw new NullPointerException();
-    }
     return value;
   }
 
   @Override
   public void set(EvaluationContext context, Object instance, Object value) {
-    ((Classifier) Types.of(instance)).getProperty(name).set(context, instance, value);
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void setFixedType(Type type) {
-    this.type = type;
-  }
-
-  @Override
-  public void setMutable(boolean mutable) {
-    this.mutable = mutable;
+    this.type = (FunctionType) type;
   }
 
 }

@@ -10,7 +10,7 @@ import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 
-// Not static for access to the variables.
+// Not static for access to the variables.
 public class Identifier extends SymbolNode {
   enum Kind {
     UNRESOLVED, LOCAL_VARIABLE, ROOT_MODULE_PROPERTY, ERROR;
@@ -40,7 +40,7 @@ public class Identifier extends SymbolNode {
       }
       resolutionContext.validateProperty(resolvedRootProperty);
       if (resolvedRootProperty.isInstanceField()) {
-        // Modules can't have non-static properties...
+        // Modules can't have non-static properties...
         throw new IllegalStateException();
       }
       mutable = resolvedRootProperty.isMutable();
@@ -54,7 +54,7 @@ public class Identifier extends SymbolNode {
     if (!mutable) {
       throw new RuntimeException("Can't assign to immutable variable '" + name + "'");
     }
-    if (!type.isAssignableFrom(returnType())) {
+    if (!type.equals(returnType())) {
       throw new RuntimeException("Can't assign a value of type " + type + " to '" + name + "' of type " + returnType());
     }
   }

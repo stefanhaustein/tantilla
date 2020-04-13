@@ -56,7 +56,7 @@ public interface Property {
 
   default void setDependenciesAndErrors(HashSet<Property> dependencies, HashMap<Node, Exception> errors) {
     if (dependencies.size() > 0 || errors.size() > 0) {
-      throw new UnsupportedOperationException("Dependencies or errors not expected for " + toString(this) + "; dependencies: " + dependencies + " errors: " + errors);
+      throw new UnsupportedOperationException("Dependencies or errors not expected for " + toString(this) + "; dependencies: " + dependencies + " errors: " + errors);
     }
   }
 

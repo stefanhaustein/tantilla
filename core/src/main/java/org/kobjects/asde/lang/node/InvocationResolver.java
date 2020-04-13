@@ -8,7 +8,7 @@ public class InvocationResolver {
 
   static Node[] resolve(FunctionType signature, Node[] children, int offset, boolean permitPositional, ValidationContext context) {
     if (signature.getParameterCount() < children.length - offset) {
-      throw new RuntimeException("Too many parameters. Expected " + signature.getParameterCount() + " but got " + children.length);
+      throw new RuntimeException("Too many parameters. Expected " + signature.getParameterCount() + " but got " + children.length);
     }
 
     Node[] result = new Node[signature.getParameterCount()];
