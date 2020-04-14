@@ -12,7 +12,7 @@ import org.kobjects.asde.lang.type.Type;
 
 public class TraitCast extends Node {
 
-  static final Node autoCast(Node node, Type expectedType, ValidationContext context) {
+  public static final Node autoCast(Node node, Type expectedType, ValidationContext context) {
     Type type = node.returnType();
     if (expectedType.equals(type)) {
       return node;

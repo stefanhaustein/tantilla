@@ -2,6 +2,7 @@ package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.io.SyntaxColor;
+import org.kobjects.asde.lang.node.TraitCast;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.node.Node;
@@ -10,6 +11,8 @@ import org.kobjects.asde.lang.function.ValidationContext;
 import java.util.Map;
 
 public class ReturnStatement extends Statement {
+
+  Node resolvedChild;
 
   public ReturnStatement(Node... children) {
     super(children);
@@ -21,20 +24,19 @@ public class ReturnStatement extends Statement {
       if (children.length != 0) {
         throw new RuntimeException("Unexpected return value for subroutine.");
       }
+      resolvedChild = null;
     } else {
       if (children.length != 1) {
         throw new RuntimeException("Return value expected for function.");
       }
-      if (!children[0].returnType().equals(resolutionContext.userFunction.getType().getReturnType())) {
-        throw new RuntimeException("Expected return type: " + resolutionContext.userFunction.getType().getReturnType() + "; actual: " + children[0].returnType());
-      }
+      resolvedChild = TraitCast.autoCast(children[0], resolutionContext.userFunction.getType(), resolutionContext);
     }
   }
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
-    if (children.length > 0) {
-      evaluationContext.returnValue = children[0].eval(evaluationContext);
+    if (resolvedChild != null) {
+      evaluationContext.returnValue = resolvedChild.eval(evaluationContext);
     }
     evaluationContext.currentLine = Integer.MAX_VALUE;
     return null;
