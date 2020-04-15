@@ -19,6 +19,8 @@ import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.ClassType;
 import org.kobjects.asde.lang.classifier.Trait;
+import org.kobjects.asde.lang.function.FunctionType;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
 
@@ -81,7 +83,18 @@ public class ClassifierView extends PropertyView {
           for (Trait trait : unimplementedTraits) {
             traitMenu.add(trait.toString()).setOnMenuItemClickListener(item -> {
                AdapterType adapterType = new AdapterType((Classifier) symbol.getStaticValue(), trait);
-               Property implProperty = GenericProperty.createStatic(mainActivity.program.mainModule, adapterType.toString(), adapterType);
+               Property implProperty = GenericProperty.createStatic(
+                   mainActivity.program.mainModule, adapterType.toString(), adapterType);
+
+               for (Property traitProperty : trait.getAllProperties()) {
+                 adapterType.putProperty(
+                     GenericProperty.createMethod(
+                         adapterType,
+                         traitProperty.getName(),
+                         new UserFunction(
+                             mainActivity.program, (FunctionType) traitProperty.getType())));
+               }
+
                mainActivity.program.mainModule.putProperty(implProperty);
                mainActivity.programView.selectImpl(implProperty);
                return true;
