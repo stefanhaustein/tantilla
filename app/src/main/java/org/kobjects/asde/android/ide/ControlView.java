@@ -91,7 +91,7 @@ public class ControlView extends LinearLayout  {
       buttonParams.gravity = Gravity.CENTER_VERTICAL;
       addView(enterButton, buttonParams);
 
-      addView(mainActivity.runControlView, buttonParams);
+      // addView(mainActivity.runControlView, buttonParams);
 
     } else {
       setOrientation(VERTICAL);
@@ -100,7 +100,7 @@ public class ControlView extends LinearLayout  {
       LinearLayout.LayoutParams resultLayoutParams = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
       resultLayoutParams.gravity = Gravity.BOTTOM;
       topBar.addView(resultView, resultLayoutParams);
-      topBar.addView(mainActivity.runControlView);
+  //    topBar.addView(mainActivity.runControlView);
       LinearLayout.LayoutParams topLayoutParams = new LinearLayout.LayoutParams(
           ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
       topLayoutParams.gravity = Gravity.BOTTOM;

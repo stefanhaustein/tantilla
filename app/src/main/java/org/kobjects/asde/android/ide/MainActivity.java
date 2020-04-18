@@ -12,6 +12,7 @@ import android.os.Build;
 import android.provider.OpenableColumns;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.os.Bundle;
 import android.view.Display;
@@ -487,6 +488,10 @@ public class MainActivity extends AppCompatActivity {
       rootView = rootLayout;
 
     } else {
+      Toolbar.LayoutParams runControlParams =new Toolbar.LayoutParams(Toolbar.LayoutParams.WRAP_CONTENT, Toolbar.LayoutParams.WRAP_CONTENT);
+      runControlParams.gravity = Gravity.END;
+      programTitleView.addView(runControlView, runControlParams);
+
       LinearLayout rootLayout = new LinearLayout(this);
       FrameLayout mainView = new FrameLayout(this);
 
