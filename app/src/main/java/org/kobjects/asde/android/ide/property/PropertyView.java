@@ -1,14 +1,18 @@
 package org.kobjects.asde.android.ide.property;
 
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
+import org.kobjects.asde.android.ide.errors.Errors;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.node.Node;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public abstract class PropertyView extends LinearLayout {
   protected final MainActivity mainActivity;
@@ -17,6 +21,7 @@ public abstract class PropertyView extends LinearLayout {
   List<ExpandListener> expandListeners = new ArrayList<>();
   public boolean expanded;
   public Property field;
+  private TextView errorView;
 
   protected ExpandableList contentView;
 
@@ -48,9 +53,28 @@ public abstract class PropertyView extends LinearLayout {
 
   public void refresh() {
     System.out.println("Refreshing: " + field);
-    titleView.setBackgroundColor(field.getErrors().size() > 0 ? Colors.RED : expanded ? Colors.PRIMARY_LIGHT_FILTER : 0);
+    Map<Node, Exception> errors = field.getErrors();
+    titleView.setBackgroundColor(errors.size() > 0 ? Colors.RED : expanded ? Colors.PRIMARY_LIGHT_FILTER : 0);
     if (field.getErrors().size() > 0) {
       System.out.println(field.getErrors());
+    }
+    Exception exception = field.getErrors().get(Node.NO_NODE);
+    if (exception != null) {
+      if (errorView == null) {
+        errorView = new TextView(mainActivity);
+        errorView.setBackgroundColor(Colors.RED);
+        addView(errorView, 1);
+      }
+      errorView.setText(exception.getMessage());
+      errorView.setOnClickListener((a) -> {
+        Errors.show(mainActivity, exception);
+      });
+
+    } else {
+      if (errorView != null) {
+        removeView(errorView);
+        errorView = null;
+      }
     }
   }
 

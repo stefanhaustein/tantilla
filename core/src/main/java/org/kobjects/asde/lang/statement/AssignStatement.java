@@ -1,14 +1,19 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.node.TraitCast;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.function.ValidationContext;
+import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 
 public class AssignStatement extends Statement {
+
+  Node resolvedTarget;
+
   public AssignStatement(Node target, Node value) throws Exception {
     super(target, value);
     if (!(target instanceof AssignableNode)) {
@@ -24,8 +29,8 @@ public class AssignStatement extends Statement {
     }
     try {
       // May fail if resolve above has failed.
-      ((AssignableNode) children[0]).resolveForAssignment(resolutionContext, children[1].returnType(), line);
-      onResolve(resolutionContext, line);
+      Type expectedType = ((AssignableNode) children[0]).resolveForAssignment(resolutionContext, line);
+      resolvedTarget = TraitCast.autoCast(children[1], expectedType, resolutionContext);
     } catch (Exception e) {
       resolutionContext.addError(this, e);
     }
@@ -35,14 +40,11 @@ public class AssignStatement extends Statement {
 
   @Override
   protected void onResolve(ValidationContext resolutionContext, int line) {
-    if (((AssignableNode) children[0]).isConstant()) {
-      throw new RuntimeException("Cannot assign to a constant.");
-    }
   }
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
-    ((AssignableNode) children[0]).set(evaluationContext, children[1].eval(evaluationContext));
+    ((AssignableNode) children[0]).set(evaluationContext, resolvedTarget.eval(evaluationContext));
     return null;
   }
 

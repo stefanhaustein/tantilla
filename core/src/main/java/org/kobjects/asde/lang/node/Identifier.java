@@ -1,8 +1,8 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.classifier.AdapterType;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.LocalSymbol;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.ValidationContext;
@@ -12,6 +12,7 @@ import java.util.Map;
 
 // Not static for access to the variables.
 public class Identifier extends SymbolNode {
+
   enum Kind {
     UNRESOLVED, LOCAL_VARIABLE, ROOT_MODULE_PROPERTY, ERROR;
   }
@@ -21,8 +22,7 @@ public class Identifier extends SymbolNode {
   Kind resolvedKind = Kind.UNRESOLVED;
   LocalSymbol resolvedLocalVariable;
   Property resolvedRootProperty;
-  boolean mutable;
-
+  boolean resolvedMutable;
   public Identifier(String name) {
     this.name = name;
   }
@@ -31,7 +31,7 @@ public class Identifier extends SymbolNode {
     resolvedLocalVariable = resolutionContext.getCurrentBlock().get(name);
     resolvedKind = Kind.ERROR;
     if (resolvedLocalVariable != null) {
-      mutable = resolvedLocalVariable.isMutable();
+      resolvedMutable = resolvedLocalVariable.isMutable();
       resolvedKind = Kind.LOCAL_VARIABLE;
     } else {
       resolvedRootProperty = resolutionContext.program.mainModule.getProperty(name);
@@ -43,20 +43,18 @@ public class Identifier extends SymbolNode {
         // Modules can't have non-static properties...
         throw new IllegalStateException();
       }
-      mutable = resolvedRootProperty.isMutable();
+      resolvedMutable = resolvedRootProperty.isMutable();
       resolvedKind = Kind.ROOT_MODULE_PROPERTY;
     }
   }
 
   @Override
-  public void resolveForAssignment(ValidationContext resolutionContext, Type type, int line) {
-    onResolve(resolutionContext, line);
-    if (!mutable) {
+  public Type resolveForAssignment(ValidationContext resolutionContext, int line) {
+    resolve(resolutionContext, line);
+    if (!resolvedMutable) {
       throw new RuntimeException("Can't assign to immutable variable '" + name + "'");
     }
-    if (!type.equals(returnType())) {
-      throw new RuntimeException("Can't assign a value of type " + type + " to '" + name + "' of type " + returnType());
-    }
+    return returnType();
   }
 
   public void set(EvaluationContext evaluationContext, Object value) {
@@ -74,7 +72,7 @@ public class Identifier extends SymbolNode {
 
   @Override
   public boolean isConstant() {
-    return !mutable;
+    return !resolvedMutable;
   }
 
 

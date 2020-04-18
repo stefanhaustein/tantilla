@@ -117,10 +117,10 @@ public class Path extends SymbolNode {
   }
 
   @Override
-  public void resolveForAssignment(ValidationContext resolutionContext, Type type, int line) {
+  public Type resolveForAssignment(ValidationContext resolutionContext, int line) {
     resolve(resolutionContext, line);
-
     // TODO: Check support...
+    return returnType();
   }
 
 

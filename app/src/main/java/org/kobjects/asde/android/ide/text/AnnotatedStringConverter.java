@@ -10,6 +10,7 @@ import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.annotatedtext.Span;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.Colors;
+import org.kobjects.asde.android.ide.errors.Errors;
 import org.kobjects.asde.android.ide.help.HelpDialog;
 import org.kobjects.asde.lang.io.Format;
 import org.kobjects.asde.lang.io.SyntaxColor;
@@ -42,16 +43,7 @@ public class AnnotatedStringConverter {
             s.setSpan(new ClickableSpan() {
               @Override
               public void onClick(View widget) {
-                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(mainActivity);
-                builder.setTitle("Error");
-                Exception exception = (Exception) span.annotation;
-                builder.setMessage(Format.exceptionToString(exception));
-                builder.setNegativeButton("Dismiss", null);
-                if (linkedLine > NO_LINKED_LINE) {
-                  builder.setPositiveButton("Edit", (dialog, index) ->
-                      mainActivity.console.edit(linkedLine));
-                }
-                builder.show();
+                Errors.show(mainActivity, (Exception) span.annotation, linkedLine);
               }
             }, span.start, span.end, 0);
           }

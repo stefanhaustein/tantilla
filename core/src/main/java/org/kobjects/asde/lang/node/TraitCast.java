@@ -12,24 +12,30 @@ import org.kobjects.asde.lang.type.Type;
 
 public class TraitCast extends Node {
 
-  public static final Node autoCast(Node node, Type expectedType, ValidationContext context) {
-    Type type = node.returnType();
-    if (expectedType.equals(type)) {
-      return node;
+  public static AdapterType getAdapterType(Type actualType, Type expectedType, ValidationContext validationContext) {
+    if (expectedType.equals(actualType)) {
+      return null;
     }
 
-    if (type instanceof ClassType && expectedType instanceof Trait) {
-      String adapterName = type + " as " + expectedType;
-      Property property = context.program.mainModule.getProperty(adapterName);
+    if (actualType instanceof ClassType && expectedType instanceof Trait) {
+      String adapterName = actualType + " as " + expectedType;
+      Property property = validationContext.program.mainModule.getProperty(adapterName);
       if (property == null) {
         throw new RuntimeException("Implementation of " + adapterName + " not found.");
       }
       AdapterType adapterType = (AdapterType) property.getStaticValue();
-      context.addInstanceDependency(adapterType);
-      return new TraitCast(node, adapterType);
+      validationContext.addInstanceDependency(adapterType);
+      return adapterType;
     }
+    throw new RuntimeException("Cannot assign value of type " + actualType + " to expected type " + expectedType);
 
-    throw new RuntimeException("Cannot assign value of type " + type + " to expected type " + expectedType);
+  }
+
+  public static final Node autoCast(Node node, Type expectedType, ValidationContext context) {
+    AdapterType adapterType = getAdapterType(node.returnType(), expectedType, context);
+
+    return adapterType == null ? node : new TraitCast(node, adapterType);
+
   }
 
 

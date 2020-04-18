@@ -1,6 +1,9 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.classifier.AdapterInstance;
+import org.kobjects.asde.lang.classifier.AdapterType;
+import org.kobjects.asde.lang.classifier.ClassInstance;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.list.ListImpl;
@@ -31,26 +34,17 @@ public class ArrayAccess extends AssignableNode {
   }
 
   @Override
-  public void resolveForAssignment(ValidationContext resolutionContext, Type type, int line) {
+  public Type resolveForAssignment(ValidationContext resolutionContext, int line) {
     resolve(resolutionContext, line);
-
-    if (!(children[0].returnType() instanceof ListType)) {
+    if (kind != Kind.ARRAY_ACCESS && kind != Kind.ERROR) {
       throw new RuntimeException("Array expected");
     }
-
-    if (!type.equals(returnType())) {
-      throw new RuntimeException("Expected type for assignment: " + type + " actual type: " + returnType());
-    }
+    return returnType();
   }
 
   public void set(EvaluationContext evaluationContext, Object value) {
-    Object base = children[0].eval(evaluationContext);
-    ListImpl array = (ListImpl) base;
-    int[] indices = new int[children.length - 1];
-    for (int i = 1; i < children.length; i++) {
-      indices[i - 1] = children[i].evalInt(evaluationContext);
-    }
-    array.setValueAt(value, indices);
+    ListImpl list = (ListImpl) children[0].eval(evaluationContext);
+    list.setValueAt(value, children[1].evalInt(evaluationContext));
   }
 
   @Override

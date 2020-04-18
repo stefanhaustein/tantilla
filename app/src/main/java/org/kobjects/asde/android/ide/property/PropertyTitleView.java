@@ -1,11 +1,16 @@
 package org.kobjects.asde.android.ide.property;
 
 import android.content.Context;
+import android.graphics.Path;
 import android.graphics.Typeface;
 import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import androidx.appcompat.widget.AppCompatTextView;
+
+import android.graphics.drawable.shapes.PathShape;
+import android.graphics.drawable.shapes.RectShape;
+import android.graphics.drawable.shapes.RoundRectShape;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,21 +68,32 @@ public class PropertyTitleView extends LinearLayout {
       removeView(typeView);
     }
 
-
     TextView typeView = new AppCompatTextView(getContext());
-      typeView.setGravity(Gravity.CENTER);
-      typeView.setTextSize((s.length() == 1 ? 24 :  12) * (small ? 0.8f : 1));
-      if (!small) {
-        typeView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-      }
-      int size = Dimensions.dpToPx(getContext(), 48);
-      LayoutParams typeLayoutParams =  new LayoutParams(size, size);
-      typeLayoutParams.gravity = Gravity.TOP;
-      addView(typeView, 0, typeLayoutParams);
+    typeView.setGravity(Gravity.CENTER);
+    typeView.setTextSize((s.length() == 1 ? 24 :  12) * (small ? 0.8f : 1));
+    if (!small) {
+      typeView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+    }
+    int size = Dimensions.dpToPx(getContext(), 48);
+    LayoutParams typeLayoutParams =  new LayoutParams(size, size);
+    typeLayoutParams.gravity = Gravity.TOP;
+    addView(typeView, 0, typeLayoutParams);
 
-    ShapeDrawable shape = new ShapeDrawable(new OvalShape());
+    float r = Dimensions.dpToPx(getContext(), 2);
+    float[] radii = new float[]{r, r, r, r, r, r, r, r};
+
+    Path path = new Path();
+    path.moveTo(-0.5f, 0);
+    path.lineTo(9, 0);
+    path.lineTo(10.5f, 5);
+    path.lineTo(9, 10);
+    path.lineTo(-0.5f, 10);
+    path.lineTo(1, 5);
+    path.close();
+
+    ShapeDrawable shape = new ShapeDrawable(s.equals("def") ? new PathShape(path, 10, 10) :  new RoundRectShape(radii, null, null));// : new OvalShape());
     shape.getPaint().setColor(color);
-    int padding = Dimensions.dpToPx(getContext(), small ? 10 : 6);
+    int padding = Dimensions.dpToPx(getContext(), small ? 11 : 6);
 
     typeView.setBackground(new InsetDrawable(shape, padding));
     typeView.setText(s);

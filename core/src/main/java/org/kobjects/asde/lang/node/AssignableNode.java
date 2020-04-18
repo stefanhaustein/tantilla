@@ -10,7 +10,7 @@ public abstract class AssignableNode extends Node {
         super(children);
     }
 
-    public abstract void resolveForAssignment(ValidationContext resolutionContext, Type type, int line);
+    public abstract Type resolveForAssignment(ValidationContext resolutionContext, int line);
 
     public abstract void set(EvaluationContext evaluationContext, Object value);
 

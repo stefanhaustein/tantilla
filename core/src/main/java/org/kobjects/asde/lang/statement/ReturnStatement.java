@@ -29,7 +29,7 @@ public class ReturnStatement extends Statement {
       if (children.length != 1) {
         throw new RuntimeException("Return value expected for function.");
       }
-      resolvedChild = TraitCast.autoCast(children[0], resolutionContext.userFunction.getType(), resolutionContext);
+      resolvedChild = TraitCast.autoCast(children[0], resolutionContext.userFunction.getType().getReturnType(), resolutionContext);
     }
   }
 
