@@ -20,7 +20,7 @@ public abstract class PropertyView extends LinearLayout {
   public PropertyTitleView titleView;
   List<ExpandListener> expandListeners = new ArrayList<>();
   public boolean expanded;
-  public Property field;
+  public Property property;
   private TextView errorView;
 
   protected ExpandableList contentView;
@@ -29,7 +29,7 @@ public abstract class PropertyView extends LinearLayout {
   protected PropertyView(MainActivity mainActivity, Property symbol) {
     super(mainActivity);
     this.mainActivity = mainActivity;
-    this.field = symbol;
+    this.property = symbol;
     setOrientation(VERTICAL);
 
     titleView = new PropertyTitleView(mainActivity, symbol.getName());
@@ -52,13 +52,13 @@ public abstract class PropertyView extends LinearLayout {
   public abstract void syncContent();
 
   public void refresh() {
-    System.out.println("Refreshing: " + field);
-    Map<Node, Exception> errors = field.getErrors();
+    System.out.println("Refreshing: " + property);
+    Map<Node, Exception> errors = property.getErrors();
     titleView.setBackgroundColor(errors.size() > 0 ? Colors.RED : expanded ? Colors.PRIMARY_LIGHT_FILTER : 0);
-    if (field.getErrors().size() > 0) {
-      System.out.println(field.getErrors());
+    if (property.getErrors().size() > 0) {
+      System.out.println(property.getErrors());
     }
-    Exception exception = field.getErrors().get(Node.NO_NODE);
+    Exception exception = property.getErrors().get(Node.NO_NODE);
     if (exception != null) {
       if (errorView == null) {
         errorView = new TextView(mainActivity);

@@ -301,7 +301,7 @@ public class HelpDialog {
 
       boolean first = true;
 
-      for (Property descriptor : classifier.getAllProperties()) {
+      for (Property descriptor : classifier.getProperties()) {
         if (isMethod(descriptor) == methods) {
           if (first) {
             addSubtitle(methods ? "Methods" : "Properties");

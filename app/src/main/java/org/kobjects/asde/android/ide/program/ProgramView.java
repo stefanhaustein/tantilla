@@ -11,8 +11,6 @@ import org.kobjects.asde.android.ide.property.PropertyListView;
 import org.kobjects.asde.android.ide.property.PropertyView;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.ClassType;
-import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.runtime.StartStopListener;
@@ -21,7 +19,6 @@ import java.util.Collections;
 
 public class ProgramView extends PropertyListView {
   boolean expanded;
-  public FunctionView mainFunctionView;
   private final MainActivity mainActivity;
   private CodeLineView highlightedLine;
   public FunctionView currentFunctionView;
@@ -36,7 +33,7 @@ public class ProgramView extends PropertyListView {
           currentPropertyView.setExpanded(false, animated);
         }
         currentPropertyView = propertyView;
-        currentFunctionView = propertyView instanceof FunctionView ? (FunctionView) propertyView : mainFunctionView;
+        currentFunctionView = propertyView instanceof FunctionView ? (FunctionView) propertyView : null;
       }
     }
   };
@@ -91,7 +88,7 @@ public class ProgramView extends PropertyListView {
   }
 
   public void refreshImpl() {
-    for (PropertyView propertyView : nameViewMap.values()) {
+    for (PropertyView propertyView : propertyViewMap.values()) {
       propertyView.refresh();
     }
   }
@@ -121,28 +118,14 @@ public class ProgramView extends PropertyListView {
             + (program.legacyMode ? " (legacy mode)️" : "")
         + (mainActivity.isUnsaved() ? "*" : "")); */
 
-    if (mainFunctionView == null || mainFunctionView.field != mainActivity.program.main.getDeclaringSymbol()) {
-      mainFunctionView = new FunctionView(mainActivity, mainActivity.program.main.getDeclaringSymbol());
-      mainFunctionView.addExpandListener(expandListener);
-      mainFunctionView.setExpanded(true, false);
-
-      currentFunctionView = mainFunctionView;
-      currentPropertyView = mainFunctionView;
-
-    }
 
     if (!expanded) {
       synchronizeTo(Collections.emptyList(), expandListener, null);
       return;
     }
 
-    PropertyView expandView = synchronizeTo(mainActivity.program.mainModule.getUserProperties(), expandListener, expandOnSync);
-    addView(mainFunctionView);
+    PropertyView expandView = synchronizeTo(mainActivity.program.mainModule.getProperties(), expandListener, expandOnSync);
 
-    mainFunctionView.syncContent();
-    if (expandOnSync == mainActivity.program.main.getDeclaringSymbol()) {
-      expandView = mainFunctionView;
-    }
 
     if (expandView != null) {
       expandView.setExpanded(true, true);
@@ -186,26 +169,26 @@ public class ProgramView extends PropertyListView {
    */
   public PropertyView selectImpl(Property symbol) {
     PropertyView targetView = null;
-    if (currentPropertyView != null && currentPropertyView.field == symbol) {
+    if (currentPropertyView != null && currentPropertyView.property == symbol) {
       targetView = currentPropertyView;
     } else {
       for (int i = 0; i < getChildCount(); i++) {
         PropertyView childView = (PropertyView) getChildAt(i);
-        if (childView.field == symbol) {
+        if (childView.property == symbol) {
           targetView = childView;
           break;
         }
         if (childView instanceof ClassifierView) {
           ClassifierView classifierView = (ClassifierView) childView;
-          Classifier classImplementation = (Classifier) classifierView.field.getStaticValue();
+          Classifier classImplementation = (Classifier) classifierView.property.getStaticValue();
           Property symbolFound = null;
-          for (Property descriptor : classImplementation.getAllProperties()) {
+          for (Property descriptor : classImplementation.getProperties()) {
             if (descriptor == symbol) {
               symbolFound = descriptor;
               break;
             }
           }
-          targetView = classifierView.getContentView().synchronizeTo(classImplementation.getAllProperties(), classifierView.expandListener, symbolFound);
+          targetView = classifierView.getContentView().synchronizeTo(classImplementation.getProperties(), classifierView.expandListener, symbolFound);
           break;
         }
       }

@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.InstantiableType;
+import org.kobjects.asde.lang.classifier.InstantiableClassType;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.io.SyntaxColor;
@@ -57,8 +57,8 @@ public class Invoke extends Node {
       FunctionType functionType = (FunctionType) children[0].returnType();
       resolvedArguments = InvocationResolver.resolve(functionType, children, 1, true, resolutionContext);
       kind = Kind.FUNCTION;
-    } else if (baseType instanceof MetaType && ((MetaType) baseType).getWrapped() instanceof InstantiableType) {
-      InstantiableType instantiable = (InstantiableType) ((MetaType) baseType).getWrapped();
+    } else if (baseType instanceof MetaType && ((MetaType) baseType).getWrapped() instanceof InstantiableClassType) {
+      InstantiableClassType instantiable = (InstantiableClassType) ((MetaType) baseType).getWrapped();
       resolutionContext.addInstanceDependency(instantiable);
       resolvedArguments = InvocationResolver.resolve(instantiable.getConstructorSignature(), children, 1, false, resolutionContext);
       kind = Kind.CONSTRUCTOR;
@@ -88,7 +88,7 @@ public class Invoke extends Node {
         for (int i = 0; i < values.length; i++) {
           values[i] = resolvedArguments[i].eval(evaluationContext);
         }
-        return ((InstantiableType) ((MetaType) (children[0].returnType())).getWrapped()).createInstance(evaluationContext, values);
+        return ((InstantiableClassType) ((MetaType) (children[0].returnType())).getWrapped()).createInstance(evaluationContext, values);
       default:
         throw new RuntimeException(kind + ": " + this);
     }

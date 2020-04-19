@@ -103,8 +103,8 @@ public class TraitProperty implements Property {
   }
 
   @Override
-  public void setFixedType(Type type) {
-    this.type = (FunctionType) type;
+  public void changeFunctionType(FunctionType type) {
+    this.type = type;
   }
 
 }

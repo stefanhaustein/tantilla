@@ -1,24 +1,19 @@
 package org.kobjects.asde.android.ide.field;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.property.DeleteFlow;
 import org.kobjects.asde.android.ide.property.RenameFlow;
 import org.kobjects.asde.android.ide.property.PropertyView;
-import org.kobjects.asde.lang.classifier.Module;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.node.ArrayLiteral;
-import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.type.Type;
 
@@ -32,7 +27,7 @@ public class FieldView extends PropertyView {
     public FieldView(MainActivity mainActivity, Property symbol) {
         super(mainActivity, symbol);
         this.mainActivity = mainActivity;
-        this.field = symbol;
+        this.property = symbol;
         boolean isTopLevel = false;//symbol.getOwner() instanceof Module;
        titleView.setTypeIndicator(symbol.isInstanceField() ? (symbol.isMutable() ? "mut" : "[prop]") : (symbol.isMutable() ? "mut" : "const"),
            symbol.isInstanceField() ? symbol.isMutable() ? Colors.LIGHT_PURPLE : Colors.LIGHT_BLUE_PURPLE : symbol.isMutable() ? Colors.LIGHT_ORANGE : Colors.LIGHT_ORANGE_RED, !isTopLevel);
@@ -41,7 +36,7 @@ public class FieldView extends PropertyView {
         titleView.setMoreClickListener(view -> {
             PopupMenu popupMenu = new PopupMenu(getContext(), view);
             popupMenu.getMenu().add("Edit").setOnMenuItemClickListener(item -> {
-                FieldFlow.editProperties(mainActivity, symbol);
+                FieldFlow.editProperties(mainActivity, this);
                 return true;
             });
             popupMenu.getMenu().add("Rename").setOnMenuItemClickListener(item -> {
@@ -93,16 +88,16 @@ public class FieldView extends PropertyView {
 
     public void refresh() {
         super.refresh();
-        if (cache != null && (field.getStaticValue() == cache || field.getType() == cache)) {
+        if (cache != null && (property.getStaticValue() == cache || property.getType() == cache)) {
             return;
         }
         StringBuilder sb = new StringBuilder(" ");
-        if (field.getStaticValue() != null) {
-            cache = field.getStaticValue();
+        if (property.getStaticValue() != null) {
+            cache = property.getStaticValue();
             sb.append(cache);
-        } else if (field.getType() != null) {
-            cache = field.getType();
-            sb.append('(').append(field.getType()).append(')');
+        } else if (property.getType() != null) {
+            cache = property.getType();
+            sb.append('(').append(property.getType()).append(')');
         } else {
             cache = null;
             sb.append("?");
@@ -125,8 +120,8 @@ public class FieldView extends PropertyView {
 
         codeView.removeAllViews();
 
-        if (field.getInitializer() != null) {
-                addLine(codeView, 1, field.getInitializer());
+        if (property.getInitializer() != null) {
+                addLine(codeView, 1, property.getInitializer());
        }
     }
 }

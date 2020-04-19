@@ -4,25 +4,20 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.classifier.ClassifierView;
 import org.kobjects.asde.android.ide.field.FieldView;
-import org.kobjects.asde.android.ide.property.ExpandListener;
-import org.kobjects.asde.android.ide.property.PropertyView;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
-import org.kobjects.asde.lang.classifier.ClassType;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.Trait;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.type.MetaType;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.TreeSet;
 
 
 public class PropertyListView extends ExpandableList {
-  public HashMap<String, PropertyView> nameViewMap = new HashMap<>();
-  HashMap<Property, PropertyView> symbolViewMap = new HashMap<>();
+  protected HashMap<Property, PropertyView> propertyViewMap = new HashMap<>();
   private final MainActivity mainActivity;
 
   public PropertyListView(MainActivity mainActivity) {
@@ -31,7 +26,7 @@ public class PropertyListView extends ExpandableList {
   }
 
   public PropertyView findViewBySymbol(Property symbol) {
-    return symbolViewMap.get(symbol);
+    return propertyViewMap.get(symbol);
   }
 
   private static int order(Property property) {
@@ -47,7 +42,7 @@ public class PropertyListView extends ExpandableList {
     }
     if (property.getType() instanceof FunctionType) {
       FunctionType functionType = (FunctionType) property.getType();
-      return functionType.getParameterCount() > 0  && functionType.getParameter(0).getName().equals("self") ? 9 : 3;
+      return functionType.getParameterCount() > 0  && functionType.getParameter(0).getName().equals("self") ? 9 : property.getName().equals("main")? 10 : 3;
     }
     return property.isMutable() ? 2 : 1;
   }
@@ -68,8 +63,7 @@ public class PropertyListView extends ExpandableList {
 
     PropertyView matchedView = null;
 
-    HashMap<String, PropertyView> newNameViewMap = new HashMap<>();
-    HashMap<Property, PropertyView> newSymbolViewMap = new HashMap<>();
+    HashMap<Property, PropertyView> newPropertyViewMap = new HashMap<>();
 
     TreeSet<Property> sorted = new TreeSet<>(new Comparator<Property>() {
       @Override
@@ -83,45 +77,35 @@ public class PropertyListView extends ExpandableList {
     }
 
 
-    for (Property symbol : sorted) {
-      if (symbol == null) {
-        continue;
-      }
-      // TODO: Does the qualified name need to be sufficiently specific to disallow cross-type
-      // mismatches? Adding the type check will close changed function signatures.
-      String qualifiedName = symbol.getName(); // + " " + symbol.getType();
-      PropertyView propertyView = nameViewMap.get(qualifiedName);
+    for (Property property : sorted) {
+      PropertyView propertyView = propertyViewMap.get(property);
       if (propertyView != null) {
         propertyView.syncContent();
       } else {
-        if (symbol.getStaticValue() instanceof Classifier) {
-          ClassifierView classifierView = new ClassifierView(mainActivity, symbol);
+        if (property.getStaticValue() instanceof Classifier) {
+          ClassifierView classifierView = new ClassifierView(mainActivity, property);
           propertyView = classifierView;
           classifierView.addExpandListener(expandListener);
           if (matchedView == null && returnViewForSymbol != null) {
             matchedView = classifierView.getContentView().findViewBySymbol(returnViewForSymbol);
           }
-        } else if (symbol.getType() instanceof FunctionType) {
-          FunctionView functionView = new FunctionView(mainActivity, symbol);
+        } else if (property.getType() instanceof FunctionType) {
+          FunctionView functionView = new FunctionView(mainActivity, property);
           propertyView = functionView;
           functionView.addExpandListener(expandListener);
         } else {
-          FieldView variableView = new FieldView(mainActivity, symbol);
+          FieldView variableView = new FieldView(mainActivity, property);
           variableView.addExpandListener(expandListener);
           propertyView = variableView;
         }
-        if (symbol == returnViewForSymbol) {
+        if (property == returnViewForSymbol) {
           matchedView = propertyView;
         }
       }
-      int index = /*(propertyView instanceof FieldView) ? varCount++ :*/ getChildCount();
-
-      addView(propertyView, index);
-      newNameViewMap.put(qualifiedName, propertyView);
-      newSymbolViewMap.put(symbol, propertyView);
+      addView(propertyView);
+      newPropertyViewMap.put(property, propertyView);
     }
-    nameViewMap = newNameViewMap;
-    symbolViewMap = newSymbolViewMap;
+    propertyViewMap = newPropertyViewMap;
 
     return matchedView;
   }

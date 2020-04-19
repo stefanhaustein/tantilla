@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.classifier;
 
+import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.program.Program;
 
 import java.util.ArrayList;
@@ -8,32 +9,28 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class Module extends ClassType {
-  TreeMap<String, Object> builtins = new TreeMap<>();
+public class Module extends AbstractClassifier {
+  TreeMap<String, GenericProperty> builtins = new TreeMap<>();
 
   public Module(Program program) {
     super(program);
   }
 
   public void addBuiltin(String name, Object value) {
-    builtins.put(name, value);
-    putProperty(GenericProperty.createStatic(this, name, value));
+    addBuiltin(GenericProperty.createStatic(this, name, value));
   }
 
-  public Map<String, Object> builtins() {
-    return builtins;
+  public void addBuiltin(GenericProperty property) {
+    builtins.put(property.name, property);
   }
 
+  public Collection<GenericProperty> builtins() {
+    return builtins.values();
+  }
 
-  @Override
-  public Collection<GenericProperty> getUserProperties() {
-    ArrayList<GenericProperty> userProperties = new ArrayList<>();
-    for (Property property : propertyMap.values()) {
-      if (property instanceof GenericProperty && !builtins.containsKey(property.getName())) {
-        userProperties.add((GenericProperty) property);
-      }
-    }
-    return userProperties;
+  public Property getProperty(String name) {
+    Property result = super.getProperty(name);
+    return result == null ? builtins.get(name) : result;
   }
 
   public Collection<Property> getBuiltinProperties() {
@@ -42,5 +39,15 @@ public class Module extends ClassType {
       result.add(getProperty(key));
     }
     return result;
+  }
+
+  @Override
+  public CharSequence getDocumentation() {
+    return null;
+  }
+
+  @Override
+  public void toString(AnnotatedStringBuilder asb) {
+    asb.append(toString());
   }
 }

@@ -1,5 +1,5 @@
 package org.kobjects.asde.lang.classifier;
 
-public interface UserPropertyChangeListener {
+public interface PropertyChangeListener {
     void propertyDefinitionChanged(Property symbol);
 }

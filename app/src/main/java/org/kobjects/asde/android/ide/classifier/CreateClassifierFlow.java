@@ -5,6 +5,7 @@ import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.android.ide.property.PropertyNameValidator;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.ClassType;
+import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Trait;
 
 public class CreateClassifierFlow {
@@ -19,7 +20,9 @@ public class CreateClassifierFlow {
         .setPositiveLabel("Create")
         .start(result -> {
           Classifier clasifier = kind == Kind.CLASS ? new ClassType(mainActivity.program) : new Trait(mainActivity.program);
-          mainActivity.program.setDeclaration(result[0], clasifier);
+          synchronized (mainActivity.program) {
+            mainActivity.program.mainModule.putProperty(GenericProperty.createStatic(mainActivity.program.mainModule, result[0], clasifier));
+          }
           mainActivity.program.notifyProgramChanged();
         });
   }

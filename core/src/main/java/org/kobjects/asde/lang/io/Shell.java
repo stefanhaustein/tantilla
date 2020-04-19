@@ -1,12 +1,11 @@
 package org.kobjects.asde.lang.io;
 
-import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.asde.lang.classifier.Classifier;
+import org.kobjects.asde.lang.classifier.Classifiers;
 import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.Program;
@@ -20,7 +19,6 @@ import org.kobjects.expressionparser.Tokenizer;
 import org.kobjects.asde.lang.function.FunctionType;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 
 public class Shell {
@@ -208,7 +206,7 @@ public class Shell {
         AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
         Property target = tryConsumeProperty(tokenizer);
         if (target == null) {
-          Classifier.list(asb, program.mainModule.getUserProperties(), "");
+          Classifiers.list(asb, program.mainModule.getProperties(), "");
         } else {
           target.list(asb);
         }

@@ -27,7 +27,6 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class ClassifierView extends PropertyView {
@@ -82,11 +81,11 @@ public class ClassifierView extends PropertyView {
           Menu traitMenu = addMenu.addSubMenu("Implement Trait");
           for (Trait trait : unimplementedTraits) {
             traitMenu.add(trait.toString()).setOnMenuItemClickListener(item -> {
-               AdapterType adapterType = new AdapterType((Classifier) symbol.getStaticValue(), trait);
+               AdapterType adapterType = new AdapterType((ClassType) symbol.getStaticValue(), trait);
                Property implProperty = GenericProperty.createStatic(
                    mainActivity.program.mainModule, adapterType.toString(), adapterType);
 
-               for (Property traitProperty : trait.getAllProperties()) {
+               for (Property traitProperty : trait.getProperties()) {
                  adapterType.putProperty(
                      GenericProperty.createMethod(
                          adapterType,
@@ -124,14 +123,14 @@ public class ClassifierView extends PropertyView {
   private Set<Trait> getUnimplementedTraits() {
     HashSet<Trait> candidates = new HashSet<>();
     HashSet<Trait> implemented = new HashSet<>();
-    for (Property property : mainActivity.program.mainModule.getAllProperties()) {
+    for (Property property : mainActivity.program.mainModule.getProperties()) {
       if (property.getType() instanceof MetaType) {
         Type type = ((MetaType) property.getType()).getWrapped();
         if (type instanceof Trait) {
           candidates.add((Trait) type);
         } else if (type instanceof AdapterType) {
           AdapterType adapterType = (AdapterType) type;
-          if (adapterType.classifier == field.getStaticValue()) {
+          if (adapterType.classType == this.property.getStaticValue()) {
             implemented.add(adapterType.trait);
           }
         }
@@ -162,8 +161,8 @@ public class ClassifierView extends PropertyView {
     }
 
     Iterable<? extends Property> symbols;
-    if (field.getStaticValue() instanceof Classifier) {
-      symbols = ((Classifier) field.getStaticValue()).getAllProperties();
+    if (property.getStaticValue() instanceof Classifier) {
+      symbols = ((Classifier) property.getStaticValue()).getProperties();
     } else {
       symbols = new ArrayList<>();
    //   symbols = ((Trait) symbol.getStaticValue()).propertyMap.values();

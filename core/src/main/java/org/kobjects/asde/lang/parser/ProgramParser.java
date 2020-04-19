@@ -53,12 +53,16 @@ public class ProgramParser {
           int cut = line.lastIndexOf(':');
           String className = line.substring(6, cut).trim();
           System.out.println("class forward declaration: '" + className + "'");
-          program.setDeclaration(className, new ClassType(program));
+          synchronized (program) {
+            program.mainModule.putProperty(GenericProperty.createStatic(program.mainModule, className, new ClassType(program)));
+          }
         } else if (line.startsWith("trait ")) {
           int cut = line.lastIndexOf(':');
           String interfaceName = line.substring("trait".length() + 1, cut).trim();
           System.out.println("trait forward declaration: '" + interfaceName + "'");
-          program.setDeclaration(interfaceName, new Trait(program));
+          synchronized (program) {
+            program.mainModule.putProperty(GenericProperty.createStatic(program.mainModule, interfaceName, new Trait(program)));
+          }
         }
         line = reader.readLine();
       }
@@ -119,7 +123,9 @@ public class ProgramParser {
             // Implicitly discarding what we have just created...
             currentFunction = program.main;
           } else {
-            program.setDeclaration(functionName, currentFunction);
+            synchronized (program) {
+              program.mainModule.putProperty(GenericProperty.createStatic(program.mainModule, functionName, currentFunction));
+            }
           }
         } else if (tokenizer.tryConsume("class")) {
           String className = tokenizer.consumeIdentifier();
@@ -132,7 +138,9 @@ public class ProgramParser {
           Trait trait = (Trait) statementParser.parseType(tokenizer);
           tokenizer.consume(":");
           currentClassifier = new AdapterType(classType, trait);
-          program.setDeclaration( currentClassifier.toString(), currentClassifier);
+          synchronized (program) {
+            program.mainModule.putProperty(GenericProperty.createStatic(program.mainModule, currentClassifier.toString(), currentClassifier));
+          }
         } else if (tokenizer.tryConsume("trait")) {
           String interfaceName = tokenizer.consumeIdentifier();
           Trait currentTrait = (Trait) program.mainModule.getProperty(interfaceName).getStaticValue();

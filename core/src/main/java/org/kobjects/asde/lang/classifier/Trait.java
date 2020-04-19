@@ -10,13 +10,11 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.Collection;
 import java.util.TreeMap;
 
-public class Trait implements Classifier, DeclaredBy {
-  Program program;
+public class Trait extends AbstractClassifier implements DeclaredBy {
   Property declaringSymbol;
-    public final TreeMap<String, TraitProperty> propertyMap = new TreeMap<>();
 
   public Trait(Program program) {
-    this.program = program;
+    super(program);
   }
 
   @Override
@@ -27,16 +25,6 @@ public class Trait implements Classifier, DeclaredBy {
   @Override
   public Property getDeclaringSymbol() {
     return declaringSymbol;
-  }
-
-  @Override
-  public Property getProperty(String name) {
-    return propertyMap.get(name);
-  }
-
-  @Override
-  public Collection<? extends Property> getAllProperties() {
-    return propertyMap.values();
   }
 
   @Override
@@ -51,25 +39,15 @@ public class Trait implements Classifier, DeclaredBy {
 
   @Override
   public Object getDefaultValue() {
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override
-  public Type getType() {
-    return new MetaType(this);
-  }
-
   public void putProperty(Property property) {
     if (!(property instanceof TraitProperty)) {
       throw new RuntimeException("TraitProperty required");
     }
-    propertyMap.put(property.getName(), (TraitProperty) property);
-  }
-
-
-  @Override
-  public void remove(String propertyName) {
-    propertyMap.remove(propertyName);
+    super.putProperty(property);
   }
 
   @Override

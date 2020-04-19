@@ -10,13 +10,11 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
-import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.property.DeleteFlow;
 import org.kobjects.asde.android.ide.property.RenameFlow;
 import org.kobjects.asde.android.ide.property.PropertyView;
-import org.kobjects.asde.lang.classifier.Module;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.FunctionType;
@@ -36,13 +34,12 @@ public class FunctionView extends PropertyView {
     this.userFunction = (Callable) symbol.getStaticValue();
 
     boolean isMain = userFunction == mainActivity.program.main;
-    boolean topLevel = false;//(userFunction.getDeclaringSymbol().getOwner() instanceof Module);
     boolean isMethod = userFunction.getType().getParameterCount() > 0 && userFunction.getType().getParameter(0).getName().equals("self");
 
     titleView.setTypeIndicator(
           "def",
           isMethod ? Colors.LIGHT_PURPLE_RED : isMain ? Colors.PRIMARY_FILTER : Colors.YELLOW,
-          !topLevel);
+          true);
 
     titleView.setMoreClickListener(clicked -> {
       PopupMenu popup = new PopupMenu(mainActivity, clicked);
@@ -73,7 +70,7 @@ public class FunctionView extends PropertyView {
 
   void refreshSignature() {
     FunctionType type = userFunction.getType();
-    titleView.setTitle(field.getName() + "(" + (type.getParameterCount() == 0 ? ")" : ""));
+    titleView.setTitle(property.getName() + "(" + (type.getParameterCount() == 0 ? ")" : ""));
 
     boolean isVoid = userFunction.getType().getReturnType() == Types.VOID;
     ArrayList<String> subtitles = new ArrayList<>();
@@ -123,7 +120,7 @@ public class FunctionView extends PropertyView {
             codeLineView = new CodeLineView(mainActivity, index % 2 == 1);
             codeView.addView(codeLineView);
           }
-          codeLineView.setCodeLine(index + 1, statement, field.getErrors());
+          codeLineView.setCodeLine(index + 1, statement, property.getErrors());
         }
         index++;
         if (updated > 8) {

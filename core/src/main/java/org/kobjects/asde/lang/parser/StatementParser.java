@@ -76,7 +76,7 @@ public class StatementParser {
             throw new RuntimeException("Type mismatch for self. Expected: " + self + " got: " + parameterType);
           }
         }
-        parameters.add(Parameter.create("self", self instanceof AdapterType ? ((AdapterType) self).classifier : self));
+        parameters.add(Parameter.create("self", self instanceof AdapterType ? ((AdapterType) self).classType : self));
       } else {
         tokenizer.consume(":");
         Type parameterType = parseType(tokenizer);

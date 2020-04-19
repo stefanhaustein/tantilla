@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.program;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Consumer;
-import org.kobjects.asde.lang.classifier.Classifier;
+import org.kobjects.asde.lang.classifier.Classifiers;
 import org.kobjects.asde.lang.classifier.Module;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.GenericProperty;
@@ -11,7 +11,7 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.BuiltinFunction;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.io.Console;
-import org.kobjects.asde.lang.classifier.UserPropertyChangeListener;
+import org.kobjects.asde.lang.classifier.PropertyChangeListener;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.parser.ProgramParser;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
@@ -57,7 +57,7 @@ public class Program {
 
   public final StatementParser parser = new StatementParser(this);
   public final UserFunction main = new UserFunction(this, new FunctionType(Types.VOID));
-  private final ArrayList<UserPropertyChangeListener> programChangeListeners = new ArrayList<>();
+  private final ArrayList<PropertyChangeListener> programChangeListeners = new ArrayList<>();
   private final ArrayList<ProgramListener> programListeners = new ArrayList<>();
 
   // Program state
@@ -66,7 +66,6 @@ public class Program {
   public int tabPos;
   public final Console console;
   private boolean loading;
-  public int currentStamp;
   public boolean hasUnsavedChanges;
 
   private boolean notificationPending;
@@ -85,11 +84,11 @@ public class Program {
     for (Builtin builtin : Builtin.values()) {
       mainModule.addBuiltin(builtin.name().toLowerCase(), builtin);
     }
-    mainModule.addBuiltin("main", main);
+    mainModule.putProperty(GenericProperty.createMethod(mainModule, "main", main));
   }
 
   public void processNodes(Consumer<Node> action) {
-    mainModule.processNodes(action);
+    Classifiers.processNodes(mainModule, action);
     notifyProgramChanged();
   }
 
@@ -97,10 +96,11 @@ public class Program {
     main.clear();
 
     Module replacement = new Module(this);
-    for (Map.Entry<String, Object> builtin : mainModule.builtins().entrySet()) {
-      replacement.addBuiltin(builtin.getKey(), builtin.getValue());
+    for (GenericProperty builtin : mainModule.builtins()) {
+      replacement.addBuiltin(builtin);
     }
     mainModule = replacement;
+    mainModule.putProperty(GenericProperty.createMethod(mainModule, "main", main));
 
     ProgramReference newReference = console.nameToReference(null);
     if (!reference.equals(newReference)) {
@@ -154,13 +154,13 @@ public class Program {
   }
 
   public synchronized void toString(AnnotatedStringBuilder sb) {
-    for (GenericProperty symbol : mainModule.getUserProperties()) {
+    for (Property symbol : mainModule.getProperties()) {
       if (!(symbol.getStaticValue() instanceof UserFunction)) {
         sb.append(symbol.getStaticValue().toString()).append('\n');
       }
     }
 
-    for (GenericProperty symbol : mainModule.getUserProperties()) {
+    for (Property symbol : mainModule.getProperties()) {
       if (symbol.getStaticValue() instanceof UserFunction) {
         ((UserFunction) symbol.getStaticValue()).toString(sb, symbol.getErrors());
       }
@@ -184,6 +184,8 @@ public class Program {
       sendProgramEvent(ProgramListener.Event.RENAMED);
     }
     OutputStreamWriter writer = new OutputStreamWriter(console.openOutputStream(programReference.url), "utf8");
+    String s = toString();
+    System.out.println("Saving: " + s);
     writer.write(toString());
     writer.close();
     hasUnsavedChanges = false;
@@ -230,10 +232,6 @@ public class Program {
   }
 
 
-  public synchronized void setDeclaration(String name, Object staticValue) {
-    mainModule.putProperty(GenericProperty.createStatic(mainModule, name, staticValue));
-  }
-
   public synchronized void setPersistentInitializer(String name, DeclarationStatement expr) {
     mainModule.putProperty(GenericProperty.createWithInitializer(
         mainModule,
@@ -256,7 +254,7 @@ public class Program {
     programListeners.add(listener);
   }
 
-  public void addSymbolChangeListener(UserPropertyChangeListener programChangeListener) {
+  public void addSymbolChangeListener(PropertyChangeListener programChangeListener) {
     programChangeListeners.add(programChangeListener);
   }
 
@@ -292,7 +290,7 @@ public class Program {
             }
             if (notificationPendingForSymbol != null) {
               ValidationContext.reValidate(Program.this, notificationPendingForSymbol);
-              for (UserPropertyChangeListener changeListener : programChangeListeners) {
+              for (PropertyChangeListener changeListener : programChangeListeners) {
                 changeListener.propertyDefinitionChanged(notificationPendingForSymbol);
               }
               notificationPendingForSymbol = null;
@@ -322,6 +320,6 @@ public class Program {
     if (main.getLineCount() > 0) {
       return false;
     }
-    return mainModule.getUserProperties().isEmpty();
+    return mainModule.getProperties().isEmpty();
   }
 }

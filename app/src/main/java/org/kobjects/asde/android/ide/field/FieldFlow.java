@@ -21,7 +21,6 @@ import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Trait;
-import org.kobjects.asde.lang.classifier.TraitProperty;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.ProgramListener;
 import org.kobjects.asde.lang.type.Type;
@@ -30,8 +29,9 @@ public class FieldFlow {
 
 
 
-  public static void editProperties(final MainActivity mainActivity, final Property symbol) {
-    new FieldFlow(mainActivity, symbol.getOwner(), symbol, symbol.isInstanceField(), symbol.isMutable()).showInitializerDialog();
+  public static void editProperties(final MainActivity mainActivity, final FieldView fieldView) {
+    Property property = fieldView.property;
+    new FieldFlow(mainActivity, property.getOwner(), fieldView, property.isInstanceField(), property.isMutable()).showInitializerDialog();
   }
 
   public static void createStaticProperty(final MainActivity mainActivity, final Classifier owner, boolean isMutable) {
@@ -45,20 +45,20 @@ public class FieldFlow {
 
   private final MainActivity mainActivity;
   private final Classifier owner;
-  private final Property symbol;
+  private final FieldView fieldView;
   private final boolean isInstanceField;
   private final boolean isMutable;
 
   private String name;
   private final String title;
 
-  FieldFlow(MainActivity mainActivity, Classifier owner, Property symbol, boolean isInstanceField, boolean isMutable) {
+  FieldFlow(MainActivity mainActivity, Classifier owner, FieldView fieldView, boolean isInstanceField, boolean isMutable) {
     this.mainActivity = mainActivity;
     this.isInstanceField = isInstanceField;
     this.isMutable = isMutable;
     this.owner = owner;
-    this.symbol = symbol;
-    name = symbol == null ? "" : symbol.getName();
+    this.fieldView = fieldView;
+    name = fieldView == null ? "" : fieldView.property.getName();
     title = isInstanceField
         ? ("Property")
         : (isMutable ? "Variable" : "Constant");
@@ -85,8 +85,8 @@ public class FieldFlow {
 
 
     final EditText editText = new EditText(mainActivity);
-    if (symbol != null && symbol.getInitializer() != null) {
-      editText.setText(symbol.getInitializer().toString());
+    if (fieldView != null && fieldView.property.getInitializer() != null) {
+      editText.setText(fieldView.property.getInitializer().toString());
     }
 
     final TextInputLayout textInputLayout = new TextInputLayout(mainActivity);
@@ -112,8 +112,8 @@ public class FieldFlow {
 
           }
         });
-      if (symbol != null && symbol.getInitializer() == null) {
-        typeSpinner.selectType(symbol.getType());
+      if (fieldView != null && fieldView.property.getInitializer() == null) {
+        typeSpinner.selectType(fieldView.property.getType());
         textInputLayout.setEnabled(false);
       }
     } else {
@@ -147,21 +147,17 @@ public class FieldFlow {
     alert.setPositiveButton("Ok", (a, b) -> {
       Type fixedType = typeSpinner.getSelectedType();
 
-        Node initializer = fixedType == null ? mainActivity.program.parser.parseExpression(editText.getText().toString()) : null;
-        if (symbol == null) {
-          if (fixedType == null) {
-            owner.putProperty(GenericProperty.createWithInitializer(owner, isInstanceField, isMutable, name, initializer));
-          } else {
-            owner.putProperty(GenericProperty.createUninitialized(owner, isMutable, name, fixedType));
-          }
-        } else {
-          if (fixedType == null) {
-            symbol.setInitializer(initializer);
-          } else {
-            symbol.setFixedType(fixedType);
-          }
-          symbol.setMutable(mutableCheckbox.isChecked());
-        }
+      Node initializer = fixedType == null ? mainActivity.program.parser.parseExpression(editText.getText().toString()) : null;
+    //    if (symbol == null) {
+
+      Property property = fixedType == null
+          ? GenericProperty.createWithInitializer(owner, isInstanceField, isMutable, name, initializer)
+          : GenericProperty.createUninitialized(owner, isMutable, name, fixedType);
+      owner.putProperty(property);
+
+      if (fieldView != null) {
+        fieldView.property = property;
+      }
 
       mainActivity.program.sendProgramEvent(ProgramListener.Event.CHANGED);
     });

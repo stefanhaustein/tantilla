@@ -4,9 +4,7 @@ package org.kobjects.asde.lang.function;
 import org.kobjects.asde.lang.classifier.AdapterType;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.GenericProperty;
-import org.kobjects.asde.lang.classifier.InstantiableType;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.Trait;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.node.Node;
@@ -226,7 +224,7 @@ public class ValidationContext {
 
 
   private void validateMembers(Classifier classifier) {
-    for (Property property : classifier.getAllProperties()) {
+    for (Property property : classifier.getProperties()) {
       validateProperty(property);
       if (!property.isInstanceField() && property.getStaticValue() instanceof Classifier) {
         validateMembers((Classifier) (property.getStaticValue()));
@@ -236,7 +234,7 @@ public class ValidationContext {
 
 
   private void validateAllMethods(Classifier classifier) {
-    for (Property property : classifier.getAllProperties()) {
+    for (Property property : classifier.getProperties()) {
       if (property.getInitializer() == null && property.getType() instanceof FunctionType) {
 
         FunctionType functionType = (FunctionType) property.getType();
@@ -254,7 +252,7 @@ public class ValidationContext {
     }
     resolvedForInstantiation.add(classifier);
     int fieldIndex = 0;
-    for (Property property : classifier.getAllProperties()) {
+    for (Property property : classifier.getProperties()) {
       if (property.isInstanceField()) {
         validateProperty(property);
         ((GenericProperty) property).setFieldIndex(fieldIndex++);

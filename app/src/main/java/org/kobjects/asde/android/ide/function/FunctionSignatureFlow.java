@@ -333,11 +333,7 @@ public class FunctionSignatureFlow {
     }
 
     FunctionType newType = new FunctionType(returnType, parameters);
-    if (classifier instanceof Trait) {
-      property.setFixedType(newType);
-    } else {
-      ((UserFunction) property.getStaticValue()).setType(newType);
-    }
+    property.changeFunctionType(newType);
     if (moved) {
       mainActivity.program.processNodes(node -> node.reorderParameters(property, oldIndices));
     }

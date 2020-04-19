@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.function.Callable;
+import org.kobjects.asde.lang.function.FunctionType;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.node.EvaluationException;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.node.Node;
@@ -168,29 +170,10 @@ public class GenericProperty implements Property {
   }
 
   @Override
-  public void setInitializer(Node initializer) {
-    if (initializer == null) {
-      throw new NullPointerException();
-    }
-    this.initializer = initializer;
-    this.staticValue = null;
-    this.fixedType = null;
+  public void changeFunctionType(FunctionType type) {
+    ((UserFunction) staticValue).setType(type);
   }
 
-  @Override
-  public void setFixedType(Type type) {
-    if (type == null) {
-      throw new NullPointerException();
-    }
-    this.staticValue = null;
-    this.initializer = null;
-    this.fixedType = type;
-  }
-
-  @Override
-  public void setMutable(boolean mutable) {
-    this.isMutable = mutable;
-  }
 
   @Override
   public Object get(EvaluationContext context, Object instance) {

@@ -1,6 +1,5 @@
 package org.kobjects.asde.lang.classifier;
 
-import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.UserFunction;
@@ -10,7 +9,6 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,10 +40,6 @@ public interface Property {
 
   Object getStaticValue();
 
-  // Node getInitializer();
-
- // void validate(ValidationContext validationContext);
-
   default void setStaticValue(Object value) {
     throw new RuntimeException(toString(this) + " does not support setting a static value.");
   }
@@ -54,29 +48,21 @@ public interface Property {
     return null;
   };
 
+  /**
+   * Used to set validation results.
+   */
   default void setDependenciesAndErrors(HashSet<Property> dependencies, HashMap<Node, Exception> errors) {
     if (dependencies.size() > 0 || errors.size() > 0) {
       throw new UnsupportedOperationException("Dependencies or errors not expected for " + toString(this) + "; dependencies: " + dependencies + " errors: " + errors);
     }
   }
 
+  /** Called at program startup */
   default void init(EvaluationContext evaluationContext, HashSet<GenericProperty> initialized) {
-  }
-
-  default void setInitializer(Node node) {
-    throw new UnsupportedOperationException(toString(this) + "' does not support initializers.");
-  }
-
-  default void setFixedType(Type type) {
-    throw new UnsupportedOperationException(toString(this) + "' does not support fixed types.");
   }
 
   default void setName(String newName) {
     throw new UnsupportedOperationException(toString(this) + "' does not support setName().");
-  }
-
-  default void setMutable(boolean checked) {
-    throw new UnsupportedOperationException(toString(this) + "' does not support setMutable().");
   }
 
   default boolean toString(AnnotatedStringBuilder asb) {
@@ -105,11 +91,15 @@ public interface Property {
       Classifier classifier = (Classifier) ((MetaType) getType()).getWrapped();
       classifier.toString(asb);
       asb.append(":\n");
-      Classifier.list(asb, classifier.getAllProperties(), " ");
+      Classifiers.list(asb, classifier.getProperties(), " ");
       asb.append("end\n");
     } else {
       toString(asb);
     }
+  }
+
+  default void changeFunctionType(FunctionType functionType) {
+    throw new UnsupportedOperationException();
   }
 
   default Set<Property> getInitializationDependencies() {

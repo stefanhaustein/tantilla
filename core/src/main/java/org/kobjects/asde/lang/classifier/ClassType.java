@@ -3,7 +3,6 @@ package org.kobjects.asde.lang.classifier;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.Parameter;
-import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
@@ -15,43 +14,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.TreeMap;
 
-public class ClassType implements Classifier, InstantiableType, DeclaredBy {
-
-  final Program program;
-  public final TreeMap<String, Property> propertyMap = new TreeMap<>();
+public class ClassType extends AbstractClassifier implements InstantiableClassType, DeclaredBy {
 
   // Theoretically, this could be handled by turning the meta-class into a function type.
 
   Property declaringSymbol;
 
   public ClassType(Program program) {
-    this.program = program;
-  }
-
-  public Collection<GenericProperty> getUserProperties() {
-    ArrayList<GenericProperty> userProperties = new ArrayList<>();
-    for (Property property : propertyMap.values()) {
-      if (property instanceof GenericProperty) {
-        userProperties.add((GenericProperty) property);
-      }
-    }
-    return userProperties;
-  }
-
-  @Override
-  public Property getProperty(String name) {
-    return propertyMap.get(name);
-  }
-
-
-  @Override
-  public Collection<? extends Property> getAllProperties() {
-    return propertyMap.values();
-  }
-
-  @Override
-  public void putProperty(Property property) {
-    propertyMap.put(property.getName(), property);
+    super(program);
   }
 
   @Override
@@ -84,7 +54,7 @@ public class ClassType implements Classifier, InstantiableType, DeclaredBy {
   @Override
   public FunctionType getConstructorSignature() {
     ArrayList<Parameter> parameters = new ArrayList<>();
-    for (Property property : propertyMap.values()) {
+    for (Property property : getProperties()) {
       if (property.isInstanceField()) {
         parameters.add(property.getInitializer() == null
             ? Parameter.create(property.getName(), property.getType())
@@ -119,10 +89,6 @@ public class ClassType implements Classifier, InstantiableType, DeclaredBy {
   @Override
   public String toString() {
     return getDeclaringSymbol() != null ? getDeclaringSymbol().getName() : super.toString();
-  }
-
-  public void remove(String name) {
-    propertyMap.remove(name);
   }
 
 }

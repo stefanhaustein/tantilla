@@ -36,7 +36,7 @@ public class TypeSpinner extends AppCompatSpinner {
         addType(Types.FLOAT);
         addType(Types.STR);
 
-        for (Property property : mainActivity.program.mainModule.getAllProperties()) {
+        for (Property property : mainActivity.program.mainModule.getProperties()) {
             if (!property.isMutable() && property.getStaticValue() instanceof Type) {
                 addType((Type) property.getStaticValue());
             }

@@ -8,30 +8,14 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.Collection;
 import java.util.TreeMap;
 
-public class AdapterType implements Classifier {
-  public final Classifier classifier;
+public class AdapterType extends AbstractClassifier {
+  public final ClassType classType;
   public final Trait trait;
-  TreeMap<String, Property> properties = new TreeMap<>();
 
-  public AdapterType(Classifier classifier, Trait trait) {
-    this.classifier = classifier;
+  public AdapterType(ClassType classType, Trait trait) {
+    super(classType.program);
+    this.classType = classType;
     this.trait = trait;
-  }
-
-
-  @Override
-  public Property getProperty(String name) {
-    return properties.get(name);
-  }
-
-  @Override
-  public Collection<? extends Property> getAllProperties() {
-    return properties.values();
-  }
-
-  @Override
-  public void putProperty(Property property) {
-    properties.put(property.getName(), property);
   }
 
   @Override
@@ -39,15 +23,11 @@ public class AdapterType implements Classifier {
     return null;
   }
 
-  @Override
-  public void remove(String propertyName) {
-    properties.remove(propertyName);
-  }
 
   @Override
   public void toString(AnnotatedStringBuilder asb) {
     asb.append("impl ");
-    asb.append(classifier.toString());
+    asb.append(classType.toString());
     asb.append(" as ");
     asb.append(trait.toString());
   }
@@ -68,6 +48,6 @@ public class AdapterType implements Classifier {
   }
 
   public String toString() {
-    return classifier + " as " + trait;
+    return classType + " as " + trait;
   }
 }

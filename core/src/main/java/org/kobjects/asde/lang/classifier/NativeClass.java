@@ -7,6 +7,9 @@ import org.kobjects.asde.lang.type.TypeImpl;
 import java.util.Collection;
 import java.util.TreeMap;
 
+/**
+ * Doesn't implement abstract classifer to avoid the program reference / notification.
+ */
 public class NativeClass extends TypeImpl implements Classifier {
 
   private final TreeMap<String, Property> propertyDescriptors = new TreeMap<>();
@@ -31,7 +34,7 @@ public class NativeClass extends TypeImpl implements Classifier {
   }
 
   @Override
-  public Collection<? extends Property> getAllProperties() {
+  public Collection<? extends Property> getProperties() {
     return propertyDescriptors.values();
   }
 

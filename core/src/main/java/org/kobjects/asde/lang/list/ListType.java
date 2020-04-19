@@ -106,7 +106,7 @@ public class ListType implements Classifier {
   }
 
   @Override
-  public Collection<? extends Property> getAllProperties() {
+  public Collection<? extends Property> getProperties() {
     ArrayList<Property> result = new ArrayList<>();
 
     result.add(getProperty("append"));

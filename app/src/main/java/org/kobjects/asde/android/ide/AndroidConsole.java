@@ -23,7 +23,6 @@ import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.android.ide.widget.IconButton;
-import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.runtime.ForcedStopException;
 import org.kobjects.asde.lang.io.Format;
@@ -213,7 +212,7 @@ public class AndroidConsole implements Console {
   @Override
   public void delete(int line) {
     FunctionView functionView = mainActivity.programView.currentFunctionView;
-    mainActivity.program.deleteLine(functionView.field, line);
+    mainActivity.program.deleteLine(functionView.property, line);
   }
 
   int lineCount;
@@ -255,7 +254,7 @@ public class AndroidConsole implements Console {
 
   @Override
   public Property getSelectedProperty() {
-    return mainActivity.programView.currentPropertyView.field;
+    return mainActivity.programView.currentPropertyView.property;
 /*    return mainActivity.programView.currentFunctionView == null
         || !(mainActivity.programView.currentFunctionView.userFunction instanceof UserFunction)
         ? mainActivity.program.main
