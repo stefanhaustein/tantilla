@@ -1,7 +1,9 @@
-package org.kobjects.asde.lang.classifier;
+package org.kobjects.asde.lang.classifier.trait;
+
+import org.kobjects.asde.lang.classifier.clazz.ClassInstance;
 
 public class AdapterInstance {
-  final AdapterType adapterType;
+  public final AdapterType adapterType;
   public final ClassInstance instance;
 
   public AdapterInstance(AdapterType adapterType, ClassInstance classInstance) {

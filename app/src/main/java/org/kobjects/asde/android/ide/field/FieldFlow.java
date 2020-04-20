@@ -17,10 +17,12 @@ import org.kobjects.asde.android.ide.text.TextValidator;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.android.ide.property.PropertyNameValidator;
 import org.kobjects.asde.android.ide.widget.TypeSpinner;
+import org.kobjects.asde.lang.classifier.clazz.ClassType;
 import org.kobjects.asde.lang.classifier.Classifier;
+import org.kobjects.asde.lang.classifier.clazz.InstanceFieldProperty;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.GenericProperty;
-import org.kobjects.asde.lang.classifier.Trait;
+import org.kobjects.asde.lang.classifier.StaticProperty;
+import org.kobjects.asde.lang.classifier.trait.Trait;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.ProgramListener;
 import org.kobjects.asde.lang.type.Type;
@@ -151,8 +153,10 @@ public class FieldFlow {
     //    if (symbol == null) {
 
       Property property = fixedType == null
-          ? GenericProperty.createWithInitializer(owner, isInstanceField, isMutable, name, initializer)
-          : GenericProperty.createUninitialized(owner, isMutable, name, fixedType);
+          ? (isInstanceField
+              ? InstanceFieldProperty.createWithInitializer((ClassType) owner, isMutable, name, initializer)
+              : StaticProperty.createWithInitializer(owner, isMutable, name, initializer))
+          : InstanceFieldProperty.createUninitialized((ClassType) owner, isMutable, name, fixedType);
       owner.putProperty(property);
 
       if (fieldView != null) {

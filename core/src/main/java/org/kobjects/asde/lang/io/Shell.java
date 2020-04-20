@@ -3,8 +3,7 @@ package org.kobjects.asde.lang.io;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.asde.lang.classifier.Classifier;
-import org.kobjects.asde.lang.classifier.Classifiers;
-import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.classifier.StaticProperty;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.node.Node;
@@ -118,7 +117,13 @@ public class Shell {
           Node node = statements.get(i);
           if (node instanceof DeclarationStatement) {
             DeclarationStatement declaration = (DeclarationStatement) node;
-            program.setPersistentInitializer(declaration.getVarName(), declaration);
+            synchronized (program) {
+              program.mainModule.putProperty(StaticProperty.createWithInitializer(
+                  program.mainModule,
+                  declaration.kind == DeclarationStatement.Kind.MUT,
+                  declaration.getVarName(),
+                  declaration.children[0]));
+            }
           }
         }
 
@@ -206,9 +211,9 @@ public class Shell {
         AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
         Property target = tryConsumeProperty(tokenizer);
         if (target == null) {
-          Classifiers.list(asb, program.mainModule.getProperties(), "");
+          program.mainModule.toString(asb, "", false, false);
         } else {
-          target.list(asb);
+          target.toString(asb, "", true, false);
         }
         program.console.print(asb.build());
         break;
@@ -251,7 +256,7 @@ public class Shell {
         function.appendStatement(statement);
       }
     }
-    Property property = GenericProperty.createMethod(program.mainModule, name, function);
+    Property property = StaticProperty.createMethod(program.mainModule, name, function);
     program.mainModule.putProperty(property);
   }
 

@@ -1,13 +1,11 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.LocalSymbol;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.function.ValidationContext;
-import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 

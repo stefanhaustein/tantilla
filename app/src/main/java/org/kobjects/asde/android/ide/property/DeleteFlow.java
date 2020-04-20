@@ -3,7 +3,7 @@ package org.kobjects.asde.android.ide.property;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.widget.InputFlowBuilder;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.ClassType;
+import org.kobjects.asde.lang.classifier.clazz.ClassType;
 
 public class DeleteFlow {
 

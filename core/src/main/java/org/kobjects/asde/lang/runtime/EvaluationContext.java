@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.runtime;
 
-import org.kobjects.asde.lang.classifier.ClassInstance;
+import org.kobjects.asde.lang.classifier.clazz.ClassInstance;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.program.ProgramControl;
 

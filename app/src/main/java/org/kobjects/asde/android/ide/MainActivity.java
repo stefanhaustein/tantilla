@@ -20,16 +20,13 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.vanniktech.emoji.EmojiManager;
 import com.vanniktech.emoji.twitter.TwitterEmojiProvider;
 
 import org.kobjects.abcnotation.AbcScore;
-import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.program.ProgramTitleView;
 import org.kobjects.asde.android.ide.program.ProgramView;
 import org.kobjects.asde.android.ide.property.PropertyView;

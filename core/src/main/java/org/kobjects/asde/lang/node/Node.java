@@ -3,7 +3,6 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Consumer;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.type.Types;
@@ -127,6 +126,7 @@ public abstract class Node {
     }
   }
 
+  @Override
   public final String toString() {
     AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
     toString(asb, Collections.<Node, Exception>emptyMap(), false);

@@ -50,8 +50,9 @@ public class FunctionType implements Type {
       }
       asb.append(parameters[i].toString());
     }
+    asb.append(')');
     if (returnType != Types.VOID) {
-      asb.append(") -> ");
+      asb.append(" -> ");
       asb.append(returnType.toString());
     }
   }

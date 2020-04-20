@@ -3,12 +3,12 @@ package org.kobjects.asde.android.library.ui;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 
-import org.kobjects.asde.lang.classifier.NativeProperty;
+import org.kobjects.asde.lang.classifier.builtin.NativeProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Typed;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.Dpad;
-import org.kobjects.asde.lang.classifier.NativeClass;
+import org.kobjects.asde.lang.classifier.builtin.NativeClass;
 import org.kobjects.asde.lang.type.Type;
 
 

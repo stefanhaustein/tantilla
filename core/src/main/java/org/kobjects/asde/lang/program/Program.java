@@ -2,10 +2,9 @@ package org.kobjects.asde.lang.program;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Consumer;
-import org.kobjects.asde.lang.classifier.Classifiers;
-import org.kobjects.asde.lang.classifier.Module;
+import org.kobjects.asde.lang.classifier.module.Module;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.classifier.StaticProperty;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.BuiltinFunction;
@@ -14,7 +13,6 @@ import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.classifier.PropertyChangeListener;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.parser.ProgramParser;
-import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.Builtin;
@@ -27,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -84,11 +81,11 @@ public class Program {
     for (Builtin builtin : Builtin.values()) {
       mainModule.addBuiltin(builtin.name().toLowerCase(), builtin);
     }
-    mainModule.putProperty(GenericProperty.createMethod(mainModule, "main", main));
+    mainModule.putProperty(StaticProperty.createMethod(mainModule, "main", main));
   }
 
   public void processNodes(Consumer<Node> action) {
-    Classifiers.processNodes(mainModule, action);
+    mainModule.processNodes(action);
     notifyProgramChanged();
   }
 
@@ -96,11 +93,11 @@ public class Program {
     main.clear();
 
     Module replacement = new Module(this);
-    for (GenericProperty builtin : mainModule.builtins()) {
+    for (StaticProperty builtin : mainModule.builtins()) {
       replacement.addBuiltin(builtin);
     }
     mainModule = replacement;
-    mainModule.putProperty(GenericProperty.createMethod(mainModule, "main", main));
+    mainModule.putProperty(StaticProperty.createMethod(mainModule, "main", main));
 
     ProgramReference newReference = console.nameToReference(null);
     if (!reference.equals(newReference)) {
@@ -153,25 +150,12 @@ public class Program {
     }
   }
 
-  public synchronized void toString(AnnotatedStringBuilder sb) {
-    for (Property symbol : mainModule.getProperties()) {
-      if (!(symbol.getStaticValue() instanceof UserFunction)) {
-        sb.append(symbol.getStaticValue().toString()).append('\n');
-      }
-    }
-
-    for (Property symbol : mainModule.getProperties()) {
-      if (symbol.getStaticValue() instanceof UserFunction) {
-        ((UserFunction) symbol.getStaticValue()).toString(sb, symbol.getErrors());
-      }
-    }
-  }
 
 
   @Override
   public String toString() {
     AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-    toString(asb);
+    mainModule.toString(asb, "", true, true);
     return asb.toString();
   }
 
@@ -229,16 +213,6 @@ public class Program {
 
   public synchronized void addBuiltin(String name, Object value) {
     mainModule.addBuiltin(name, value);
-  }
-
-
-  public synchronized void setPersistentInitializer(String name, DeclarationStatement expr) {
-    mainModule.putProperty(GenericProperty.createWithInitializer(
-        mainModule,
-        false,
-        expr.kind == DeclarationStatement.Kind.MUT,
-        name,
-        expr.children[0]));
   }
 
 

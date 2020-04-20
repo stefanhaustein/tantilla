@@ -1,12 +1,10 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.AdapterInstance;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.ValidationContext;
-import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.MetaType;

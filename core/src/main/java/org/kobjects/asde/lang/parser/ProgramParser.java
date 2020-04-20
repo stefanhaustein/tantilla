@@ -1,12 +1,14 @@
 package org.kobjects.asde.lang.parser;
 
 
-import org.kobjects.asde.lang.classifier.AdapterType;
-import org.kobjects.asde.lang.classifier.ClassType;
+import org.kobjects.asde.lang.classifier.clazz.InstanceFieldProperty;
+import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.classifier.trait.AdapterType;
+import org.kobjects.asde.lang.classifier.clazz.ClassType;
 import org.kobjects.asde.lang.classifier.Classifier;
-import org.kobjects.asde.lang.classifier.Trait;
-import org.kobjects.asde.lang.classifier.GenericProperty;
-import org.kobjects.asde.lang.classifier.TraitProperty;
+import org.kobjects.asde.lang.classifier.trait.Trait;
+import org.kobjects.asde.lang.classifier.StaticProperty;
+import org.kobjects.asde.lang.classifier.trait.TraitProperty;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.Program;
@@ -54,14 +56,14 @@ public class ProgramParser {
           String className = line.substring(6, cut).trim();
           System.out.println("class forward declaration: '" + className + "'");
           synchronized (program) {
-            program.mainModule.putProperty(GenericProperty.createStatic(program.mainModule, className, new ClassType(program)));
+            program.mainModule.putProperty(StaticProperty.createWithStaticValue(program.mainModule, className, new ClassType(program)));
           }
         } else if (line.startsWith("trait ")) {
           int cut = line.lastIndexOf(':');
           String interfaceName = line.substring("trait".length() + 1, cut).trim();
           System.out.println("trait forward declaration: '" + interfaceName + "'");
           synchronized (program) {
-            program.mainModule.putProperty(GenericProperty.createStatic(program.mainModule, interfaceName, new Trait(program)));
+            program.mainModule.putProperty(StaticProperty.createWithStaticValue(program.mainModule, interfaceName, new Trait(program)));
           }
         }
         line = reader.readLine();
@@ -118,13 +120,13 @@ public class ProgramParser {
           }
           currentFunction = new UserFunction(program, functionType);
           if (currentClassifier != null) {
-            currentClassifier.putProperty(GenericProperty.createMethod(currentClassifier, functionName, currentFunction));
+            currentClassifier.putProperty(StaticProperty.createMethod(currentClassifier, functionName, currentFunction));
           } else if (functionName.equals("main")) {
             // Implicitly discarding what we have just created...
             currentFunction = program.main;
           } else {
             synchronized (program) {
-              program.mainModule.putProperty(GenericProperty.createStatic(program.mainModule, functionName, currentFunction));
+              program.mainModule.putProperty(StaticProperty.createWithStaticValue(program.mainModule, functionName, currentFunction));
             }
           }
         } else if (tokenizer.tryConsume("class")) {
@@ -139,7 +141,7 @@ public class ProgramParser {
           tokenizer.consume(":");
           currentClassifier = new AdapterType(classType, trait);
           synchronized (program) {
-            program.mainModule.putProperty(GenericProperty.createStatic(program.mainModule, currentClassifier.toString(), currentClassifier));
+            program.mainModule.putProperty(StaticProperty.createWithStaticValue(program.mainModule, currentClassifier.toString(), currentClassifier));
           }
         } else if (tokenizer.tryConsume("trait")) {
           String interfaceName = tokenizer.consumeIdentifier();
@@ -152,24 +154,30 @@ public class ProgramParser {
           boolean mutable = !isConst && tokenizer.tryConsume("mut");
           String name = tokenizer.consumeIdentifier();
           if (currentClassifier != null) {
+            if (!(currentClassifier instanceof ClassType)) {
+              throw new RuntimeException();
+            }
+            Property property;
             if (tokenizer.tryConsume("=")) {
               Node initilaizer = statementParser.expressionParser.parse(tokenizer);
-              currentClassifier.putProperty(GenericProperty.createWithInitializer(currentClassifier, !isConst, mutable, name, initilaizer));
+              property = isConst ? StaticProperty.createWithInitializer(currentClassifier, false, name, initilaizer)
+                  : InstanceFieldProperty.createWithInitializer((ClassType) currentClassifier, mutable, name, initilaizer);
             } else if (tokenizer.tryConsume(":")) {
               Type type = statementParser.parseType(tokenizer);
-              currentClassifier.putProperty(GenericProperty.createUninitialized(
-                  currentClassifier,
+              property = InstanceFieldProperty.createUninitialized(
+                  (ClassType) currentClassifier,
                   mutable,
                   name,
-                  type));
+                  type);
             } else {
               throw new RuntimeException("= or : expected after property name");
             }
+            currentClassifier.putProperty(property);
           } else {
             tokenizer.consume("=");
-            Node initilaizer = statementParser.expressionParser.parse(tokenizer);
+            Node initializer = statementParser.expressionParser.parse(tokenizer);
             // mutable is (currently?) redundant here...
-            program.mainModule.putProperty(GenericProperty.createWithInitializer(program.mainModule, false, !isConst, name, initilaizer));
+            program.mainModule.putProperty(StaticProperty.createWithInitializer(program.mainModule, !isConst, name, initializer));
           }
           // Push down?
           if (tokenizer.currentType != Tokenizer.TokenType.EOF) {

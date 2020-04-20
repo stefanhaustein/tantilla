@@ -1,6 +1,7 @@
-package org.kobjects.asde.lang.classifier;
+package org.kobjects.asde.lang.classifier.clazz;
 
 
+import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.type.Typed;
 
 public class ClassInstance implements Typed {

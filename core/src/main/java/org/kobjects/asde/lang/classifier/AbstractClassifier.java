@@ -1,23 +1,21 @@
 package org.kobjects.asde.lang.classifier;
 
-import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Collection;
-import java.util.TreeMap;
+import java.util.HashMap;
+import java.util.TreeSet;
 
 public abstract class AbstractClassifier implements Classifier {
 
-  final Program program;
-  private final TreeMap<String, Property> properties = new TreeMap<>();
+  public final Program program;
+  private final HashMap<String, Property> properties = new HashMap<>();
 
-
-  AbstractClassifier(Program program) {
+  protected AbstractClassifier(Program program) {
     this.program = program;
   }
-
 
   @Override
   public Property getProperty(String name) {
@@ -26,7 +24,7 @@ public abstract class AbstractClassifier implements Classifier {
 
   @Override
   public Collection<? extends Property> getProperties() {
-    return properties.values();
+    return new TreeSet<>(properties.values());
   }
 
   @Override
@@ -41,7 +39,6 @@ public abstract class AbstractClassifier implements Classifier {
     properties.remove(propertyName);
     program.notifyProgramChanged();
   }
-
 
   @Override
   public boolean hasDefaultValue() {

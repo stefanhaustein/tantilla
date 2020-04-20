@@ -1,14 +1,10 @@
-package org.kobjects.asde.lang.classifier;
+package org.kobjects.asde.lang.classifier.trait;
 
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.FunctionType;
-import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
-import org.kobjects.asde.lang.type.Types;
-
-import java.util.Collections;
-import java.util.Map;
 
 public class TraitProperty implements Property {
   private final Trait owner;

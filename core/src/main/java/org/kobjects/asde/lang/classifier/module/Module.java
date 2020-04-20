@@ -1,30 +1,31 @@
-package org.kobjects.asde.lang.classifier;
+package org.kobjects.asde.lang.classifier.module;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.classifier.AbstractClassifier;
+import org.kobjects.asde.lang.classifier.StaticProperty;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.program.Program;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.TreeMap;
 
 public class Module extends AbstractClassifier {
-  TreeMap<String, GenericProperty> builtins = new TreeMap<>();
+  TreeMap<String, StaticProperty> builtins = new TreeMap<>();
 
   public Module(Program program) {
     super(program);
   }
 
   public void addBuiltin(String name, Object value) {
-    addBuiltin(GenericProperty.createStatic(this, name, value));
+    addBuiltin(StaticProperty.createWithStaticValue(this, name, value));
   }
 
-  public void addBuiltin(GenericProperty property) {
-    builtins.put(property.name, property);
+  public void addBuiltin(StaticProperty property) {
+    builtins.put(property.getName(), property);
   }
 
-  public Collection<GenericProperty> builtins() {
+  public Collection<StaticProperty> builtins() {
     return builtins.values();
   }
 
@@ -47,7 +48,7 @@ public class Module extends AbstractClassifier {
   }
 
   @Override
-  public void toString(AnnotatedStringBuilder asb) {
-    asb.append(toString());
+  public void toString(AnnotatedStringBuilder asb, String indent, boolean includeContent, boolean forExport) {
+    listProperties(asb, indent, includeContent, forExport);
   }
 }

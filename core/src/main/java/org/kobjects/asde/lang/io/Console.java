@@ -1,6 +1,5 @@
 package org.kobjects.asde.lang.io;
 
-import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.UserFunction;
 

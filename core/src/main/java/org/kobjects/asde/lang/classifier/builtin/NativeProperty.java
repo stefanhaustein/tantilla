@@ -1,5 +1,7 @@
-package org.kobjects.asde.lang.classifier;
+package org.kobjects.asde.lang.classifier.builtin;
 
+import org.kobjects.asde.lang.classifier.Classifier;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 

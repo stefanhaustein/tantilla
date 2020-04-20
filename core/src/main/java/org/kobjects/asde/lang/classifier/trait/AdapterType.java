@@ -1,12 +1,10 @@
-package org.kobjects.asde.lang.classifier;
+package org.kobjects.asde.lang.classifier.trait;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.io.SyntaxColor;
+import org.kobjects.asde.lang.classifier.AbstractClassifier;
+import org.kobjects.asde.lang.classifier.clazz.ClassType;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
-
-import java.util.Collection;
-import java.util.TreeMap;
 
 public class AdapterType extends AbstractClassifier {
   public final ClassType classType;
@@ -25,11 +23,16 @@ public class AdapterType extends AbstractClassifier {
 
 
   @Override
-  public void toString(AnnotatedStringBuilder asb) {
+  public void toString(AnnotatedStringBuilder asb, String indent, boolean includeContent, boolean forExport) {
+    asb.append(indent);
     asb.append("impl ");
     asb.append(classType.toString());
     asb.append(" as ");
     asb.append(trait.toString());
+    if (includeContent) {
+      asb.append(":\n");
+      listProperties(asb, indent + " ", includeContent, forExport);
+    }
   }
 
   @Override

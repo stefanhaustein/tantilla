@@ -1,7 +1,8 @@
-package org.kobjects.asde.lang.classifier;
+package org.kobjects.asde.lang.classifier.builtin;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.io.SyntaxColor;
+import org.kobjects.asde.lang.classifier.Classifier;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.type.TypeImpl;
 
 import java.util.Collection;
@@ -53,7 +54,7 @@ public class NativeClass extends TypeImpl implements Classifier {
   }
 
   @Override
-  public void toString(AnnotatedStringBuilder asb) {
+  public void toString(AnnotatedStringBuilder asb, String indent, boolean includeContent, boolean forExport) {
     asb.append("(native class)");
   }
 }

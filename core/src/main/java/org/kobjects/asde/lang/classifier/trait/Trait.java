@@ -1,14 +1,11 @@
-package org.kobjects.asde.lang.classifier;
+package org.kobjects.asde.lang.classifier.trait;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.function.FunctionType;
+import org.kobjects.asde.lang.classifier.AbstractClassifier;
+import org.kobjects.asde.lang.classifier.DeclaredBy;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.program.Program;
-import org.kobjects.asde.lang.type.MetaType;
-import org.kobjects.asde.lang.type.Type;
-
-import java.util.Collection;
-import java.util.TreeMap;
 
 public class Trait extends AbstractClassifier implements DeclaredBy {
   Property declaringSymbol;
@@ -56,11 +53,13 @@ public class Trait extends AbstractClassifier implements DeclaredBy {
   }
 
   @Override
-  public void toString(AnnotatedStringBuilder asb) {
+  public void toString(AnnotatedStringBuilder asb, String indent, boolean listContent, boolean forExport) {
     asb.append("trait", SyntaxColor.KEYWORD);
-    if (declaringSymbol != null) {
-      asb.append(' ');
-      asb.append(declaringSymbol.getName());
+    asb.append(' ');
+    asb.append(toString());
+    if (forExport) {
+      asb.append("\n");
+     listProperties(asb, indent + " ", listContent, forExport);
     }
   }
 }

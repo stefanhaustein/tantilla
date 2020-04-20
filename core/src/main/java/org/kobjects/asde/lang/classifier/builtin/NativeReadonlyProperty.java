@@ -1,11 +1,8 @@
-package org.kobjects.asde.lang.classifier;
+package org.kobjects.asde.lang.classifier.builtin;
 
-import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
-
-import java.util.Collections;
-import java.util.Map;
 
 public abstract class NativeReadonlyProperty extends NativeProperty {
 

@@ -13,7 +13,6 @@ import org.kobjects.asde.lang.program.ProgramControl;
 import org.kobjects.asde.lang.runtime.WrappedExecutionException;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.type.Types;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -97,7 +96,7 @@ public class UserFunction implements Callable, DeclaredBy {
     }
   }
 
-  public synchronized void toString(AnnotatedStringBuilder sb, Map<Node, Exception> errors) {
+  public synchronized void toString(AnnotatedStringBuilder sb, String indent, boolean exportFormat, Map<Node, Exception> errors) {
     if (declaringSymbol == null) {
       for (int i = 0; i < code.size(); i++) {
         if (i > 0) {
@@ -106,13 +105,18 @@ public class UserFunction implements Callable, DeclaredBy {
         code.get(i).toString(sb, errors, true);
       }
     } else {
+      sb.append(indent);
       sb.append("def ", SyntaxColor.KEYWORD);
       sb.append(declaringSymbol.getName());
       sb.append(type.toString());
       sb.append(":\n");
       int lineNumber = 1;
       for (Statement statement : code) {
-        sb.append(String.valueOf(lineNumber++));
+        if (exportFormat) {
+          sb.append(indent);
+        } else {
+          sb.append(String.valueOf(lineNumber++));
+        }
         for (int i = -1; i < statement.getIndent(); i++) {
           sb.append(' ');
         }
@@ -128,7 +132,7 @@ public class UserFunction implements Callable, DeclaredBy {
 
   public String toString() {
     AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-    toString(asb, Collections.emptyMap());
+    toString(asb, "", false, Collections.emptyMap());
     return asb.toString();
   }
 

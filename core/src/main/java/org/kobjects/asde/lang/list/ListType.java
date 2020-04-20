@@ -1,9 +1,8 @@
 package org.kobjects.asde.lang.list;
 
-import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.NativeMethod;
-import org.kobjects.asde.lang.classifier.NativeReadonlyProperty;
+import org.kobjects.asde.lang.classifier.builtin.NativeMethod;
+import org.kobjects.asde.lang.classifier.builtin.NativeReadonlyProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.classifier.Classifier;
@@ -11,7 +10,6 @@ import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.type.Type;
 
-import java.lang.annotation.ElementType;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -40,20 +38,13 @@ public class ListType implements Classifier {
   }
 
   @Override
-  public void toString(AnnotatedStringBuilder asb) {
-    asb.append("List");
-    if (elementType != Types.VOID) {
-      asb.append('[');
-      asb.append(elementType.toString());
-      asb.append(']');
-    }
+  public void toString(AnnotatedStringBuilder asb, String indent, boolean includeContent, boolean forExport) {
+    asb.append(toString());
   }
 
   @Override
   public String toString() {
-    AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-    toString(asb);
-    return asb.toString();
+   return "List" + (elementType == Types.VOID ? "" : ('[' + elementType.toString() + ']'));
   }
 
   @Override

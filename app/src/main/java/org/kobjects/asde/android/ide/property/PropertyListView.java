@@ -6,7 +6,7 @@ import org.kobjects.asde.android.ide.classifier.ClassifierView;
 import org.kobjects.asde.android.ide.field.FieldView;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.Trait;
+import org.kobjects.asde.lang.classifier.trait.Trait;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.type.MetaType;
@@ -29,23 +29,6 @@ public class PropertyListView extends ExpandableList {
     return propertyViewMap.get(symbol);
   }
 
-  private static int order(Property property) {
-    if (property.getType() instanceof MetaType && ((MetaType) property.getType()).getWrapped() instanceof Classifier) {
-      Classifier classifier = (Classifier) ((MetaType) property.getType()).getWrapped();
-      if (classifier instanceof Trait) {
-        return 4;
-      }
-      return 5;
-    }
-    if (property.isInstanceField()) {
-      return property.isMutable() ? 7 : 8;
-    }
-    if (property.getType() instanceof FunctionType) {
-      FunctionType functionType = (FunctionType) property.getType();
-      return functionType.getParameterCount() > 0  && functionType.getParameter(0).getName().equals("self") ? 9 : property.getName().equals("main")? 10 : 3;
-    }
-    return property.isMutable() ? 2 : 1;
-  }
 
   /** 
    *
@@ -65,19 +48,9 @@ public class PropertyListView extends ExpandableList {
 
     HashMap<Property, PropertyView> newPropertyViewMap = new HashMap<>();
 
-    TreeSet<Property> sorted = new TreeSet<>(new Comparator<Property>() {
-      @Override
-      public int compare(Property p1, Property p2) {
-        int cmp = Integer.compare(order(p1), order(p2));
-        return cmp == 0 ? p1.getName().compareTo(p2.getName()) : cmp;
-      }
-    });
+
+
     for (Property property : symbolList) {
-      sorted.add(property);
-    }
-
-
-    for (Property property : sorted) {
       PropertyView propertyView = propertyViewMap.get(property);
       if (propertyView != null) {
         propertyView.syncContent();

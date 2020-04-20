@@ -18,10 +18,10 @@ import org.kobjects.asde.android.ide.widget.TypeSpinner;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.android.ide.text.TextValidator;
 import org.kobjects.asde.lang.classifier.Classifier;
-import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.classifier.StaticProperty;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.Trait;
-import org.kobjects.asde.lang.classifier.TraitProperty;
+import org.kobjects.asde.lang.classifier.trait.Trait;
+import org.kobjects.asde.lang.classifier.trait.TraitProperty;
 import org.kobjects.asde.lang.function.Parameter;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.type.Types;
@@ -354,7 +354,7 @@ public class FunctionSignatureFlow {
       UserFunction userFunction = new UserFunction(mainActivity.program, functionType);
       RemStatement remStatement = new RemStatement("This comment should document this function.");
       userFunction.appendStatement(remStatement);
-      property = GenericProperty.createMethod(classifier, name, userFunction);
+      property = StaticProperty.createMethod(classifier, name, userFunction);
     }
     classifier.putProperty(property);
     mainActivity.program.notifyProgramChanged();

@@ -1,11 +1,11 @@
 package org.kobjects.asde.lang.node;
 
-import org.kobjects.asde.lang.classifier.AdapterInstance;
-import org.kobjects.asde.lang.classifier.AdapterType;
-import org.kobjects.asde.lang.classifier.ClassInstance;
-import org.kobjects.asde.lang.classifier.ClassType;
+import org.kobjects.asde.lang.classifier.trait.AdapterInstance;
+import org.kobjects.asde.lang.classifier.trait.AdapterType;
+import org.kobjects.asde.lang.classifier.clazz.ClassInstance;
+import org.kobjects.asde.lang.classifier.clazz.ClassType;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.Trait;
+import org.kobjects.asde.lang.classifier.trait.Trait;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;

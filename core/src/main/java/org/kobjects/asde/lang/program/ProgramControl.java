@@ -1,7 +1,6 @@
 package org.kobjects.asde.lang.program;
 
-import org.kobjects.asde.lang.Consumer;
-import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.classifier.StaticProperty;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.runtime.StartStopListener;
@@ -109,7 +108,7 @@ public class ProgramControl {
     public void initializeAndRunShellCode(UserFunction wrapper, final ProgramControl programInterpreterControl, Set<Property> initializationDependencies) {
         runAsync(() -> {
             EvaluationContext wrapperContext = new EvaluationContext(ProgramControl.this, wrapper);
-            HashSet<GenericProperty> initialized = new HashSet<>();
+            HashSet<StaticProperty> initialized = new HashSet<>();
             for (Property property : initializationDependencies) {
                 property.init(wrapperContext, initialized);
             }

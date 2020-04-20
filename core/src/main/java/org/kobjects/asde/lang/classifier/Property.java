@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.classifier.trait.Trait;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.io.SyntaxColor;
@@ -15,10 +16,28 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public interface Property {
+public interface Property extends Comparable<Property> {
 
   static String toString(Property property) {
     return property.getClass().getSimpleName() + " " + property.getOwner() + "." + property.getName() + " (type: " + property.getType() + ")";
+  }
+
+  static int order(Property property) {
+    if (property.getType() instanceof MetaType && ((MetaType) property.getType()).getWrapped() instanceof Classifier) {
+      Classifier classifier = (Classifier) ((MetaType) property.getType()).getWrapped();
+      if (classifier instanceof Trait) {
+        return 4;
+      }
+      return 5;
+    }
+    if (property.isInstanceField()) {
+      return property.isMutable() ? 7 : 8;
+    }
+    if (property.getType() instanceof FunctionType) {
+      FunctionType functionType = (FunctionType) property.getType();
+      return functionType.getParameterCount() > 0  && functionType.getParameter(0).getName().equals("self") ? 9 : property.getName().equals("main")? 10 : 3;
+    }
+    return property.isMutable() ? 2 : 1;
   }
 
   Classifier getOwner();
@@ -58,43 +77,39 @@ public interface Property {
   }
 
   /** Called at program startup */
-  default void init(EvaluationContext evaluationContext, HashSet<GenericProperty> initialized) {
+  default void init(EvaluationContext evaluationContext, HashSet<StaticProperty> initialized) {
   }
 
   default void setName(String newName) {
     throw new UnsupportedOperationException(toString(this) + "' does not support setName().");
   }
 
-  default boolean toString(AnnotatedStringBuilder asb) {
-    if (getType() instanceof FunctionType) {
+  default void toString(AnnotatedStringBuilder asb, String indent, boolean includeContent, boolean exportFormat) {
+    if (includeContent && getStaticValue() instanceof UserFunction) {
+      ((UserFunction) getStaticValue()).toString(asb, indent, exportFormat, getErrors());
+
+    } else if (getType() instanceof FunctionType) {
+      asb.append(indent);
       asb.append("def", SyntaxColor.KEYWORD);
       asb.append(' ');
       asb.append(getName());
       ((FunctionType) getType()).toString(asb);
-      return false;
-    }
-    if (getType() instanceof MetaType && ((MetaType) getType()).getWrapped() instanceof Classifier) {
-      Classifier classifier = (Classifier) ((MetaType) getType()).getWrapped();
-      classifier.toString(asb);
-      return false;
-    }
+      asb.append(": […]");
 
-    asb.append("(tbd) ");
-    asb.append(getName());
-    return true;
-  }
-
-  default void list(AnnotatedStringBuilder asb) {
-    if (getType() instanceof FunctionType) {
-      ((UserFunction) getStaticValue()).toString(asb, getErrors());
     } else if (getType() instanceof MetaType && ((MetaType) getType()).getWrapped() instanceof Classifier) {
       Classifier classifier = (Classifier) ((MetaType) getType()).getWrapped();
-      classifier.toString(asb);
-      asb.append(":\n");
-      Classifiers.list(asb, classifier.getProperties(), " ");
-      asb.append("end\n");
+      classifier.toString(asb, indent, includeContent, exportFormat);
+
     } else {
-      toString(asb);
+      asb.append(indent);
+      asb.append(getName());
+      if (getInitializer() != null) {
+        asb.append(" = ");
+        getInitializer().toString(asb, getErrors(), exportFormat);
+      } else {
+        asb.append(": ");
+        asb.append(getType().toString());
+      }
     }
   }
 
@@ -104,6 +119,11 @@ public interface Property {
 
   default Set<Property> getInitializationDependencies() {
     return Collections.emptySet();
+  }
+
+  default int compareTo(Property other) {
+    int diff = Integer.compare(order(this), order(other));
+    return diff == 0 ? getName().compareTo(other.getName()) : diff;
   }
 
 }

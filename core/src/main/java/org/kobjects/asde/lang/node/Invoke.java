@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.InstantiableClassType;
+import org.kobjects.asde.lang.classifier.clazz.InstantiableClassType;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.io.SyntaxColor;

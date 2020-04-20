@@ -146,7 +146,7 @@ public class ControlView extends LinearLayout  {
       codeEditText.setText("");
       resultView.setText(Format.exceptionToString(e.getErrors().values().iterator().next()));
       AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-      e.getCode().toString(asb, e.getErrors());
+      e.getCode().toString(asb, "", false, e.getErrors());
       codeEditText.append(AnnotatedStringConverter.toSpanned(mainActivity, asb.build(), -1));
     } catch (Throwable e) {
       e.printStackTrace();

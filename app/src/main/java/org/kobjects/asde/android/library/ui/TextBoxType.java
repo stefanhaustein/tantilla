@@ -1,12 +1,12 @@
 package org.kobjects.asde.android.library.ui;
 
-import org.kobjects.asde.lang.classifier.NativeProperty;
+import org.kobjects.asde.lang.classifier.builtin.NativeProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.graphics.TextBox;
 import org.kobjects.graphics.XAlign;
 import org.kobjects.graphics.YAlign;
-import org.kobjects.asde.lang.classifier.NativeClass;
+import org.kobjects.asde.lang.classifier.builtin.NativeClass;
 
 public class TextBoxType {
 

@@ -1,9 +1,9 @@
 package org.kobjects.asde.lang.function;
 
 
-import org.kobjects.asde.lang.classifier.AdapterType;
+import org.kobjects.asde.lang.classifier.clazz.InstanceFieldProperty;
+import org.kobjects.asde.lang.classifier.trait.AdapterType;
 import org.kobjects.asde.lang.classifier.Classifier;
-import org.kobjects.asde.lang.classifier.GenericProperty;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.statement.BlockStatement;
@@ -255,7 +255,7 @@ public class ValidationContext {
     for (Property property : classifier.getProperties()) {
       if (property.isInstanceField()) {
         validateProperty(property);
-        ((GenericProperty) property).setFieldIndex(fieldIndex++);
+        ((InstanceFieldProperty) property).setFieldIndex(fieldIndex++);
       }
     }
     // We need to initialize all methods, too -- as they can be called via traits.

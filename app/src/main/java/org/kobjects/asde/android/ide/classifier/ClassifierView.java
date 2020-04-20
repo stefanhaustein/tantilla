@@ -13,12 +13,12 @@ import org.kobjects.asde.android.ide.property.RenameFlow;
 import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.property.PropertyView;
 import org.kobjects.asde.android.ide.property.ExpandListener;
-import org.kobjects.asde.lang.classifier.AdapterType;
+import org.kobjects.asde.lang.classifier.trait.AdapterType;
 import org.kobjects.asde.lang.classifier.Classifier;
-import org.kobjects.asde.lang.classifier.GenericProperty;
+import org.kobjects.asde.lang.classifier.StaticProperty;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.classifier.ClassType;
-import org.kobjects.asde.lang.classifier.Trait;
+import org.kobjects.asde.lang.classifier.clazz.ClassType;
+import org.kobjects.asde.lang.classifier.trait.Trait;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.type.MetaType;
@@ -82,12 +82,12 @@ public class ClassifierView extends PropertyView {
           for (Trait trait : unimplementedTraits) {
             traitMenu.add(trait.toString()).setOnMenuItemClickListener(item -> {
                AdapterType adapterType = new AdapterType((ClassType) symbol.getStaticValue(), trait);
-               Property implProperty = GenericProperty.createStatic(
+               Property implProperty = StaticProperty.createWithStaticValue(
                    mainActivity.program.mainModule, adapterType.toString(), adapterType);
 
                for (Property traitProperty : trait.getProperties()) {
                  adapterType.putProperty(
-                     GenericProperty.createMethod(
+                     StaticProperty.createMethod(
                          adapterType,
                          traitProperty.getName(),
                          new UserFunction(

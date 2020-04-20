@@ -1,6 +1,9 @@
-package org.kobjects.asde.lang.classifier;
+package org.kobjects.asde.lang.classifier.clazz;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.classifier.AbstractClassifier;
+import org.kobjects.asde.lang.classifier.DeclaredBy;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.Parameter;
 import org.kobjects.asde.lang.io.SyntaxColor;
@@ -11,8 +14,6 @@ import org.kobjects.asde.lang.type.Type;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.TreeMap;
 
 public class ClassType extends AbstractClassifier implements InstantiableClassType, DeclaredBy {
 
@@ -36,11 +37,18 @@ public class ClassType extends AbstractClassifier implements InstantiableClassTy
 
 
   @Override
-  public void toString(AnnotatedStringBuilder asb) {
+  public void toString(AnnotatedStringBuilder asb, String indent, boolean includeContent, boolean forExport) {
+    asb.append(indent);
     asb.append("class", SyntaxColor.KEYWORD);
     if (declaringSymbol != null) {
       asb.append(' ');
       asb.append(declaringSymbol.getName());
+    }
+    asb.append(':');
+    if (includeContent) {
+      listProperties(asb, indent + " ", includeContent, forExport);
+    } else {
+      asb.append("[...]");
     }
   }
 

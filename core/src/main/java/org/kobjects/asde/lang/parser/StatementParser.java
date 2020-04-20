@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.parser;
 
-import org.kobjects.asde.lang.classifier.AdapterType;
+import org.kobjects.asde.lang.classifier.trait.AdapterType;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.Parameter;

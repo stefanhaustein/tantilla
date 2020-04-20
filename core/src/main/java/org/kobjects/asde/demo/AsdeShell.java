@@ -1,7 +1,6 @@
 package org.kobjects.asde.demo;
 
 import org.kobjects.annotatedtext.AnnotatedString;
-import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.annotatedtext.Span;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.io.SyntaxColor;

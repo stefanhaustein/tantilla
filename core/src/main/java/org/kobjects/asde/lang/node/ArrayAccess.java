@@ -1,9 +1,6 @@
 package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.AdapterInstance;
-import org.kobjects.asde.lang.classifier.AdapterType;
-import org.kobjects.asde.lang.classifier.ClassInstance;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.list.ListImpl;
