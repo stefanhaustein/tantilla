@@ -16,10 +16,12 @@ import org.kobjects.asde.android.ide.property.DeleteFlow;
 import org.kobjects.asde.android.ide.property.RenameFlow;
 import org.kobjects.asde.android.ide.property.PropertyView;
 import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.classifier.trait.AdapterType;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.statement.Statement;
+import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Types;
 
 import java.util.ArrayList;
@@ -35,34 +37,37 @@ public class FunctionView extends PropertyView {
 
     boolean isMain = userFunction == mainActivity.program.main;
     boolean isMethod = userFunction.getType().getParameterCount() > 0 && userFunction.getType().getParameter(0).getName().equals("self");
+    boolean isAdapterMethod = symbol.getOwner().getType() instanceof MetaType
+        && ((MetaType) symbol.getOwner().getType()).getWrapped() instanceof AdapterType;
 
     titleView.setTypeIndicator(
           "def",
           isMethod ? Colors.LIGHT_PURPLE_RED : isMain ? Colors.PRIMARY_FILTER : Colors.YELLOW,
           true);
 
-    titleView.setMoreClickListener(clicked -> {
-      PopupMenu popup = new PopupMenu(mainActivity, clicked);
-      Menu menu = popup.getMenu();
-      if (!isMain) {
-        menu.add("Rename").setOnMenuItemClickListener(item -> {
-          RenameFlow.start(mainActivity, symbol);
-          return true;
-        });
-        menu.add("Change Signature").setOnMenuItemClickListener(item -> {
-          FunctionSignatureFlow.changeSignature(mainActivity, symbol);
-          return true;
-        });
-      }
-      if (!isMain) {
-        menu.add("Delete").setOnMenuItemClickListener(item -> {
-          DeleteFlow.start(mainActivity, symbol);
-          return true;
-        });
-      }
-      popup.show();
-    });
-
+    if (!isMain && !isAdapterMethod) {
+      titleView.setMoreClickListener(clicked -> {
+        PopupMenu popup = new PopupMenu(mainActivity, clicked);
+        Menu menu = popup.getMenu();
+        if (!isMain) {
+          menu.add("Rename").setOnMenuItemClickListener(item -> {
+            RenameFlow.start(mainActivity, symbol);
+            return true;
+          });
+          menu.add("Change Signature").setOnMenuItemClickListener(item -> {
+            FunctionSignatureFlow.changeSignature(mainActivity, symbol);
+            return true;
+          });
+        }
+        if (!isMain) {
+          menu.add("Delete").setOnMenuItemClickListener(item -> {
+            DeleteFlow.start(mainActivity, symbol);
+            return true;
+          });
+        }
+        popup.show();
+      });
+    }
     refreshSignature();
   }
 

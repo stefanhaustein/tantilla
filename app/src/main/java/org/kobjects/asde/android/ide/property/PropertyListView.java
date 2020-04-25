@@ -19,10 +19,12 @@ import java.util.TreeSet;
 public class PropertyListView extends ExpandableList {
   protected HashMap<Property, PropertyView> propertyViewMap = new HashMap<>();
   private final MainActivity mainActivity;
+  protected Classifier classifier;
 
-  public PropertyListView(MainActivity mainActivity) {
+  public PropertyListView(MainActivity mainActivity, Classifier classifier) {
     super(mainActivity);
     this.mainActivity = mainActivity;
+    this.classifier = classifier;
   }
 
   public PropertyView findViewBySymbol(Property symbol) {
@@ -31,26 +33,23 @@ public class PropertyListView extends ExpandableList {
 
 
   /** 
-   *
-   * @param symbolList The new symbol list
    * @param expandListener Listener to add to newly created views
    * @param returnViewForSymbol Return the view for this symbol.
    * @return
    */
-  public PropertyView synchronizeTo(Iterable<? extends Property> symbolList, ExpandListener expandListener, Property returnViewForSymbol) {
-
-    System.out.println("########  synchronizeTo: " + symbolList);
-
+  public PropertyView synchronize(boolean expanded, ExpandListener expandListener, Property returnViewForSymbol) {
     removeAllViews();
     //int varCount = 0;
+
+    if (!expanded) {
+      return null;
+    }
 
     PropertyView matchedView = null;
 
     HashMap<Property, PropertyView> newPropertyViewMap = new HashMap<>();
 
-
-
-    for (Property property : symbolList) {
+    for (Property property : classifier.getProperties()) {
       PropertyView propertyView = propertyViewMap.get(property);
       if (propertyView != null) {
         propertyView.syncContent();

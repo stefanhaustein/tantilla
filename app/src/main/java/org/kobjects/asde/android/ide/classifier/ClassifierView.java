@@ -32,6 +32,7 @@ import java.util.Set;
 public class ClassifierView extends PropertyView {
 
   PropertyView currentPropertyView;
+  Classifier classifier;
 
   public final ExpandListener expandListener = new ExpandListener() {
     @Override
@@ -51,10 +52,11 @@ public class ClassifierView extends PropertyView {
 
   public ClassifierView(MainActivity mainActivity, Property symbol) {
     super(mainActivity, symbol);
+    this.classifier = (Classifier) symbol.getStaticValue();
 
-    if (symbol.getStaticValue() instanceof Trait) {
+    if (classifier instanceof Trait) {
       titleView.setTypeIndicator("trait", Colors.LIGHT_GREEN, false);
-    } else if (symbol.getStaticValue() instanceof AdapterType){
+    } else if (classifier instanceof AdapterType){
       titleView.setTypeIndicator("impl",Colors.LIGHT_CYAN , false);
     } else {
       titleView.setTypeIndicator("class", Colors.LIGHT_BLUE, false);
@@ -95,7 +97,7 @@ public class ClassifierView extends PropertyView {
                }
 
                mainActivity.program.mainModule.putProperty(implProperty);
-               mainActivity.programView.selectImpl(implProperty);
+               mainActivity.program.console.selectProperty(implProperty);
                return true;
             });
           }
@@ -103,7 +105,7 @@ public class ClassifierView extends PropertyView {
       }
 
       addMenu.add("Add Method").setOnMenuItemClickListener(item -> {
-        FunctionSignatureFlow.createMethod(mainActivity, (Classifier) symbol.getStaticValue());
+        FunctionSignatureFlow.createMethod(mainActivity, classifier);
         return true;
       });
 
@@ -144,7 +146,7 @@ public class ClassifierView extends PropertyView {
   @Override
   public PropertyListView getContentView() {
     if (contentView == null) {
-      contentView = new PropertyListView(mainActivity);
+      contentView = new PropertyListView(mainActivity, classifier);
       addView(contentView);
     }
     return (PropertyListView) contentView;
@@ -154,21 +156,7 @@ public class ClassifierView extends PropertyView {
   @Override
   public void syncContent() {
     refresh();
-
-    if (!expanded) {
-      getContentView().synchronizeTo(Collections.emptyList(), expandListener, null);
-      return;
-    }
-
-    Iterable<? extends Property> symbols;
-    if (property.getStaticValue() instanceof Classifier) {
-      symbols = ((Classifier) property.getStaticValue()).getProperties();
-    } else {
-      symbols = new ArrayList<>();
-   //   symbols = ((Trait) symbol.getStaticValue()).propertyMap.values();
-    }
-    getContentView().synchronizeTo(symbols, expandListener, null);
-
+    getContentView().synchronize(expanded, expandListener, null);
   }
 
 }

@@ -10,8 +10,10 @@ import org.kobjects.asde.android.ide.property.ExpandListener;
 import org.kobjects.asde.android.ide.property.PropertyListView;
 import org.kobjects.asde.android.ide.property.PropertyView;
 import org.kobjects.asde.lang.classifier.Classifier;
+import org.kobjects.asde.lang.classifier.DeclaredBy;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.android.ide.MainActivity;
+import org.kobjects.asde.lang.classifier.module.Module;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 
@@ -39,7 +41,7 @@ public class ProgramView extends PropertyListView {
   };
 
   public ProgramView(MainActivity context) {
-    super(context);
+    super(context, context.program.mainModule);
 
     this.mainActivity = context;
 
@@ -111,21 +113,9 @@ public class ProgramView extends PropertyListView {
   }
 
   void synchronize() {
-    /*
-    boolean isDefaultSaveLocation = program.reference.name.isEmpty();
-    titleView.setTitle(
-        (isDefaultSaveLocation ? "ASDE" : program.reference.name)
-            + (program.legacyMode ? " (legacy mode)️" : "")
-        + (mainActivity.isUnsaved() ? "*" : "")); */
+    classifier = mainActivity.program.mainModule;
 
-
-    if (!expanded) {
-      synchronizeTo(Collections.emptyList(), expandListener, null);
-      return;
-    }
-
-    PropertyView expandView = synchronizeTo(mainActivity.program.mainModule.getProperties(), expandListener, expandOnSync);
-
+    PropertyView expandView = synchronize(expanded, expandListener, expandOnSync);
 
     if (expandView != null) {
       expandView.setExpanded(true, true);
@@ -188,7 +178,7 @@ public class ProgramView extends PropertyListView {
               break;
             }
           }
-          targetView = classifierView.getContentView().synchronizeTo(classImplementation.getProperties(), classifierView.expandListener, symbolFound);
+          targetView = classifierView.getContentView().synchronize(true, classifierView.expandListener, symbolFound);
           break;
         }
       }
