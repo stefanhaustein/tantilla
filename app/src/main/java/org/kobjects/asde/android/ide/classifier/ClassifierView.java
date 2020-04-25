@@ -146,7 +146,7 @@ public class ClassifierView extends PropertyView {
   @Override
   public PropertyListView getContentView() {
     if (contentView == null) {
-      contentView = new PropertyListView(mainActivity, classifier);
+      contentView = new PropertyListView(mainActivity, classifier, expandListener);
       addView(contentView);
     }
     return (PropertyListView) contentView;
@@ -156,7 +156,7 @@ public class ClassifierView extends PropertyView {
   @Override
   public void syncContent() {
     refresh();
-    getContentView().synchronize(expanded, expandListener, null);
+    getContentView().synchronize(expanded, null);
   }
 
 }

@@ -2,13 +2,16 @@ package org.kobjects.asde.lang.classifier.trait;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.AbstractClassifier;
+import org.kobjects.asde.lang.classifier.DeclaredBy;
+import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.clazz.ClassType;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
 
-public class AdapterType extends AbstractClassifier {
+public class AdapterType extends AbstractClassifier implements DeclaredBy {
   public final ClassType classType;
   public final Trait trait;
+  private Property declaringSymbol;
 
   public AdapterType(ClassType classType, Trait trait) {
     super(classType.program);
@@ -52,5 +55,15 @@ public class AdapterType extends AbstractClassifier {
 
   public String toString() {
     return classType + " as " + trait;
+  }
+
+  @Override
+  public void setDeclaredBy(Property declaringSymbol) {
+    this.declaringSymbol = declaringSymbol;
+  }
+
+  @Override
+  public Property getDeclaringSymbol() {
+    return declaringSymbol;
   }
 }

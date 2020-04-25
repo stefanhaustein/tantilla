@@ -5,6 +5,7 @@ import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.classifier.ClassifierView;
 import org.kobjects.asde.android.ide.field.FieldView;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
+import org.kobjects.asde.lang.classifier.DeclaredBy;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.trait.Trait;
 import org.kobjects.asde.lang.function.FunctionType;
@@ -20,11 +21,13 @@ public class PropertyListView extends ExpandableList {
   protected HashMap<Property, PropertyView> propertyViewMap = new HashMap<>();
   private final MainActivity mainActivity;
   protected Classifier classifier;
+  protected ExpandListener childExpansionListener;
 
-  public PropertyListView(MainActivity mainActivity, Classifier classifier) {
+  public PropertyListView(MainActivity mainActivity, Classifier classifier, ExpandListener childExpansionListener) {
     super(mainActivity);
     this.mainActivity = mainActivity;
     this.classifier = classifier;
+    this.childExpansionListener = childExpansionListener;
   }
 
   public PropertyView findViewBySymbol(Property symbol) {
@@ -32,12 +35,30 @@ public class PropertyListView extends ExpandableList {
   }
 
 
+  public PropertyView selectImpl(Property property) {
+    Classifier c = property.getOwner();
+    Property localProperty = property;
+    while (c != classifier) {
+      localProperty = ((DeclaredBy) c).getDeclaringSymbol();
+      c = localProperty.getOwner();
+    }
+    PropertyView propertyView = synchronize(true, localProperty);
+    if (localProperty == property) {
+      propertyView.setExpanded(true, true);
+      return propertyView;
+    }
+    if (!(propertyView instanceof ClassifierView)) {
+      return null;
+    }
+    return ((ClassifierView) propertyView).getContentView().selectImpl(property);
+  }
+
+
   /** 
-   * @param expandListener Listener to add to newly created views
    * @param returnViewForSymbol Return the view for this symbol.
    * @return
    */
-  public PropertyView synchronize(boolean expanded, ExpandListener expandListener, Property returnViewForSymbol) {
+  public PropertyView synchronize(boolean expanded, Property returnViewForSymbol) {
     removeAllViews();
     //int varCount = 0;
 
@@ -57,22 +78,19 @@ public class PropertyListView extends ExpandableList {
         if (property.getStaticValue() instanceof Classifier) {
           ClassifierView classifierView = new ClassifierView(mainActivity, property);
           propertyView = classifierView;
-          classifierView.addExpandListener(expandListener);
-          if (matchedView == null && returnViewForSymbol != null) {
-            matchedView = classifierView.getContentView().findViewBySymbol(returnViewForSymbol);
-          }
+          classifierView.addExpandListener(childExpansionListener);
         } else if (property.getType() instanceof FunctionType) {
           FunctionView functionView = new FunctionView(mainActivity, property);
           propertyView = functionView;
-          functionView.addExpandListener(expandListener);
+          functionView.addExpandListener(childExpansionListener);
         } else {
           FieldView variableView = new FieldView(mainActivity, property);
-          variableView.addExpandListener(expandListener);
+          variableView.addExpandListener(childExpansionListener);
           propertyView = variableView;
         }
-        if (property == returnViewForSymbol) {
-          matchedView = propertyView;
-        }
+      }
+      if (property == returnViewForSymbol) {
+        matchedView = propertyView;
       }
       addView(propertyView);
       newPropertyViewMap.put(property, propertyView);

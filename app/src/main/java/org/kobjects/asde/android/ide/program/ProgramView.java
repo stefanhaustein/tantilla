@@ -27,21 +27,22 @@ public class ProgramView extends PropertyListView {
   public PropertyView currentPropertyView;
   int syncRequestCount;
   Property expandOnSync;
-  private final ExpandListener expandListener = new ExpandListener() {
-    @Override
-    public void notifyExpanding(PropertyView propertyView, boolean animated) {
-      if (propertyView != currentPropertyView) {
-        if (currentPropertyView != null) {
-          currentPropertyView.setExpanded(false, animated);
-        }
-        currentPropertyView = propertyView;
-        currentFunctionView = propertyView instanceof FunctionView ? (FunctionView) propertyView : null;
-      }
-    }
-  };
 
   public ProgramView(MainActivity context) {
-    super(context, context.program.mainModule);
+    super(context, context.program.mainModule, null);
+    childExpansionListener = new ExpandListener() {
+      @Override
+      public void notifyExpanding(PropertyView propertyView, boolean animated) {
+        if (propertyView != currentPropertyView) {
+          if (currentPropertyView != null) {
+            currentPropertyView.setExpanded(false, animated);
+          }
+          currentPropertyView = propertyView;
+          currentFunctionView = propertyView instanceof FunctionView ? (FunctionView) propertyView : null;
+        }
+      }
+    };
+
 
     this.mainActivity = context;
 
@@ -115,7 +116,7 @@ public class ProgramView extends PropertyListView {
   void synchronize() {
     classifier = mainActivity.program.mainModule;
 
-    PropertyView expandView = synchronize(expanded, expandListener, expandOnSync);
+    PropertyView expandView = synchronize(expanded, expandOnSync);
 
     if (expandView != null) {
       expandView.setExpanded(true, true);
@@ -156,7 +157,7 @@ public class ProgramView extends PropertyListView {
 
   /**
    * Users should call console.edit(symbol) instead.
-   */
+
   public PropertyView selectImpl(Property symbol) {
     PropertyView targetView = null;
     if (currentPropertyView != null && currentPropertyView.property == symbol) {
@@ -178,7 +179,7 @@ public class ProgramView extends PropertyListView {
               break;
             }
           }
-          targetView = classifierView.getContentView().synchronize(true, classifierView.expandListener, symbolFound);
+          targetView = classifierView.getContentView().synchronize(true,  symbolFound);
           break;
         }
       }
@@ -193,5 +194,5 @@ public class ProgramView extends PropertyListView {
     }
 
     return targetView;
-  }
+  } */
 }
