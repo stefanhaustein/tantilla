@@ -14,3 +14,7 @@ Notable differences:
 Code examples:
 
 https://github.com/stefanhaustein/tantilla/tree/master/app/src/main/assets/examples
+
+Android Play Store Beta link:
+
+https://play.google.com/store/apps/details?id=org.kobjects.asde
