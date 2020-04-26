@@ -7,10 +7,10 @@ import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.classifier.DeclaredBy;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.runtime.ForcedStopException;
+import org.kobjects.asde.lang.exceptions.ForcedStopException;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramControl;
-import org.kobjects.asde.lang.runtime.WrappedExecutionException;
+import org.kobjects.asde.lang.exceptions.WrappedExecutionException;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 import org.kobjects.asde.lang.node.Node;
 

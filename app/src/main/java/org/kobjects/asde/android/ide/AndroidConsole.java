@@ -24,11 +24,11 @@ import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.runtime.ForcedStopException;
+import org.kobjects.asde.lang.exceptions.ForcedStopException;
 import org.kobjects.asde.lang.io.Format;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.statement.Statement;
-import org.kobjects.asde.lang.runtime.WrappedExecutionException;
+import org.kobjects.asde.lang.exceptions.WrappedExecutionException;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
 

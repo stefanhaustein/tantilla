@@ -2,11 +2,9 @@ package org.kobjects.asde.android.ide;
 
 import android.widget.LinearLayout;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.widget.IconButton;
-import org.kobjects.asde.lang.runtime.ForcedStopException;
+import org.kobjects.asde.lang.exceptions.ForcedStopException;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 import org.kobjects.asde.lang.io.Console;
 

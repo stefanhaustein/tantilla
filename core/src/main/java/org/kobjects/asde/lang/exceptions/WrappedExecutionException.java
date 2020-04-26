@@ -1,4 +1,4 @@
-package org.kobjects.asde.lang.runtime;
+package org.kobjects.asde.lang.exceptions;
 
 import org.kobjects.asde.lang.function.UserFunction;
 

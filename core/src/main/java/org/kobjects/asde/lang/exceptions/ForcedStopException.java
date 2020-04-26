@@ -1,4 +1,4 @@
-package org.kobjects.asde.lang.runtime;
+package org.kobjects.asde.lang.exceptions;
 
 /**
  * Thrown when the user requested a program stop or it was forced extenally somehow.

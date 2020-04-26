@@ -1,11 +1,11 @@
-package org.kobjects.asde.demo;
+package org.kobjects.asde.shell;
 
 import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.annotatedtext.Span;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.program.Program;
-import org.kobjects.asde.lang.runtime.WrappedExecutionException;
+import org.kobjects.asde.lang.exceptions.WrappedExecutionException;
 import org.kobjects.asde.lang.io.Console;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.io.Shell;

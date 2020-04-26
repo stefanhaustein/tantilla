@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.asde.lang.exceptions.ExceptionWithReplacementPropolsal;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.node.Node;
@@ -23,7 +24,9 @@ public class VoidStatement extends Statement {
       returnType = ((FunctionType) returnType).getReturnType();
     }
     if (returnType != Types.VOID) {
-      throw new RuntimeException("Function result typed "+ returnType + " ignored.");
+      throw new ExceptionWithReplacementPropolsal(
+          "Function result typed "+ returnType + " ignored.",
+          "print %s");
     }
   }
 
