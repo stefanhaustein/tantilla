@@ -205,6 +205,18 @@ public class MainMenu {
       return true;
     });
 
+    mainMenu.add("Examples…").setOnMenuItemClickListener(item -> {
+      confirmLosingUnsavedChanges(mainActivity, "Open Example", () -> {
+        new FilePicker(mainActivity, node -> {
+          mainActivity.load(new ProgramReference(node.getName(), node.getUrl(), node.isWritable()), true, false);
+        }).setTitle("Open")
+            .setRootNode(getExamplesNode(mainActivity))
+            .setOptions(FilePicker.Option.SINGLE_CLICK)
+            .show();
+      });
+      return true;
+    });
+
     Menu projectMenu = mainMenu.addSubMenu("Project");
     fillProjectMenu(mainActivity, projectMenu);
 
@@ -222,17 +234,6 @@ public class MainMenu {
     });
      */
 
-    mainMenu.add("Examples…").setOnMenuItemClickListener(item -> {
-          confirmLosingUnsavedChanges(mainActivity, "Open Example", () -> {
-            new FilePicker(mainActivity, node -> {
-              mainActivity.load(new ProgramReference(node.getName(), node.getUrl(), node.isWritable()), true, false);
-            }).setTitle("Open")
-                .setRootNode(getExamplesNode(mainActivity))
-                .setOptions(FilePicker.Option.SINGLE_CLICK)
-                .show();
-            });
-          return true;
-        });
 
 
     Menu displayMenu = mainMenu.addSubMenu("Display");

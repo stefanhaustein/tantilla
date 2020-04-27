@@ -26,6 +26,7 @@ import org.kobjects.asde.lang.classifier.trait.Trait;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.ProgramListener;
 import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.type.Types;
 
 public class FieldFlow {
 
@@ -147,7 +148,12 @@ public class FieldFlow {
 
     alert.setNegativeButton("Cancel", null);
     alert.setPositiveButton("Ok", (a, b) -> {
-      Type fixedType = typeSpinner.getSelectedType();
+    Type fixedType = typeSpinner.getSelectedType();
+
+    if (fixedType == Types.VOID) {
+      fixedType = null;
+    }
+
 
       Node initializer = fixedType == null ? mainActivity.program.parser.parseExpression(editText.getText().toString()) : null;
     //    if (symbol == null) {

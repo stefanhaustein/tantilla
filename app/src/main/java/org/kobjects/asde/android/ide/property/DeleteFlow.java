@@ -13,7 +13,7 @@ public class DeleteFlow {
         .setConfirmationCheckbox("Yes, I am sure!")
         .setPositiveLabel("Delete")
         .start(result -> {
-          ((ClassType) symbol.getOwner()).remove(symbol.getName());
+          (symbol.getOwner()).remove(symbol.getName());
           mainActivity.program.notifyProgramChanged();
     });
   }
