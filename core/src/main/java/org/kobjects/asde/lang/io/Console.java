@@ -38,6 +38,7 @@ public interface Console {
     void selectProperty(Property property);
 
     Property getSelectedProperty();
+    UserFunction getSelectedFunction();
 
     void showError(String message, Exception e);
 }

@@ -59,7 +59,6 @@ public class Shell {
 
 
   public void enter(String line) {
-    Property currentFunction = program.console.getSelectedProperty();
     if (line.isEmpty()) {
       program.console.prompt();
       return;
@@ -77,15 +76,17 @@ public class Shell {
           if (tokenizer.currentType == Tokenizer.TokenType.IDENTIFIER
               || "?".equals(tokenizer.currentValue)) {
 
-            List<Statement> parsed = program.parser.parseStatementList(tokenizer, (UserFunction) currentFunction.getStaticValue());
+            UserFunction currentFunction = program.console.getSelectedFunction();
+
+            List<Statement> parsed = program.parser.parseStatementList(tokenizer, currentFunction);
             int targetLine = (int) Math.ceil(lineNumber);
             boolean replace = lineNumber == targetLine;
             for (Statement statement : parsed) {
               if (replace) {
-                ((UserFunction) currentFunction.getStaticValue()).setLine(targetLine, statement);
+                currentFunction.setLine(targetLine, statement);
                 replace = false;
               } else {
-                ((UserFunction) currentFunction.getStaticValue()).insertLine(targetLine, statement);
+                currentFunction.insertLine(targetLine, statement);
               }
               targetLine++;
             }

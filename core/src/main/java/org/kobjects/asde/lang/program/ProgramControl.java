@@ -81,11 +81,11 @@ public class ProgramControl {
 
 
     public void start() {
-        EvaluationContext context = new EvaluationContext(this, program.main);
+        EvaluationContext context = new EvaluationContext(this, program.getMain());
         try {
             program.clear(context);
 
-            program.main.getDeclaringSymbol().init(context, new HashSet<>());
+            program.getMain().getDeclaringSymbol().init(context, new HashSet<>());
 
             runAsync(() -> context.function.callImpl(context));
         } catch (Exception e) {
@@ -127,9 +127,9 @@ public class ProgramControl {
         runAsync(new Runnable() {
             @Override
             public void run() {
-                EvaluationContext context = new EvaluationContext(ProgramControl.this, program.main);
+                EvaluationContext context = new EvaluationContext(ProgramControl.this, program.getMain());
                 context.currentLine = runLine;
-                program.main.callImpl(context);
+                program.getMain().callImpl(context);
             }
         });
     }

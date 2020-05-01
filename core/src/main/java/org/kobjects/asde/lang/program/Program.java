@@ -53,7 +53,6 @@ public class Program {
   public ProgramReference reference;
 
   public final StatementParser parser = new StatementParser(this);
-  public final UserFunction main = new UserFunction(this, new FunctionType(Types.VOID));
   private final ArrayList<PropertyChangeListener> programChangeListeners = new ArrayList<>();
   private final ArrayList<ProgramListener> programListeners = new ArrayList<>();
 
@@ -81,7 +80,7 @@ public class Program {
     for (Builtin builtin : Builtin.values()) {
       mainModule.addBuiltin(builtin.name().toLowerCase(), builtin);
     }
-    mainModule.putProperty(StaticProperty.createMethod(mainModule, "main", main));
+    mainModule.putProperty(StaticProperty.createMethod(mainModule, "main", new UserFunction(this, FunctionType.createFromTypes(Types.VOID))));
   }
 
   public void processNodes(Consumer<Node> action) {
@@ -90,14 +89,12 @@ public class Program {
   }
 
   public synchronized void deleteAll() {
-    main.clear();
-
     Module replacement = new Module(this);
     for (StaticProperty builtin : mainModule.builtins()) {
       replacement.addBuiltin(builtin);
     }
     mainModule = replacement;
-    mainModule.putProperty(StaticProperty.createMethod(mainModule, "main", main));
+    mainModule.putProperty(StaticProperty.createMethod(mainModule, "main", new UserFunction(this, FunctionType.createFromTypes(Types.VOID))));
 
     ProgramReference newReference = console.nameToReference(null);
     if (!reference.equals(newReference)) {
@@ -291,9 +288,13 @@ public class Program {
 
 
   public boolean isEmpty() {
-    if (main.getLineCount() > 0) {
+    if (getMain().getLineCount() > 0) {
       return false;
     }
     return mainModule.getProperties().isEmpty();
+  }
+
+  public UserFunction getMain() {
+    return (UserFunction) mainModule.getProperty("main").getStaticValue();
   }
 }

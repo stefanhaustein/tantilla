@@ -123,7 +123,7 @@ public class ProgramParser {
             currentClassifier.putProperty(StaticProperty.createMethod(currentClassifier, functionName, currentFunction));
           } else if (functionName.equals("main")) {
             // Implicitly discarding what we have just created...
-            currentFunction = program.main;
+            currentFunction = program.getMain();
           } else {
             synchronized (program) {
               program.mainModule.putProperty(StaticProperty.createWithStaticValue(program.mainModule, functionName, currentFunction));

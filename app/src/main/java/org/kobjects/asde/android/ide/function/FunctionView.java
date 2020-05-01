@@ -35,7 +35,7 @@ public class FunctionView extends PropertyView {
     super(mainActivity, symbol);
     this.userFunction = (Callable) symbol.getStaticValue();
 
-    boolean isMain = userFunction == mainActivity.program.main;
+    boolean isMain = userFunction == mainActivity.program.getMain();
     boolean isMethod = userFunction.getType().getParameterCount() > 0 && userFunction.getType().getParameter(0).getName().equals("self");
     boolean isAdapterMethod = symbol.getOwner().getType() instanceof MetaType
         && ((MetaType) symbol.getOwner().getType()).getWrapped() instanceof AdapterType;

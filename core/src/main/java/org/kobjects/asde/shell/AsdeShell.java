@@ -73,7 +73,6 @@ public class AsdeShell implements Console {
     this.writer = new PrintWriter(writer, true);
     program = new Program(this);
     shell = new Shell(program);
-    selectedFunction = program.main;
   }
 
   public void run() throws IOException {
@@ -231,7 +230,11 @@ public class AsdeShell implements Console {
 
     @Override
     public void selectProperty(Property property) {
-      this.selectedProperty = property;
+
+    this.selectedProperty = property;
+      if (!property.isInstanceField() && property.getStaticValue() instanceof UserFunction) {
+        selectedFunction = ((UserFunction) property.getStaticValue());
+      }
     }
 
     @Override
@@ -239,7 +242,12 @@ public class AsdeShell implements Console {
       return selectedProperty;
     }
 
-    @Override
+  @Override
+  public UserFunction getSelectedFunction() {
+    return selectedFunction == null ? program.getMain() : selectedFunction;
+  }
+
+  @Override
     public void showError(String message, Exception e) {
       print(message + e);
     }

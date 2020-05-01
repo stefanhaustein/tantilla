@@ -2,6 +2,7 @@ package org.kobjects.asde.android.ide;
 
 import android.graphics.Typeface;
 import android.text.InputType;
+import android.text.method.LinkMovementMethod;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -19,7 +20,6 @@ import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.lang.io.Format;
 import org.kobjects.asde.lang.io.MultiValidationException;
-import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.expressionparser.ParsingException;
 
 
@@ -61,7 +61,6 @@ public class ControlView extends LinearLayout  {
       }
       return false;
     });
-
 
     inputLayout = new LinearLayout(mainActivity);
     inputLayout.setOrientation(LinearLayout.VERTICAL);

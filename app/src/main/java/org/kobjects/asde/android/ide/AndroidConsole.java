@@ -42,9 +42,8 @@ import java.util.concurrent.SynchronousQueue;
 public class AndroidConsole implements Console {
   private final MainActivity mainActivity;
   private TextView pendingOutput;
-  private String readLine;
   boolean autoScroll = true;
-
+  private UserFunction selectedFunction;
 
 
   AndroidConsole(MainActivity mainActivity) {
@@ -119,7 +118,6 @@ public class AndroidConsole implements Console {
       asb.append(result, Annotations.ACCENT_COLOR);
       asb.append("\n");
       print(asb.build());
-      readLine = null;
       return result;
     } catch (InterruptedException e) {
       if (inputEditText[0] != null) {
@@ -249,6 +247,9 @@ public class AndroidConsole implements Console {
 
   @Override
   public void selectProperty(Property symbol) {
+    if (!symbol.isInstanceField() && symbol.getStaticValue() instanceof UserFunction) {
+      selectedFunction = (UserFunction) symbol.getStaticValue();
+    }
     mainActivity.runOnUiThread(() -> mainActivity.programView.selectImpl(symbol));
   }
 
@@ -259,6 +260,11 @@ public class AndroidConsole implements Console {
         || !(mainActivity.programView.currentFunctionView.userFunction instanceof UserFunction)
         ? mainActivity.program.main
         : (UserFunction) mainActivity.programView.currentFunctionView.userFunction;*/
+  }
+
+  @Override
+  public UserFunction getSelectedFunction() {
+    return selectedFunction == null ? mainActivity.program.getMain() : selectedFunction;
   }
 
 
