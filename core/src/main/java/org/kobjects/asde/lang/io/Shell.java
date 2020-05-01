@@ -137,16 +137,19 @@ public class Shell {
         ValidationContext validationContext = ValidationContext.validateShellInput(wrapper);
         System.out.println("init deps: " + validationContext.initializationDependencies);
 
-        if (validationContext.errors.size() > 0) {
-          throw new MultiValidationException(wrapper, validationContext.errors);
-        }
-
         AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-        asb.append(wrapper.toString(), Annotations.ACCENT_COLOR);
+        wrapper.toString(asb, "", false, validationContext.errors);
         asb.append("\n");
         program.console.print(asb.build());
 
-        shellControl.initializeAndRunShellCode(wrapper, mainControl, validationContext.initializationDependencies);
+        if (validationContext.errors.isEmpty()) {
+          shellControl.initializeAndRunShellCode(wrapper, mainControl, validationContext.initializationDependencies);
+        } else {
+          for (Exception exception : validationContext.errors.values()) {
+            program.console.print(Format.exceptionToString(exception));
+          }
+        }
+
     }
   }
 

@@ -248,6 +248,11 @@ public class AsdeShell implements Console {
   }
 
   @Override
+  public void showError(AnnotatedString annotatedString) {
+    print(annotatedString);
+  }
+
+  @Override
     public void showError(String message, Exception e) {
       print(message + e);
     }

@@ -5,6 +5,8 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
+import android.widget.TextView;
+
 import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.annotatedtext.Span;
@@ -19,6 +21,8 @@ public class AnnotatedStringConverter {
 
   public static final int NO_LINKS = -1;
   public static final int NO_LINKED_LINE = 0;
+
+
 
   public static SpannableString toSpanned(MainActivity mainActivity, AnnotatedString annotated, HelpDialog helpDialog) {
     return toSpanned(mainActivity, annotated, NO_LINKED_LINE, helpDialog);
@@ -43,7 +47,7 @@ public class AnnotatedStringConverter {
             s.setSpan(new ClickableSpan() {
               @Override
               public void onClick(View widget) {
-                Errors.show(mainActivity, (Exception) span.annotation, linkedLine);
+                Errors.show(mainActivity, annotated, span, linkedLine);
               }
             }, span.start, span.end, 0);
           }

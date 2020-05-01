@@ -1,5 +1,7 @@
 package org.kobjects.asde.lang.io;
 
+import org.kobjects.asde.lang.exceptions.ExceptionWithReplacementPropolsal;
+
 public class Format {
 
   public static String exceptionToString(Throwable e) {
@@ -7,7 +9,7 @@ public class Format {
     while (true) {
       if (e instanceof IndexOutOfBoundsException) {
         sb.append("Array index out of bounds: " + e.getMessage());
-      } else if (e.getClass() == RuntimeException.class) {
+      } else if (e.getClass() == RuntimeException.class || e instanceof ExceptionWithReplacementPropolsal) {
         if (e.getCause() != null) {
           e = e.getCause();
           continue;

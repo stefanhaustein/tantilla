@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.io;
 
+import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.UserFunction;
 
@@ -39,6 +40,8 @@ public interface Console {
 
     Property getSelectedProperty();
     UserFunction getSelectedFunction();
+
+    void showError(AnnotatedString annotatedString);
 
     void showError(String message, Exception e);
 }

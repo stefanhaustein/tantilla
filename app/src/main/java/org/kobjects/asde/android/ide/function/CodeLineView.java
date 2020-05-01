@@ -18,6 +18,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
+import org.kobjects.asde.android.ide.text.TextViews;
 import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.Statement;
@@ -84,11 +85,8 @@ public class CodeLineView extends LinearLayout {
 
     statementView.setTextScaleX(0.9f);
     statementView.setText(spannable);
-    if (spannable.getSpans(0, spannable.length(), ClickableSpan.class).length > 0) {
-      statementView.setMovementMethod(LinkMovementMethod.getInstance());
-    } else {
-      statementView.setMovementMethod(null);
-    }
+
+    TextViews.adjustMovementMethod(statementView);
   }
 
   public void setHighlighted(boolean highlighted) {

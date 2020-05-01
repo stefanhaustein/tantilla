@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.text.InputType;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,7 @@ import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
+import org.kobjects.asde.android.ide.text.TextViews;
 import org.kobjects.asde.android.ide.widget.IconButton;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.exceptions.ForcedStopException;
@@ -267,6 +270,11 @@ public class AndroidConsole implements Console {
     return selectedFunction == null ? mainActivity.program.getMain() : selectedFunction;
   }
 
+  @Override
+  public void showError(AnnotatedString annotatedString) {
+    print(annotatedString);
+  }
+
 
   private void printImpl(AnnotatedString s) {
     if (mainActivity.controlView.getParent() != null && mainActivity.controlView.getVisibility() == View.VISIBLE) {
@@ -281,6 +289,7 @@ public class AndroidConsole implements Console {
       int cut = s.indexOf('\n');
       if (cut == -1) {
         resultView.append(AnnotatedStringConverter.toSpanned(mainActivity, s, 0));
+        TextViews.adjustMovementMethod(resultView);
       } else {
         EmojiTextView newLine = new EmojiTextView(mainActivity);
         newLine.setTypeface(Typeface.MONOSPACE);
@@ -288,6 +297,7 @@ public class AndroidConsole implements Console {
         resultView.setText("");
 
         newLine.append(AnnotatedStringConverter.toSpanned(mainActivity, s.subSequence(0, cut), 0));
+        TextViews.adjustMovementMethod(newLine);
         mainActivity.textOutputView.addContent(newLine);
         postScrollIfAtEnd();
 
