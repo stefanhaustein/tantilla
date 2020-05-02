@@ -327,7 +327,7 @@ public class AndroidConsole implements Console {
       }
     }
   }
-  
+
   @Override
   public void prompt() {
     mainActivity.runOnUiThread(() -> {

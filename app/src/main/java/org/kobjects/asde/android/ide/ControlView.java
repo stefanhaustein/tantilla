@@ -52,11 +52,13 @@ public class ControlView extends LinearLayout  {
 
     codeEditText = new EmojiEditText(mainActivity);
     codeEditText.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS|InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE);
-    codeEditText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI|EditorInfo.IME_FLAG_NO_FULLSCREEN);
+    codeEditText.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI|EditorInfo.IME_FLAG_NO_FULLSCREEN|EditorInfo.IME_ACTION_SEND);
     codeEditText.setOnEditorActionListener((view, actionId, event) -> {
-      if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED
-          && event.getAction() == KeyEvent.ACTION_DOWN) {
-        mainActivity.controlView.enter();
+      if (actionId == EditorInfo.IME_ACTION_UNSPECIFIED) {
+        if (event.getAction() == KeyEvent.ACTION_UP) {
+          mainActivity.controlView.enter();
+        }
+        // Prevent system action (= keyboard disappearing)
         return true;
       }
       return false;

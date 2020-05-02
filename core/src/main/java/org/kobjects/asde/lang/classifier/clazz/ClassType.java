@@ -54,7 +54,7 @@ public class ClassType extends AbstractClassifier implements InstantiableClassTy
 
   @Override
   public ClassInstance createInstance(EvaluationContext evaluationContext, Object... ctorValues) {
-    System.out.println("****** Create Instance of " + toString() + " Values: " + Arrays.toString(ctorValues));
+    // System.out.println("****** Create Instance of " + toString() + " Values: " + Arrays.toString(ctorValues));
     return new ClassInstance(this, ctorValues);
   }
 
