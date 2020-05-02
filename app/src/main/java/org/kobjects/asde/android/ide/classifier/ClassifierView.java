@@ -1,6 +1,9 @@
 package org.kobjects.asde.android.ide.classifier;
 
 import android.view.Menu;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 
 import org.kobjects.asde.android.ide.Colors;

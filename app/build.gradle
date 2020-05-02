@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "org.kobjects.asde"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 29
         versionCode 12
         versionName "v0.9.3"

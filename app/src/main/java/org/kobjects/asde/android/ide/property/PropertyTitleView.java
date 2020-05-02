@@ -144,6 +144,7 @@ public class PropertyTitleView extends LinearLayout {
   public void setMoreClickListener(OnClickListener moreClickListener) {
     if (moreButton == null) {
       moreButton = new IconButton(getContext(), R.drawable.baseline_more_vert_24);
+      moreButton.setVisibility(GONE);
       addView(moreButton);
     }
     moreButton.setOnClickListener(moreClickListener);

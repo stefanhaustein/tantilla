@@ -37,6 +37,8 @@ public abstract class PropertyView extends LinearLayout {
     titleView.setOnClickListener(clicked -> {
       setExpanded(!expanded, true);
 
+
+
       if (!expanded && mainActivity.sharedCodeViewAvailable()) {
         mainActivity.textOutputView.syncContent();
       }
@@ -44,6 +46,8 @@ public abstract class PropertyView extends LinearLayout {
     });
     refresh();
   }
+
+
 
   public void addExpandListener(ExpandListener expandListener) {
     expandListeners.add(expandListener);
@@ -53,6 +57,9 @@ public abstract class PropertyView extends LinearLayout {
 
   public void refresh() {
     System.out.println("Refreshing: " + property);
+    if (titleView.moreButton != null) {
+      titleView.moreButton.setVisibility(expanded ? VISIBLE : GONE);
+    }
     Map<Node, Exception> errors = property.getErrors();
     titleView.setBackgroundColor(errors.size() > 0 ? Colors.RED : expanded ? Colors.PRIMARY_LIGHT_FILTER : 0);
     if (property.getErrors().size() > 0) {

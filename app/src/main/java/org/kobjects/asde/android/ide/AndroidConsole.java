@@ -327,11 +327,12 @@ public class AndroidConsole implements Console {
       }
     }
   }
-
-
+  
   @Override
   public void prompt() {
-    mainActivity.controlView.codeEditText.setText("");
+    mainActivity.runOnUiThread(() -> {
+      mainActivity.controlView.codeEditText.setText("");
+    });
   }
 
   @Override

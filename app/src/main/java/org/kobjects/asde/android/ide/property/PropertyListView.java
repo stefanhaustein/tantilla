@@ -1,5 +1,7 @@
 package org.kobjects.asde.android.ide.property;
 
+import android.view.View;
+
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.function.FunctionView;
 import org.kobjects.asde.android.ide.classifier.ClassifierView;
@@ -15,6 +17,7 @@ import org.kobjects.asde.lang.type.MetaType;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 
 
 public class PropertyListView extends ExpandableList {
