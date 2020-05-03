@@ -27,7 +27,7 @@ import java.util.Map;
 
 public class CodeLineView extends LinearLayout {
   TextView lineNumberView;
-  TextView statementView;
+  EmojiTextView statementView;
   boolean odd;
   boolean highlighted;
   int lineNumber;
@@ -84,7 +84,8 @@ public class CodeLineView extends LinearLayout {
     spannable.setSpan(new LeadingMarginSpan.Standard(indent * factor, (indent + 2) * factor),0,spannable.length(),0);
 
     statementView.setTextScaleX(0.9f);
-    statementView.setText(spannable);
+    // setText breaks adjustMovementMethod below...
+    statementView.append(spannable);
 
     TextViews.adjustMovementMethod(statementView);
   }

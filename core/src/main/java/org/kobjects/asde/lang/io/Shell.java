@@ -254,6 +254,13 @@ public class Shell {
 
   void processDef(Tokenizer tokenizer) {
     String name = tokenizer.consumeIdentifier();
+
+    Classifier target = program.mainModule;
+    while (tokenizer.tryConsume(".")) {
+      target = (Classifier) target.getProperty(name).getStaticValue();
+      name = tokenizer.consumeIdentifier();
+    }
+
     FunctionType functionType = program.parser.parseFunctionSignature(tokenizer, null);
     UserFunction function = new UserFunction(program, functionType);
     if (tokenizer.tryConsume(":")) {
@@ -261,8 +268,9 @@ public class Shell {
         function.appendStatement(statement);
       }
     }
-    Property property = StaticProperty.createMethod(program.mainModule, name, function);
-    program.mainModule.putProperty(property);
+    Property property = StaticProperty.createMethod(target, name, function);
+    target.putProperty(property);
+    program.console.selectProperty(property);
   }
 
 
