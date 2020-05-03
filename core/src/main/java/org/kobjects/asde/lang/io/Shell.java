@@ -142,14 +142,15 @@ public class Shell {
         asb.append("\n");
         program.console.print(asb.build());
 
-        if (validationContext.errors.isEmpty()) {
+        if (!validationContext.hasAnyErrors()) {
           shellControl.initializeAndRunShellCode(wrapper, mainControl, validationContext.initializationDependencies);
+        } else if (validationContext.errors.isEmpty()) {
+          program.console.print("Errors in dependencies.");
         } else {
           for (Exception exception : validationContext.errors.values()) {
             program.console.print(Format.exceptionToString(exception));
           }
         }
-
     }
   }
 

@@ -36,6 +36,7 @@ import org.kobjects.asde.android.library.ui.ScreenType;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.BuiltinFunction;
 import org.kobjects.asde.lang.function.Callable;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramControl;
@@ -664,5 +665,4 @@ public class MainActivity extends AppCompatActivity {
     return program.hasUnsavedChanges
         || (program.reference.name.isEmpty() && !program.isEmpty());
   }
-
 }

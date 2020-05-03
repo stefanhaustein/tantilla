@@ -37,8 +37,6 @@ public abstract class PropertyView extends LinearLayout {
     titleView.setOnClickListener(clicked -> {
       setExpanded(!expanded, true);
 
-
-
       if (!expanded && mainActivity.sharedCodeViewAvailable()) {
         mainActivity.textOutputView.syncContent();
       }
@@ -46,7 +44,6 @@ public abstract class PropertyView extends LinearLayout {
     });
     refresh();
   }
-
 
 
   public void addExpandListener(ExpandListener expandListener) {
@@ -73,9 +70,6 @@ public abstract class PropertyView extends LinearLayout {
         addView(errorView, 1);
       }
       errorView.setText(exception.getMessage());
-      errorView.setOnClickListener((a) -> {
-        Errors.show(mainActivity, exception);
-      });
 
     } else {
       if (errorView != null) {
@@ -96,6 +90,7 @@ public abstract class PropertyView extends LinearLayout {
     for (ExpandListener expandListener : expandListeners) {
       expandListener.notifyExpanding(this, animated);
     }
+    mainActivity.console.notifySelected(property);
     syncContent();
   }
 

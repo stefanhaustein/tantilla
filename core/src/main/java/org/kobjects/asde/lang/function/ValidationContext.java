@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.function;
 
 
+import org.kobjects.asde.lang.classifier.DeclaredBy;
 import org.kobjects.asde.lang.classifier.clazz.InstanceFieldProperty;
 import org.kobjects.asde.lang.classifier.trait.AdapterType;
 import org.kobjects.asde.lang.classifier.Classifier;
@@ -26,8 +27,10 @@ public class ValidationContext {
     FULLY_RESOLVED;
   }
 
-  public static void validateAll(Program program) {
-    new ValidationContext(program, null, null, null).validateMembers(program.mainModule);
+  public static boolean validateAll(Program program) {
+    ValidationContext validationContext = new ValidationContext(program, null, null, null);
+    validationContext.validateMembers(program.mainModule);
+    return !validationContext.anyErrors;
   }
 
   public static ValidationContext validateShellInput(UserFunction userFunction) {
@@ -55,6 +58,7 @@ public class ValidationContext {
   private int localSymbolCount;
   private Block currentBlock;
   private State state = State.UNINITIALIZED;
+  private boolean anyErrors = false;
 
 
   public HashSet<Property> initializationDependencies = new HashSet<>();
@@ -99,7 +103,8 @@ public class ValidationContext {
     }
   }
 
-  public void validateProperty(Property property) {
+  public boolean validateProperty(Property property) {
+    boolean ok = true;
     ValidationContext other = resolved.get(property);
     if (other == null) {
       other = createChildContext(property);
@@ -117,6 +122,7 @@ public class ValidationContext {
     } else {
       other.whenDone.add(addInitializationDependencies);
     }
+    return ok;
   }
 
   private void validate() {
@@ -153,26 +159,35 @@ public class ValidationContext {
         Set<String> missingMethodNames = adapterType.trait.getAllPropertyNames();
         missingMethodNames.removeAll(adapterType.getAllPropertyNames());
         if (!missingMethodNames.isEmpty()) {
-          errors.put(Node.NO_NODE, new RuntimeException("Missing trait methods: " + missingMethodNames));
+          addError(Node.NO_NODE, new RuntimeException("Missing trait methods: " + missingMethodNames));
         }
       }
       if (property.getOwner() instanceof AdapterType) {
         AdapterType adapterType = (AdapterType) property.getOwner();
         Property traitProperty = adapterType.trait.getProperty(property.getName());
         if (traitProperty == null) {
-          errors.put(Node.NO_NODE, new RuntimeException("Not a Trait property."));
+          addError(Node.NO_NODE, new RuntimeException("Not a Trait property."));
         } else if (!((FunctionType) property.getType()).equals((FunctionType) traitProperty.getType(), true)) {
-          errors.put(Node.NO_NODE, new RuntimeException("Signature does not match trait property signature: " + traitProperty.getType()));
+          addError(Node.NO_NODE, new RuntimeException("Signature does not match trait property signature: " + traitProperty.getType()));
         }
       }
 
       property.setDependenciesAndErrors(initializationDependencies, errors);
     }
 
-    if (errors.size() != 0) {
-      System.out.println("Errors for property " + property + ":  ");
-      for (Throwable throwable : errors.values()) {
-        throwable.printStackTrace(System.out);
+    // Hacky error bubbling...
+    if (property != null) {
+      Property p = property;
+      while (p.getOwner() instanceof DeclaredBy) {
+        Property owner = ((DeclaredBy) p.getOwner()).getDeclaringSymbol();
+        if (owner == null) {
+          break;
+        }
+        validateProperty(owner);
+        if (errors.size() > 0) {
+          owner.getErrors().put(Node.NO_NODE, new RuntimeException("Error(s) in '" + p.getName() + "'"));
+        }
+        p = owner;
       }
     }
 
@@ -207,6 +222,11 @@ public class ValidationContext {
 
   public void addError(Node node, Exception e) {
     errors.put(node, e);
+    ValidationContext context = this;
+    while(context != null && !context.anyErrors) {
+      context.anyErrors = true;
+      context = context.parentContext;
+    }
   }
 
   public int getLocalVariableCount() {
@@ -243,6 +263,10 @@ public class ValidationContext {
         }
       }
     }
+  }
+
+  public boolean hasAnyErrors() {
+    return anyErrors;
   }
 
 

@@ -52,7 +52,7 @@ public class ProgramTitleView extends Toolbar {
     Program program = mainActivity.program;
     boolean isDefaultSaveLocation = program.reference.name.isEmpty();
     setTitle(
-        (isDefaultSaveLocation ? "ASDE" : program.reference.name)
+        (isDefaultSaveLocation ? "Tantilla" : program.reference.name)
         + (mainActivity.isUnsaved() ? "*" : ""));
 
   }

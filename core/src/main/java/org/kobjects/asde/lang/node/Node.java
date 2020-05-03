@@ -98,7 +98,7 @@ public abstract class Node {
   }
 
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
-    if (children.length > 0) {
+    if (children != null && children.length > 0) {
       children[0].toString(asb, errors, preferAscii);
       for (int i = 1; i < children.length; i++) {
         asb.append(", ");

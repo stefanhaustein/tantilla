@@ -4,7 +4,10 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.AbstractClassifier;
 import org.kobjects.asde.lang.classifier.StaticProperty;
 import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.function.FunctionType;
+import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.program.Program;
+import org.kobjects.asde.lang.type.Types;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -16,6 +19,17 @@ public class Module extends AbstractClassifier {
   public Module(Program program) {
     super(program);
   }
+
+
+  @Override
+  public void putProperty(Property property) {
+    if (property.getName().equals("main") && (!(property.getStaticValue() instanceof UserFunction) || !((UserFunction) property.getStaticValue()).getType().equals(FunctionType.createFromTypes(Types.VOID)))) {
+      throw new RuntimeException("'main' must be a function without argument and return value.");
+    }
+    super.putProperty(property);
+  }
+
+
 
   public void addBuiltin(String name, Object value) {
     addBuiltin(StaticProperty.createWithStaticValue(this, name, value));

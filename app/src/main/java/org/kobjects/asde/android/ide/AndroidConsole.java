@@ -47,7 +47,7 @@ public class AndroidConsole implements Console {
   private TextView pendingOutput;
   boolean autoScroll = true;
   private UserFunction selectedFunction;
-
+  private Property selectedProperty;
 
   AndroidConsole(MainActivity mainActivity) {
     this.mainActivity = mainActivity;
@@ -248,21 +248,22 @@ public class AndroidConsole implements Console {
     });
   }
 
+  public void notifySelected(Property property) {
+    this.selectedProperty = property;
+    if (!property.isInstanceField() && property.getStaticValue() instanceof UserFunction) {
+      selectedFunction = (UserFunction) property.getStaticValue();
+    }
+  }
+
   @Override
   public void selectProperty(Property symbol) {
-    if (!symbol.isInstanceField() && symbol.getStaticValue() instanceof UserFunction) {
-      selectedFunction = (UserFunction) symbol.getStaticValue();
-    }
+    notifySelected(symbol);
     mainActivity.runOnUiThread(() -> mainActivity.programView.selectImpl(symbol));
   }
 
   @Override
   public Property getSelectedProperty() {
-    return mainActivity.programView.currentPropertyView.property;
-/*    return mainActivity.programView.currentFunctionView == null
-        || !(mainActivity.programView.currentFunctionView.userFunction instanceof UserFunction)
-        ? mainActivity.program.main
-        : (UserFunction) mainActivity.programView.currentFunctionView.userFunction;*/
+    return selectedProperty;
   }
 
   @Override
