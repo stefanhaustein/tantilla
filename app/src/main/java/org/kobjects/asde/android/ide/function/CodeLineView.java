@@ -73,6 +73,7 @@ public class CodeLineView extends LinearLayout {
   void setCodeLine(int index, Statement statement, Map<Node, Exception> errors) {
     this.lineNumber = index;
     lineNumberView.setText(lineNumber + " ");
+    statementView.setText("");
 
     AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
     int indent = statement.getIndent();

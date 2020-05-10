@@ -108,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
 
   RunControlView runControlView;
   Screen screen;
-  boolean windowMode;
   boolean runningFromShortcut;
 
   ShortcutHandler shortcutHandler;
@@ -496,10 +495,10 @@ public class MainActivity extends AppCompatActivity {
       rootLayout.setDividerDrawable(new ColorDrawable(Colors.PRIMARY_LIGHT_FILTER));
       rootLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
 
-      boolean running = shell.mainControl.state == ProgramControl.State.RUNNING; //runButton.getVisibility() != View.VISIBLE;
+      boolean portraitMode = displayHeight >= displayWidth;
+      boolean overlayGraphicsMode = preferences.getOverlayGraphics();
 
-      if (displayHeight >= displayWidth) {
-
+      if (portraitMode) {
         textOutputView.titleView.setVisibility(View.VISIBLE);
 
         rootLayout.setOrientation(LinearLayout.VERTICAL);
@@ -537,9 +536,7 @@ public class MainActivity extends AppCompatActivity {
 
         controlView.arrangeButtons(true);
 
-        boolean showCodeView = windowMode || !running;
-
-        if (showCodeView) {
+        if (overlayGraphicsMode) {
           codeView = new LinearLayout(this);
           codeView.setOrientation(LinearLayout.VERTICAL);
           scrollContentView.addView(codeView, 0);
@@ -554,7 +551,7 @@ public class MainActivity extends AppCompatActivity {
         mainView.addView(mainScrollView);
 
         rootLayout.addView(leftView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
-        rootLayout.addView(rightView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, showCodeView ? 2 : 1));
+        rootLayout.addView(rightView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, overlayGraphicsMode ? 2 : 1));
 
         rightView.setClipChildren(false);
       }
@@ -566,7 +563,7 @@ public class MainActivity extends AppCompatActivity {
      // mainView.addView(runButton, runButtonParams);
 
 
-      if (windowMode && running) {
+      if (portraitMode && !overlayGraphicsMode) {
         resizableFrameLayout.addView(screen.view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         FrameLayout.LayoutParams resizableFrameLayoutParmas =

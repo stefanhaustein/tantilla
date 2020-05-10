@@ -12,6 +12,7 @@ public class AsdePreferences {
 
   private static final String HELLO_COPIED = "hello-copied";
   private static final String RECENT = "recent";
+  private static final String OVERLAY_GRAPHICS = "overlay-graphics";
   private static final int MAX_RECENTS = 9;
 
   private final SharedPreferences sharedPreferences;
@@ -33,6 +34,14 @@ public class AsdePreferences {
 
   public void setHelloCopied(boolean newValue) {
     sharedPreferences.edit().putBoolean(HELLO_COPIED, newValue).commit();
+  }
+
+  public boolean getOverlayGraphics() {
+    return sharedPreferences.getBoolean(OVERLAY_GRAPHICS, true);
+  }
+
+  public void setOverlayGraphics(boolean newValue) {
+    sharedPreferences.edit().putBoolean(OVERLAY_GRAPHICS, newValue).commit();
   }
 
   public void setProgramReference(ProgramReference programReference) {

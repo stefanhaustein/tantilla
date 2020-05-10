@@ -241,8 +241,8 @@ public class MainMenu {
       mainActivity.console.clearScreen(Console.ClearScreenType.CLS_STATEMENT);
       return true;
     });
-    displayMenu.add("Debug graphics window").setCheckable(true).setChecked(mainActivity.windowMode).setOnMenuItemClickListener(item -> {
-      mainActivity.windowMode = !mainActivity.windowMode;
+    displayMenu.add("Overlay graphics mode").setCheckable(true).setChecked(mainActivity.preferences.getOverlayGraphics()).setOnMenuItemClickListener(item -> {
+      mainActivity.preferences.setOverlayGraphics(!mainActivity.preferences.getOverlayGraphics());
       mainActivity.arrangeUi();
       return true;
     });;
