@@ -22,6 +22,7 @@ public class Path extends SymbolNode {
     STATIC_PROPERTY,
     ENUM_LITERAL,
     UNRESOLVED,
+    SET_METHOD_CALL,
     ERROR
   }
 
@@ -40,11 +41,35 @@ public class Path extends SymbolNode {
 
   @Override
   protected void onResolve(ValidationContext resolutionContext, int line) {
+    onResolve(resolutionContext, line, false);
+  }
+
+  private void onResolve(ValidationContext resolutionContext, int line, boolean forSet) {
     resolvedKind = ResolvedKind.ERROR;
     if (children[0].returnType() instanceof Classifier) {
+      if (forSet) {
+        // TODO: Skip this for self.foo inside the declaration of set_foo for the same type.
+
+        resolvedProperty = ((Classifier) children[0].returnType()).getProperty("set_" + pathName);
+
+        // We check for an exact match, as we still need to fall through to the property check
+        if (resolvedProperty != null && !resolvedProperty.isInstanceField() && resolvedProperty.getType() instanceof FunctionType) {
+          FunctionType functionType = (FunctionType) resolvedProperty.getType();
+          if (functionType.getParameterCount() == 2
+              && functionType.getParameter(0).getName().equals("self")
+              // TODO: && ...
+              ) {
+            resolvedKind = ResolvedKind.SET_METHOD_CALL;
+            return;
+          }
+        }
+      }
+
       resolvedProperty = ((Classifier) children[0].returnType()).getProperty(pathName);
       if (resolvedProperty == null) {
-        throw new RuntimeException("Property '" + pathName + "' not found in " + children[0].returnType());
+        throw new RuntimeException("Property '" + pathName + "'"
+            + (forSet ? (" or set_" + pathName + " method") : "")
+            + " not found in " + children[0].returnType());
       }
       resolutionContext.validateProperty(resolvedProperty);
       if (resolvedProperty.getType() == null) {
@@ -143,16 +168,32 @@ public class Path extends SymbolNode {
 
   @Override
   public Type resolveForAssignment(ValidationContext resolutionContext, int line) {
-    resolve(resolutionContext, line);
-    // TODO: Check support...
+    children[0].resolve(resolutionContext, line);
+    onResolve(resolutionContext, line, true);
     return returnType();
   }
 
 
   @Override
   public void set(EvaluationContext evaluationContext, Object value) {
-    Object target = children[0].eval(evaluationContext);
-    resolvedProperty.set(evaluationContext, target, value);
+    switch (resolvedKind) {
+      case STATIC_PROPERTY:
+        resolvedProperty.setStaticValue(value);
+        break;
+      case INSTANCE_FIELD:
+        Object instance = children[0].eval(evaluationContext);
+        resolvedProperty.set(evaluationContext, instance, value);
+        break;
+      case SET_METHOD_CALL:
+        Callable callable = (Callable) resolvedProperty.getStaticValue();
+        evaluationContext.ensureExtraStackSpace(callable.getLocalVariableCount());
+        evaluationContext.push(children[0].eval(evaluationContext));
+        evaluationContext.push(value);
+        callable.call(evaluationContext, 2);
+        break;
+      default:
+        throw new IllegalStateException(resolvedKind + ": " + this);
+    }
   }
 
   @Override
