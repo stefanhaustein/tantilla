@@ -7,7 +7,7 @@ import org.kobjects.asde.lang.node.ArrayLiteral;
 import org.kobjects.asde.lang.node.Named;
 import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.ImpliedSliceValue;
-import org.kobjects.asde.lang.node.InvokeMethod;
+import org.kobjects.asde.lang.node.InvokeNamed;
 import org.kobjects.asde.lang.node.NegOperator;
 import org.kobjects.asde.lang.node.Slice;
 import org.kobjects.asde.lang.program.Program;
@@ -93,7 +93,7 @@ class ExpressionBuilder extends Processor<Node> {
       if (base instanceof Path) {
         Path path = (Path) base;
         children.add(0, path.children[0]);
-        return new InvokeMethod(path.pathName, children.toArray(Node.EMPTY_ARRAY));
+        return new InvokeNamed(path.pathName, false, children.toArray(Node.EMPTY_ARRAY));
       }
       children.add(0, base);
       return new Invoke(true, children.toArray(Node.EMPTY_ARRAY));

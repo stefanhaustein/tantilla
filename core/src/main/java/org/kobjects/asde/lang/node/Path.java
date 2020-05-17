@@ -44,23 +44,28 @@ public class Path extends SymbolNode {
     onResolve(resolutionContext, line, false);
   }
 
-  private void onResolve(ValidationContext resolutionContext, int line, boolean forSet) {
+  private Type onResolve(ValidationContext resolutionContext, int line, boolean forSet) {
     resolvedKind = ResolvedKind.ERROR;
     if (children[0].returnType() instanceof Classifier) {
       if (forSet) {
-        // TODO: Skip this for self.foo inside the declaration of set_foo for the same type.
+        // TODO: look up property first and check for consistency!
+        boolean inside_set = children[0].toString().equals("self")
+            && resolutionContext.property != null
+            && resolutionContext.property.getName().equals("set_" + pathName);
 
-        resolvedProperty = ((Classifier) children[0].returnType()).getProperty("set_" + pathName);
+        if (!inside_set) {
+          resolvedProperty = ((Classifier) children[0].returnType()).getProperty("set_" + pathName);
 
-        // We check for an exact match, as we still need to fall through to the property check
-        if (resolvedProperty != null && !resolvedProperty.isInstanceField() && resolvedProperty.getType() instanceof FunctionType) {
-          FunctionType functionType = (FunctionType) resolvedProperty.getType();
-          if (functionType.getParameterCount() == 2
-              && functionType.getParameter(0).getName().equals("self")
+          // We check for an exact match, as we still need to fall through to the property check
+          if (resolvedProperty != null && !resolvedProperty.isInstanceField() && resolvedProperty.getType() instanceof FunctionType) {
+            FunctionType functionType = (FunctionType) resolvedProperty.getType();
+            if (functionType.getParameterCount() == 2
+                && functionType.getParameter(0).getName().equals("self")
               // TODO: && ...
-              ) {
-            resolvedKind = ResolvedKind.SET_METHOD_CALL;
-            return;
+            ) {
+              resolvedKind = ResolvedKind.SET_METHOD_CALL;
+              return functionType.getParameter(1).getType();
+            }
           }
         }
       }
@@ -82,22 +87,27 @@ public class Path extends SymbolNode {
             throw new RuntimeException("Parameterless (apart from self) method expected for property-style invocation.");
           }
           resolvedKind = ResolvedKind.INSTANCE_PROPERTY_GET;
-        } else {
-          throw new RuntimeException("No-static Instance property expected. Please use " + children[0].returnType() + "." + resolvedProperty + " for a static reference instead.");
+          return functionType.getReturnType();
         }
-      } else {
-        resolvedKind = ResolvedKind.INSTANCE_FIELD;
+        throw new RuntimeException("No-static Instance property expected. Please use " + children[0].returnType() + "." + resolvedProperty + " for a static reference instead.");
       }
-      return;
+      resolvedKind = ResolvedKind.INSTANCE_FIELD;
+      if (forSet && !resolvedProperty.isMutable()) {
+        throw new RuntimeException("Not mutable.");
+      }
+      return resolvedProperty.getType();
     }
 
     if (children[0].returnType() instanceof MetaType) {
       Type type = ((MetaType) children[0].returnType()).getWrapped();
       if (type instanceof EnumType) {
+        if (forSet) {
+          throw new RuntimeException("Can't assign to enum literal.");
+        }
         EnumType enumType = (EnumType) type;
         resolvedConstant = enumType.getLiteral(pathName);
         resolvedKind = ResolvedKind.ENUM_LITERAL;
-        return;
+        return enumType;
       }
       if (type instanceof Classifier) {
         resolvedProperty = ((Classifier) type).getProperty(pathName);
@@ -112,7 +122,10 @@ public class Path extends SymbolNode {
           throw new RuntimeException("Static property expected for static reference.");
         }
         resolvedKind = ResolvedKind.STATIC_PROPERTY;
-        return;
+        if (forSet && !resolvedProperty.isMutable()) {
+          throw new RuntimeException("Not mutable.");
+        }
+        return resolvedProperty.getType();
       }
     }
     throw new RuntimeException("Classifier expected as path base; got: " + children[0].returnType());
@@ -169,8 +182,7 @@ public class Path extends SymbolNode {
   @Override
   public Type resolveForAssignment(ValidationContext resolutionContext, int line) {
     children[0].resolve(resolutionContext, line);
-    onResolve(resolutionContext, line, true);
-    return returnType();
+    return onResolve(resolutionContext, line, true);
   }
 
 

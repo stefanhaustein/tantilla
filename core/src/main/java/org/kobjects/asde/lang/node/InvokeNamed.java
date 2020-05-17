@@ -16,21 +16,23 @@ import java.util.Map;
 /**
  * Theoretically, this could be merged with apply using a "dot syntax" flag, but
  */
-public class InvokeMethod extends Node {
+public class InvokeNamed extends Node {
 
   public String name;
+  public boolean mainModule;
   boolean isStaticCall;
   Property resolvedProperty;
   Node[] resolvedArguments;
 
-  public InvokeMethod(String name, Node... children) {
+  public InvokeNamed(String name, boolean mainModule, Node... children) {
     super(children);
+    this.mainModule = mainModule;
     this.name = name;
   }
 
   @Override
   protected void onResolve(ValidationContext resolutionContext, int line) {
-    Type baseType = children[0].returnType();
+    Type baseType = mainModule ? new MetaType(resolutionContext.program.mainModule) : children[0].returnType();
 
     if (baseType instanceof MetaType && ((MetaType) baseType).getWrapped() instanceof Classifier) {
       isStaticCall = true;
@@ -52,7 +54,7 @@ public class InvokeMethod extends Node {
     }
 
     FunctionType functionType = (FunctionType) resolvedProperty.getType() ;
-    resolvedArguments = InvocationResolver.resolve(functionType, children, isStaticCall ? 1 : 0, true, resolutionContext);
+    resolvedArguments = InvocationResolver.resolve(functionType, children, isStaticCall && !mainModule ? 1 : 0, true, resolutionContext);
   }
 
   public Object eval(EvaluationContext evaluationContext) {
@@ -86,12 +88,15 @@ public class InvokeMethod extends Node {
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     int start = asb.length();
-    children[0].toString(asb, errors, preferAscii);
-    asb.append(".");
+    int startIndex = 0;
+    if (!mainModule) {
+      children[startIndex++].toString(asb, errors, preferAscii);
+      asb.append(".");
+    }
     appendLinked(asb, name, errors);
     asb.append("(");
-    for (int i = 1; i < children.length; i++) {
-      if (i > 1) {
+    for (int i = startIndex; i < children.length; i++) {
+      if (i > startIndex) {
         asb.append(", ");
       }
       children[i].toString(asb, errors, preferAscii);
@@ -111,7 +116,7 @@ public class InvokeMethod extends Node {
     children = new Node[oldIndices.length];
     for (int i = 0; i < oldIndices.length; i++) {
       if (oldIndices[i] != -1) {
-        children[i] = oldChildren[oldIndices[i] + 1];
+        children[i] = oldChildren[oldIndices[i] + (mainModule ? 0 : 1)];
       } else {
         children[i] = new Identifier("placeholder" + i);
       }

@@ -51,7 +51,7 @@ public class ValidationContext {
   public final Program program;
   /** Will be null when validating symbols! */
   public final UserFunction userFunction;
-  private final Property property;
+  public final Property property;
 
   public final HashMap<Node, Exception> errors = new HashMap<>();
 

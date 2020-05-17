@@ -6,7 +6,7 @@ import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.Parameter;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.UserFunction;
-import org.kobjects.asde.lang.node.InvokeMethod;
+import org.kobjects.asde.lang.node.InvokeNamed;
 import org.kobjects.asde.lang.node.Path;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Invoke;
@@ -170,7 +170,7 @@ public class StatementParser {
         if (expression instanceof MathOperator && ((MathOperator) expression).kind == MathOperator.Kind.SUB) {
           params.add(expression.children[0]);
           params.add(new Group(new NegOperator(expression.children[1])));
-        } else if ((expression instanceof Invoke || expression instanceof InvokeMethod) && expression.children.length == 2) {
+        } else if ((expression instanceof Invoke || expression instanceof InvokeNamed) && expression.children.length == 2) {
           params.add(expression.children[0]);
           params.add(new Group(expression.children[1]));
         } else {
@@ -183,12 +183,13 @@ public class StatementParser {
         params.add(expressionParser.parse(tokenizer));
       } while (tokenizer.tryConsume(","));
 
-      if (expression instanceof InvokeMethod) {
-        result.add(new VoidStatement(new InvokeMethod(((InvokeMethod) expression).name, params.toArray(Node.EMPTY_ARRAY))));
+      if (expression instanceof InvokeNamed) {
+        InvokeNamed invokeNamed = (InvokeNamed) expression;
+        result.add(new VoidStatement(new InvokeNamed(invokeNamed.name, invokeNamed.mainModule, params.toArray(Node.EMPTY_ARRAY))));
       } else if (params.get(0) instanceof Path) {
         Path path = (Path) params.get(0);
         params.set(0, path.children[0]);
-        result.add(new VoidStatement(new InvokeMethod(path.pathName, params.toArray(Node.EMPTY_ARRAY))));
+        result.add(new VoidStatement(new InvokeNamed(path.pathName, false, params.toArray(Node.EMPTY_ARRAY))));
       } else {
         result.add(new VoidStatement(new Invoke(false, params.toArray(Node.EMPTY_ARRAY))));
       }
