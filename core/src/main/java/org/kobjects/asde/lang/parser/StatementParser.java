@@ -6,7 +6,9 @@ import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.Parameter;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.UserFunction;
+import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.InvokeNamed;
+import org.kobjects.asde.lang.node.Named;
 import org.kobjects.asde.lang.node.Path;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Invoke;
@@ -165,6 +167,9 @@ public class StatementParser {
         throw tokenizer.exception(null, e);
       }
     } else if (!tokenizer.currentValue.equals(";") && !tokenizer.currentValue.equals("")) {
+
+      // Extra parameters without parenthesis
+
       List<Node> params = new ArrayList<>();
       if (tokenizer.tryConsume(",")) {
         if (expression instanceof MathOperator && ((MathOperator) expression).kind == MathOperator.Kind.SUB) {
@@ -190,6 +195,8 @@ public class StatementParser {
         Path path = (Path) params.get(0);
         params.set(0, path.children[0]);
         result.add(new VoidStatement(new InvokeNamed(path.pathName, false, params.toArray(Node.EMPTY_ARRAY))));
+      } else if (params.get(0) instanceof Identifier) {
+        result.add(new VoidStatement(new InvokeNamed(params.get(0).toString(), true, params.subList(1, params.size()).toArray(Node.EMPTY_ARRAY))));
       } else {
         result.add(new VoidStatement(new Invoke(false, params.toArray(Node.EMPTY_ARRAY))));
       }

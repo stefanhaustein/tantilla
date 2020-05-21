@@ -95,6 +95,10 @@ class ExpressionBuilder extends Processor<Node> {
         children.add(0, path.children[0]);
         return new InvokeNamed(path.pathName, false, children.toArray(Node.EMPTY_ARRAY));
       }
+      if (base instanceof Identifier) {
+        Identifier identifier = (Identifier) base;
+        return new InvokeNamed(identifier.getName(), true, children.toArray(Node.EMPTY_ARRAY));
+      }
       children.add(0, base);
       return new Invoke(true, children.toArray(Node.EMPTY_ARRAY));
     }

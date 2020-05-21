@@ -2,6 +2,8 @@ package org.kobjects.asde.lang.node;
 
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.function.Callable;
+import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.LocalSymbol;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.ValidationContext;
@@ -13,7 +15,7 @@ import java.util.Map;
 public class Identifier extends SymbolNode {
 
   enum Kind {
-    UNRESOLVED, LOCAL_VARIABLE, ROOT_MODULE_PROPERTY, ERROR;
+    UNRESOLVED, LOCAL_VARIABLE, ROOT_MODULE_PROPERTY, ERROR, ROOT_METHOD_INVOCATION;
   }
 
   String name;
@@ -42,8 +44,16 @@ public class Identifier extends SymbolNode {
         // Modules can't have non-static properties...
         throw new IllegalStateException();
       }
-      resolvedMutable = resolvedRootProperty.isMutable();
-      resolvedKind = Kind.ROOT_MODULE_PROPERTY;
+      if (resolvedRootProperty.getType() instanceof FunctionType) {
+        FunctionType functionType = (FunctionType) resolvedRootProperty.getType();
+        if (functionType.getParameterCount() != 0) {
+          throw new RuntimeException("Function can't be called implicitly because it has parameters.");
+        }
+        resolvedKind = Kind.ROOT_METHOD_INVOCATION;
+      } else {
+        resolvedMutable = resolvedRootProperty.isMutable();
+        resolvedKind = Kind.ROOT_MODULE_PROPERTY;
+      }
     }
   }
 
@@ -61,11 +71,12 @@ public class Identifier extends SymbolNode {
       case LOCAL_VARIABLE:
         resolvedLocalVariable.set(evaluationContext, value);
         break;
+      case ROOT_METHOD_INVOCATION:
       case ROOT_MODULE_PROPERTY:
         resolvedRootProperty.setStaticValue(value);
         break;
       default:
-        throw new RuntimeException("Unresolved: " + name);
+        throw new RuntimeException("Unassignable: " + name);
     }
   }
 
@@ -74,7 +85,6 @@ public class Identifier extends SymbolNode {
     return !resolvedMutable;
   }
 
-
   @Override
   public Object eval(EvaluationContext evaluationContext) {
     switch (resolvedKind) {
@@ -82,6 +92,10 @@ public class Identifier extends SymbolNode {
         return resolvedLocalVariable.get(evaluationContext);
       case ROOT_MODULE_PROPERTY:
         return resolvedRootProperty.getStaticValue();
+      case ROOT_METHOD_INVOCATION:
+        Callable callable = (Callable) resolvedRootProperty.getStaticValue();
+        evaluationContext.ensureExtraStackSpace(callable.getLocalVariableCount());
+        return callable.call(evaluationContext, 0);
     }
     throw new RuntimeException("Unresolved variable "+ name);
   }
@@ -92,6 +106,8 @@ public class Identifier extends SymbolNode {
         return resolvedLocalVariable.getType();
       case ROOT_MODULE_PROPERTY:
         return resolvedRootProperty.getType();
+      case ROOT_METHOD_INVOCATION:
+        return ((FunctionType) resolvedRootProperty.getType()).getReturnType();
     }
     return null;
   }
@@ -115,7 +131,7 @@ public class Identifier extends SymbolNode {
 
   @Override
   public Property getResolvedProperty() {
-    return resolvedKind == Kind.ROOT_MODULE_PROPERTY ? resolvedRootProperty : null;
+    return resolvedKind == Kind.ROOT_MODULE_PROPERTY || resolvedKind == Kind.ROOT_METHOD_INVOCATION ? resolvedRootProperty : null;
   }
 
   public void setName(String s) {
