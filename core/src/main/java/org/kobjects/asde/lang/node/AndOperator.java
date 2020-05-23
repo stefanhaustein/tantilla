@@ -10,8 +10,6 @@ import java.util.Map;
 
 public class AndOperator extends Node {
 
-  boolean boolMode;
-
   public AndOperator(Node child1, Node child2) {
     super(child1, child2);
   }
@@ -19,14 +17,13 @@ public class AndOperator extends Node {
   @Override
   protected void onResolve(ValidationContext resolutionContext, int line) {
     Type t0 = children[0].returnType();
-    if (t0 != Types.BOOL && t0 != Types.FLOAT) {
-      throw new IllegalArgumentException("First argument must be number or boolean instead of " + t0);
+    if (t0 != Types.BOOL) {
+      throw new IllegalArgumentException("First argument must be bool instead of " + t0);
     }
     Type t1 = children[1].returnType();
-    if (t1 != Types.BOOL && t1 != Types.FLOAT) {
-      throw new IllegalArgumentException("Second argument must be number or boolean instead of " + t1);
+    if (t1 != Types.BOOL) {
+      throw new IllegalArgumentException("Second argument must be bool instead of " + t1);
     }
-    boolMode = children[0].returnType() == Types.BOOL || children[1].returnType() == Types.BOOL;
   }
 
   @Override
@@ -35,27 +32,14 @@ public class AndOperator extends Node {
   }
 
   @Override
-  public double evalDouble(EvaluationContext evaluationContext) {
-    return children[0].evalInt(evaluationContext) & children[1].evalInt(evaluationContext);
-  }
-
-  @Override
-  public int evalInt(EvaluationContext evaluationContext) {
-    return children[0].evalInt(evaluationContext) & children[1].evalInt(evaluationContext);
-  }
-
-  @Override
   public Object eval(EvaluationContext evaluationContext) {
-    if (boolMode) {
-      return evalBoolean(evaluationContext);
-    }
-    return evalDouble(evaluationContext);
+    return evalBoolean(evaluationContext);
   }
 
 
   @Override
   public Type returnType() {
-    return boolMode ? Types.BOOL : Types.FLOAT;
+    return Types.BOOL;
   }
 
   @Override

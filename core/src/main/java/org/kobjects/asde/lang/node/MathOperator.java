@@ -34,7 +34,7 @@ public class MathOperator extends Node {
       case DIV:
         return "/";
       case POW:
-        return "^";
+        return "**";
       case MOD:
         return "%";
       default:
@@ -57,7 +57,7 @@ public class MathOperator extends Node {
       throw new RuntimeException("Left parameter expected to be a Number but is " + t0);
     }
     Type t1 = children[0].returnType();
-    if (t1 != Types.BOOL && t0 != Types.FLOAT) {
+    if (t1 != Types.BOOL && t1 != Types.FLOAT) {
       throw new RuntimeException("Right parameter expected to be a Number but is " + t1);
     }
   }

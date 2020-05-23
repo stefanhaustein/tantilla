@@ -19,14 +19,18 @@ public class AsdeExpressionParser extends ExpressionParser<Node> {
   public AsdeExpressionParser(Program program) {
     super(new ExpressionBuilder(program));
 //    addApplyBrackets(10,"(", ",", ")");
-    addOperators(OperatorType.SUFFIX, 10,"{", "[", "(");
     addGroupBrackets("(", null, ")");
     addGroupBrackets("[", ",", "]");
-    addOperators(OperatorType.INFIX, 11, ".");
-    addOperators(OperatorType.INFIX, 9, "^");
-    addOperators(OperatorType.PREFIX, 8, "-");
-    addOperators(OperatorType.INFIX, 7, "*", "/", "×", "⋅", "÷", "%");
-    addOperators(OperatorType.INFIX, 6, "+", "-", "−");
+    addOperators(OperatorType.INFIX, 15, ".");
+    addOperators(OperatorType.SUFFIX, 14,"{", "[", "(");
+    addOperators(OperatorType.INFIX, 13, "^", "**");
+    addOperators(OperatorType.PREFIX, 12, "-", "~");
+    addOperators(OperatorType.INFIX, 11, "*", "/", "×", "⋅", "÷", "%", "//");
+    addOperators(OperatorType.INFIX, 10, "+", "-", "−");
+    addOperators(OperatorType.INFIX, 9, "<<", ">>");
+    addOperators(OperatorType.INFIX, 8, "&");
+    addOperators(OperatorType.INFIX, 7, "^");
+    addOperators(OperatorType.INFIX, 6, "|");
     addOperators(OperatorType.INFIX, 5, ">=", "<=", ">", "<", "≠", "!=", "≥", "≤", "==");
     addOperators(OperatorType.PREFIX, 4, "not");
     addOperators(OperatorType.INFIX, 3, "and");

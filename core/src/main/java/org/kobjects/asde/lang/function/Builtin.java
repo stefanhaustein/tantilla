@@ -10,44 +10,50 @@ import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;
 
+/**
+ * Note: functions needing
+ */
 public enum Builtin implements Callable {
   ABS("Calculates the absolute value of the input.\n\nExamples:\n\n * abs(3.4) = 3.4\n * abs(-4) = 4\n * abs(0) = 0",
       Types.FLOAT, Types.FLOAT),
-  ORD("Returns the code point value of the first character of the string\n\nExample:\n\n * ord(\"A\") = 65.",
-      Types.FLOAT, Types.STR),
+  BIN("Convert an number to a binary integer string prefixed with '0b'.", Types.STR, Types.FLOAT),
   ATAN2("Converts the given cartesian coordinates into the angle of the corresponding polar coordinates",
       Types.FLOAT, Types.FLOAT, Types.FLOAT),
-  CHR("Returns a single-character string representing the given ASCII value.\n\nExample:\n\n * chr$(65) = \"A\"",
+  CEIL("Rounds up to the next higher integer",
+      Types.FLOAT, Types.FLOAT),
+  CHR("Returns a  string representing the given unicode code point.\n\nExample:\n\n * chr(65) = \"A\"",
       Types.STR, Types.FLOAT),
   COS("Calculates the cosine of the parameter value.",
       Types.FLOAT, Types.FLOAT),
   EXP("Returns e raised to the power of the parameter value.",
       Types.FLOAT, Types.FLOAT),
-  CEIL("Rounds up to the next higher integer",
-      Types.FLOAT, Types.FLOAT),
+  FLOAT("Parses the argument as a floating point number. If this fails, the return value is 0.",
+      Types.FLOAT, Types.STR),
+  FLOOR("Rounds down to the next lower integer", Types.FLOAT, Types.FLOAT),
+  HEX("Convert a number to a lowercase hexadecimal integer prefixed with 0x.", Types.STR, Types.FLOAT),
   INT("Rounds down to the next lower integer",
     Types.FLOAT, Types.FLOAT),
-  FLOOR("Rounds down to the next lower integer", Types.FLOAT, Types.FLOAT),
   LEN("Returns the length of the given string.\n\nExample:\n\n * len(\"ABC\") = 3",
         Types.FLOAT, Types.STR),
   LOG("Calculates the logarithm to the base e.",
         Types.FLOAT, Types.FLOAT),
+  OCT("Convert the given number to an octal integer string prfixed with '0o'.", Types.STR, Types.FLOAT),
+  ORD("Returns the code point value of the first character of the string\n\nExample:\n\n * ord(\"A\") = 65.",
+      Types.FLOAT, Types.STR),
   RANGE(
       "Returns a sequence of integers from the first parameter (inclusive) to the second parameter (exclusive)",
       new ListType(Types.FLOAT),
       Parameter.create("start", Types.FLOAT),
       Parameter.create("end", new Literal(Double.NaN)),
       Parameter.create("step", new Literal(1.0))),
-    RANDOM("Returns a (pseudo-)random number in the range from 0 (inclusive) to 1 (exclusive)",
+  RANDOM("Returns a (pseudo-)random number in the range from 0 (inclusive) to 1 (exclusive)",
         Types.FLOAT, Parameter.EMPTY_ARRAY),
-    STR("Converts the given number to a string (similar to print).",
+  STR("Converts the given number to a string (similar to print).",
         Types.STR, Types.FLOAT),
-    SQRT("Calculates the square root of the argument\n\nExample:\n\n * sqr(9) = 3",
+  SQRT("Calculates the square root of the argument\n\nExample:\n\n * sqr(9) = 3",
         Types.FLOAT, Types.FLOAT),
-    SIN("Calculates the sine of the parameter value.", Types.FLOAT, Types.FLOAT),
-    TAN("Calculates the tangent of the argument", Types.FLOAT, Types.FLOAT),
-    FLOAT("Parses the argument as a floating point number. If this fails, the return value is 0.",
-        Types.FLOAT, Types.STR);
+  SIN("Calculates the sine of the parameter value.", Types.FLOAT, Types.FLOAT),
+  TAN("Calculates the tangent of the argument", Types.FLOAT, Types.FLOAT);
 
   private static Parameter[] typesToParams(Type[] parameterTypes) {
     Parameter[] parameters = new Parameter[parameterTypes.length];
@@ -102,10 +108,8 @@ public enum Builtin implements Callable {
         return Math.abs((Double) evaluationContext.getParameter(0));
       case ATAN2:
         return Math.atan2((Double) evaluationContext.getParameter(0), (Double) evaluationContext.getParameter(1));
-      case ORD: {
-        String s = (String) evaluationContext.getParameter(0);
-        return s.length() == 0 ? 0.0 : (double) Character.codePointAt(s, 0);
-      }
+      case BIN:
+        return "0b" + Long.toBinaryString(((Double) evaluationContext.getParameter(0)).longValue());
       case CEIL:
         return Math.ceil((Double) evaluationContext.getParameter(0));
       case CHR:
@@ -114,20 +118,24 @@ public enum Builtin implements Callable {
         return Math.cos((Double) evaluationContext.getParameter(0));
       case EXP:
         return Math.exp((Double) evaluationContext.getParameter(0));
+      case FLOAT:
+        return Double.parseDouble((String) evaluationContext.getParameter(0));
       case FLOOR:
         return Math.floor((Double) evaluationContext.getParameter(0));
+      case HEX:
+        return "0x" + Long.toHexString(((Double) evaluationContext.getParameter(0)).longValue());
       case INT:
         return Double.valueOf(((Double) evaluationContext.getParameter(0)).longValue());
       case LEN:
         return Double.valueOf(len((String) evaluationContext.getParameter(0)));
       case LOG:
         return Math.log((Double) evaluationContext.getParameter(0));
-       case SIN:
-        return Math.sin((Double) evaluationContext.getParameter(0));
-      case SQRT:
-        return Math.sqrt((Double) evaluationContext.getParameter(0));
-      case STR:
-        return Program.toString(evaluationContext.getParameter(0));
+      case OCT:
+        return "0o" + Long.toOctalString(((Double) evaluationContext.getParameter(0)).longValue());
+      case ORD: {
+        String s = (String) evaluationContext.getParameter(0);
+        return s.length() == 0 ? 0.0 : (double) Character.codePointAt(s, 0);
+      }
       case RANGE: {
         double start = (Double) evaluationContext.getParameter(0);
         double end = (Double) evaluationContext.getParameter(1);
@@ -144,10 +152,14 @@ public enum Builtin implements Callable {
       }
       case RANDOM:
         return Math.random();
+      case SIN:
+        return Math.sin((Double) evaluationContext.getParameter(0));
+      case SQRT:
+        return Math.sqrt((Double) evaluationContext.getParameter(0));
+      case STR:
+        return Program.toString(evaluationContext.getParameter(0));
       case TAN:
         return Math.tan((Double) evaluationContext.getParameter(0));
-      case FLOAT:
-        return Double.parseDouble((String) evaluationContext.getParameter(0));
       default:
         throw new IllegalArgumentException("NYI: " + name());
     }

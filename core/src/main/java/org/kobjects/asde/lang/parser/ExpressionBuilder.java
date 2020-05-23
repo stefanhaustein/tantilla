@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang.parser;
 
 import org.kobjects.asde.lang.node.AndOperator;
+import org.kobjects.asde.lang.node.BinaryNotOperator;
+import org.kobjects.asde.lang.node.BitOperator;
 import org.kobjects.asde.lang.node.Invoke;
 import org.kobjects.asde.lang.node.ArrayAccess;
 import org.kobjects.asde.lang.node.ArrayLiteral;
@@ -61,6 +63,8 @@ class ExpressionBuilder extends Processor<Node> {
       case "−":
       case "-":
         return new NegOperator(param);
+      case "~":
+        return new BinaryNotOperator(param);
       case "+":
         return param;
       default:
@@ -172,12 +176,22 @@ class ExpressionBuilder extends Processor<Node> {
         return new MathOperator(MathOperator.Kind.DIV, left, right);
       case "%":
         return new MathOperator(MathOperator.Kind.MOD, left, right);
-      case "^":
+      case "**":
         return new MathOperator(MathOperator.Kind.POW, left, right);
       case "and":
         return new AndOperator(left, right);
       case "or":
         return new OrOperator(left, right);
+      case "&":
+        return new BitOperator(BitOperator.Kind.AND, left, right);
+      case "|":
+        return new BitOperator(BitOperator.Kind.OR, left, right);
+      case "^":
+        return new BitOperator(BitOperator.Kind.XOR, left, right);
+      case "<<":
+        return new BitOperator(BitOperator.Kind.SHL, left, right);
+      case ">>":
+        return new BitOperator(BitOperator.Kind.SHR, left, right);
       default:
         return super.infixOperator(tokenizer, name, left, right);
     }
