@@ -148,7 +148,11 @@ public class Shell {
           program.console.print("Errors in dependencies.");
         } else {
           for (Exception exception : validationContext.errors.values()) {
-            program.console.print(Format.exceptionToString(exception));
+            AnnotatedStringBuilder sb = new AnnotatedStringBuilder();
+            sb.append(" - ");
+            sb.append(Format.exceptionToString(exception));
+            sb.append("\n");
+            program.console.print(sb.build());
           }
         }
     }

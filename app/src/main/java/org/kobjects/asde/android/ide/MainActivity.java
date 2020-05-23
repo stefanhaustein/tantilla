@@ -47,7 +47,7 @@ import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.android.library.ui.DpadAdapter;
 import org.kobjects.asde.android.library.ui.SpriteAdapter;
 import org.kobjects.asde.android.library.ui.TextBoxType;
-import org.kobjects.graphics.Screen;
+import org.kobjects.krash.Screen;
 import org.kobjects.abcnotation.SampleManager;
 import org.kobjects.asde.lang.function.FunctionType;
 

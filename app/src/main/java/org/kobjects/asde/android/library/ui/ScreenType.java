@@ -6,11 +6,11 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.EnumType;
 import org.kobjects.asde.lang.classifier.builtin.NativeClass;
-import org.kobjects.graphics.Pen;
-import org.kobjects.graphics.Screen;
-import org.kobjects.graphics.TextBox;
-import org.kobjects.graphics.XAlign;
-import org.kobjects.graphics.YAlign;
+import org.kobjects.krash.Pen;
+import org.kobjects.krash.Screen;
+import org.kobjects.krash.TextBox;
+import org.kobjects.krash.XAlign;
+import org.kobjects.krash.YAlign;
 
 
 public class ScreenType {
