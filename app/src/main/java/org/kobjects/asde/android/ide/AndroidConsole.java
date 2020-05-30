@@ -23,6 +23,7 @@ import org.kobjects.annotatedtext.AnnotatedStringBuilder;
 import org.kobjects.annotatedtext.Annotations;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.function.FunctionView;
+import org.kobjects.asde.android.ide.help.HelpDialog;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.android.ide.text.TextViews;
 import org.kobjects.asde.android.ide.widget.IconButton;
@@ -269,6 +270,15 @@ public class AndroidConsole implements Console {
   @Override
   public UserFunction getSelectedFunction() {
     return selectedFunction == null ? mainActivity.program.getMain() : selectedFunction;
+  }
+
+  @Override
+  public void showHelp(Property property) {
+    if (property == null) {
+      HelpDialog.showHelp(mainActivity);
+    } else {
+      HelpDialog.showHelp(mainActivity, property);
+    }
   }
 
   @Override

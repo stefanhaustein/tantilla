@@ -6,13 +6,16 @@ import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.StaticProperty;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.ValidationContext;
+import org.kobjects.asde.lang.node.HasProperty;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.node.Path;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramControl;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 import org.kobjects.asde.lang.function.UserFunction;
+import org.kobjects.asde.lang.statement.VoidStatement;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.expressionparser.Tokenizer;
 import org.kobjects.asde.lang.function.FunctionType;
@@ -26,7 +29,7 @@ public class Shell {
   public final ProgramControl shellControl;
 
   enum ShellCommand {
-    DEF, LOAD, SAVE, EDIT, LIST, DELETE
+    DEF, LOAD, SAVE, EDIT, LIST, DELETE, HELP
   }
 
 
@@ -183,7 +186,6 @@ public class Shell {
         processDef(tokenizer);
         break;
 
-
       case DELETE:
         if (tokenizer.currentType != Tokenizer.TokenType.NUMBER) {
           throw new RuntimeException("Line Number expected for delete.");
@@ -202,6 +204,24 @@ public class Shell {
             throw new RuntimeException("line number or identifier expected for edit.");
           }
         }
+        break;
+
+      case HELP:
+        Property property;
+        if (tokenizer.currentType == Tokenizer.TokenType.EOF) {
+          property = null;
+        } else {
+          Node node = program.parser.expressionParser.parse(tokenizer);
+          UserFunction wrapper = new UserFunction(program, new FunctionType(Types.VOID));
+          wrapper.appendStatement(new VoidStatement(node));
+          ValidationContext.validateShellInput(wrapper);
+          if (node instanceof HasProperty) {
+            property = ((HasProperty) node).getResolvedProperty();
+          } else {
+            property = null;
+          }
+        }
+        program.console.showHelp(property);
         break;
 
       case LOAD:

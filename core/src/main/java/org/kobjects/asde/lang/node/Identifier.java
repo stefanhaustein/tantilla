@@ -12,7 +12,7 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.Map;
 
 // Not static for access to the variables.
-public class Identifier extends SymbolNode {
+public class Identifier extends SymbolNode implements HasProperty {
 
   enum Kind {
     UNRESOLVED, LOCAL_VARIABLE, ROOT_MODULE_PROPERTY, ERROR, ROOT_METHOD_INVOCATION;
@@ -30,6 +30,7 @@ public class Identifier extends SymbolNode {
 
   public void onResolve(ValidationContext resolutionContext, int line) {
     resolvedLocalVariable = resolutionContext.getCurrentBlock().get(name);
+    resolvedRootProperty = null;
     resolvedKind = Kind.ERROR;
     if (resolvedLocalVariable != null) {
       resolvedMutable = resolvedLocalVariable.isMutable();
@@ -131,7 +132,7 @@ public class Identifier extends SymbolNode {
 
   @Override
   public Property getResolvedProperty() {
-    return resolvedKind == Kind.ROOT_MODULE_PROPERTY || resolvedKind == Kind.ROOT_METHOD_INVOCATION ? resolvedRootProperty : null;
+    return resolvedRootProperty;
   }
 
   public void setName(String s) {
@@ -147,4 +148,6 @@ public class Identifier extends SymbolNode {
       }
     }
   }
+
+
 }

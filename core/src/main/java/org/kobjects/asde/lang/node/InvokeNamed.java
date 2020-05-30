@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * Theoretically, this could be merged with apply using a "dot syntax" flag, but
  */
-public class InvokeNamed extends Node {
+public class InvokeNamed extends Node implements HasProperty {
 
   enum Kind {
     INSTANCE_METHOD,
@@ -154,5 +154,11 @@ public class InvokeNamed extends Node {
       }
     }
   }
+
+  @Override
+  public Property getResolvedProperty() {
+    return resolvedProperty;
+  }
+
 
 }

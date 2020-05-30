@@ -2,6 +2,7 @@ package org.kobjects.asde.android.ide.help;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.telecom.Call;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.widget.LinearLayout;
@@ -222,17 +223,16 @@ public class HelpDialog {
   void renderObject(Object o) {
     if (o instanceof Property) {
       Property symbol = (Property) o;
-      if (symbol.getStaticValue() instanceof Callable) {
+      Object staticValue = symbol.isInstanceField() ? null : symbol.getStaticValue();
+      if (staticValue instanceof Callable) {
         renderFunction(symbol);
-      } else if (symbol.getStaticValue() instanceof Type) {
+      } else if (staticValue instanceof Type) {
         renderObject(symbol.getStaticValue());
       } else {
-        throw new RuntimeException("Don't know how to render " + symbol);
+        renderProperty((Property) o);
       }
     } else if (o instanceof Classifier) {
       renderClass((Classifier) o);
-    } else if (o instanceof Property) {
-      renderProperty((Property) o);
     } else if (o instanceof EnumType) {
       renderEnum((EnumType) o);
     } else {

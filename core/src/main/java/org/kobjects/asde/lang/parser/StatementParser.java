@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StatementParser {
-  final AsdeExpressionParser expressionParser;
+  public final AsdeExpressionParser expressionParser;
   final Program program;
 
   public StatementParser(Program program) {
