@@ -11,11 +11,14 @@ import android.widget.TextView;
 
 import org.kobjects.annotatedtext.AnnotatedString;
 import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.annotatedtext.Section;
+import org.kobjects.annotatedtext.Text;
 import org.kobjects.asde.android.ide.Dimensions;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.lang.classifier.StaticProperty;
 import org.kobjects.asde.lang.function.Callable;
+import org.kobjects.asde.lang.help.HelpGenerator;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.EnumType;
@@ -41,18 +44,14 @@ public class HelpDialog {
     showHelp(mainActivity, Collections.singletonList(o));
   }
 
-
-    public static void showHelp(MainActivity mainActivity ) {
+  public static void showHelp(MainActivity mainActivity ) {
     showHelp(mainActivity, Collections.singletonList(null));
   }
-
-
 
   final MainActivity mainActivity;
   final LinearLayout linearLayout;
   final AlertDialog alertDialog;
   final ArrayList<Object> navigationStack = new ArrayList<>();
-
 
   HelpDialog(MainActivity mainActivity, List<Object> stack) {
     this.mainActivity = mainActivity;
@@ -84,132 +83,36 @@ public class HelpDialog {
     updateContent();
   }
 
-  void appendLink(AnnotatedStringBuilder asb, Object linked) {
-    if (linked instanceof StaticProperty) {
-      StaticProperty symbol = (StaticProperty) linked;
-      if (symbol.getStaticValue() instanceof Callable) {
-        appendFunctionLink(asb, (StaticProperty) linked);
-      } else if (symbol.getStaticValue() instanceof Type) {
-        appendLink(asb, symbol.getStaticValue());
-      } else {
-        asb.append(symbol.getName());
-        asb.append(": ");
-        appendLink(asb, symbol.getType());
-      }
-    } else if (linked instanceof Property) {
-      appendPropertyLink(asb, (Property) linked);
-    } else {
-      appendLink(asb, String.valueOf(linked), linked);
-    }
-  }
-
-  private void appendMethodLink(AnnotatedStringBuilder asb, Property property) {
-    appendLink(asb, property.getName(), property);
-    appendShortSignature(asb, (FunctionType) property.getType());
-  }
-
-  private void appendPropertyLink(AnnotatedStringBuilder asb, Property property) {
-    if (isMethod(property)) {
-      appendMethodLink(asb, property);
-    } else {
-      appendLink(asb, property.getName(), property);
-      asb.append(": ");
-      asb.append(String.valueOf(property.getType()));
-    }
-
-  }
-
-  void appendLink(AnnotatedStringBuilder asb, String text, Object linked) {
-    asb.append(text, linked);
-  }
-
-  void addSignaure(String name, FunctionType functionType) {
-
-    addSubtitle("Parameter");
-
-    for (int i = 0; i < functionType.getParameterCount(); i++) {
-      AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-      asb.append(String.valueOf(i + 1)).append(") ");
-      appendLink(asb, functionType.getParameterType(i));
-      addParagraph(asb.build());
-    }
-
-    if (functionType.getReturnType() != Types.VOID) {
-      addSubtitle("Return Type");
-
-      AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-      asb.append("  ");
-      appendLink(asb, functionType.getReturnType());
-      addParagraph(asb.build());
-    }
-  }
-
-  void appendShortSignature(AnnotatedStringBuilder asb, FunctionType functionType) {
-    asb.append('(');
-    for (int i = 0; i < functionType.getParameterCount(); i++) {
-      if (i > 0) {
-        asb.append(", ");
-      }
-      asb.append(functionType.getParameterType(i).toString());
-    }
-    asb.append(")");
-
-    if (functionType.getReturnType() != Types.VOID) {
-      asb.append(" -> ").append(functionType.getReturnType().toString());
-    }
-  }
-
-  void appendFunctionLink(AnnotatedStringBuilder sb, Property functionSymbol) {
-    Callable function = (Callable) functionSymbol.getStaticValue();
-
-    appendLink(sb, functionSymbol.getName(), functionSymbol);
-
-    appendShortSignature(sb, function.getType());
-  }
-
-
   public HelpDialog navigateTo(Object o) {
     navigationStack.add(o);
     updateContent();
     return this;
   }
 
-
-  void addAll(String subtitle, Predicate<Property> filter) {
-    addSubtitle(subtitle);
-
-    for (Property s : mainActivity.program.mainModule.getBuiltinProperties()) {
-      if (filter.test(s)) {
-        AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-        appendLink(asb, s);
-        addParagraph(asb.build());
-      }
-    }
-  }
-
   HelpDialog updateContent() {
     linearLayout.removeAllViews();
     Object o = navigationStack.get(navigationStack.size() - 1);
-    if (o == null) {
-      alertDialog.setTitle("Help");
-      linearLayout.removeAllViews();
 
-      addAll("Constants", s -> !(s.getStaticValue() instanceof Callable) && !(s.getType() instanceof MetaType));
+    Text helpText = HelpGenerator.renderHelp(mainActivity.program, o);
 
-      addAll("Classes", s -> s.getStaticValue() instanceof Classifier);
+    alertDialog.setTitle(helpText.title);
 
-      addAll("Enums", s -> s.getStaticValue() instanceof EnumType);
-
-      addAll("Functions", s -> s.getStaticValue() instanceof Callable);
-    } else {
-      renderObject(o);
+    for (Section section : helpText.sections) {
+      switch (section.kind) {
+        case SUBTITLE:
+          addSubtitle(section.text);
+          break;
+        default:
+          addParagraph(section.text);
+          break;
+      }
     }
 
     alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setEnabled(navigationStack.size() > 1);
     return this;
   }
 
-  private void addSubtitle(String text) {
+  private void addSubtitle(CharSequence text) {
     TextView textView = new TextView(mainActivity);
     SpannableString spanned = new SpannableString(text);
     //spanned.setSpan(new StyleSpan(BOLD), 0, text.length(), 0);
@@ -219,106 +122,9 @@ public class HelpDialog {
     linearLayout.addView(textView);
   }
 
-
-  void renderObject(Object o) {
-    if (o instanceof Property) {
-      Property symbol = (Property) o;
-      Object staticValue = symbol.isInstanceField() ? null : symbol.getStaticValue();
-      if (staticValue instanceof Callable) {
-        renderFunction(symbol);
-      } else if (staticValue instanceof Type) {
-        renderObject(symbol.getStaticValue());
-      } else {
-        renderProperty((Property) o);
-      }
-    } else if (o instanceof Classifier) {
-      renderClass((Classifier) o);
-    } else if (o instanceof EnumType) {
-      renderEnum((EnumType) o);
-    } else {
-      alertDialog.setTitle("Unknown");
-      AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-      asb.append(String.valueOf(o));
-      addParagraph(asb.build());
-    }
-  }
-
-  private void renderProperty(Property o) {
-    if (isMethod(o)) {
-      renderMethod(o);
-      return;
-    }
-
-    alertDialog.setTitle("Property " + o.getName());
-
-    AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-    asb.append("Type: ");
-    appendLink(asb, o.getType());
-
-    addParagraph(asb.build());
-  }
-
-  private void renderMethod(Property o) {
-    alertDialog.setTitle("Method " + o.getName());
-    addSignaure(o.getName(), (FunctionType) o.getType());
-  }
-
-
-  void renderFunction(Property functionSymbol) {
-    Callable function = (Callable) functionSymbol.getStaticValue();
-
-    alertDialog.setTitle("Function " + functionSymbol.getName());
-
-    addSignaure(functionSymbol.getName(), function.getType());
-
-    CharSequence documentation = function.getDocumentation();
-    if (documentation != null) {
-      addSubtitle("Description");
-      addParagraph(documentation);
-    }
-  }
-
-
-  void renderEnum(EnumType enumType) {
-    alertDialog.setTitle("Enum " + enumType.toString());
-
-    addSubtitle("Literals");
-
-    for (Object literal : enumType.literals) {
-      AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-      asb.append(String.valueOf(literal));
-      addParagraph(asb.build());
-    }
-  }
-
-
-    void renderClass(Classifier classifier) {
-    alertDialog.setTitle("Class " + classifier.toString());
-
-    addParagraph(AnnotatedString.of(classifier.getDocumentation()));
-
-    for (boolean methods : new boolean[]{false, true}) {
-
-      boolean first = true;
-
-      for (Property descriptor : classifier.getProperties()) {
-        if (isMethod(descriptor) == methods) {
-          if (first) {
-            addSubtitle(methods ? "Methods" : "Properties");
-            first = false;
-          }
-          AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-          appendPropertyLink(asb, descriptor);
-          addParagraph(asb.build());
-        }
-      }
-    }
-  }
-
   private static  boolean isMethod(Property descriptor) {
     return descriptor.getType() instanceof FunctionType && !(descriptor.getType() instanceof ListType);
   }
-
 
   private void addParagraph(CharSequence charSequence) {
     if (charSequence != null) {
@@ -327,10 +133,5 @@ public class HelpDialog {
       textView.setMovementMethod(LinkMovementMethod.getInstance());
       linearLayout.addView(textView);
     }
-  }
-
-
-  interface Predicate<T> {
-    boolean test(T value);
   }
 }
