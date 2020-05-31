@@ -32,8 +32,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
-
 public class HelpDialog {
 
   public static void showHelp(MainActivity mainActivity, List<Object> stack) {

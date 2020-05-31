@@ -248,12 +248,6 @@ public class AsdeShell implements Console {
   }
 
   @Override
-  public void showHelp(Property property) {
-    // TODO: Proper help!
-    print(property.toString());
-  }
-
-  @Override
   public void showError(AnnotatedString annotatedString) {
     print(annotatedString);
   }

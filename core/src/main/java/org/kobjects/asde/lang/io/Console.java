@@ -41,8 +41,6 @@ public interface Console {
   Property getSelectedProperty();
   UserFunction getSelectedFunction();
 
-  void showHelp(Property property);
-
   void showError(AnnotatedString annotatedString);
 
   void showError(String message, Exception e);

@@ -273,15 +273,6 @@ public class AndroidConsole implements Console {
   }
 
   @Override
-  public void showHelp(Property property) {
-    if (property == null) {
-      HelpDialog.showHelp(mainActivity);
-    } else {
-      HelpDialog.showHelp(mainActivity, property);
-    }
-  }
-
-  @Override
   public void showError(AnnotatedString annotatedString) {
     print(annotatedString);
   }
