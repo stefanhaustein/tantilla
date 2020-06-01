@@ -41,6 +41,12 @@ public class TraitProperty implements Property {
       }
 
       @Override
+      public CharSequence getDocumentation() {
+        // TODO
+        return null;
+      }
+
+      @Override
       public Property getDeclaringSymbol() {
         return TraitProperty.this;
       }
@@ -101,6 +107,12 @@ public class TraitProperty implements Property {
   @Override
   public void changeFunctionType(FunctionType type) {
     this.type = type;
+  }
+
+  @Override
+  public CharSequence getDocumentation() {
+    // TODO
+    return null;
   }
 
 }

@@ -92,6 +92,8 @@ public class HelpGenerator {
 
     generator.addParagraph(asb.build());
 
+    generator.addParagraph(o.getDocumentation());
+
     return generator.textBuilder.build();
   }
 

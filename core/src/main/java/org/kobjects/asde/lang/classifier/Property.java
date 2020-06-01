@@ -126,4 +126,5 @@ public interface Property extends Comparable<Property> {
     return diff == 0 ? getName().compareTo(other.getName()) : diff;
   }
 
+  CharSequence getDocumentation();
 }

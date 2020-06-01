@@ -61,6 +61,12 @@ public class UserFunction implements Callable, DeclaredBy {
     return localVariableCount;
   }
 
+  @Override
+  public CharSequence getDocumentation() {
+    // TODO
+    return null;
+  }
+
   public Object callImpl(EvaluationContext newContext) {
     try {
       ProgramControl control = newContext.control;

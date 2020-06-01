@@ -88,5 +88,11 @@ public class InstanceFieldProperty extends AbstractProperty {
     return null;
   }
 
+  @Override
+  public CharSequence getDocumentation() {
+    // TODO
+    return null;
+  }
+
 
 }

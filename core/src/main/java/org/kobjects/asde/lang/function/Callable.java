@@ -14,7 +14,7 @@ public  interface Callable extends Typed, HasDeclaringPropertyReference {
     return getType().getParameterCount();
   }
 
-  default CharSequence getDocumentation() { return null; }
+  CharSequence getDocumentation(); // { return null; }
 
   default void setType(FunctionType functionType) {
     throw new UnsupportedOperationException();

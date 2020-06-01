@@ -11,6 +11,7 @@ public abstract class NativeMethod implements Property, Callable {
   Classifier owner;
   FunctionType type;
   String name;
+  String documentation;
 
   public NativeMethod(Classifier owner, String name, String description, Type returnType, Type... parameterTypes) {
     this.owner = owner;
@@ -64,6 +65,11 @@ public abstract class NativeMethod implements Property, Callable {
   @Override
   public Property getDeclaringSymbol() {
     return this;
+  }
+
+  @Override
+  public CharSequence getDocumentation() {
+    return documentation;
   }
 
 }

@@ -139,6 +139,12 @@ public class StaticProperty extends AbstractProperty {
     ((UserFunction) staticValue).setType(type);
   }
 
+  @Override
+  public CharSequence getDocumentation() {
+    // TODO
+    return null;
+  }
+
 
   @Override
   public void setStaticValue(Object value) {

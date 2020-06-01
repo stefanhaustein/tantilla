@@ -8,8 +8,8 @@ android {
         applicationId "org.kobjects.asde"
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 16
-        versionName "v0.9.6"
+        versionCode 18
+        versionName "v0.9.8"
     }
     buildTypes {
         release {

@@ -250,6 +250,11 @@ public class MainActivity extends AppCompatActivity {
       }
 
       @Override
+      public CharSequence getDocumentation() {
+        return "Plays the given string interpreted as ABC-notation. Some emojis are supported for sound effects.";
+      }
+
+      @Override
       public Object call(EvaluationContext evaluationContext, int paramCount) {
         new AbcScore(sampleManager, String.valueOf(evaluationContext.getParameter(0))).play();
         return null;

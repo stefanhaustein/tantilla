@@ -10,10 +10,12 @@ public abstract class NativeProperty implements Property {
   private final Classifier owner;
   private final String name;
   private final Type type;
+  private final String documentation;
 
   public NativeProperty(Classifier owner, String name, String description, Type type) {
     this.owner = owner;
     this.name = name;
+    this.documentation = description;
     this.type = type;
   }
 
@@ -51,6 +53,12 @@ public abstract class NativeProperty implements Property {
   @Override
   public Object getStaticValue() {
     throw new UnsupportedOperationException("Not static.");
+  }
+
+
+  @Override
+  public CharSequence getDocumentation() {
+    return documentation;
   }
 
 }
