@@ -1,7 +1,7 @@
 package org.kobjects.asde.shell;
 
-import org.kobjects.annotatedtext.AnnotatedString;
-import org.kobjects.annotatedtext.Span;
+import org.kobjects.markdown.AnnotatedString;
+import org.kobjects.markdown.Span;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.program.Program;

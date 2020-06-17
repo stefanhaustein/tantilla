@@ -1,1 +1,1 @@
-include ':app', ':core', ':typesystem', ':wasm'
+include ':app', ':core', ':markdown', ':wasm'

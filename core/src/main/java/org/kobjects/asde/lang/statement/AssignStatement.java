@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.statement;
 
-import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.node.TraitCast;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.node.AssignableNode;

@@ -1,4 +1,4 @@
-package org.kobjects.annotatedtext;
+package org.kobjects.markdown;
 
 public class Section {
   public enum Kind {

@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.classifier.module;
 
-import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.AbstractClassifier;
 import org.kobjects.asde.lang.classifier.StaticProperty;
 import org.kobjects.asde.lang.classifier.Property;

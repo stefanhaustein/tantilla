@@ -5,16 +5,14 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
-import android.widget.TextView;
 
-import org.kobjects.annotatedtext.AnnotatedString;
-import org.kobjects.annotatedtext.Annotations;
-import org.kobjects.annotatedtext.Span;
+import org.kobjects.markdown.AnnotatedString;
+import org.kobjects.markdown.Annotations;
+import org.kobjects.markdown.Span;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.errors.Errors;
 import org.kobjects.asde.android.ide.help.HelpDialog;
-import org.kobjects.asde.lang.io.Format;
 import org.kobjects.asde.lang.io.SyntaxColor;
 
 public class AnnotatedStringConverter {

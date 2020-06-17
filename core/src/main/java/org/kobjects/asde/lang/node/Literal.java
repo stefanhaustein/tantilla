@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.node;
 
-import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.runtime.EvaluationContext;

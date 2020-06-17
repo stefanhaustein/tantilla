@@ -4,8 +4,6 @@ import android.graphics.Typeface;
 import androidx.appcompat.widget.AppCompatTextView;
 
 import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.text.style.LeadingMarginSpan;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -14,12 +12,11 @@ import android.widget.TextView;
 
 import com.vanniktech.emoji.EmojiTextView;
 
-import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.text.TextViews;
-import org.kobjects.asde.lang.function.CodeLine;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.statement.Statement;
 

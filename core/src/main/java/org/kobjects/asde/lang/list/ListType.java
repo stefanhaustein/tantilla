@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.list;
 
-import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.builtin.NativeMethod;
 import org.kobjects.asde.lang.classifier.builtin.NativeReadonlyProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;

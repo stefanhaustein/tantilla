@@ -1,7 +1,7 @@
 package org.kobjects.asde.android.ide.errors;
 
-import org.kobjects.annotatedtext.AnnotatedString;
-import org.kobjects.annotatedtext.Span;
+import org.kobjects.markdown.AnnotatedString;
+import org.kobjects.markdown.Span;
 import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.lang.exceptions.ExceptionWithReplacementPropolsal;

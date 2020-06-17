@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.function;
 
-import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;

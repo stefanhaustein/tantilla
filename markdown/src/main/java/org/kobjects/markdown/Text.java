@@ -1,7 +1,6 @@
-package org.kobjects.annotatedtext;
+package org.kobjects.markdown;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Text {
 

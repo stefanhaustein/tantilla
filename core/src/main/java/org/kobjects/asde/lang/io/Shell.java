@@ -1,9 +1,9 @@
 package org.kobjects.asde.lang.io;
 
-import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.annotatedtext.Annotations;
-import org.kobjects.annotatedtext.Section;
-import org.kobjects.annotatedtext.Text;
+import org.kobjects.markdown.AnnotatedStringBuilder;
+import org.kobjects.markdown.Annotations;
+import org.kobjects.markdown.Section;
+import org.kobjects.markdown.Text;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.StaticProperty;
 import org.kobjects.asde.lang.classifier.Property;
@@ -11,7 +11,6 @@ import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.help.HelpGenerator;
 import org.kobjects.asde.lang.node.HasProperty;
 import org.kobjects.asde.lang.node.Node;
-import org.kobjects.asde.lang.node.Path;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramControl;
 import org.kobjects.asde.lang.statement.DeclarationStatement;

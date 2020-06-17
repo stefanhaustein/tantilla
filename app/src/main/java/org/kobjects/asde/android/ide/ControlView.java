@@ -2,7 +2,6 @@ package org.kobjects.asde.android.ide;
 
 import android.graphics.Typeface;
 import android.text.InputType;
-import android.text.method.LinkMovementMethod;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -14,7 +13,7 @@ import com.vanniktech.emoji.EmojiEditText;
 
 import com.vanniktech.emoji.EmojiTextView;
 
-import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.android.ide.widget.IconButton;

@@ -1,4 +1,4 @@
-package org.kobjects.annotatedtext;
+package org.kobjects.markdown;
 
 import java.util.Collection;
 import java.util.Collections;

@@ -4,8 +4,6 @@ import android.app.ProgressDialog;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.text.InputType;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,12 +16,11 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.vanniktech.emoji.EmojiTextView;
 
-import org.kobjects.annotatedtext.AnnotatedString;
-import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.annotatedtext.Annotations;
+import org.kobjects.markdown.AnnotatedString;
+import org.kobjects.markdown.AnnotatedStringBuilder;
+import org.kobjects.markdown.Annotations;
 import org.kobjects.asde.R;
 import org.kobjects.asde.android.ide.function.FunctionView;
-import org.kobjects.asde.android.ide.help.HelpDialog;
 import org.kobjects.asde.android.ide.text.AnnotatedStringConverter;
 import org.kobjects.asde.android.ide.text.TextViews;
 import org.kobjects.asde.android.ide.widget.IconButton;

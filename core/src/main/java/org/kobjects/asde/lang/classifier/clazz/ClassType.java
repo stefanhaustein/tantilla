@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.classifier.clazz;
 
-import org.kobjects.annotatedtext.AnnotatedStringBuilder;
+import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.AbstractClassifier;
 import org.kobjects.asde.lang.classifier.DeclaredBy;
 import org.kobjects.asde.lang.classifier.Property;
@@ -13,7 +13,6 @@ import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class ClassType extends AbstractClassifier implements InstantiableClassType, DeclaredBy {
 

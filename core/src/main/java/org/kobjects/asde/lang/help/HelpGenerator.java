@@ -1,8 +1,8 @@
 package org.kobjects.asde.lang.help;
 
-import org.kobjects.annotatedtext.AnnotatedString;
-import org.kobjects.annotatedtext.AnnotatedStringBuilder;
-import org.kobjects.annotatedtext.Text;
+import org.kobjects.markdown.AnnotatedString;
+import org.kobjects.markdown.AnnotatedStringBuilder;
+import org.kobjects.markdown.Text;
 import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.StaticProperty;

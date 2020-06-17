@@ -30,6 +30,7 @@ import org.kobjects.abcnotation.AbcScore;
 import org.kobjects.asde.android.ide.program.ProgramTitleView;
 import org.kobjects.asde.android.ide.program.ProgramView;
 import org.kobjects.asde.android.ide.property.PropertyView;
+import org.kobjects.asde.android.ide.tutorial.TutorialView;
 import org.kobjects.asde.android.ide.widget.ResizableFrameLayout;
 import org.kobjects.asde.android.library.ui.PenType;
 import org.kobjects.asde.android.library.ui.ScreenType;
@@ -67,11 +68,6 @@ public class MainActivity extends AppCompatActivity {
 
   static final FunctionType FUNCTION_VOID_0 = new FunctionType(Types.VOID);
 
-  static final String[] HINTS = {
-      "Try the classic:\n\n  print \"Hello World\"",
-      "Tantilla is a simple programming environment for mobile devices.",
-  };
-
   public static void removeFromParent(View view) {
     if (view != null && view.getParent() instanceof ViewGroup) {
       ((ViewGroup) view.getParent()).removeView(view);
@@ -88,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
   public AndroidConsole console;
   public Program program;
   public TextOutputView textOutputView;
+  TutorialView tutorialView;
   ResizableFrameLayout resizableFrameLayout;
   //  public ProgramControl mainControl = new ProgramControl(program);
   // ProgramControl shellControl = new ProgramControl(program);
@@ -161,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
 
     programView = new ProgramView(this);
     programTitleView = new ProgramTitleView(this);
+    tutorialView = new TutorialView(this);
     textOutputView = new TextOutputView(this);
 
     SampleManager sampleManager = new SampleManager(this);
@@ -170,17 +168,6 @@ public class MainActivity extends AppCompatActivity {
     scrollContentView = new LinearLayout(this);
     scrollContentView.setOrientation(LinearLayout.VERTICAL);
 
- /*   runButton = new FloatingActionButton(this);
-    runButton.setImageResource(R.drawable.ic_asde);
-//    runButton.setPadding(0, 0, 0, 0);
-    runButton.setScaleType(ImageView.ScaleType.CENTER);
-  //  runButton.setIm
-    //runButton.setMaxWidth(10);
-    //runButton.setMaxHeight(10);
-
-//    runButton.setScaleType(ImageView.ScaleType.CENTER);
-  //  runButton.setSize(FloatingActionButton.SIZE_MINI);
-*/
     ColorDrawable divider = new ColorDrawable(0x0) {
       @Override
       public int getIntrinsicHeight() {
@@ -282,10 +269,6 @@ public class MainActivity extends AppCompatActivity {
       programReference = ProgramReference.parse(runIntent);
     } else {
       arrangeUi();
-
-      console.print("\n");
-      console.print(HINTS[(int)(Math.random()*HINTS.length)]);
-      console.print("\n\n\n\n");
 
       /*
       console.print("  " + (Runtime.getRuntime().totalMemory() / 1024) + "K SYSTEM  "
@@ -458,6 +441,7 @@ public class MainActivity extends AppCompatActivity {
     removeFromParent(runControlView);
     removeFromParent(resizableFrameLayout);
     removeFromParent(textOutputView);
+    removeFromParent(tutorialView);
    // removeFromParent(runButton);
 
     if (leftScrollView != null) {
@@ -519,6 +503,7 @@ public class MainActivity extends AppCompatActivity {
         scrollContentView.addView(programView, 0);
         scrollContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
 
+        scrollContentView.addView(tutorialView);
         scrollContentView.addView(textOutputView);
 
         rootLayout.setClipChildren(false);
@@ -528,10 +513,23 @@ public class MainActivity extends AppCompatActivity {
 
         rootLayout.setOrientation(LinearLayout.HORIZONTAL);
 
+        LinearLayout leftContentView = new LinearLayout(this);
+        leftContentView.setOrientation(LinearLayout.VERTICAL);
+        ColorDrawable divider = new ColorDrawable(0x0) {
+          @Override
+          public int getIntrinsicHeight() {
+            return Dimensions.dpToPx(MainActivity.this, 6);
+          }
+        };
+        leftContentView.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+        leftContentView.setDividerDrawable(divider);
+        leftContentView.addView(programView);
+        leftContentView.addView(tutorialView);
+
         LinearLayout leftView = new LinearLayout(this);
         leftView.setOrientation(LinearLayout.VERTICAL);
         leftView.addView(programTitleView);
-        leftScrollView.addView(programView);
+        leftScrollView.addView(leftContentView);
         leftView.addView(leftScrollView);
 
         LinearLayout rightView = new LinearLayout(this);
