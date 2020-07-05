@@ -26,7 +26,7 @@ import java.util.HashMap;
 
 public class TutorialView extends LinearLayout {
 
-  static final int HINT_COUNT = 2;
+  static final int HINT_COUNT = 3;
 
   IconButton prevButton;
   IconButton nextButton;
@@ -73,7 +73,7 @@ public class TutorialView extends LinearLayout {
     move(0);
   }
 
-  void move(int dir) {
+  public void move(int dir) {
     hintIndex += dir;
     nextButton.setEnabled(hintIndex < HINT_COUNT - 1);
     prevButton.setEnabled(hintIndex > 0);
@@ -95,6 +95,9 @@ public class TutorialView extends LinearLayout {
                   mainActivity.getAssets().open("tutorial/lesson0" + (finalIndex + 1) + ".md"), "utf-8"));
           Text text = MarkdownParser.parse(reader);
           hintCache.put(finalIndex, text);
+
+          mainActivity.console.tutorialAdvanceTrigger = text.metadata.get("advance");
+
           mainActivity.runOnUiThread(() -> {
             move(0);
           });

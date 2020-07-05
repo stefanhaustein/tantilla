@@ -23,9 +23,11 @@ public class MarkdownParser {
 
   private Text parse() throws IOException {
     AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
+    boolean inHeader = true;
     while(true) {
       String line = reader.readLine();
       if (line == null || line.trim().length() == 0) {
+        inHeader = false;
         if (asb.length() != 0) {
           builder.addParagraph(asb.build());
           asb = new AnnotatedStringBuilder();
@@ -34,7 +36,15 @@ public class MarkdownParser {
           break;
         }
       } else {
-        asb.append(line);
+        if (inHeader && line.indexOf(':') > 0 && line.indexOf(':') < line.indexOf(' ') && line.indexOf(':') < line.trim().length() - 1) {
+          int cut = line.indexOf(':');
+          String key = line.substring(0, cut).trim();
+          String value = line.substring(cut + 1).trim();
+          builder.addMetadata(key, value);
+        } else {
+          inHeader = false;
+          asb.append(line);
+        }
       }
     }
     builder.addParagraph(asb.build());

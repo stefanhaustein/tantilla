@@ -42,6 +42,7 @@ import java.util.concurrent.SynchronousQueue;
 
 public class AndroidConsole implements Console {
   private final MainActivity mainActivity;
+  public String tutorialAdvanceTrigger;
   private TextView pendingOutput;
   boolean autoScroll = true;
   private UserFunction selectedFunction;
@@ -276,6 +277,9 @@ public class AndroidConsole implements Console {
 
 
   private void printImpl(AnnotatedString s) {
+    if (tutorialAdvanceTrigger != null && s.toString().contains(tutorialAdvanceTrigger)) {
+      mainActivity.tutorialView.move(1);
+    }
     if (mainActivity.controlView.getParent() != null && mainActivity.controlView.getVisibility() == View.VISIBLE) {
 
       if (pendingOutput != null) {
