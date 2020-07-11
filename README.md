@@ -1,6 +1,6 @@
 # Tantilla
 
-## TLDR
+## TL;DR
 
 Main goal: Provide a reasonable way to code on a mobile phone (including a simple IDE).
 
@@ -21,6 +21,23 @@ https://github.com/stefanhaustein/tantilla/tree/master/app/src/main/assets/examp
 Android Play Store Beta link:
 
 https://play.google.com/store/apps/details?id=org.kobjects.asde
+
+## IDE 
+
+The mobile IDE is not strictly a part of the language, but it’s a feature that sets it apart from other
+languages: Instead of a text editor, the IDE is based on a line editor that also serves as a shell. 
+
+The main motivation for this design is that cursor positioning is extremely fiddly on mobile. 
+A line-based editor splits the editing process up into two separate more reliable steps, 
+limiting position needs to one dimension -- or typing a short command, which allows the user to stay 
+in the keyboard area. 
+
+Requiring an explicit “end” statement to close blocks allows the IDE to always automatically indent 
+and format the source code.
+
+A side effect of this design is that this also works quite well for telnet / shell based editing.
+In particular, explicit block ends allow running arbitrary complex statements from the shell.
+
 
 ## Properties and invocations
 
@@ -75,6 +92,10 @@ this to vector-only.
 
 Mostly hoping that avoiding traditional OO-inheritence avoids most pain points. Go has done well without so far,
 so this is not a primary priority at the moment. 
+
+### Port more "stuff" from Python
+
+Integer type? Not sure what's missing most...
 
 ### Direction
 
