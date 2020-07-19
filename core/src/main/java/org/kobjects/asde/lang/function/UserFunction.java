@@ -54,7 +54,7 @@ public class UserFunction implements Callable, DeclaredBy {
    */
   @Override
   public Object call(EvaluationContext callerContext, int parameterCount) {
-    return callImpl(new EvaluationContext(callerContext, this, null));
+    return callImpl(new EvaluationContext(callerContext, this));
   }
 
   public int getLocalVariableCount() {

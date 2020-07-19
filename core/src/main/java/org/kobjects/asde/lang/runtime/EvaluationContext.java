@@ -48,7 +48,7 @@ public class EvaluationContext {
     /**
      * Creates a new context for calling the given function.
      */
-    public EvaluationContext(EvaluationContext parentContext, UserFunction userFunction, ClassInstance self) {
+    public EvaluationContext(EvaluationContext parentContext, UserFunction userFunction) {
         this.function = userFunction;
         this.control = parentContext.control;
         this.dataStack = parentContext.dataStack;

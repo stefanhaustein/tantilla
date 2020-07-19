@@ -1,5 +1,8 @@
 package org.kobjects.asde.lang.statement;
 
+import org.kobjects.asde.lang.type.AwaitableType;
+import org.kobjects.asde.lang.type.Type;
+import org.kobjects.async.Promise;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.LocalSymbol;
 import org.kobjects.asde.lang.io.SyntaxColor;
@@ -16,13 +19,25 @@ public class DeclarationStatement extends Statement {
     MUT, LET
   }
 
+  public final boolean await;
   public final Kind kind;
   String varName;
   LocalSymbol resolved;
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
-    resolved.set(evaluationContext, evalValue(evaluationContext));
+    Object value = children[0].eval(evaluationContext);
+    if (await) {
+      final EvaluationContext innerContext = new EvaluationContext(evaluationContext);
+      innerContext.currentLine++;
+      evaluationContext.returnValue = ((Promise<?>) value).then(resolved -> {
+        evaluationContext.function.callImpl(innerContext);
+       return innerContext.returnValue;
+     });
+     evaluationContext.currentLine = Integer.MAX_VALUE;
+    } else {
+      resolved.set(evaluationContext, value);
+    }
     return null;
   }
 
@@ -30,22 +45,22 @@ public class DeclarationStatement extends Statement {
     return varName;
   }
 
-  public void setVarName(String newName) {
-    this.varName = varName;
-  }
-
-  public DeclarationStatement(Kind kind, String varName, Node init) {
+  public DeclarationStatement(Kind kind, String varName, boolean await, Node init) {
     super(init);
     this.varName = varName;
     this.kind = kind;
+    this.await = await;
   }
 
   public void onResolve(ValidationContext resolutionContext, int line) {
-    resolved = resolutionContext.declareLocalVariable(varName, children[0].returnType(), kind != Kind.LET);
-  }
-
-  public Object evalValue(EvaluationContext evaluationContext) {
-    return children[0].eval(evaluationContext);
+    Type type = children[0].returnType();
+    if (await) {
+      if (type instanceof AwaitableType) {
+        throw new RuntimeException("awaitable type expected.");
+      }
+      type = ((AwaitableType) type).getWrapped();
+    }
+    resolved = resolutionContext.declareLocalVariable(varName, type, kind != Kind.LET);
   }
 
 

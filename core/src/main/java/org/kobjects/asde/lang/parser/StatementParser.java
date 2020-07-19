@@ -269,8 +269,9 @@ public class StatementParser {
     }
     String varName = tokenizer.consumeIdentifier();
     tokenizer.consume("=");
+    boolean await = tokenizer.tryConsume("await");
     Node value = expressionParser.parse(tokenizer);
-    return new DeclarationStatement(kind, varName, value);
+    return new DeclarationStatement(kind, varName, await, value);
   }
 
 
