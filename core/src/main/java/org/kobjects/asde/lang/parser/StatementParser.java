@@ -31,6 +31,7 @@ import org.kobjects.asde.lang.statement.RemStatement;
 import org.kobjects.asde.lang.statement.ReturnStatement;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.statement.VoidStatement;
+import org.kobjects.asde.lang.type.AwaitableType;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.statement.WhileStatement;
 import org.kobjects.expressionparser.Tokenizer;
@@ -94,12 +95,12 @@ public class StatementParser {
     return parameters.toArray(Parameter.EMPTY_ARRAY);
   }
 
-  public FunctionType parseFunctionSignature(Tokenizer tokenizer, Type self) {
+  public FunctionType parseFunctionSignature(Tokenizer tokenizer, boolean async, Type self) {
     Parameter[] parameterTypes = parseParameterList(tokenizer, self);
 
     Type returnType = tokenizer.tryConsume("->") ? parseType(tokenizer) : Types.VOID;
 
-    return new FunctionType(returnType, parameterTypes);
+    return new FunctionType(async ? new AwaitableType(returnType) : returnType, parameterTypes);
   }
 
   void parseStatement(Tokenizer tokenizer, List<Statement> result, UserFunction parsingContext) {

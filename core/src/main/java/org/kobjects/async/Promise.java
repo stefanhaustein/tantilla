@@ -8,6 +8,10 @@ public class Promise<T> implements Executable<T> {
 
   private final Executable<T> executable;
 
+  public static <T> Promise<T> of(T value) {
+    return new Promise<>((executor, consumer) -> consumer.accept(value));
+  }
+
   Promise(Executable<T> executable) {
     this.executable = executable;
   }

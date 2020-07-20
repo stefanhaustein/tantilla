@@ -92,8 +92,7 @@ public interface Property extends Comparable<Property> {
       asb.append(indent);
       asb.append("def", SyntaxColor.KEYWORD);
       asb.append(' ');
-      asb.append(getName());
-      ((FunctionType) getType()).toString(asb);
+      ((FunctionType) getType()).toString(asb, getName());
       asb.append(": […]");
 
     } else if (getType() instanceof MetaType && ((MetaType) getType()).getWrapped() instanceof Classifier) {

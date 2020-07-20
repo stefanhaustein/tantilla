@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.function;
 
+import org.kobjects.asde.lang.type.AwaitableType;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
@@ -38,11 +39,20 @@ public class FunctionType implements Type {
 
   public String toString() {
     AnnotatedStringBuilder asb = new AnnotatedStringBuilder();
-    toString(asb);
+    toString(asb, null);
     return asb.toString();
   }
 
-  public void toString(AnnotatedStringBuilder asb) {
+  public void toString(AnnotatedStringBuilder asb, String functionName) {
+    Type returnType = getReturnType();
+    if (returnType instanceof AwaitableType) {
+      asb.append("async ");
+      returnType = ((AwaitableType) returnType).getWrapped();
+    }
+    if (functionName != null && !functionName.isEmpty()) {
+      asb.append(functionName);
+      asb.append(' ');
+    }
     asb.append('(');
     for (int i = 0; i < parameters.length; i++) {
       if (i > 0) {

@@ -31,7 +31,7 @@ public class Shell {
   public final ProgramControl shellControl;
 
   enum ShellCommand {
-    DEF, LOAD, SAVE, EDIT, LIST, DELETE, HELP
+    ASYNC, DEF, LOAD, SAVE, EDIT, LIST, DELETE, HELP
   }
 
 
@@ -184,8 +184,11 @@ public class Shell {
 
   void processShellCommand(Tokenizer tokenizer, ShellCommand shellCommand) {
     switch (shellCommand) {
+      case ASYNC:
+        tokenizer.consume("def");
+        processDef(tokenizer, /* async= */ true);
       case DEF:
-        processDef(tokenizer);
+        processDef(tokenizer, /* async= */ false);
         break;
 
       case DELETE:
@@ -287,7 +290,7 @@ public class Shell {
   }
 
 
-  void processDef(Tokenizer tokenizer) {
+  void processDef(Tokenizer tokenizer, boolean async) {
     String name = tokenizer.consumeIdentifier();
 
     Classifier target = program.mainModule;
@@ -296,7 +299,7 @@ public class Shell {
       name = tokenizer.consumeIdentifier();
     }
 
-    FunctionType functionType = program.parser.parseFunctionSignature(tokenizer, null);
+    FunctionType functionType = program.parser.parseFunctionSignature(tokenizer, async,null);
     UserFunction function = new UserFunction(program, functionType);
     if (tokenizer.tryConsume(":")) {
       for (Statement statement : program.parser.parseStatementList(tokenizer, function)) {

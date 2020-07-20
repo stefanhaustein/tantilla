@@ -58,6 +58,9 @@ public class DeclarationStatement extends Statement {
       if (type instanceof AwaitableType) {
         throw new RuntimeException("awaitable type expected.");
       }
+      if (!(resolutionContext.userFunction.getType().getReturnType() instanceof AwaitableType)) {
+        throw new RuntimeException("Function " + resolutionContext.userFunction + " must be async for await.");
+      }
       type = ((AwaitableType) type).getWrapped();
     }
     resolved = resolutionContext.declareLocalVariable(varName, type, kind != Kind.LET);

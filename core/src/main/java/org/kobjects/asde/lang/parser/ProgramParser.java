@@ -111,10 +111,12 @@ public class ProgramParser {
           } else {
             throw new RuntimeException("Unexpected end");
           }
-        } else if (tokenizer.tryConsume("def")) {
+        } else if (tokenizer.currentValue.equals("async") || tokenizer.currentValue.equals("def")) {
+          boolean async = tokenizer.tryConsume("async");
+          tokenizer.consume("def");
           String functionName = tokenizer.consumeIdentifier();
           program.console.updateProgress("Parsing function " + functionName);
-          FunctionType functionType = statementParser.parseFunctionSignature(tokenizer, currentClassifier);
+          FunctionType functionType = statementParser.parseFunctionSignature(tokenizer, async, currentClassifier);
           if (!tokenizer.tryConsume(":")) {
             throw new RuntimeException("':' expected.");
           }
@@ -196,8 +198,6 @@ public class ProgramParser {
   }
 
 
-
-
   private int parseTrait(Trait trait, List<String> lines, int index) {
     while (true) {
       String line = lines.get(++index);
@@ -206,9 +206,11 @@ public class ProgramParser {
       if (tokenizer.tryConsume("end")) {
         break;
       }
-      if (tokenizer.tryConsume("def")) {
+      if (tokenizer.currentValue.equals("async") || tokenizer.currentValue.equals("def")) {
+        boolean async = tokenizer.tryConsume("async");
+        tokenizer.consume("def");
         String functionName = tokenizer.consumeIdentifier();
-        FunctionType functionType = statementParser.parseFunctionSignature(tokenizer, trait);
+        FunctionType functionType = statementParser.parseFunctionSignature(tokenizer, async, trait);
         trait.putProperty(TraitProperty.create(trait, functionName, functionType));
       } else {
        throw new RuntimeException("def or end expected.");

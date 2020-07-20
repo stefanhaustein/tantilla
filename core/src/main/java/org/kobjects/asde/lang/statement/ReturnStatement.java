@@ -1,5 +1,8 @@
 package org.kobjects.asde.lang.statement;
 
+import org.kobjects.asde.lang.type.AwaitableType;
+import org.kobjects.asde.lang.type.Type;
+import org.kobjects.async.Promise;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.node.TraitCast;
@@ -13,6 +16,7 @@ import java.util.Map;
 public class ReturnStatement extends Statement {
 
   Node resolvedChild;
+  boolean async;
 
   public ReturnStatement(Node... children) {
     super(children);
@@ -20,23 +24,32 @@ public class ReturnStatement extends Statement {
 
   @Override
   protected void onResolve(ValidationContext resolutionContext, int line) {
-    if (resolutionContext.userFunction.getType().getReturnType() == Types.VOID) {
-      if (children.length != 0) {
-        throw new RuntimeException("Unexpected return value for subroutine.");
-      }
-      resolvedChild = null;
-    } else {
-      if (children.length != 1) {
+    Type returnType = resolutionContext.userFunction.getType().getReturnType();
+    async = returnType instanceof AwaitableType;
+    Type unwrappedReturnType = async ? ((AwaitableType) returnType).getWrapped() : returnType;
+
+    if (children.length == 0) {
+      if (unwrappedReturnType != Types.VOID) {
         throw new RuntimeException("Return value expected for function.");
       }
-      resolvedChild = TraitCast.autoCast(children[0], resolutionContext.userFunction.getType().getReturnType(), resolutionContext);
+      resolvedChild = null;
+    } else if (children.length == 1) {
+      Type type = children[0].returnType();
+      if (type instanceof AwaitableType) {
+        resolvedChild = TraitCast.autoCast(children[0], returnType, resolutionContext);
+      } else {
+        resolvedChild = TraitCast.autoCast(children[0], unwrappedReturnType, resolutionContext);
+      }
+    } else {
+      throw new RuntimeException("Impossible");
     }
   }
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
     if (resolvedChild != null) {
-      evaluationContext.returnValue = resolvedChild.eval(evaluationContext);
+      Object result = resolvedChild.eval(evaluationContext);
+      evaluationContext.returnValue = async ? Promise.of(result) : result;
     }
     evaluationContext.currentLine = Integer.MAX_VALUE;
     return null;
