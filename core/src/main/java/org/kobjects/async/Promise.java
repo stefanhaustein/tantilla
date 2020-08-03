@@ -12,10 +12,9 @@ public class Promise<T> implements Executable<T> {
     return new Promise<>((executor, consumer) -> consumer.accept(value));
   }
 
-  Promise(Executable<T> executable) {
+  public Promise(Executable<T> executable) {
     this.executable = executable;
   }
-
 
   public <R> Promise<R> then(Function<? super T, ? extends R> transformation) {
     return new Promise<R>(
@@ -31,6 +30,4 @@ public class Promise<T> implements Executable<T> {
       }
     });
   }
-
-
 }

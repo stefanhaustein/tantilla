@@ -27,6 +27,9 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 
 public class Program {
@@ -51,6 +54,7 @@ public class Program {
   }
 
   public ProgramReference reference;
+  private Executor executor = Executors.newCachedThreadPool();
 
   public final StatementParser parser = new StatementParser(this);
   private final ArrayList<PropertyChangeListener> programChangeListeners = new ArrayList<>();
@@ -296,5 +300,9 @@ public class Program {
 
   public UserFunction getMain() {
     return (UserFunction) mainModule.getProperty("main").getStaticValue();
+  }
+
+  public Executor getExecutor() {
+    return executor;
   }
 }

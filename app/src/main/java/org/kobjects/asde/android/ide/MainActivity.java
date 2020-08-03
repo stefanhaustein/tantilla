@@ -44,10 +44,12 @@ import org.kobjects.asde.lang.program.ProgramControl;
 import org.kobjects.asde.lang.program.ProgramListener;
 import org.kobjects.asde.lang.io.ProgramReference;
 import org.kobjects.asde.lang.io.Shell;
+import org.kobjects.asde.lang.type.AwaitableType;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.android.library.ui.DpadAdapter;
 import org.kobjects.asde.android.library.ui.SpriteAdapter;
 import org.kobjects.asde.android.library.ui.TextBoxType;
+import org.kobjects.async.Promise;
 import org.kobjects.krash.Screen;
 import org.kobjects.abcnotation.SampleManager;
 import org.kobjects.asde.lang.function.FunctionType;
@@ -245,6 +247,32 @@ public class MainActivity extends AppCompatActivity {
       public Object call(EvaluationContext evaluationContext, int paramCount) {
         new AbcScore(sampleManager, String.valueOf(evaluationContext.getParameter(0))).play();
         return null;
+      }
+    });
+
+    program.addBuiltin("abc", new Callable() {
+      @Override
+      public Property getDeclaringSymbol() {
+        return null;
+      }
+
+      @Override
+      public FunctionType getType() {
+        return FunctionType.createFromTypes(new AwaitableType(Types.VOID), Types.STR);
+      }
+
+      @Override
+      public CharSequence getDocumentation() {
+        return "Plays the given string interpreted as ABC-notation. Some emojis are supported for sound effects.";
+      }
+
+      @Override
+      public Object call(EvaluationContext evaluationContext, int paramCount) {
+        AbcScore abcScore = new AbcScore(sampleManager, String.valueOf(evaluationContext.getParameter(0)));
+        return new Promise((executor, consumer) -> executor.execute(() -> {
+          abcScore.play();
+          consumer.accept(null);
+        }));
       }
     });
 

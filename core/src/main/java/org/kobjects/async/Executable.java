@@ -3,6 +3,6 @@ package org.kobjects.async;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
-interface Executable<W> {
+public interface Executable<W> {
   void execute(Executor executor, Consumer<? super W> consumer);
 }

@@ -20,6 +20,7 @@ import org.kobjects.asde.lang.statement.ConditionStatement;
 import org.kobjects.asde.lang.statement.DebuggerStatement;
 import org.kobjects.asde.lang.statement.EndStatement;
 import org.kobjects.asde.lang.statement.ForStatement;
+import org.kobjects.asde.lang.statement.LaunchStatement;
 import org.kobjects.asde.lang.statement.OnChangeStatement;
 import org.kobjects.asde.lang.statement.PrintStatement;
 import org.kobjects.asde.lang.statement.DeclarationStatement;
@@ -133,6 +134,10 @@ public class StatementParser {
         return;
       case "if":
         parseConditional(tokenizer, ConditionStatement.Kind.IF, result);
+        return;
+      case "launch":
+        tokenizer.consumeIdentifier();
+        result.add(new LaunchStatement(expressionParser.parse(tokenizer)));
         return;
       case "on":
         result.add(parseOn(tokenizer));
