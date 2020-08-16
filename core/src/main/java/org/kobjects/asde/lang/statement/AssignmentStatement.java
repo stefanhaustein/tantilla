@@ -13,7 +13,7 @@ import org.kobjects.asde.lang.function.ValidationContext;
 import java.util.Map;
 
 
-public class DeclarationStatement extends Statement {
+public class AssignmentStatement extends Statement {
 
   public enum Kind {
     MUT, LET
@@ -22,7 +22,14 @@ public class DeclarationStatement extends Statement {
   public final boolean await;
   public final Kind kind;
   String varName;
-  LocalSymbol resolved;
+  LocalSymbol resolvedSymbol;
+
+  public AssignmentStatement(Kind kind, String varName, boolean await, Node init) {
+    super(init);
+    this.varName = varName;
+    this.kind = kind;
+    this.await = await;
+  }
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
@@ -31,12 +38,13 @@ public class DeclarationStatement extends Statement {
       final EvaluationContext innerContext = new EvaluationContext(evaluationContext);
       innerContext.currentLine++;
       evaluationContext.returnValue = ((Promise<?>) value).then(resolved -> {
+        resolvedSymbol.set(innerContext, resolved);
         evaluationContext.function.callImpl(innerContext);
        return innerContext.returnValue;
      });
      evaluationContext.currentLine = Integer.MAX_VALUE;
     } else {
-      resolved.set(evaluationContext, value);
+      resolvedSymbol.set(evaluationContext, value);
     }
     return null;
   }
@@ -45,12 +53,6 @@ public class DeclarationStatement extends Statement {
     return varName;
   }
 
-  public DeclarationStatement(Kind kind, String varName, boolean await, Node init) {
-    super(init);
-    this.varName = varName;
-    this.kind = kind;
-    this.await = await;
-  }
 
   public void onResolve(ValidationContext resolutionContext, int line) {
     Type type = children[0].returnType();
@@ -63,7 +65,7 @@ public class DeclarationStatement extends Statement {
       }
       type = ((AwaitableType) type).getWrapped();
     }
-    resolved = resolutionContext.declareLocalVariable(varName, type, kind != Kind.LET);
+    resolvedSymbol = resolutionContext.declareLocalVariable(varName, type, kind != Kind.LET);
   }
 
 
@@ -73,4 +75,6 @@ public class DeclarationStatement extends Statement {
     appendLinked(asb, " " + varName + " = ", errors);
     children[0].toString(asb, errors, preferAscii);
   }
+
+
 }

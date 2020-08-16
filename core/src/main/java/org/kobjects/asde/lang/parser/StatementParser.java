@@ -8,7 +8,6 @@ import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.InvokeNamed;
-import org.kobjects.asde.lang.node.Named;
 import org.kobjects.asde.lang.node.Path;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Invoke;
@@ -23,7 +22,7 @@ import org.kobjects.asde.lang.statement.ForStatement;
 import org.kobjects.asde.lang.statement.LaunchStatement;
 import org.kobjects.asde.lang.statement.OnChangeStatement;
 import org.kobjects.asde.lang.statement.PrintStatement;
-import org.kobjects.asde.lang.statement.DeclarationStatement;
+import org.kobjects.asde.lang.statement.AssignmentStatement;
 import org.kobjects.asde.lang.node.Literal;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.node.MathOperator;
@@ -264,12 +263,12 @@ public class StatementParser {
     return new ForStatement(varName, iterable);
   }
 
-  DeclarationStatement parseDeclaration(Tokenizer tokenizer) {
-    DeclarationStatement.Kind kind;
+  AssignmentStatement parseDeclaration(Tokenizer tokenizer) {
+    AssignmentStatement.Kind kind;
     if (tokenizer.tryConsume("mut")) {
-      kind = DeclarationStatement.Kind.MUT;
+      kind = AssignmentStatement.Kind.MUT;
     } else if (tokenizer.tryConsume("let")) {
-      kind = tokenizer.tryConsume("mut") ? DeclarationStatement.Kind.MUT : DeclarationStatement.Kind.LET;
+      kind = tokenizer.tryConsume("mut") ? AssignmentStatement.Kind.MUT : AssignmentStatement.Kind.LET;
     } else {
       throw new RuntimeException("let or mut expected");
     }
@@ -277,7 +276,7 @@ public class StatementParser {
     tokenizer.consume("=");
     boolean await = tokenizer.tryConsume("await");
     Node value = expressionParser.parse(tokenizer);
-    return new DeclarationStatement(kind, varName, await, value);
+    return new AssignmentStatement(kind, varName, await, value);
   }
 
 

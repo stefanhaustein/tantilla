@@ -1,7 +1,6 @@
 package org.kobjects.asde.lang.io;
 
 import org.kobjects.markdown.AnnotatedStringBuilder;
-import org.kobjects.markdown.Annotations;
 import org.kobjects.markdown.Section;
 import org.kobjects.markdown.Text;
 import org.kobjects.asde.lang.classifier.Classifier;
@@ -13,7 +12,7 @@ import org.kobjects.asde.lang.node.HasProperty;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramControl;
-import org.kobjects.asde.lang.statement.DeclarationStatement;
+import org.kobjects.asde.lang.statement.AssignmentStatement;
 import org.kobjects.asde.lang.statement.Statement;
 import org.kobjects.asde.lang.runtime.StartStopListener;
 import org.kobjects.asde.lang.function.UserFunction;
@@ -121,12 +120,12 @@ public class Shell {
 
         for (int i = 0; i < statements.size(); i++) {
           Node node = statements.get(i);
-          if (node instanceof DeclarationStatement) {
-            DeclarationStatement declaration = (DeclarationStatement) node;
+          if (node instanceof AssignmentStatement) {
+            AssignmentStatement declaration = (AssignmentStatement) node;
             synchronized (program) {
               program.mainModule.putProperty(StaticProperty.createWithInitializer(
                   program.mainModule,
-                  declaration.kind == DeclarationStatement.Kind.MUT,
+                  declaration.kind == AssignmentStatement.Kind.MUT,
                   declaration.getVarName(),
                   declaration.children[0]));
             }
