@@ -209,11 +209,6 @@ public class Path extends SymbolNode {
   }
 
   @Override
-  public boolean isConstant() {
-    return resolvedConstant != null;
-  }
-
-  @Override
   public Property getResolvedProperty() {
     return resolvedProperty;
   }

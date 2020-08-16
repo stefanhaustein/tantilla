@@ -1,10 +1,12 @@
 package org.kobjects.asde.lang.statement;
 
+import org.kobjects.asde.lang.node.Assignable;
+import org.kobjects.asde.lang.node.AssignableNode;
+import org.kobjects.asde.lang.node.TraitCast;
 import org.kobjects.asde.lang.type.AwaitableType;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.async.Promise;
 import org.kobjects.markdown.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.function.LocalSymbol;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.node.Node;
@@ -16,35 +18,47 @@ import java.util.Map;
 public class AssignmentStatement extends Statement {
 
   public enum Kind {
-    MUT, LET
+    ASSIGN, MUT, LET
+  }
+
+  public static AssignmentStatement createDeclaration(Kind kind, String varName, boolean await, Node init) {
+    return new AssignmentStatement(kind, varName, null, await, init);
+  }
+
+  public static AssignmentStatement createAssignment(Node target, boolean await, Node init) {
+    if (!(target instanceof AssignableNode)) {
+      throw new RuntimeException("Assignment target is not assignable.");
+    }
+    return new AssignmentStatement(Kind.ASSIGN, null, target, await, init);
   }
 
   public final boolean await;
   public final Kind kind;
   String varName;
-  LocalSymbol resolvedSymbol;
+  Assignable resolvedTarget;
+  Node resolvedSource;
 
-  public AssignmentStatement(Kind kind, String varName, boolean await, Node init) {
-    super(init);
-    this.varName = varName;
+  private AssignmentStatement(Kind kind, String varName, Node target, boolean await, Node init) {
+    super(init, target);
     this.kind = kind;
+    this.varName = varName;
     this.await = await;
   }
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
-    Object value = children[0].eval(evaluationContext);
+    Object value = resolvedSource.eval(evaluationContext);
     if (await) {
       final EvaluationContext innerContext = new EvaluationContext(evaluationContext);
       innerContext.currentLine++;
       evaluationContext.returnValue = ((Promise<?>) value).then(resolved -> {
-        resolvedSymbol.set(innerContext, resolved);
+        resolvedTarget.set(innerContext, resolved);
         evaluationContext.function.callImpl(innerContext);
        return innerContext.returnValue;
      });
      evaluationContext.currentLine = Integer.MAX_VALUE;
     } else {
-      resolvedSymbol.set(evaluationContext, value);
+      resolvedTarget.set(evaluationContext, value);
     }
     return null;
   }
@@ -53,26 +67,53 @@ public class AssignmentStatement extends Statement {
     return varName;
   }
 
+  @Override
+  public boolean resolve(ValidationContext resolutionContext, int line) {
+    block = resolutionContext.getCurrentBlock();
+    if (!children[0].resolve(resolutionContext, line)) {
+      return false;
+    }
+    if (kind == Kind.ASSIGN) {
+      try {
+        // May fail if resolve above has failed.
+        Type expectedType = ((AssignableNode) children[1]).resolveForAssignment(resolutionContext, line);
+        resolvedSource = TraitCast.autoCast(children[0], expectedType, resolutionContext);
+      } catch (Exception e) {
+        resolutionContext.addError(this, e);
+      }
+      resolvedTarget = (AssignableNode) children[1];
+    } else {
+      Type type = children[0].returnType();
+      if (await) {
+        if (type instanceof AwaitableType) {
+          throw new RuntimeException("awaitable type expected.");
+        }
+        if (!(resolutionContext.userFunction.getType().getReturnType() instanceof AwaitableType)) {
+          throw new RuntimeException("Function " + resolutionContext.userFunction + " must be async for await.");
+        }
+        type = ((AwaitableType) type).getWrapped();
+      }
+      resolvedTarget = resolutionContext.declareLocalVariable(varName, type, kind != Kind.LET);
+      resolvedSource = children[0];
+    }
+    return true;
+  }
+
 
   public void onResolve(ValidationContext resolutionContext, int line) {
-    Type type = children[0].returnType();
-    if (await) {
-      if (type instanceof AwaitableType) {
-        throw new RuntimeException("awaitable type expected.");
-      }
-      if (!(resolutionContext.userFunction.getType().getReturnType() instanceof AwaitableType)) {
-        throw new RuntimeException("Function " + resolutionContext.userFunction + " must be async for await.");
-      }
-      type = ((AwaitableType) type).getWrapped();
-    }
-    resolvedSymbol = resolutionContext.declareLocalVariable(varName, type, kind != Kind.LET);
   }
 
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
-    asb.append(kind.name().toLowerCase(), SyntaxColor.KEYWORD);
-    appendLinked(asb, " " + varName + " = ", errors);
+    if (kind == Kind.ASSIGN) {
+      asb.append(kind.name().toLowerCase(), SyntaxColor.KEYWORD);
+      asb.append(' ');
+      asb.append(varName);
+    } else {
+      children[1].toString(asb, errors, preferAscii);
+    }
+    appendLinked(asb, " = ", errors);
     children[0].toString(asb, errors, preferAscii);
   }
 

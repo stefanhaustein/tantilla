@@ -1,9 +1,10 @@
 package org.kobjects.asde.lang.function;
 
+import org.kobjects.asde.lang.node.Assignable;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 
-public class LocalSymbol {
+public class LocalSymbol implements Assignable {
     public final int index;
     private final Type type;
     private final boolean mutable;
@@ -21,6 +22,7 @@ public class LocalSymbol {
         return evaluationContext.getLocal(index);
     }
 
+    @Override
     public void set(EvaluationContext evaluationContext, Object value) {
         evaluationContext.setLocal(index, value);
     }

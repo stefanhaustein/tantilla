@@ -166,8 +166,9 @@ public class StatementParser {
 
     Node expression = expressionParser.parse(tokenizer);
     if (tokenizer.tryConsume("=")) {
+      boolean await = tokenizer.tryConsume("await");
       try {
-        result.add(new AssignStatement(expression, expressionParser.parse(tokenizer)));
+        result.add(AssignmentStatement.createAssignment(expression, await, expressionParser.parse(tokenizer)));
       } catch (Exception e) {
         throw tokenizer.exception(null, e);
       }
@@ -276,7 +277,7 @@ public class StatementParser {
     tokenizer.consume("=");
     boolean await = tokenizer.tryConsume("await");
     Node value = expressionParser.parse(tokenizer);
-    return new AssignmentStatement(kind, varName, await, value);
+    return AssignmentStatement.createDeclaration(kind, varName, await, value);
   }
 
 

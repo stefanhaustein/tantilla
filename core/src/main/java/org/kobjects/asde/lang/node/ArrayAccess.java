@@ -45,11 +45,6 @@ public class ArrayAccess extends AssignableNode {
   }
 
   @Override
-  public boolean isConstant() {
-    return false;
-  }
-
-  @Override
   protected void onResolve(ValidationContext resolutionContext, int line) {
     kind = Kind.ERROR;
     Type type0 = children[0].returnType();

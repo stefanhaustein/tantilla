@@ -81,10 +81,6 @@ public class Identifier extends SymbolNode implements HasProperty {
     }
   }
 
-  @Override
-  public boolean isConstant() {
-    return !resolvedMutable;
-  }
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
