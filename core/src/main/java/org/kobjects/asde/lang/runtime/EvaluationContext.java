@@ -82,8 +82,17 @@ public class EvaluationContext {
         dataStack.data[stackTop++] = value;
     }
 
+    public Object pop() {
+        return dataStack.data[--stackTop];
+    }
+
+
     public void popN(int count) {
         stackTop -= count;
+    }
+
+    public double popDouble() {
+        return (Double) pop();
     }
 
     static class DataStack {

@@ -10,8 +10,6 @@ import java.util.Map;
 
 public class NotOperator extends Node {
 
-  boolean boolMode;
-
   public NotOperator(Node child) {
     super(child);
   }

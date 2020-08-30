@@ -1,14 +1,15 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.asde.lang.wasm.Wasm;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.markdown.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 
-public class MathOperator extends Node {
+public class MathOperator extends WasmNode {
 
   public enum Kind {
     ADD, SUB, MUL, DIV, MOD, POW;
@@ -16,7 +17,6 @@ public class MathOperator extends Node {
 
   public final Kind kind;
 
-  public boolean stringAdd;
 
   public MathOperator(Kind kind, Node child1, Node child2) {
     super(child1, child2);
@@ -42,64 +42,47 @@ public class MathOperator extends Node {
     }
   }
 
+
   @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
-    stringAdd = false;
-    Type t0 = children[0].returnType();
-    if (t0 != Types.BOOL && t0 != Types.FLOAT) {
+  public Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
+    Type t0 = children[0].resolveWasmImpl(wasm, resolutionContext, line);
+    Type t1 = children[1].resolveWasmImpl(wasm, resolutionContext, line);
+    if (t0 != Types.FLOAT) {
       if (kind == Kind.ADD) {
         if (t0 == Types.STR) {
-          stringAdd = true;
-          return;
+          wasm.opCode(Wasm.STR_ADD);
+          return Types.STR;
         }
         throw new RuntimeException("Left parameter type should be String or Number; got: " + t0);
       }
       throw new RuntimeException("Left parameter expected to be a Number but is " + t0);
     }
-    Type t1 = children[0].returnType();
-    if (t1 != Types.BOOL && t1 != Types.FLOAT) {
+    if (t1 != Types.FLOAT) {
       throw new RuntimeException("Right parameter expected to be a Number but is " + t1);
     }
-  }
-
-  @Override
-  public Object eval(EvaluationContext evaluationContext) {
-    if (stringAdd) {
-      return evalString(evaluationContext);
-    }
-    return evalDouble(evaluationContext);
-  }
-
-  @Override
-  public String evalString(EvaluationContext evaluationContext) {
-    return children[0].evalString(evaluationContext) + children[1].evalString(evaluationContext);
-  }
-
-  @Override
-  public double evalDouble(EvaluationContext evaluationContext) {
-    double l = children[0].evalDouble(evaluationContext);
-    double r = children[1].evalDouble(evaluationContext);
     switch (kind) {
       case POW:
-        return Math.pow(l, r);
+        wasm.opCode(Wasm.F64_POW);
+        break;
       case ADD:
-        return l + r;
+        wasm.opCode(Wasm.F64_ADD);
+        break;
       case SUB:
-        return l - r;
+        wasm.opCode(Wasm.F64_SUB);
+        break;
       case DIV:
-        return l / r;
+        wasm.opCode(Wasm.F64_DIV);
+        break;
       case MUL:
-        return l * r;
+        wasm.opCode(Wasm.F64_MUL);
+        break;
       case MOD:
-        return l % r;
+        wasm.opCode(Wasm.F64_MOD);
+        break;
       default:
         throw new IllegalStateException("Unsupported binary operator " + kind);
     }
-  }
-
-  @Override
-  public Type returnType() {
-    return stringAdd ? Types.STR : Types.FLOAT;
+    return Types.FLOAT;
   }
 
   @Override

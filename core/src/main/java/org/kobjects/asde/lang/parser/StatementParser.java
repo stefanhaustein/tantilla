@@ -13,7 +13,6 @@ import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Invoke;
 import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.NegOperator;
-import org.kobjects.asde.lang.statement.AssignStatement;
 import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.statement.ConditionStatement;
 import org.kobjects.asde.lang.statement.DebuggerStatement;

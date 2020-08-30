@@ -1,5 +1,7 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.asde.lang.wasm.Wasm;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.program.Program;
@@ -10,7 +12,7 @@ import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 
-public class Literal extends Node {
+public class Literal extends WasmNode {
   public final Object value;
   private final Format format;
 
@@ -29,24 +31,25 @@ public class Literal extends Node {
     this(value, Format.DEFAULT);
   }
 
-  @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
-    // Nothing to do here.
-  }
 
   @Override
-  public Object eval(EvaluationContext evaluationContext) {
-    return value;
-  }
-
-  @Override
-  public Type returnType() {
+  public Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
+    if (value instanceof Boolean) {
+      wasm.opCode(value.equals(Boolean.TRUE) ? Wasm.BOOL_TRUE : Wasm.BOOL_FALSE);
+    /*
+    } else if (value instanceof Number) {
+      wasm.opCode(Wasm.F64_CONST);
+      wasm.f64(((Number) value).doubleValue()); */
+    } else {
+      wasm.opCode(Wasm.OBJECT);
+      wasm.object(value);
+    }
     return Types.of(value);
   }
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
-    if (value != Program.INVISIBLE_STRING && value instanceof String) {
+    if (value instanceof String) {
       appendLinked(asb, "\"" + ((String) value).replace("\"", "\"\"") + '"', errors, SyntaxColor.STRING);
     } else if (format == Format.HEX && returnType() == Types.FLOAT && ((Number) value).longValue() == ((Number) value).doubleValue()) {
       appendLinked(asb, "0x" + Long.toHexString(((Number) value).longValue()), errors);

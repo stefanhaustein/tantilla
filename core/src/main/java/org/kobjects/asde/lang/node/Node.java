@@ -1,5 +1,7 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.asde.lang.wasm.Wasm;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.Consumer;
 import org.kobjects.asde.lang.classifier.Property;
@@ -42,6 +44,23 @@ public abstract class Node {
   }
 
   protected abstract void onResolve(ValidationContext resolutionContext, int line);
+
+  public final Type resolveWasm(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
+    try {
+      return resolveWasmImpl(wasm, resolutionContext, line);
+    } catch (Exception e) {
+      resolutionContext.addError(this, e);
+      return null;
+    }
+  }
+
+  protected Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
+    resolve(resolutionContext, line);
+    wasm.opCode(Wasm.EVAL);
+    wasm.object(this);
+    return returnType();
+  }
+
 
   public boolean resolve(ValidationContext resolutionContext, int line) {
     for (Node child: children) {

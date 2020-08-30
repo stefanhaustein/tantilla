@@ -106,7 +106,7 @@ public class AssignmentStatement extends Statement {
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
-    if (kind == Kind.ASSIGN) {
+    if (kind != Kind.ASSIGN) {
       asb.append(kind.name().toLowerCase(), SyntaxColor.KEYWORD);
       asb.append(' ');
       asb.append(varName);

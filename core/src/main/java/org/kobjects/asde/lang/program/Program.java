@@ -33,9 +33,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 
 public class Program {
-
-  public static final String INVISIBLE_STRING = new String();
-
   public static String toString(double d) {
     return d == (int) d ? String.valueOf((int) d) : String.valueOf(d);
   }
