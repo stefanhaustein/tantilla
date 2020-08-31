@@ -30,6 +30,33 @@ public class WasmExpression {
           context.push(Double.longBitsToDouble(l));
           break;
 
+        case Wasm.F64_EQ:
+          context.push(context.popDouble() == context.popDouble());
+          break;
+        case Wasm.F64_NE:
+          context.push(context.popDouble() != context.popDouble());
+          break;
+        case Wasm.F64_LT: {
+          double z2 = context.popDouble();
+          context.push(context.popDouble() < z2);
+          break;
+        }
+        case Wasm.F64_GT: {
+          double z2 = context.popDouble();
+          context.push(context.popDouble() > z2);
+          break;
+        }
+        case Wasm.F64_LE: {
+          double z2 = context.popDouble();
+          context.push(context.popDouble() <= z2);
+          break;
+        }
+        case Wasm.F64_GE: {
+          double z2 = context.popDouble();
+          context.push(context.popDouble() >= z2);
+          break;
+        }
+
         case Wasm.F64_ABS:
           context.push(Math.abs((Double) context.pop()));
           break;
@@ -89,6 +116,39 @@ public class WasmExpression {
           break;
         }
 
+        case Wasm.OBJ_CONST: {
+          int index = code[pc++] & 255;
+          context.push(references[index]);
+          break;
+        }
+        case Wasm.OBJ_EQ:
+          context.push(context.pop().equals(context.pop()));
+          break;
+        case Wasm.OBJ_NE:
+          context.push(!context.pop().equals(context.pop()));
+          break;
+
+        case Wasm.OBJ_LT: {
+          Comparable z2 = (Comparable) context.pop();
+          context.push(((Comparable) context.pop()).compareTo(z2) < 0);
+          break;
+        }
+        case Wasm.OBJ_GT: {
+          Comparable z2 = (Comparable) context.pop();
+          context.push(((Comparable) context.pop()).compareTo(z2) > 0);
+          break;
+        }
+        case Wasm.OBJ_LE: {
+          Comparable z2 = (Comparable) context.pop();
+          context.push(((Comparable) context.pop()).compareTo(z2) <= 0);
+          break;
+        }
+        case Wasm.OBJ_GE: {
+          Comparable z2 = (Comparable) context.pop();
+          context.push(((Comparable) context.pop()).compareTo(z2) >= 0);
+          break;
+        }
+
         case Wasm.BOOL_FALSE:
           context.push(Boolean.FALSE);
           break;
@@ -105,11 +165,6 @@ public class WasmExpression {
           int index = code[pc++] & 255;
           Node node = (Node) (references[index]);
           context.push(node.eval(context));
-          break;
-        }
-        case Wasm.OBJECT: {
-          int index = code[pc++] & 255;
-          context.push(references[index]);
           break;
         }
         default:

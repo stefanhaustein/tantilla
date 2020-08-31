@@ -41,7 +41,7 @@ public class Literal extends WasmNode {
       wasm.opCode(Wasm.F64_CONST);
       wasm.f64(((Number) value).doubleValue()); */
     } else {
-      wasm.opCode(Wasm.OBJECT);
+      wasm.opCode(Wasm.OBJ_CONST);
       wasm.object(value);
     }
     return Types.of(value);

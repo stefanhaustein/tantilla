@@ -27,7 +27,7 @@ public abstract class WasmNode extends Node {
     throw new UnsupportedOperationException();
   }
 
-  public abstract Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line);
+  protected abstract Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line);
 
   @Override
   public final Object eval(EvaluationContext evaluationContext) {

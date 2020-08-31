@@ -1,5 +1,7 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.asde.lang.wasm.Wasm;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
@@ -8,31 +10,19 @@ import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 
-public class NegOperator extends Node {
+public class NegOperator extends WasmNode {
 
   public NegOperator(Node child) {
     super(child);
   }
 
   @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
-    if (children[0].returnType() != Types.FLOAT && children[0].returnType() != Types.BOOL) {
+  protected Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
+    Type t0 = children[0].resolveWasm(wasm, resolutionContext, line);
+    if (t0 != Types.FLOAT) {
       throw new RuntimeException("Number argument expected for negation.");
     }
-  }
-
-  @Override
-  public Object eval(EvaluationContext evaluationContext) {
-    return evalDouble(evaluationContext);
-  }
-
-  @Override
-  public double evalDouble(EvaluationContext evaluationContext) {
-    return -children[0].evalDouble(evaluationContext);
-  }
-
-  @Override
-  public Type returnType() {
+    wasm.opCode(Wasm.F64_NEG);
     return Types.FLOAT;
   }
 

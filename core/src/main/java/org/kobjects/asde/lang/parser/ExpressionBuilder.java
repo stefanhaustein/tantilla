@@ -147,21 +147,21 @@ class ExpressionBuilder extends Processor<Node> {
       case ".":
         return new Path(left, right);
       case "<":
-        return new RelationalOperator(-1, -1, left, right);
+        return new RelationalOperator(RelationalOperator.Kind.LT, left, right);
       case "<=":
       case "≤":
-        return new RelationalOperator(-1, 0, left, right);
+        return new RelationalOperator(RelationalOperator.Kind.LE, left, right);
       case "==":
       case "=":
-        return new RelationalOperator(0, 0, left, right);
+        return new RelationalOperator(RelationalOperator.Kind.EQ, left, right);
       case "≠":
       case "!=":
-        return new RelationalOperator(-1, 1, left, right);
+        return new RelationalOperator(RelationalOperator.Kind.NE, left, right);
       case ">":
-        return new RelationalOperator(1, 1, left, right);
+        return new RelationalOperator(RelationalOperator.Kind.GT, left, right);
       case ">=":
       case "≥":
-        return new RelationalOperator(1, 0, left, right);
+        return new RelationalOperator(RelationalOperator.Kind.GE, left, right);
       case "+":
         return new MathOperator(MathOperator.Kind.ADD, left, right);
       case "-":

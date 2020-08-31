@@ -1,5 +1,7 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.asde.lang.wasm.Wasm;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
@@ -8,15 +10,17 @@ import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 
-public class RelationalOperator extends Node {
-  public final int val1;
-  public final int val2;
+public class RelationalOperator extends WasmNode {
 
+  public enum Kind {
+    EQ, NE, LT, GT, LE, GE
+  }
 
-  public RelationalOperator(int val1, int val2, Node child1, Node child2) {
+  private final Kind kind;
+
+  public RelationalOperator(Kind kind, Node child1, Node child2) {
     super(child1, child2);
-    this.val1 = val1;
-    this.val2 = val2;
+    this.kind = kind;
   }
 
   public String getName() {
@@ -24,58 +28,73 @@ public class RelationalOperator extends Node {
   }
 
   private String getName(boolean preferAscii) {
-    if (preferAscii) {
-      switch (val1) {
-        case -1:
-          return val2 == 0 ? "<=" : val2 == 1 ? "<>" : "<";
-        case 0:
-          return val2 == 0 ? "==" : val2 == -1 ? "<=" : ">=";
-        case 1:
-          return val2 == 0 ? ">=" : val2 == -1 ? "<>" : ">";
-      }
-    } else {
-      switch (val1) {
-        case -1:
-          return val2 == 0 ? "≤" : val2 == 1 ? "≠" : "<";
-        case 0:
-          return val2 == 0 ? "==" : val2 == -1 ? "≤" : "≥";
-        case 1:
-          return val2 == 0 ? "≥" : val2 == -1 ? "≠" : ">";
-      }
+      switch (kind) {
+        case EQ:
+          return "==";
+        case NE:
+          return preferAscii ? "!=" : "≠";
+        case LT:
+          return "<";
+        case GT:
+          return ">";
+        case LE:
+          return preferAscii ? "<=" : "≤";
+        case GE:
+          return preferAscii ? ">=" : "≥";
     }
     throw new IllegalStateException();
   }
 
   @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
-    if (!children[0].returnType().equals(children[1].returnType())) {
+  protected Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
+    Type t0 = children[0].resolveWasm(wasm, resolutionContext, line);
+    Type t1 = children[1].resolveWasm(wasm, resolutionContext, line);
+    if (!t0.equals(t1)) {
       throw new RuntimeException("Argument types must match for relational expressions; got "
-              + children[0].returnType() + " and " + children[1].returnType());
+              + t0 + " and " + t1);
     }
-  }
-
-  @Override
-  public Object eval(EvaluationContext evaluationContext) {
-    Object lVal = children[0].eval(evaluationContext);
-    Object rVal = children[1].eval(evaluationContext);
-    if (lVal.getClass() != rVal.getClass()) {
-      throw new RuntimeException("Types (" + lVal.getClass() + " and " + rVal.getClass() + ") don't match for relational operator '" + getName() + "'");
+    if (t0 == Types.FLOAT)
+      switch (kind) {
+        case EQ:
+          wasm.opCode(Wasm.F64_EQ);
+          break;
+        case NE:
+          wasm.opCode(Wasm.F64_NE);
+          break;
+        case LT:
+          wasm.opCode(Wasm.F64_LT);
+          break;
+        case GT:
+          wasm.opCode(Wasm.F64_GT);
+          break;
+        case LE:
+          wasm.opCode(Wasm.F64_LE);
+          break;
+        case GE:
+          wasm.opCode(Wasm.F64_GE);
+          break;
+    } else {
+      switch (kind) {
+        case EQ:
+          wasm.opCode(Wasm.OBJ_EQ);
+          break;
+        case NE:
+          wasm.opCode(Wasm.OBJ_NE);
+          break;
+        case LT:
+          wasm.opCode(Wasm.OBJ_LT);
+          break;
+        case GT:
+          wasm.opCode(Wasm.OBJ_GT);
+          break;
+        case LE:
+          wasm.opCode(Wasm.OBJ_LE);
+          break;
+        case GE:
+          wasm.opCode(Wasm.OBJ_GE);
+          break;
+      }
     }
-    if (lVal instanceof Comparable) {
-      int cmp = Integer.signum(((Comparable) lVal).compareTo(rVal));
-      return cmp == val1 || cmp == val2;
-    }
-    if (val1 == 0 && val2 == 0) {
-      return lVal.equals(rVal);
-    }
-    if (val1 == -1 && val2 == 1) {
-      return !lVal.equals(rVal);
-    }
-    throw new RuntimeException("Can't compare type " + lVal.getClass());
-  }
-
-  @Override
-  public Type returnType() {
     return Types.BOOL;
   }
 
