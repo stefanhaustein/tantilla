@@ -17,6 +17,10 @@ public class WasmExpression {
     int pc = 0;
     while (pc < code.length) {
       switch (code[pc++]) {
+        case Wasm.UNREACHABLE:
+          throw new IllegalStateException("Reached unreachable.");
+        case Wasm.NOP:
+          break;
         case Wasm.F64_CONST:
           long l = (code[pc] & 255L)
             | ((code[pc + 1] & 255L) << 8)
@@ -56,6 +60,100 @@ public class WasmExpression {
           context.push(context.popDouble() >= z2);
           break;
         }
+
+        case Wasm.I32_ADD:
+          context.push(context.popInt() + context.popInt());
+          break;
+        case Wasm.I32_SUB: {
+          int z2 = context.popInt();
+          context.push(context.popInt() - z2);
+          break;
+        }
+        case Wasm.I32_MUL:
+          context.push(context.popInt() * context.popInt());
+          break;
+        case Wasm.I32_DIV_S: {
+          int z2 = context.popInt();
+          context.push(context.popInt() / z2);
+          break;
+        }
+        case Wasm.I32_REM_S: {
+          int z2 = context.popInt();
+          context.push(context.popInt() % z2);
+          break;
+        }
+        case Wasm.I32_AND:
+          context.push(context.popInt() & context.popInt());
+          break;
+        case Wasm.I32_OR:
+          context.push(context.popInt() | context.popInt());
+          break;
+        case Wasm.I32_XOR:
+          context.push(context.popInt() ^ context.popInt());
+          break;
+        case Wasm.I32_SHL: {
+          int z2 = context.popInt();
+          context.push(context.popInt() << z2);
+          break;
+        }
+        case Wasm.I32_SHR_S: {
+          int z2 = context.popInt();
+          context.push(context.popInt() >> z2);
+          break;
+        }
+        case Wasm.I32_SHR_U: {
+          int z2 = context.popInt();
+          context.push(context.popInt() >>> z2);
+          break;
+        }
+
+        case Wasm.I64_ADD:
+          context.push(context.popLong() + context.popLong());
+          break;
+        case Wasm.I64_SUB: {
+          long z2 = context.popLong();
+          context.push(context.popLong() - z2);
+          break;
+        }
+        case Wasm.I64_MUL:
+          context.push(context.popLong() * context.popLong());
+          break;
+        case Wasm.I64_DIV_S: {
+          long z2 = context.popLong();
+          context.push(context.popLong() / z2);
+          break;
+        }
+        case Wasm.I64_REM_S: {
+          long z2 = context.popLong();
+          context.push(context.popLong() % z2);
+          break;
+        }
+        case Wasm.I64_AND:
+          context.push(context.popLong() & context.popLong());
+          break;
+        case Wasm.I64_OR:
+          context.push(context.popLong() | context.popLong());
+          break;
+        case Wasm.I64_XOR:
+          context.push(context.popLong() ^ context.popLong());
+          break;
+        case Wasm.I64_SHL: {
+          long z2 = context.popLong();
+          context.push(context.popLong() << z2);
+          break;
+        }
+        case Wasm.I64_SHR_S: {
+          long z2 = context.popLong();
+          context.push(context.popLong() >> z2);
+          break;
+        }
+        case Wasm.I64_SHR_U: {
+          long z2 = context.popLong();
+          context.push(context.popLong() >>> z2);
+          break;
+        }
+
+
 
         case Wasm.F64_ABS:
           context.push(Math.abs((Double) context.pop()));
@@ -104,6 +202,60 @@ public class WasmExpression {
           break;
         }
 
+        case Wasm.I32_WRAP_I64:
+          context.push((int) context.popLong());
+          break;
+        case Wasm.I32_TRUNC_F32_S:
+          context.push((int) context.popFloat());
+          break;
+        case Wasm.I32_TRUNC_F64_S:
+          context.push((int) context.popDouble());
+          break;
+        case Wasm.I64_EXTEND_I32_S:
+          context.push((long) context.popInt());
+          break;
+        case Wasm.I64_EXTEND_I32_U:
+          context.push(context.popInt() & 0xffffffffL);
+          break;
+        case Wasm.I64_TRUNC_F32_S:
+          context.push((long) context.popFloat());
+          break;
+        case Wasm.I64_TRUNC_F64_S:
+          context.push((long) context.popDouble());
+          break;
+        case Wasm.F32_CONVERT_I32_S:
+          context.push((float) context.popInt());
+          break;
+        case Wasm.F32_CONVERT_I64_S:
+          context.push((float) context.popLong());
+          break;
+        case Wasm.F32_DEMOTE_F64:
+          context.push((float) context.popDouble());
+          break;
+        case Wasm.F64_CONVERT_I32_S:
+          context.push((double) context.popInt());
+          break;
+        case Wasm.F64_CONVERT_I64_S:
+          context.push((double) context.popLong());
+          break;
+        case Wasm.F64_PROMOTE_F32:
+          context.push((double) context.popFloat());
+          break;
+
+        case Wasm.I32_REINTERPRET_F32:
+          context.push(Float.floatToRawIntBits(context.popFloat()));
+          break;
+        case Wasm.I64_REINTERPRET_F64:
+          context.push(Double.doubleToRawLongBits(context.popFloat()));
+          break;
+        case Wasm.F32_REINTERPRET_I32:
+          context.push(Float.intBitsToFloat(context.popInt()));
+          break;
+        case Wasm.F64_REINTERPRET_I64:
+          context.push(Double.longBitsToDouble(context.popLong()));
+          break;
+
+        // Custom opcodes 
 
         case Wasm.F64_POW: {
           double z2 = context.popDouble();

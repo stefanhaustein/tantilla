@@ -191,11 +191,11 @@ public class Wasm {
  public static final byte F64_CONVERT_I32_U = (byte) 0xB8;
  public static final byte F64_CONVERT_I64_S = (byte) 0xB9;
  public static final byte F64_CONVERT_I64_U = (byte) 0xBA;
- public static final byte F64_PROMOTE_F32_U = (byte) 0xBB;
- public static final byte I32_REINTERPRET_F32 = (byte) 0xBB;
- public static final byte I64_REINTERPRET_F64 = (byte) 0xBC;
- public static final byte F32_REINTERPRET_I32 = (byte) 0xBD;
- public static final byte F32_REINTERPRET_I64 = (byte) 0xBE;
+ public static final byte F64_PROMOTE_F32 = (byte) 0xBB;
+ public static final byte I32_REINTERPRET_F32 = (byte) 0xBC;
+ public static final byte I64_REINTERPRET_F64 = (byte) 0xBD;
+ public static final byte F32_REINTERPRET_I32 = (byte) 0xBE;
+ public static final byte F64_REINTERPRET_I64 = (byte) 0xBF;
 
  // Nonstandard Tantilla extensions
 

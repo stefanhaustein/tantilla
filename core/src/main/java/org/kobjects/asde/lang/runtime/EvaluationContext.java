@@ -95,6 +95,18 @@ public class EvaluationContext {
         return (Double) pop();
     }
 
+    public float popFloat() {
+        return (Float) pop();
+    }
+
+    public int popInt() {
+        return (Integer) pop();
+    }
+
+    public long popLong() {
+        return (Long) pop();
+    }
+
     static class DataStack {
         Object[] data;
         int limit;
