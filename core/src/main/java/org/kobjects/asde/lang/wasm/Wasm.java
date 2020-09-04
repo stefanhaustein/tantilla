@@ -47,7 +47,7 @@ public class Wasm {
  public static final byte I64_LOAD32_S = 0x34;
  public static final byte I64_LOAD32_U = 0x35;
  public static final byte I32_STORE = 0x36;
- public static final byte I63_STORE = 0x37;
+ public static final byte I64_STORE = 0x37;
  public static final byte F32_STORE = 0x38;
  public static final byte F64_STORE = 0x39;
  public static final byte I32_STORE8 = 0x3A;

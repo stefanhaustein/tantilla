@@ -107,6 +107,10 @@ public class EvaluationContext {
         return (Long) pop();
     }
 
+    public boolean popBoolean() {
+        return (Boolean) pop();
+    }
+
     static class DataStack {
         Object[] data;
         int limit;
