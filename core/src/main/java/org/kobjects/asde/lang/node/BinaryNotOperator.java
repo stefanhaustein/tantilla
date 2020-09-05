@@ -1,5 +1,7 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.asde.lang.wasm.Wasm;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -8,34 +10,21 @@ import org.kobjects.asde.lang.type.Types;
 
 import java.util.Map;
 
-public class BinaryNotOperator extends Node {
+public class BinaryNotOperator extends WasmNode {
 
   public BinaryNotOperator(Node child) {
     super(child);
   }
 
   @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
-    if (Types.FLOAT != children[0].returnType()) {
-      throw new RuntimeException("Number parameter expected.");
-    }
-  }
-
-  public Object eval(EvaluationContext evaluationContext) {
-    return evalDouble(evaluationContext);
-  }
-
-  public double evalDouble(EvaluationContext evaluationContext) {
-    return ~children[0].evalInt(evaluationContext);
-  }
-
-  public int evalInt(EvaluationContext evaluationContext) {
-    return ~children[0].evalInt(evaluationContext);
-  }
-
-  @Override
-  public Type returnType() {
-    return children[0].returnType();
+  protected Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
+    children[0].resolveWasm(wasm, resolutionContext, line, Types.FLOAT);
+    wasm.opCode(Wasm.I64_TRUNC_F64_S);
+    wasm.opCode(Wasm.I64_CONST);
+    wasm.opCode((byte) 0x7f);
+    wasm.opCode(Wasm.I64_XOR);
+    wasm.opCode(Wasm.F64_CONVERT_I64_S);
+    return null;
   }
 
   @Override

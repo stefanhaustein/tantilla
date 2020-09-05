@@ -1,5 +1,7 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.asde.lang.wasm.Wasm;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
@@ -8,30 +10,17 @@ import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 
-public class NotOperator extends Node {
+public class NotOperator extends WasmNode {
 
   public NotOperator(Node child) {
     super(child);
   }
 
   @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
-    if (Types.BOOL != children[0].returnType()) {
-      throw new RuntimeException("Boolean parameter expected.");
-    }
-  }
-
-  public Object eval(EvaluationContext evaluationContext) {
-    return evalBoolean(evaluationContext);
-  }
-
-  public boolean evalBoolean(EvaluationContext evaluationContext) {
-    return !children[0].evalBoolean(evaluationContext);
-  }
-
-  @Override
-  public Type returnType() {
-    return children[0].returnType();
+  protected Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
+    children[0].resolveWasm(wasm, resolutionContext, line, Types.BOOL);
+    wasm.opCode(Wasm.I32_EQZ);
+    return Types.BOOL;
   }
 
   @Override

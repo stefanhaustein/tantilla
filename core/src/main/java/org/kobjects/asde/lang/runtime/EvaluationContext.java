@@ -85,13 +85,11 @@ public class EvaluationContext {
         if (value == null) {
             throw new NullPointerException();
         }
-        dataStack.setObject(dataStack.push(), value);
+        dataStack.pushObject(value);
     }
 
     public Object pop() {
-        Object result = dataStack.getObject(dataStack.size() - 1);
-        dataStack.size--;
-        return result;
+        return dataStack.popObject();
     }
 
 

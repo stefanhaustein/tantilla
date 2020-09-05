@@ -307,52 +307,52 @@ public class WasmExpression {
         case Wasm.I32_POPCNT:
           throw new UnsupportedOperationException("i32.popcnt");
         case Wasm.I32_ADD:
-          stack.pushI64(stack.popI32() + stack.popI32());
+          stack.pushI32(stack.popI32() + stack.popI32());
           break;
         case Wasm.I32_SUB: {
           int z2 = stack.popI32();
-          stack.pushI64(stack.popI32() - z2);
+          stack.pushI32(stack.popI32() - z2);
           break;
         }
         case Wasm.I32_MUL:
-          stack.pushI64(stack.popI32() * stack.popI32());
+          stack.pushI32(stack.popI32() * stack.popI32());
           break;
         case Wasm.I32_DIV_S: {
           int z2 = stack.popI32();
-          stack.pushI64(stack.popI32() / z2);
+          stack.pushI32(stack.popI32() / z2);
           break;
         }
         case Wasm.I32_DIV_U:
           throw new UnsupportedOperationException("i32.div_u");
         case Wasm.I32_REM_S: {
           int z2 = stack.popI32();
-          stack.pushI64(stack.popI32() % z2);
+          stack.pushI32(stack.popI32() % z2);
           break;
         }
         case Wasm.I32_REM_U:
           throw new UnsupportedOperationException("i32.div_u");
         case Wasm.I32_AND:
-          stack.pushI64(stack.popI32() & stack.popI32());
+          stack.pushI32(stack.popI32() & stack.popI32());
           break;
         case Wasm.I32_OR:
-          stack.pushI64(stack.popI32() | stack.popI32());
+          stack.pushI32(stack.popI32() | stack.popI32());
           break;
         case Wasm.I32_XOR:
-          stack.pushI64(stack.popI32() ^ stack.popI32());
+          stack.pushI32(stack.popI32() ^ stack.popI32());
           break;
         case Wasm.I32_SHL: {
           int z2 = stack.popI32();
-          stack.pushI64(stack.popI32() << z2);
+          stack.pushI32(stack.popI32() << z2);
           break;
         }
         case Wasm.I32_SHR_S: {
           int z2 = stack.popI32();
-          stack.pushI64(stack.popI32() >> z2);
+          stack.pushI32(stack.popI32() >> z2);
           break;
         }
         case Wasm.I32_SHR_U: {
           int z2 = stack.popI32();
-          stack.pushI64(stack.popI32() >>> z2);
+          stack.pushI32(stack.popI32() >>> z2);
           break;
         }
         case Wasm.I32_ROTL:
@@ -518,15 +518,15 @@ public class WasmExpression {
         }
 
         case Wasm.I32_WRAP_I64:
-          stack.pushI64((int) stack.popI64());
+          stack.pushI32((int) stack.popI64());
           break;
         case Wasm.I32_TRUNC_F32_S:
-          stack.pushI64((int) stack.popF32());
+          stack.pushI32((int) stack.popF32());
           break;
         case Wasm.I32_TRUNC_F32_U:
           throw new UnsupportedOperationException("i32.trunc_f32_u");
         case Wasm.I32_TRUNC_F64_S:
-          stack.pushI64((int) stack.popF64());
+          stack.pushI32((int) stack.popF64());
           break;
         case Wasm.I32_TRUNC_F64_U:
           throw new UnsupportedOperationException("i32.trunc_f64_u");
@@ -574,7 +574,7 @@ public class WasmExpression {
           break;
 
         case Wasm.I32_REINTERPRET_F32:
-          stack.pushI64(Float.floatToRawIntBits(stack.popF32()));
+          stack.pushI32(Float.floatToRawIntBits(stack.popF32()));
           break;
         case Wasm.I64_REINTERPRET_F64:
           stack.pushI64(Double.doubleToRawLongBits(stack.popF32()));
@@ -634,10 +634,10 @@ public class WasmExpression {
         }
 
         case Wasm.BOOL_FALSE:
-          context.push(Boolean.FALSE);
+          stack.pushBoolean(Boolean.FALSE);
           break;
         case Wasm.BOOL_TRUE:
-          context.push(Boolean.TRUE);
+          stack.pushBoolean(Boolean.TRUE);
           break;
         case Wasm.STR_ADD: {
           Object other = stack.popObject();

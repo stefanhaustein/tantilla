@@ -212,7 +212,6 @@ public class Wasm {
 
  public static final byte BOOL_TRUE = (byte) 0xe0;
  public static final byte BOOL_FALSE = (byte) 0xe1;
- public static final byte BOOL_NOT = (byte) 0xe2;
 
  public static final byte STR_ADD = (byte) 0xf2;
  public static final byte EVAL = (byte) 0xf3;
