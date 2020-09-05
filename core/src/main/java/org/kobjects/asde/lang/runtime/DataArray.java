@@ -1,6 +1,11 @@
 package org.kobjects.asde.lang.runtime;
 
-class DataArray {
+public class DataArray {
+
+    public void popN(int i) {
+        size -= i;
+    }
+
     enum DirectNumberType {
         I32, I64, F32, F64
     }
@@ -29,6 +34,73 @@ class DataArray {
             numbers = newNumbers;
         }
         size = Math.max(size, i);
+    }
+
+    public void copy(int sourceIndex, int targetIndex) {
+        objects[targetIndex] = objects[sourceIndex];
+        numbers[targetIndex] = numbers[sourceIndex];
+    }
+
+    public Object popObject() {
+        Object result = getObject(size - 1);
+        objects[--size] = null;
+        return result;
+    }
+
+    public int popI32() {
+        int result = getI32(size - 1);
+        objects[--size] = null;
+        return result;
+    }
+
+    public long popI64() {
+        long result = getI64(size - 1);
+        objects[--size] = null;
+        return result;
+    }
+
+    public float popF32() {
+        float result = getF32(size - 1);
+        objects[--size] = null;
+        return result;
+    }
+
+    public double popF64() {
+        double result = getF64(size - 1);
+        objects[--size] = null;
+        return result;
+    }
+
+    public int push() {
+        if (objects.length > size) {
+            return size++;
+        }
+        ensureSize(size + 1);
+        return size - 1;
+    }
+
+    public void pushF32(float value) {
+        setF32(push(), value);
+    }
+
+    public void pushF64(double value) {
+        setF64(push(), value);
+    }
+
+    public void pushI32(int value) {
+        setI32(push(), value);
+    }
+
+    public void pushI64(long value) {
+        setI64(push(), value);
+    }
+
+    public void pushBoolean(boolean b) {
+        setBoolean(push(), b);
+    }
+
+    public void pushObject(Object o) {
+        setObject(push(), o);
     }
 
     public void setI32(int index, int value) {
@@ -138,6 +210,10 @@ class DataArray {
             objects[index] = o;
         }
         return o;
+    }
+
+    public int size() {
+        return size;
     }
 
 }

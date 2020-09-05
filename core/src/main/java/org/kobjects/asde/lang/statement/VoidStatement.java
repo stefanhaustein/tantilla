@@ -34,9 +34,7 @@ public class VoidStatement extends Statement {
   public Object eval(EvaluationContext evaluationContext) {
     Object result = children[0].eval(evaluationContext);
     if (result instanceof Callable) {
-      Callable function = (Callable) result;
-      evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
-      function.call(evaluationContext, 0);
+      evaluationContext.call((Callable) result, 0);
     }
     return result;
   }

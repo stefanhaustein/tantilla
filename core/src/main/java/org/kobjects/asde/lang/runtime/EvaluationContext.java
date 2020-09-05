@@ -8,9 +8,8 @@ public class EvaluationContext {
     public final ProgramControl control;
     public final UserFunction function;
 
-    private final DataArray dataStack;
-    private final int stackBase;
-    private int stackTop;
+    public final DataArray dataStack;
+    public int stackBase;
 
     public Object returnValue;
 
@@ -24,8 +23,7 @@ public class EvaluationContext {
         this.control = control;
         this.function = function;
         stackBase = 0;
-        stackTop = function.localVariableCount;
-        dataStack = new DataArray(stackTop);
+        dataStack = new DataArray(function.localVariableCount);
 
         control.lastCreatedContext = this;
     }
@@ -37,11 +35,11 @@ public class EvaluationContext {
         control = parentContext.control;
         function = parentContext.function;
         stackBase = 0;
-        stackTop = parentContext.stackTop - parentContext.stackBase;
-        dataStack = new DataArray(stackTop);
+
+        dataStack = new DataArray(parentContext.dataStack.size() - parentContext.stackBase);
         currentLine = parentContext.currentLine;
-        System.arraycopy(parentContext.dataStack.objects, parentContext.stackBase, dataStack.objects, stackBase, stackTop);
-        System.arraycopy(parentContext.dataStack.numbers, parentContext.stackBase, dataStack.numbers, stackBase, stackTop);
+        System.arraycopy(parentContext.dataStack.objects, parentContext.stackBase, dataStack.objects, stackBase, dataStack.size);
+        System.arraycopy(parentContext.dataStack.numbers, parentContext.stackBase, dataStack.numbers, stackBase, dataStack.size);
 
         control.lastCreatedContext = this;
     }
@@ -53,8 +51,8 @@ public class EvaluationContext {
         this.function = userFunction;
         this.control = parentContext.control;
         this.dataStack = parentContext.dataStack;
-        this.stackBase = parentContext.stackTop;
-        this.stackTop = stackBase + userFunction.localVariableCount;
+        this.stackBase = parentContext.stackBase;
+        dataStack.ensureSize(stackBase + userFunction.localVariableCount);
 
         control.lastCreatedContext = this;
     }
@@ -68,37 +66,34 @@ public class EvaluationContext {
     }
 
     public Object getParameter(int index) {
-        return dataStack.objects[stackTop + index];
+        return dataStack.objects[stackBase + index];
     }
 
-    /*
+
     public Object call(Callable callable, int paramCount) {
-        popN(paramCount);
-        ensureExtraStackSpace(callable.getLocalVariableCount());
-        return callable.call(this, paramCount);
-    }*/
-
-
-    public void ensureExtraStackSpace(int localVariableCount) {
-        dataStack.ensureSize(stackTop + localVariableCount);
+        int savedStackBase = stackBase;
+        stackBase = dataStack.size() - paramCount;
+        try {
+            dataStack.ensureSize(stackBase + callable.getLocalVariableCount());
+            return callable.call(this, paramCount);
+        } finally {
+            stackBase = savedStackBase;
+        }
     }
 
     public void push(Object value) {
         if (value == null) {
             throw new NullPointerException();
         }
-        dataStack.ensureSize(stackTop + 1);
-        dataStack.objects[stackTop++] = value;
+        dataStack.setObject(dataStack.push(), value);
     }
 
     public Object pop() {
-        return dataStack.objects[--stackTop];
+        Object result = dataStack.getObject(dataStack.size() - 1);
+        dataStack.size--;
+        return result;
     }
 
-
-    public void popN(int count) {
-        stackTop -= count;
-    }
 
     public double popDouble() {
         return (Double) pop();

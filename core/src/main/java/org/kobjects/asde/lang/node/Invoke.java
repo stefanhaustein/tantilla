@@ -71,15 +71,13 @@ public class Invoke extends Node {
     switch (kind) {
       case FUNCTION:
         Callable function = (Callable) children[0].eval(evaluationContext);
-        evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
         // Push is important here, as parameter evaluation might also run apply().
         int count = resolvedArguments.length;
         for (int i = 0; i < count; i++) {
           evaluationContext.push(resolvedArguments[i].eval(evaluationContext));
         }
-        evaluationContext.popN(count);
         try {
-          return function.call(evaluationContext, count);
+          return evaluationContext.call(function, count);
         } catch (Exception e) {
           throw new RuntimeException(e.getMessage() + " in " + children[0], e);
         }

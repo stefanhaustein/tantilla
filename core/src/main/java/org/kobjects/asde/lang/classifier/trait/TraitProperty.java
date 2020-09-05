@@ -26,13 +26,10 @@ public class TraitProperty implements Property {
         AdapterInstance adapterInstance = (AdapterInstance) evaluationContext.getParameter(0);
 
         evaluationContext.push(adapterInstance.instance);
-        evaluationContext.popN(1);
 
         Callable callable = (Callable) adapterInstance.adapterType.getProperty(name).getStaticValue();
 
-        evaluationContext.ensureExtraStackSpace(callable.getLocalVariableCount());
-
-        return callable.call(evaluationContext, paramCount);
+        return evaluationContext.call(callable, paramCount);
       }
 
       @Override

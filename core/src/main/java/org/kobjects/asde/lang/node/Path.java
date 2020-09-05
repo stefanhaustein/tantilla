@@ -150,10 +150,8 @@ public class Path extends SymbolNode {
         if (instance == null) {
           throw new EvaluationException(this, "path base is null");
         }
-        Callable callable = (Callable) resolvedProperty.getStaticValue();
-        evaluationContext.ensureExtraStackSpace(callable.getLocalVariableCount());
         evaluationContext.push(instance);
-        return callable.call(evaluationContext, 1);
+        return evaluationContext.call((Callable) resolvedProperty.getStaticValue(), 1);
 
     }
     throw new IllegalStateException(resolvedKind + ": " + this);
@@ -198,10 +196,9 @@ public class Path extends SymbolNode {
         break;
       case SET_METHOD_CALL:
         Callable callable = (Callable) resolvedProperty.getStaticValue();
-        evaluationContext.ensureExtraStackSpace(callable.getLocalVariableCount());
         evaluationContext.push(children[0].eval(evaluationContext));
         evaluationContext.push(value);
-        callable.call(evaluationContext, 2);
+        evaluationContext.call(callable, 2);
         break;
       default:
         throw new IllegalStateException(resolvedKind + ": " + this);

@@ -88,21 +88,18 @@ public class InvokeNamed extends Node implements HasProperty {
     }
 
     Callable function = (Callable) resolvedProperty.getStaticValue();
-      evaluationContext.ensureExtraStackSpace(function.getLocalVariableCount());
-      for (int i = 0; i < resolvedArguments.length; i++) {
-        evaluationContext.push(resolvedArguments[i].eval(evaluationContext));
+    for (int i = 0; i < resolvedArguments.length; i++) {
+      evaluationContext.push(resolvedArguments[i].eval(evaluationContext));
+    }
+    try {
+      Object result = evaluationContext.call(function, resolvedArguments.length);
+      if (result == null && returnType() != Types.VOID) {
+        throw new NullPointerException("non-void method evaluation of " + function + " returns null");
       }
-
-     evaluationContext.popN(resolvedArguments.length);
-     try {
-       Object result = function.call(evaluationContext, resolvedArguments.length);
-       if (result == null && returnType() != Types.VOID) {
-         throw new NullPointerException("non-void method evaluation of " + function + " returns null");
-       }
-       return result;
-     } catch (Exception e) {
-       throw new RuntimeException(e.getMessage() + " in " + this, e);
-     }
+      return result;
+    } catch (Exception e) {
+      throw new RuntimeException(e.getMessage() + " in " + this, e);
+    }
   }
 
   // Shouldn't throw, as it's used outside validation!

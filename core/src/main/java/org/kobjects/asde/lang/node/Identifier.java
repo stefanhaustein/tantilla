@@ -91,8 +91,7 @@ public class Identifier extends SymbolNode implements HasProperty {
         return resolvedRootProperty.getStaticValue();
       case ROOT_METHOD_INVOCATION:
         Callable callable = (Callable) resolvedRootProperty.getStaticValue();
-        evaluationContext.ensureExtraStackSpace(callable.getLocalVariableCount());
-        return callable.call(evaluationContext, 0);
+        return evaluationContext.call(callable, 0);
     }
     throw new RuntimeException("Unresolved variable "+ name);
   }
