@@ -1,5 +1,7 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.asde.lang.wasm.Wasm;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
@@ -8,7 +10,7 @@ import org.kobjects.asde.lang.type.Types;
 
 import java.util.Map;
 
-public class BitOperator extends Node {
+public class BitOperator extends WasmNode {
   public enum Kind {
     AND, OR, XOR, SHL, SHR
   }
@@ -21,7 +23,7 @@ public class BitOperator extends Node {
     this.kind = kind;
   }
 
-  String getName(boolean preferAscii) {
+  String getName() {
     switch (kind) {
       case AND:
         return "&";
@@ -39,51 +41,39 @@ public class BitOperator extends Node {
   }
 
   @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
-    Type t0 = children[0].returnType();
-    if (t0 != Types.FLOAT) {
-      throw new RuntimeException("Left parameter expected to be a Number but is " + t0);
-    }
-    Type t1 = children[0].returnType();
-    if (t1 != Types.FLOAT) {
-      throw new RuntimeException("Right parameter expected to be a Number but is " + t1);
-    }
-  }
-
-  @Override
-  public Object eval(EvaluationContext evaluationContext) {
-    return (double) evalInt(evaluationContext);
-  }
-
-  @Override
-  public int evalInt(EvaluationContext evaluationContext) {
-    int l = children[0].evalInt(evaluationContext);
-    int r = children[1].evalInt(evaluationContext);
+  protected Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
+    children[0].resolveWasm(wasm, resolutionContext, line, Types.FLOAT);
+    wasm.opCode(Wasm.I64_TRUNC_F64_S);
+    children[1].resolveWasm(wasm, resolutionContext, line, Types.FLOAT);
+    wasm.opCode(Wasm.I64_TRUNC_F64_S);
     switch (kind) {
       case AND:
-        return l & r;
+        wasm.opCode(Wasm.I64_AND);
+        break;
       case OR:
-        return l | r;
+        wasm.opCode(Wasm.I64_OR);
+        break;
       case XOR:
-        return l ^ r;
+        wasm.opCode(Wasm.I64_XOR);
+        break;
       case SHL:
-        return l << r;
+        wasm.opCode(Wasm.I64_SHL);
+        break;
       case SHR:
-        return l >> r;
+        wasm.opCode(Wasm.I64_SHR_S);
+        break;
       default:
-        throw new IllegalStateException("Unsupported binary operator " + kind);
+        throw new IllegalStateException();
     }
-  }
-
-  @Override
-  public Type returnType() {
+    wasm.opCode(Wasm.F64_CONVERT_I64_S);
     return Types.FLOAT;
   }
+
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     children[0].toString(asb, errors, preferAscii);
-    appendLinked(asb, ' ' + getName(preferAscii) + ' ', errors);
+    appendLinked(asb, ' ' + getName() + ' ', errors);
     children[1].toString(asb, errors, preferAscii);
   }
 }

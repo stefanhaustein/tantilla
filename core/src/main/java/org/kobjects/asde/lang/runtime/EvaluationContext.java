@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.runtime;
 
-import org.kobjects.asde.lang.classifier.clazz.ClassInstance;
+import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.program.ProgramControl;
 
@@ -8,7 +8,7 @@ public class EvaluationContext {
     public final ProgramControl control;
     public final UserFunction function;
 
-    private final DataStack dataStack;
+    private final DataArray dataStack;
     private final int stackBase;
     private int stackTop;
 
@@ -25,7 +25,7 @@ public class EvaluationContext {
         this.function = function;
         stackBase = 0;
         stackTop = function.localVariableCount;
-        dataStack = new DataStack(stackTop);
+        dataStack = new DataArray(stackTop);
 
         control.lastCreatedContext = this;
     }
@@ -38,9 +38,10 @@ public class EvaluationContext {
         function = parentContext.function;
         stackBase = 0;
         stackTop = parentContext.stackTop - parentContext.stackBase;
-        dataStack = new DataStack(stackTop);
+        dataStack = new DataArray(stackTop);
         currentLine = parentContext.currentLine;
-        System.arraycopy(parentContext.dataStack.data, parentContext.stackBase, dataStack.data, stackBase, stackTop);
+        System.arraycopy(parentContext.dataStack.objects, parentContext.stackBase, dataStack.objects, stackBase, stackTop);
+        System.arraycopy(parentContext.dataStack.numbers, parentContext.stackBase, dataStack.numbers, stackBase, stackTop);
 
         control.lastCreatedContext = this;
     }
@@ -59,16 +60,23 @@ public class EvaluationContext {
     }
 
     public Object getLocal(int index) {
-        return dataStack.data[stackBase + index];
+        return dataStack.objects[stackBase + index];
     }
 
     public void setLocal(int index, Object value) {
-        dataStack.data[stackBase + index] = value;
+        dataStack.objects[stackBase + index] = value;
     }
 
     public Object getParameter(int index) {
-        return dataStack.data[stackTop + index];
+        return dataStack.objects[stackTop + index];
     }
+
+    /*
+    public Object call(Callable callable, int paramCount) {
+        popN(paramCount);
+        ensureExtraStackSpace(callable.getLocalVariableCount());
+        return callable.call(this, paramCount);
+    }*/
 
 
     public void ensureExtraStackSpace(int localVariableCount) {
@@ -79,11 +87,12 @@ public class EvaluationContext {
         if (value == null) {
             throw new NullPointerException();
         }
-        dataStack.data[stackTop++] = value;
+        dataStack.ensureSize(stackTop + 1);
+        dataStack.objects[stackTop++] = value;
     }
 
     public Object pop() {
-        return dataStack.data[--stackTop];
+        return dataStack.objects[--stackTop];
     }
 
 
@@ -109,25 +118,6 @@ public class EvaluationContext {
 
     public boolean popBoolean() {
         return (Boolean) pop();
-    }
-
-    static class DataStack {
-        Object[] data;
-        int limit;
-
-        DataStack(int initialSize) {
-            this.data = new Object[initialSize];
-            limit = initialSize;
-        }
-
-        void ensureSize(int i) {
-            limit = i;
-            if (data.length < i) {
-                Object[] newStack = new Object[Math.max(i, data.length * 3 / 2)];
-                System.arraycopy(data, 0, newStack, 0, data.length);
-                data = newStack;
-            }
-        }
     }
 
 

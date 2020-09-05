@@ -31,7 +31,6 @@ public abstract class WasmNode extends Node {
 
   @Override
   public final Object eval(EvaluationContext evaluationContext) {
-    evaluationContext.ensureExtraStackSpace(100);
     return wasmExpression.run(evaluationContext);
   }
 

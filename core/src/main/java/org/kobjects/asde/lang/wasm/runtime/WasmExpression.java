@@ -652,8 +652,7 @@ public class WasmExpression {
           throw new IllegalStateException("Unrecognized opcode " + Integer.toHexString(code[pc-1]&255));
       }
     }
-    context.popN(1);
-    return context.getParameter(0);
+    return context.pop();
   }
 
 }

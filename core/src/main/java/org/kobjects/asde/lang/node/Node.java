@@ -45,6 +45,17 @@ public abstract class Node {
 
   protected abstract void onResolve(ValidationContext resolutionContext, int line);
 
+  public final void resolveWasm(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line, Type expectedType) {
+    try {
+      Type type = resolveWasmImpl(wasm, resolutionContext, line);
+      if (type != expectedType) {
+        throw new RuntimeException("Actual type (" + type + ") does not match expected type (" + expectedType + ").");
+      }
+    } catch (Exception e) {
+      resolutionContext.addError(this, e);
+    }
+  }
+
   public final Type resolveWasm(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
     try {
       return resolveWasmImpl(wasm, resolutionContext, line);
