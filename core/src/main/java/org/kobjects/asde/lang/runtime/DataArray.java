@@ -182,7 +182,7 @@ public class DataArray {
     }
 
     public boolean getBoolean(int index) {
-        return getI32(index) != 0;
+        return (Boolean) getObject(index);
     }
 
     public Object getObject(int index) {
@@ -205,6 +205,8 @@ public class DataArray {
                 case I64:
                     o = n;
                     break;
+                default:
+                    throw new IllegalStateException();
             }
             // Avoid potentially boxing multiple times.
             objects[index] = o;

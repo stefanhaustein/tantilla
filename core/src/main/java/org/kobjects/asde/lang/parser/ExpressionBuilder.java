@@ -9,7 +9,6 @@ import org.kobjects.asde.lang.node.ArrayLiteral;
 import org.kobjects.asde.lang.node.Named;
 import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.ImpliedSliceValue;
-import org.kobjects.asde.lang.node.InvokeNamed;
 import org.kobjects.asde.lang.node.NegOperator;
 import org.kobjects.asde.lang.node.Slice;
 import org.kobjects.asde.lang.program.Program;
@@ -76,6 +75,7 @@ class ExpressionBuilder extends Processor<Node> {
   public Node suffixOperator(Tokenizer tokenizer, String name, Node base) {
     AsdeExpressionParser subParser = new AsdeExpressionParser(program);
     ArrayList<Node> children = new ArrayList<>();
+    children.add(base);
     boolean ctor = name.equals("{");
     if (ctor || name.equals("(")) {
       String end = ctor ? "}" : ")";
@@ -94,20 +94,9 @@ class ExpressionBuilder extends Processor<Node> {
         } while (tokenizer.tryConsume(","));
         tokenizer.consume(end);
       }
-      if (base instanceof Path) {
-        Path path = (Path) base;
-        children.add(0, path.children[0]);
-        return new InvokeNamed(path.pathName, false, children.toArray(Node.EMPTY_ARRAY));
-      }
-      if (base instanceof Identifier) {
-        Identifier identifier = (Identifier) base;
-        return new InvokeNamed(identifier.getName(), true, children.toArray(Node.EMPTY_ARRAY));
-      }
-      children.add(0, base);
       return new Invoke(true, children.toArray(Node.EMPTY_ARRAY));
     }
 
-    children.add(base);
     String separator = null;
     if (!tokenizer.tryConsume("]")) {
       do {

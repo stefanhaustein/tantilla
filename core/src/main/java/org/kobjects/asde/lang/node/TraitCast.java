@@ -9,6 +9,9 @@ import org.kobjects.asde.lang.classifier.trait.Trait;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.wasm.Wasm;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
+import org.kobjects.asde.lang.wasm.runtime.CallWithContext;
 
 public class TraitCast extends Node {
 
@@ -37,6 +40,16 @@ public class TraitCast extends Node {
     return adapterType == null ? node : new TraitCast(node, adapterType);
 
   }
+
+  public static void autoCastWasm(WasmExpressionBuilder wasm, Type actualType, Type expectedType, ValidationContext validationContext) {
+    AdapterType adapterType = getAdapterType(actualType, expectedType, validationContext);
+    if (adapterType != null) {
+      wasm.callWithContext(context -> {
+          context.dataStack.pushObject(new AdapterInstance(adapterType, (ClassInstance) context.dataStack.popObject()));
+      });
+    }
+  }
+
 
 
   private final AdapterType adapterType;

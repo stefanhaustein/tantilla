@@ -6,11 +6,8 @@ import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.Parameter;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.UserFunction;
-import org.kobjects.asde.lang.node.Identifier;
-import org.kobjects.asde.lang.node.InvokeNamed;
-import org.kobjects.asde.lang.node.Path;
-import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Invoke;
+import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Group;
 import org.kobjects.asde.lang.node.NegOperator;
 import org.kobjects.asde.lang.statement.BlockStatement;
@@ -173,43 +170,34 @@ public class StatementParser {
       }
     } else if (!tokenizer.currentValue.equals(";") && !tokenizer.currentValue.equals("")) {
 
-      // Extra parameters without parenthesis
+      // Extra parameters without parenthesis.
+
+      // The expression itself is added to the parameters, as
 
       List<Node> params = new ArrayList<>();
       if (tokenizer.tryConsume(",")) {
         if (expression instanceof MathOperator && ((MathOperator) expression).kind == MathOperator.Kind.SUB) {
-          params.add(expression.children[0]);
+          // foo -bar, baz
           params.add(new Group(new NegOperator(expression.children[1])));
-        } else if ((expression instanceof Invoke || expression instanceof InvokeNamed) && expression.children.length == 2) {
-          params.add(expression.children[0]);
+          expression = expression.children[0];
+        } else if (expression instanceof Invoke && expression.children.length == 2) {
+          // foo (bar), baz
           params.add(new Group(expression.children[1]));
+          expression = expression.children[0];
         } else {
           throw tokenizer.exception("Unexpected comma", null);
         }
-      } else {
-        params.add(expression);
       }
       do {
         params.add(expressionParser.parse(tokenizer));
       } while (tokenizer.tryConsume(","));
 
-      if (expression instanceof InvokeNamed) {
-        InvokeNamed invokeNamed = (InvokeNamed) expression;
-        result.add(new VoidStatement(new InvokeNamed(invokeNamed.name, invokeNamed.mainModule, params.toArray(Node.EMPTY_ARRAY))));
-      } else if (params.get(0) instanceof Path) {
-        Path path = (Path) params.get(0);
-        params.set(0, path.children[0]);
-        result.add(new VoidStatement(new InvokeNamed(path.pathName, false, params.toArray(Node.EMPTY_ARRAY))));
-      } else if (params.get(0) instanceof Identifier) {
-        result.add(new VoidStatement(new InvokeNamed(params.get(0).toString(), true, params.subList(1, params.size()).toArray(Node.EMPTY_ARRAY))));
-      } else {
-        result.add(new VoidStatement(new Invoke(false, params.toArray(Node.EMPTY_ARRAY))));
-      }
-    } else {//if (expression instanceof Path || expression instanceof Identifier){
+      params.add(0, expression);
+
+      result.add(new VoidStatement(new Invoke(false, params.toArray(Node.EMPTY_ARRAY))));
+    } else {
       result.add(new VoidStatement(expression));
-    } /*else {
-      result.add(expression);
-    }*/
+    }
   }
 
 

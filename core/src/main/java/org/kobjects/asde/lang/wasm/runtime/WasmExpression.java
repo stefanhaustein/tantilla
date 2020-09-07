@@ -651,6 +651,11 @@ public class WasmExpression {
           context.push(node.eval(context));
           break;
         }
+        case Wasm.CALL_WITH_CONTEXT: {
+          CallWithContext callWithContext = (CallWithContext) stack.popObject();
+          callWithContext.call(context);
+          break;
+        }
         default:
           throw new IllegalStateException("Unrecognized opcode " + Integer.toHexString(code[pc-1]&255));
       }

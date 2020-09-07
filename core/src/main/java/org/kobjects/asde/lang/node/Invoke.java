@@ -1,121 +1,154 @@
 package org.kobjects.asde.lang.node;
 
-import org.kobjects.markdown.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.classifier.clazz.InstantiableClassType;
+import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.Property;
+import org.kobjects.asde.lang.classifier.clazz.InstantiableClassType;
 import org.kobjects.asde.lang.function.Callable;
-import org.kobjects.asde.lang.io.SyntaxColor;
-import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.function.FunctionType;
+import org.kobjects.asde.lang.function.ValidationContext;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.wasm.Wasm;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
+import org.kobjects.asde.lang.wasm.runtime.CallWithContext;
+import org.kobjects.asde.lang.wasm.runtime.WasmExpression;
+import org.kobjects.markdown.AnnotatedStringBuilder;
 
 import java.util.Map;
 
-// Not static for access to the variables.
-public class Invoke extends Node {
+public class Invoke extends WasmNode {
 
-  enum Kind {
-    UNRESOLVED, CONSTRUCTOR, FUNCTION, ERROR
-  }
+  final boolean parenthesis;
+  Property resolvedProperty;
 
-  boolean parenthesis;
-  Node[] resolvedArguments;
-  Kind kind = Kind.UNRESOLVED;
-
-  public Invoke(boolean parentesis, Node... children) {
+  public Invoke(boolean parenthesis, Node... children) {
     super(children);
-    this.parenthesis = parentesis;
+    this.parenthesis = parenthesis;
   }
 
-
   @Override
-  public void reorderParameters(Property symbol, int[] oldIndices) {
-    Node base = children[0];
-    if (!(base instanceof SymbolNode) || ((SymbolNode) base).getResolvedProperty() != symbol) {
-      return;
+  protected Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
+
+    // Special cases for paths and identifiers to avoid implict invocation
+
+    if (children[0] instanceof Path) {
+      return resolvePathInvocation(wasm, resolutionContext, line, (Path) children[0]);
     }
-    Node[] oldChildren = children;
-    children = new Node[oldIndices.length + 1];
-    children[0] = base;
-    for (int i = 0; i < oldIndices.length; i++) {
-      if (oldIndices[i] != -1) {
-        children[i + 1] = oldChildren[oldIndices[i] + 1];
-      } else {
-        children[i + 1] = new Identifier("placeholder" + i);
+    if (children[0] instanceof Identifier) {
+      return resolveStaticInvocation(wasm, resolutionContext, line, resolutionContext.program.mainModule, ((Identifier) children[0]).name);
+    }
+
+    Type baseType = children[0].resolveWasm(wasm, resolutionContext, line);
+    if (!(baseType instanceof FunctionType)) {
+      throw new RuntimeException("Base type needs to be function or constructor.");
+    }
+    FunctionType functionType = (FunctionType) baseType;
+
+    final int count = InvocationResolver.resolveWasm(wasm,functionType, children, 1, true, resolutionContext, line);
+
+    wasm.callWithContext(context -> {
+      Callable function = (Callable) context.dataStack.getObject(context.dataStack.size() - count - 1);
+      Object result = context.call(function, count);
+      context.dataStack.setObject(context.dataStack.size() - 1, result);
+    });
+
+    return functionType.getReturnType();
+  }
+
+  private Type resolvePathInvocation(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line, Path path) {
+    Type baseType = path.children[0].resolveWasm(new WasmExpressionBuilder(), resolutionContext, line);
+    String name = path.pathName;
+
+    // Static
+    if (baseType instanceof MetaType && ((MetaType) baseType).getWrapped() instanceof Classifier) {
+      return resolveStaticInvocation(wasm, resolutionContext, line, (Classifier) ((MetaType) baseType).getWrapped(), name);
+    }
+
+    if (baseType instanceof Classifier) {
+      Node[] adjustedChildren = new Node[children.length];
+      adjustedChildren[0] = path.children[0];
+      for (int i = 1; i < adjustedChildren.length; i++) {
+        adjustedChildren[i] = children[i];
       }
+
+      resolvedProperty = ((Classifier) baseType).getProperty(name);
+      if (resolvedProperty == null) {
+        throw new RuntimeException("Property '" + name + "' not found in " + adjustedChildren[0].returnType());
+      }
+      if (!(resolvedProperty.getType() instanceof FunctionType)) {
+        throw new RuntimeException("Type of property '" + resolvedProperty + "' is not callable.");
+      }
+
+      FunctionType functionType = (FunctionType) resolvedProperty.getType();
+      final int count = InvocationResolver.resolveWasm(wasm, functionType, adjustedChildren, 0, true, resolutionContext, line);
+      wasm.callWithContext(context -> {
+          Callable function = (Callable) resolvedProperty.getStaticValue();
+          context.dataStack.pushObject(context.call(function, count));
+      });
+      return functionType.getReturnType();
     }
+
+    throw new RuntimeException("Classifier or instance base expected");
   }
 
-  @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
-    kind = Kind.ERROR;
 
-    Type baseType = children[0].returnType();
-    if (baseType instanceof FunctionType) {
-      FunctionType functionType = (FunctionType) children[0].returnType();
-      resolvedArguments = InvocationResolver.resolve(functionType, children, 1, true, resolutionContext);
-      kind = Kind.FUNCTION;
-    } else if (baseType instanceof MetaType && ((MetaType) baseType).getWrapped() instanceof InstantiableClassType) {
-      InstantiableClassType instantiable = (InstantiableClassType) ((MetaType) baseType).getWrapped();
+  /**
+   * Ignores the first parameter.
+   */
+  private Type resolveStaticInvocation(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line, Classifier classifier, String name) {
+    resolvedProperty = classifier.getProperty(name);
+    if (resolvedProperty == null) {
+      throw new RuntimeException("Property '" + name + "' not found in " + classifier);
+    }
+
+    if (resolvedProperty.getType() instanceof FunctionType) {
+      FunctionType functionType = (FunctionType) resolvedProperty.getType();
+      final int count = InvocationResolver.resolveWasm(wasm, functionType, children, 1, true, resolutionContext, line);
+      wasm.callWithContext(context -> {
+        Callable function = (Callable) resolvedProperty.getStaticValue();
+        context.dataStack.pushObject(context.call(function, count));
+      });
+      return functionType.getReturnType();
+    }
+
+    if (resolvedProperty.getType() instanceof MetaType
+        && ((MetaType) resolvedProperty.getType()).getWrapped() instanceof InstantiableClassType) {
+      final InstantiableClassType instantiable = (InstantiableClassType) ((MetaType) resolvedProperty.getType()).getWrapped();
       resolutionContext.addInstanceDependency(instantiable);
-      resolvedArguments = InvocationResolver.resolve(instantiable.getConstructorSignature(), children, 1, false, resolutionContext);
-      kind = Kind.CONSTRUCTOR;
-    } else {
-      throw new RuntimeException("function or class required to apply parameters.");
-    }
-  }
-
-  public Object eval(EvaluationContext evaluationContext) {
-    switch (kind) {
-      case FUNCTION:
-        Callable function = (Callable) children[0].eval(evaluationContext);
-        // Push is important here, as parameter evaluation might also run apply().
-        int count = resolvedArguments.length;
+      final int count = InvocationResolver.resolveWasm(wasm, instantiable.getConstructorSignature(), children, 1, false, resolutionContext, line);
+      wasm.callWithContext(context -> {
+        Object[] args = new Object[count];
         for (int i = 0; i < count; i++) {
-          evaluationContext.push(resolvedArguments[i].eval(evaluationContext));
+          args[count - i] = context.dataStack.popObject();
         }
-        try {
-          return evaluationContext.call(function, count);
-        } catch (Exception e) {
-          throw new RuntimeException(e.getMessage() + " in " + children[0], e);
-        }
-      case CONSTRUCTOR:
-        Object[] values = new Object[resolvedArguments.length];
-        for (int i = 0; i < values.length; i++) {
-          values[i] = resolvedArguments[i].eval(evaluationContext);
-        }
-        return ((InstantiableClassType) ((MetaType) (children[0].returnType())).getWrapped()).createInstance(evaluationContext, values);
-      default:
-        throw new RuntimeException(kind + ": " + this);
+        context.dataStack.pushObject(instantiable.createInstance(context, args));
+      });
+      return instantiable;
     }
+
+    throw new RuntimeException("Can't invoke " + name);
   }
 
-  // Shouldn't throw, as it's used outside validation!
-  public Type returnType() {
-    switch (kind) {
-      case FUNCTION:
-        return ((FunctionType) children[0].returnType()).getReturnType();
-      case CONSTRUCTOR:
-        return ((MetaType) (children[0].returnType())).getWrapped();
-      default:
-        return null;
-    }
-  }
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     int start = asb.length();
-    children[0].toString(asb, errors, preferAscii);
-    asb.append("(" , parenthesis ? null : SyntaxColor.HIDE);
-    for (int i = 1; i < children.length; i++) {
-      if (i > 1) {
+    int startIndex = 0;
+
+    children[startIndex++].toString(asb, errors, preferAscii);
+
+    asb.append(parenthesis ? '(' : ' ');
+    for (int i = startIndex; i < children.length; i++) {
+      if (i > startIndex) {
         asb.append(", ");
       }
       children[i].toString(asb, errors, preferAscii);
     }
-    asb.append(")" , parenthesis ? null : SyntaxColor.HIDE);
+    if (parenthesis) {
+      asb.append(')');
+    }
     asb.annotate(start, asb.length(), errors.get(this));
   }
+
 }

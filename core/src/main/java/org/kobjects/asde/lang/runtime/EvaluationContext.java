@@ -52,21 +52,20 @@ public class EvaluationContext {
         this.control = parentContext.control;
         this.dataStack = parentContext.dataStack;
         this.stackBase = parentContext.stackBase;
-        dataStack.ensureSize(stackBase + userFunction.localVariableCount);
 
         control.lastCreatedContext = this;
     }
 
     public Object getLocal(int index) {
-        return dataStack.objects[stackBase + index];
+        return dataStack.getObject(stackBase + index);
     }
 
     public void setLocal(int index, Object value) {
-        dataStack.objects[stackBase + index] = value;
+        dataStack.setObject(stackBase + index, value);
     }
 
     public Object getParameter(int index) {
-        return dataStack.objects[stackBase + index];
+        return dataStack.getObject(stackBase + index);
     }
 
 
@@ -77,6 +76,7 @@ public class EvaluationContext {
             dataStack.ensureSize(stackBase + callable.getLocalVariableCount());
             return callable.call(this, paramCount);
         } finally {
+            dataStack.popN(paramCount);
             stackBase = savedStackBase;
         }
     }
