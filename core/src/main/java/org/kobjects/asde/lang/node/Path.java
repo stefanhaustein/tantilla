@@ -48,7 +48,7 @@ public class Path extends SymbolNode {
     resolvedKind = ResolvedKind.ERROR;
     if (children[0].returnType() instanceof Classifier) {
       if (forSet) {
-        // TODO: look up property first and check for consistency!
+        // TODO: look up property first and check for consistency!
         boolean inside_set = children[0].toString().equals("self")
             && resolutionContext.property != null
             && resolutionContext.property.getName().equals("set_" + pathName);
@@ -56,12 +56,12 @@ public class Path extends SymbolNode {
         if (!inside_set) {
           resolvedProperty = ((Classifier) children[0].returnType()).getProperty("set_" + pathName);
 
-          // We check for an exact match, as we still need to fall through to the property check
+          // We check for an exact match, as we still need to fall through to the property check
           if (resolvedProperty != null && !resolvedProperty.isInstanceField() && resolvedProperty.getType() instanceof FunctionType) {
             FunctionType functionType = (FunctionType) resolvedProperty.getType();
             if (functionType.getParameterCount() == 2
                 && functionType.getParameter(0).getName().equals("self")
-              // TODO: && ...
+              // TODO: && ...
             ) {
               resolvedKind = ResolvedKind.SET_METHOD_CALL;
               return functionType.getParameter(1).getType();
@@ -74,7 +74,7 @@ public class Path extends SymbolNode {
       if (resolvedProperty == null) {
         throw new RuntimeException("Property '" + pathName + "'"
             + (forSet ? (" or set_" + pathName + " method") : "")
-            + " not found in " + children[0].returnType());
+            + " not found in " + children[0].returnType());
       }
       resolutionContext.validateProperty(resolvedProperty);
       if (resolvedProperty.getType() == null) {

@@ -6,6 +6,10 @@ import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 
 public abstract class AssignableWasmNode extends WasmNode {
 
+  protected AssignableWasmNode(Node... children) {
+    super(children);
+  }
+
   public abstract Type resolveForAssignment(WasmExpressionBuilder wasm, ValidationContext validationContext, int line);
 
 }
