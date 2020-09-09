@@ -17,7 +17,7 @@ public class WasmExpression {
 
 
 
-  public Object run(EvaluationContext context) {
+  public void run(EvaluationContext context) {
     DataArray stack = context.dataStack;
     int pc = 0;
     while (pc < code.length) {
@@ -660,7 +660,6 @@ public class WasmExpression {
           throw new IllegalStateException("Unrecognized opcode " + Integer.toHexString(code[pc-1]&255));
       }
     }
-    return stack.popObject();
   }
 
 }

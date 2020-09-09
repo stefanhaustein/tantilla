@@ -2,9 +2,12 @@ package org.kobjects.asde.lang.statement;
 
 import org.kobjects.asde.lang.node.Assignable;
 import org.kobjects.asde.lang.node.AssignableNode;
+import org.kobjects.asde.lang.node.AssignableWasmNode;
 import org.kobjects.asde.lang.node.TraitCast;
 import org.kobjects.asde.lang.type.AwaitableType;
 import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
+import org.kobjects.asde.lang.wasm.runtime.WasmExpression;
 import org.kobjects.async.Promise;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.io.SyntaxColor;
@@ -76,12 +79,27 @@ public class AssignmentStatement extends Statement {
     if (kind == Kind.ASSIGN) {
       try {
         // May fail if resolve above has failed.
-        Type expectedType = ((AssignableNode) children[1]).resolveForAssignment(resolutionContext, line);
-        resolvedSource = TraitCast.autoCast(children[0], expectedType, resolutionContext);
+        if (children[1] instanceof AssignableNode) {
+          Type expectedType = ((AssignableNode) children[1]).resolveForAssignment(resolutionContext, line);
+          resolvedSource = TraitCast.autoCast(children[0], expectedType, resolutionContext);
+          resolvedTarget = (AssignableNode) children[1];
+        } else if (children[1] instanceof AssignableWasmNode) {
+          WasmExpressionBuilder builder = new WasmExpressionBuilder();
+          WasmExpression wasm = builder.build();
+          Type expectedType = ((AssignableWasmNode) children[1]).resolveForAssignment(builder, resolutionContext, line);
+          resolvedSource = TraitCast.autoCast(children[0], expectedType, resolutionContext);
+          resolvedTarget = new Assignable() {
+            @Override
+            public void set(EvaluationContext evaluationContext, Object value) {
+              evaluationContext.dataStack.pushObject(value);
+              wasm.run(evaluationContext);
+            }
+          };
+        }
       } catch (Exception e) {
         resolutionContext.addError(this, e);
       }
-      resolvedTarget = (AssignableNode) children[1];
+
     } else {
       Type type = children[0].returnType();
       if (await) {

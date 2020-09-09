@@ -31,7 +31,8 @@ public abstract class WasmNode extends Node {
 
   @Override
   public final Object eval(EvaluationContext evaluationContext) {
-    return wasmExpression.run(evaluationContext);
+    wasmExpression.run(evaluationContext);
+    return evaluationContext.dataStack.popObject();
   }
 
   @Override
