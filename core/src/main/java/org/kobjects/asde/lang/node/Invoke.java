@@ -6,13 +6,9 @@ import org.kobjects.asde.lang.classifier.clazz.InstantiableClassType;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.ValidationContext;
-import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
-import org.kobjects.asde.lang.wasm.Wasm;
 import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
-import org.kobjects.asde.lang.wasm.runtime.CallWithContext;
-import org.kobjects.asde.lang.wasm.runtime.WasmExpression;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 
 import java.util.Map;
@@ -32,11 +28,16 @@ public class Invoke extends WasmNode {
 
     // Special cases for paths and identifiers to avoid implict invocation
 
-    if (children[0] instanceof Path) {
-      return resolvePathInvocation(wasm, resolutionContext, line, (Path) children[0]);
+    Node base = children[0];
+
+    if (base instanceof Path) {
+      return resolvePathInvocation(wasm, resolutionContext, line, base, ((Path) base).pathName);
     }
-    if (children[0] instanceof Identifier) {
-      return resolveStaticInvocation(wasm, resolutionContext, line, resolutionContext.program.mainModule, ((Identifier) children[0]).name);
+    if (base instanceof Path) {
+      return resolvePathInvocation(wasm, resolutionContext, line, base, ((Path) base).pathName);
+    }
+    if (base instanceof Identifier) {
+      return resolveStaticInvocation(wasm, resolutionContext, line, resolutionContext.program.mainModule, ((Identifier) base).name);
     }
 
     Type baseType = children[0].resolveWasm(wasm, resolutionContext, line);
@@ -56,9 +57,8 @@ public class Invoke extends WasmNode {
     return functionType.getReturnType();
   }
 
-  private Type resolvePathInvocation(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line, Path path) {
+  private Type resolvePathInvocation(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line, Node path, String name) {
     Type baseType = path.children[0].resolveWasm(new WasmExpressionBuilder(), resolutionContext, line);
-    String name = path.pathName;
 
     // Static
     if (baseType instanceof MetaType && ((MetaType) baseType).getWrapped() instanceof Classifier) {

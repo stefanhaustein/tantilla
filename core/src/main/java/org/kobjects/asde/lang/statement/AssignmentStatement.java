@@ -29,7 +29,7 @@ public class AssignmentStatement extends Statement {
   }
 
   public static AssignmentStatement createAssignment(Node target, boolean await, Node init) {
-    if (!(target instanceof AssignableNode)) {
+    if (!(target instanceof AssignableNode) && !(target instanceof AssignableWasmNode)) {
       throw new RuntimeException("Assignment target is not assignable.");
     }
     return new AssignmentStatement(Kind.ASSIGN, null, target, await, init);
@@ -85,9 +85,9 @@ public class AssignmentStatement extends Statement {
           resolvedTarget = (AssignableNode) children[1];
         } else if (children[1] instanceof AssignableWasmNode) {
           WasmExpressionBuilder builder = new WasmExpressionBuilder();
-          WasmExpression wasm = builder.build();
           Type expectedType = ((AssignableWasmNode) children[1]).resolveForAssignment(builder, resolutionContext, line);
           resolvedSource = TraitCast.autoCast(children[0], expectedType, resolutionContext);
+          WasmExpression wasm = builder.build();
           resolvedTarget = new Assignable() {
             @Override
             public void set(EvaluationContext evaluationContext, Object value) {

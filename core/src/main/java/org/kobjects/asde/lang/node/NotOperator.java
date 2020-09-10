@@ -20,7 +20,7 @@ public class NotOperator extends WasmNode {
   protected Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
     children[0].resolveWasm(wasm, resolutionContext, line, Types.BOOL);
     wasm.opCode(Wasm.I32_EQZ);
-    return Types.BOOL;
+    return resolvedType = Types.BOOL;
   }
 
   @Override
