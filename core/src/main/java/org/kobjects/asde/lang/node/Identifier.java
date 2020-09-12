@@ -1,21 +1,23 @@
 package org.kobjects.asde.lang.node;
 
-import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.LocalSymbol;
-import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.ValidationContext;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.wasm.Wasm;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
+import org.kobjects.markdown.AnnotatedStringBuilder;
 
 import java.util.Map;
 
 // Not static for access to the variables.
-public class Identifier extends SymbolNode implements HasProperty {
+public class Identifier extends AssignableWasmNode implements HasProperty {
+
 
   enum Kind {
-    UNRESOLVED, LOCAL_VARIABLE, ROOT_MODULE_PROPERTY, ERROR, ROOT_METHOD_INVOCATION;
+    UNRESOLVED, LOCAL_VARIABLE, ROOT_MODULE_PROPERTY, ERROR;
   }
 
   String name;
@@ -28,84 +30,37 @@ public class Identifier extends SymbolNode implements HasProperty {
     this.name = name;
   }
 
-  public void onResolve(ValidationContext resolutionContext, int line) {
-    resolvedLocalVariable = resolutionContext.getCurrentBlock().get(name);
-    resolvedRootProperty = null;
+  @Override
+  protected Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
+    return resolveWasmImpl(wasm, resolutionContext, line, /* forSet= */ false);
+  }
+
+  @Override
+  public Type resolveForAssignment(WasmExpressionBuilder wasm, ValidationContext validationContext, int line) {
+    return resolveWasmImpl(wasm, validationContext, line, /* forSet */ true);
+  }
+
+
+  private Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line, boolean forSet) {
     resolvedKind = Kind.ERROR;
+    resolvedRootProperty = null;
+    resolvedLocalVariable = resolutionContext.getCurrentBlock().get(name);
+
     if (resolvedLocalVariable != null) {
       resolvedMutable = resolvedLocalVariable.isMutable();
       resolvedKind = Kind.LOCAL_VARIABLE;
+      wasm.opCode(forSet ? Wasm.LOCAL_SET : Wasm.LOCAL_GET);
+      wasm.integer(resolvedLocalVariable.index);
+      resolvedType = resolvedLocalVariable.getType();
     } else {
       resolvedRootProperty = resolutionContext.program.mainModule.getProperty(name);
       if (resolvedRootProperty == null) {
         throw new RuntimeException("Variable not found: '" + name + "'");
       }
-      resolutionContext.validateProperty(resolvedRootProperty);
-      if (resolvedRootProperty.isInstanceField()) {
-        // Modules can't have non-static properties...
-        throw new IllegalStateException();
-      }
-      if (resolvedRootProperty.getType() instanceof FunctionType) {
-        FunctionType functionType = (FunctionType) resolvedRootProperty.getType();
-        if (functionType.getParameterCount() != 0) {
-          throw new RuntimeException("Function can't be called implicitly because it has parameters.");
-        }
-        resolvedKind = Kind.ROOT_METHOD_INVOCATION;
-      } else {
-        resolvedMutable = resolvedRootProperty.isMutable();
-        resolvedKind = Kind.ROOT_MODULE_PROPERTY;
-      }
+      resolvedKind = Kind.ROOT_MODULE_PROPERTY;
+      resolvedType = StaticPropertyResolver.resolveStaticProperty(wasm, resolutionContext, resolvedRootProperty, forSet);
     }
-  }
-
-  @Override
-  public Type resolveForAssignment(ValidationContext resolutionContext, int line) {
-    resolve(resolutionContext, line);
-    if (!resolvedMutable) {
-      throw new RuntimeException("Can't assign to immutable variable '" + name + "'");
-    }
-    return returnType();
-  }
-
-  public void set(EvaluationContext evaluationContext, Object value) {
-    switch (resolvedKind) {
-      case LOCAL_VARIABLE:
-        resolvedLocalVariable.set(evaluationContext, value);
-        break;
-      case ROOT_METHOD_INVOCATION:
-      case ROOT_MODULE_PROPERTY:
-        resolvedRootProperty.setStaticValue(value);
-        break;
-      default:
-        throw new RuntimeException("Unassignable: " + name);
-    }
-  }
-
-
-  @Override
-  public Object eval(EvaluationContext evaluationContext) {
-    switch (resolvedKind) {
-      case LOCAL_VARIABLE:
-        return resolvedLocalVariable.get(evaluationContext);
-      case ROOT_MODULE_PROPERTY:
-        return resolvedRootProperty.getStaticValue();
-      case ROOT_METHOD_INVOCATION:
-        Callable callable = (Callable) resolvedRootProperty.getStaticValue();
-        return evaluationContext.call(callable, 0);
-    }
-    throw new RuntimeException("Unresolved variable "+ name);
-  }
-
-  public Type returnType() {
-    switch (resolvedKind) {
-      case LOCAL_VARIABLE:
-        return resolvedLocalVariable.getType();
-      case ROOT_MODULE_PROPERTY:
-        return resolvedRootProperty.getType();
-      case ROOT_METHOD_INVOCATION:
-        return ((FunctionType) resolvedRootProperty.getType()).getReturnType();
-    }
-    return null;
+    return resolvedType;
   }
 
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {

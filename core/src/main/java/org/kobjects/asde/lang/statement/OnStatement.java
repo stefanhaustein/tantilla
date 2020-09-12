@@ -24,15 +24,17 @@ public class OnStatement extends BlockStatement  {
   protected void onResolve(ValidationContext resolutionContext, int line) {
     resolutionContext.startBlock(this);
     listenableSubexpressions.clear();
-    findListenableSubexpressions(children);
+    findListenableSubexpressions(children, resolutionContext, line);
   }
 
-  void findListenableSubexpressions(Node[] nodes) {
+  void findListenableSubexpressions(Node[] nodes, ValidationContext resolutionContext, int line) {
     for (Node node: nodes) {
       if (node.returnType().supportsChangeListeners()) {
+        // Make sure it has wasm if needed.
+        node.resolve(resolutionContext, line);
         listenableSubexpressions.add(node);
       } else {
-        findListenableSubexpressions(node.children);
+        findListenableSubexpressions(node.children, resolutionContext, line);
       }
     }
   }

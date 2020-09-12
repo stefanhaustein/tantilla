@@ -34,7 +34,7 @@ public class WasmExpressionBuilder {
   }
 
   public WasmExpressionBuilder object(Object object) {
-    opCode((byte) references.size());
+    integer(references.size());
     references.add(object);
     return this;
   }
@@ -62,4 +62,10 @@ public class WasmExpressionBuilder {
     opCode(Wasm.CALL_WITH_CONTEXT);
   }
 
+  public void integer(int value) {
+    if (value < 0 || value > 127) {
+      throw new RuntimeException("NYI: encoiding");
+    }
+    opCode((byte) value);
+  }
 }

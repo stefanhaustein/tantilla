@@ -33,9 +33,6 @@ public class Invoke extends WasmNode {
     if (base instanceof Path) {
       return resolvePathInvocation(wasm, resolutionContext, line, base, ((Path) base).pathName);
     }
-    if (base instanceof Path) {
-      return resolvePathInvocation(wasm, resolutionContext, line, base, ((Path) base).pathName);
-    }
     if (base instanceof Identifier) {
       return resolveStaticInvocation(wasm, resolutionContext, line, resolutionContext.program.mainModule, ((Identifier) base).name);
     }

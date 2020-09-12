@@ -5,11 +5,9 @@ import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.ValidationContext;
-import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.EnumType;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
-import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 
@@ -160,30 +158,13 @@ public class Path extends AssignableWasmNode implements HasProperty {
         throw new RuntimeException("Property '" + pathName + "' not found in " + children[0].returnType());
       }
       resolutionContext.validateProperty(resolvedProperty);
-      if (resolvedProperty.getType() == null) {
-        throw new RuntimeException("Type of property '" + resolvedProperty + "' is null.");
-      }
-      if (resolvedProperty.isInstanceField()) {
-        throw new RuntimeException("Static property expected for static reference.");
-      }
+      resolvedType = StaticPropertyResolver.resolveStaticProperty(wasm, resolutionContext, resolvedProperty, forSet);
       resolvedKind = ResolvedKind.STATIC_PROPERTY;
-      if (forSet) {
-        if (!resolvedProperty.isMutable()) {
-          throw new RuntimeException("Not mutable.");
-        }
-        wasm.callWithContext(context -> {
-          resolvedProperty.setStaticValue(context.dataStack.popObject());
-        });
-      } else {
-        wasm.callWithContext(context -> {
-          context.dataStack.pushObject(resolvedProperty.getStaticValue());
-        });
-      }
-      resolvedType = resolvedProperty.getType();
       return resolvedType;
     }
     throw new RuntimeException("Classifier expected as path base; got: " + type);
   }
+
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
