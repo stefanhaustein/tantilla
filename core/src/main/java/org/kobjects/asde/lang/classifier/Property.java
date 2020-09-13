@@ -19,7 +19,7 @@ import java.util.Set;
 public interface Property extends Comparable<Property> {
 
   static String toString(Property property) {
-    return property.getClass().getSimpleName() + " " + property.getOwner() + "." + property.getName() + " (type: " + property.getType() + ")";
+    return property.getClass().getSimpleName() + " " + property.getOwner() + "." + property.getName() + " (type: " + property.getType() + "; initializer: " + property.getInitializer() + ")";
   }
 
   static int order(Property property) {

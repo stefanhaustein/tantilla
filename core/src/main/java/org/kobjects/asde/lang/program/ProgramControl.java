@@ -95,8 +95,12 @@ public class ProgramControl {
 
 
     public static Object runCodeLineImpl(Statement statement, EvaluationContext evaluationContext) {
+        int stackTop = evaluationContext.dataStack.size();
         int line = evaluationContext.currentLine;
         Object result = statement.eval(evaluationContext);
+        if (stackTop != evaluationContext.dataStack.size()) {
+            throw new RuntimeException("Unbalanced stack in " + statement);
+        }
         if (evaluationContext.currentLine != line) {
           return result;  // Goto or similar out of the current line
         }

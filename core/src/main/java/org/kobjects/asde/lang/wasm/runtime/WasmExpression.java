@@ -15,13 +15,19 @@ public class WasmExpression {
   }
 
 
-
-
   public void run(EvaluationContext context) {
+    run(context, 1);
+  }
+
+
+  public void run(EvaluationContext context, int expectedStackGrowth) {
     DataArray stack = context.dataStack;
     int pc = 0;
+    int expectedStackSize = stack.size() + expectedStackGrowth;
+    int minimumStackSize = Math.min(stack.size(), expectedStackSize);
     while (pc < code.length) {
-      switch (code[pc++]) {
+      byte op = code[pc++];
+      switch (op) {
         case Wasm.UNREACHABLE:
           throw new IllegalStateException("Reached unreachable.");
         case Wasm.NOP:
@@ -659,7 +665,15 @@ public class WasmExpression {
         default:
           throw new IllegalStateException("Unrecognized opcode " + Integer.toHexString(code[pc-1]&255));
       }
+      if (stack.size() < minimumStackSize) {
+        throw new RuntimeException("Stack underflow at op: " + Integer.toHexString(op));
+      }
     }
+
+    if (stack.size() != expectedStackSize) {
+      throw new RuntimeException("Expected stack size: " + expectedStackSize + "; actual: " + stack.size());
+    }
+
   }
 
 }

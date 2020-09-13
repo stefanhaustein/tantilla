@@ -73,10 +73,13 @@ public class Invoke extends WasmNode {
       if (resolvedProperty == null) {
         throw new RuntimeException("Property '" + name + "' not found in " + adjustedChildren[0].returnType());
       }
+
+      resolutionContext.validateProperty(resolvedProperty);
+
       if (!(resolvedProperty.getType() instanceof FunctionType)) {
         throw new RuntimeException("Type of property '" + resolvedProperty + "' is not callable.");
       }
-
+      
       FunctionType functionType = (FunctionType) resolvedProperty.getType();
       final int count = InvocationResolver.resolveWasm(wasm, functionType, adjustedChildren, 0, true, resolutionContext, line);
       wasm.callWithContext(context -> {
@@ -99,6 +102,8 @@ public class Invoke extends WasmNode {
       throw new RuntimeException("Property '" + name + "' not found in " + classifier);
     }
 
+    resolutionContext.validateProperty(resolvedProperty);
+
     if (resolvedProperty.getType() instanceof FunctionType) {
       FunctionType functionType = (FunctionType) resolvedProperty.getType();
       final int count = InvocationResolver.resolveWasm(wasm, functionType, children, 1, true, resolutionContext, line);
@@ -117,7 +122,7 @@ public class Invoke extends WasmNode {
       wasm.callWithContext(context -> {
         Object[] args = new Object[count];
         for (int i = 0; i < count; i++) {
-          args[count - i] = context.dataStack.popObject();
+          args[count - i - 1] = context.dataStack.popObject();
         }
         context.dataStack.pushObject(instantiable.createInstance(context, args));
       });

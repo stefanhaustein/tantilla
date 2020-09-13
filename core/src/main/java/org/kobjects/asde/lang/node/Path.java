@@ -133,7 +133,9 @@ public class Path extends AssignableWasmNode implements HasProperty {
       });
     } else {
       wasm.callWithContext(evaluationContext -> {
-        evaluationContext.dataStack.pushObject(resolvedProperty.get(evaluationContext, evaluationContext.dataStack.popObject()));
+        Object instance = evaluationContext.dataStack.popObject();
+        System.err.println("instance at stackTop for evaluating " + this + " is: " + instance);
+        evaluationContext.dataStack.pushObject(resolvedProperty.get(evaluationContext, instance));
       });
     }
     resolvedType = resolvedProperty.getType();

@@ -92,7 +92,7 @@ public class AssignmentStatement extends Statement {
             @Override
             public void set(EvaluationContext evaluationContext, Object value) {
               evaluationContext.dataStack.pushObject(value);
-              wasm.run(evaluationContext);
+              wasm.run(evaluationContext, -1);
             }
           };
         }

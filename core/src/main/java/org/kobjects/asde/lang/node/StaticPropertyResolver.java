@@ -11,6 +11,7 @@ public class StaticPropertyResolver {
 
   static Type resolveStaticProperty(WasmExpressionBuilder wasm, ValidationContext resolutionContext, Property resolvedProperty, boolean forSet) {
     resolutionContext.validateProperty(resolvedProperty);
+
     if (resolvedProperty.getType() == null) {
       throw new RuntimeException("Type of property '" + resolvedProperty + "' is null.");
     }
@@ -42,7 +43,11 @@ public class StaticPropertyResolver {
       });
     } else {
       wasm.callWithContext(context -> {
-        context.dataStack.pushObject(resolvedProperty.getStaticValue());
+        Object value = resolvedProperty.getStaticValue();
+        if (value == null) {
+          throw new RuntimeException("null resolving " + resolvedProperty);
+        }
+        context.dataStack.pushObject(value);
       });
     }
 

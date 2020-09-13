@@ -70,13 +70,18 @@ public class EvaluationContext {
 
 
     public Object call(Callable callable, int paramCount) {
+        int savedStackSize = dataStack.size();
         int savedStackBase = stackBase;
-        stackBase = dataStack.size() - paramCount;
+        stackBase = savedStackSize - paramCount;
         try {
             dataStack.ensureSize(stackBase + callable.getLocalVariableCount());
-            return callable.call(this, paramCount);
+            Object result = callable.call(this, paramCount);
+            if (dataStack.size() != stackBase + callable.getLocalVariableCount()) {
+                throw new RuntimeException("Expected stack size " + savedStackSize + "; actual: " + dataStack.size() + " in " + callable);
+            }
+            return result;
         } finally {
-            dataStack.popN(paramCount);
+            dataStack.popN(dataStack.size() - savedStackSize + paramCount);
             stackBase = savedStackBase;
         }
     }

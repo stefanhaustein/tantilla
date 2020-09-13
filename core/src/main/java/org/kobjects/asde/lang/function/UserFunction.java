@@ -68,6 +68,11 @@ public class UserFunction implements Callable, DeclaredBy {
   }
 
   public Object callImpl(EvaluationContext newContext) {
+    System.err.println("CallImpl of " + declaringSymbol);
+    for (int i = newContext.stackBase; i < newContext.dataStack.size(); i++) {
+      System.err.println(" local " + i + ": " + newContext.dataStack.getObject(i));
+    }
+
     try {
       ProgramControl control = newContext.control;
       //      if (newContext.currentLine > -1) {

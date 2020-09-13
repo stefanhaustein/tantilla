@@ -51,6 +51,9 @@ public class Identifier extends AssignableWasmNode implements HasProperty {
       resolvedKind = Kind.LOCAL_VARIABLE;
       wasm.opCode(forSet ? Wasm.LOCAL_SET : Wasm.LOCAL_GET);
       wasm.integer(resolvedLocalVariable.index);
+      wasm.callWithContext(context -> {
+          System.err.println("Evaluated local '" + name + " to " + context.dataStack.getObject(context.dataStack.size() - 1));
+      });
       resolvedType = resolvedLocalVariable.getType();
     } else {
       resolvedRootProperty = resolutionContext.program.mainModule.getProperty(name);

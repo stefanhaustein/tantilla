@@ -67,8 +67,9 @@ public abstract class Node {
 
   protected Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
     resolve(resolutionContext, line);
-    wasm.opCode(Wasm.EVAL);
-    wasm.object(this);
+    wasm.callWithContext(context -> {
+      context.dataStack.pushObject(eval(context));
+    });
     return returnType();
   }
 
