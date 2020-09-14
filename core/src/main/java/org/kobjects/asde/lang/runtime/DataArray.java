@@ -71,6 +71,12 @@ public class DataArray {
         return result;
     }
 
+    public boolean popBoolean() {
+        boolean result = getBoolean(size - 1);
+        objects[--size] = null;
+        return result;
+    }
+
     public int push() {
         if (objects.length > size) {
             return size++;

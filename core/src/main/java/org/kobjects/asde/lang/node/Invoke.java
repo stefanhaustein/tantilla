@@ -79,7 +79,7 @@ public class Invoke extends WasmNode {
       if (!(resolvedProperty.getType() instanceof FunctionType)) {
         throw new RuntimeException("Type of property '" + resolvedProperty + "' is not callable.");
       }
-      
+
       FunctionType functionType = (FunctionType) resolvedProperty.getType();
       final int count = InvocationResolver.resolveWasm(wasm, functionType, adjustedChildren, 0, true, resolutionContext, line);
       wasm.callWithContext(context -> {

@@ -1,5 +1,7 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.asde.lang.wasm.Wasm;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
@@ -8,35 +10,25 @@ import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 
-public final class OrOperator extends Node {
+public final class OrOperator extends WasmNode {
 
   public OrOperator(Node child1, Node child2) {
     super(child1, child2);
   }
 
   @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
-    Type t0 = children[0].returnType();
-    if (t0 != Types.BOOL) {
-      throw new IllegalArgumentException("First argument must be boolean instead of " + t0);
-    }
-    Type t1 = children[1].returnType();
-    if (t1 != Types.BOOL) {
-      throw new IllegalArgumentException("Second argument must be boolean instead of " + t1);
-    }
-  }
-
-  public Object eval(EvaluationContext evaluationContext) {
-    return evalBoolean(evaluationContext);
+  protected Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
+    children[0].resolveWasm(wasm, resolutionContext, line, Types.BOOL);
+    wasm.opCode(Wasm.IF);
+    wasm.opCode(Wasm.BOOL_TRUE);
+    wasm.opCode(Wasm.ELSE);
+    children[1].resolveWasm(wasm, resolutionContext, line, Types.BOOL);
+    wasm.opCode(Wasm.END);
+    return Types.BOOL;
   }
 
   public boolean evalBoolean(EvaluationContext evaluationContext) {
     return children[0].evalBoolean(evaluationContext) || children[1].evalBoolean(evaluationContext);
-  }
-
-  @Override
-  public Type returnType() {
-    return Types.BOOL;
   }
 
   @Override

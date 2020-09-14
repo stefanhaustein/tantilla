@@ -19,6 +19,52 @@ public class WasmExpression {
     run(context, 1);
   }
 
+  public int skipBlock(int pc, boolean orElse) {
+    int depth = 0;
+    while (true) {
+      switch (code[pc++]) {
+        case Wasm.UNREACHABLE:
+          throw new IllegalStateException("Reachded unreachable.");
+        case Wasm.BLOCK:
+          // Fallthrough intended
+        case Wasm.LOOP:
+          // Fallthrough intended
+        case Wasm.IF:
+          depth++;
+          break;
+        case Wasm.END:
+          System.err.println("END reached at depth: " + depth);
+          if (depth-- == 0) {
+            return pc;
+          }
+          break;
+        case Wasm.ELSE:
+          System.err.println("ELSE reached at depth: " + depth + " orElse: " + orElse);
+          if (orElse && depth == 0) {
+            return pc;
+          }
+          break;
+        case Wasm.LOCAL_GET:
+        case Wasm.LOCAL_SET:
+        case Wasm.LOCAL_TEE:
+        case Wasm.I32_CONST:
+        case Wasm.I64_CONST:
+        case Wasm.OBJ_CONST:
+        case Wasm.EVAL:
+          while ((code[pc++] & 0x80) != 0) {
+            // condition contains increment.
+          }
+          break;
+        case Wasm.F32_CONST:
+          pc += 4;
+          break;
+        case Wasm.F64_CONST:
+          pc += 8;
+          break;
+      }
+    }
+  }
+
 
   public void run(EvaluationContext context, int expectedStackGrowth) {
     DataArray stack = context.dataStack;
@@ -31,13 +77,25 @@ public class WasmExpression {
         case Wasm.UNREACHABLE:
           throw new IllegalStateException("Reached unreachable.");
         case Wasm.NOP:
+        case Wasm.END:
+          break;
+
+        case Wasm.IF:
+          if (!stack.popBoolean()) {
+            System.err.println("IF -> false branch.");
+            pc = skipBlock(pc, /* orElse= */ true);
+          } else {
+            System.err.println("IF -> true branch.");
+          }
+          break;
+
+        case Wasm.ELSE:
+          System.err.println("ELES reached.");
+          pc = skipBlock(pc, /* orElse= */ false);
           break;
 
         case Wasm.BLOCK:
         case Wasm.LOOP:
-        case Wasm.IF:
-        case Wasm.ELSE:
-        case Wasm.END:
         case Wasm.BR:
         case Wasm.BR_IF:
         case Wasm.BR_TABLE:
@@ -51,7 +109,7 @@ public class WasmExpression {
           break;
 
         case Wasm.SELECT:
-          if (!context.popBoolean()) {
+          if (!stack.popBoolean()) {
             stack.copy(stack.size() - 1, stack.size() - 2);
           }
           stack.popN(1);
@@ -194,6 +252,9 @@ public class WasmExpression {
         case Wasm.I32_EQ:
           stack.pushBoolean(stack.popI32() == stack.popI32());
           break;
+        case Wasm.I32_NE:
+          stack.pushBoolean(stack.popI32() != stack.popI32());
+          break;
         case Wasm.I32_LT_S: {
           int z2 = stack.popI32();
           stack.pushBoolean(stack.popI32() < z2);
@@ -225,6 +286,9 @@ public class WasmExpression {
           break;
         case Wasm.I64_EQ:
           stack.pushBoolean(stack.popI64() == stack.popI64());
+          break;
+        case Wasm.I64_NE:
+          stack.pushBoolean(stack.popI64() != stack.popI64());
           break;
         case Wasm.I64_LT_S: {
           long z2 = stack.popI64();
