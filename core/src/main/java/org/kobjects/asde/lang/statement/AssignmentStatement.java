@@ -1,7 +1,6 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.asde.lang.node.Assignable;
-import org.kobjects.asde.lang.node.AssignableNode;
 import org.kobjects.asde.lang.node.AssignableWasmNode;
 import org.kobjects.asde.lang.node.TraitCast;
 import org.kobjects.asde.lang.type.AwaitableType;
@@ -29,7 +28,7 @@ public class AssignmentStatement extends Statement {
   }
 
   public static AssignmentStatement createAssignment(Node target, boolean await, Node init) {
-    if (!(target instanceof AssignableNode) && !(target instanceof AssignableWasmNode)) {
+    if (!(target instanceof AssignableWasmNode)) {
       throw new RuntimeException("Assignment target is not assignable.");
     }
     return new AssignmentStatement(Kind.ASSIGN, null, target, await, init);
@@ -79,11 +78,7 @@ public class AssignmentStatement extends Statement {
     if (kind == Kind.ASSIGN) {
       try {
         // May fail if resolve above has failed.
-        if (children[1] instanceof AssignableNode) {
-          Type expectedType = ((AssignableNode) children[1]).resolveForAssignment(resolutionContext, line);
-          resolvedSource = TraitCast.autoCast(children[0], expectedType, resolutionContext);
-          resolvedTarget = (AssignableNode) children[1];
-        } else if (children[1] instanceof AssignableWasmNode) {
+        if (children[1] instanceof AssignableWasmNode) {
           WasmExpressionBuilder builder = new WasmExpressionBuilder();
           Type expectedType = ((AssignableWasmNode) children[1]).resolveForAssignment(builder, resolutionContext, line);
           resolvedSource = TraitCast.autoCast(children[0], expectedType, resolutionContext);

@@ -13,7 +13,7 @@ import org.kobjects.markdown.AnnotatedStringBuilder;
 
 import java.util.Map;
 
-public class Invoke extends WasmNode {
+public class Invoke extends ExpressionNode {
 
   final boolean parenthesis;
   Property resolvedProperty;

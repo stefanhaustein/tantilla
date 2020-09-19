@@ -4,14 +4,13 @@ import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.list.ListType;
-import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Arrays;
 import java.util.Map;
 
-public class ArrayLiteral extends WasmNode {
+public class ArrayLiteral extends ExpressionNode {
     ListType resolvedType;
 
     public ArrayLiteral(Node... children) {

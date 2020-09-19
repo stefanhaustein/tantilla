@@ -6,11 +6,11 @@ import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.asde.lang.wasm.runtime.WasmExpression;
 
-public abstract class WasmNode extends Node {
+public abstract class ExpressionNode extends Node {
   WasmExpression wasmExpression;
   Type resolvedType;
 
-  public WasmNode(Node... children) {
+  public ExpressionNode(Node... children) {
     super(children);
   }
 

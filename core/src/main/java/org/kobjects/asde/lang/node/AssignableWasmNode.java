@@ -4,7 +4,7 @@ import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 
-public abstract class AssignableWasmNode extends WasmNode {
+public abstract class AssignableWasmNode extends ExpressionNode {
 
   protected AssignableWasmNode(Node... children) {
     super(children);

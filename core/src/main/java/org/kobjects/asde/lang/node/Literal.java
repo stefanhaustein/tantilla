@@ -5,14 +5,13 @@ import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.io.SyntaxColor;
 import org.kobjects.asde.lang.program.Program;
-import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 
-public class Literal extends WasmNode {
+public class Literal extends ExpressionNode {
   public final Object value;
   private final Format format;
 

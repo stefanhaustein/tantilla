@@ -4,13 +4,12 @@ import org.kobjects.asde.lang.wasm.Wasm;
 import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.ValidationContext;
-import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;
 
 import java.util.Map;
 
-public class BinaryNotOperator extends WasmNode {
+public class BinaryNotOperator extends ExpressionNode {
 
   public BinaryNotOperator(Node child) {
     super(child);

@@ -3,14 +3,13 @@ package org.kobjects.asde.lang.node;
 import org.kobjects.asde.lang.wasm.Wasm;
 import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.markdown.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 
-public class AndOperator extends WasmNode {
+public class AndOperator extends ExpressionNode {
 
   public AndOperator(Node child1, Node child2) {
     super(child1, child2);

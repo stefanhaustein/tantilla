@@ -9,7 +9,7 @@ import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 
-public class MathOperator extends WasmNode {
+public class MathOperator extends ExpressionNode {
 
   public enum Kind {
     ADD, SUB, MUL, DIV, MOD, POW;

@@ -4,13 +4,12 @@ import org.kobjects.asde.lang.wasm.Wasm;
 import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.ValidationContext;
-import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;
 
 import java.util.Map;
 
-public class BitOperator extends WasmNode {
+public class BitOperator extends ExpressionNode {
   public enum Kind {
     AND, OR, XOR, SHL, SHR
   }
