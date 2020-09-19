@@ -24,8 +24,6 @@ public class ArrayAccessWasm extends AssignableWasmNode {
 
   Kind kind = Kind.UNRESOLVED;
   Type resolvedElementType;
-  // Only used for LIST_CONSTRUCTOR
-  Node[] resolvedChildren;
 
   public ArrayAccessWasm(Node... children) {
     super(children);
@@ -36,22 +34,24 @@ public class ArrayAccessWasm extends AssignableWasmNode {
     return resolveWasmImpl(wasm, validationContext, line, /* forSet= */ true);
   }
 
-  c@Override
-  public Type resolveForAssignment(ValidationContext resolutionContext, int line) {
-    if (kind != Kind.ARRAY_ACCESS && kind != Kind.ERROR) {
-      throw new RuntimeException("Array expected");
-    }
-    return returnType();
-  }
-
-  public void set(EvaluationContext evaluationContext, Object value) {
-    ListImpl list = (ListImpl) children[0].eval(evaluationContext);
-    list.setValueAt(value, children[1].evalInt(evaluationContext));
-  }
-
   private Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line, boolean forSet) {
     kind = Kind.ERROR;
+
+    if (children[0].toString().equals("List")) {
+      if (forSet) {
+        throw new RuntimeException("Assignment to list types not supported");
+      }
+      // The reason for parsing the type is the ambiguity of float (conversion method vs. type).
+      kind = Kind.QUALIFIED_TYPE;
+      Tokenizer tokenizer = resolutionContext.program.parser.createTokenizer(toString());
+      tokenizer.nextToken();
+      resolvedElementType = resolutionContext.program.parser.parseType(tokenizer);
+      wasm.objConst(resolvedElementType);
+      return resolvedType = new MetaType(resolvedElementType);
+    }
+
     Type type0 = children[0].resolveWasm(new WasmExpressionBuilder(), resolutionContext, line);
+
     if (type0 instanceof ListType || type0 == Types.STR) {
       // For real...
       children[0].resolveWasm(wasm, resolutionContext, line);
@@ -100,19 +100,6 @@ public class ArrayAccessWasm extends AssignableWasmNode {
       return resolvedType = ((ListType) type0).elementType;
     }
 
-    if (type0.toString().equals("List")) {
-      if (forSet) {
-        throw new RuntimeException("Assignment to list types not supported");
-      }
-      // The reason for parsing the type is the ambiguity of float (conversion method vs. type).
-      kind = Kind.QUALIFIED_TYPE;
-      Tokenizer tokenizer = resolutionContext.program.parser.createTokenizer(toString());
-      tokenizer.nextToken();
-      resolvedElementType = resolutionContext.program.parser.parseType(tokenizer);
-      wasm.objConst(resolvedElementType);
-      return resolvedType = new MetaType(resolvedElementType);
-    }
-
     if (type0 instanceof MetaType) {
       if (forSet) {
         throw new RuntimeException("Assignment to list constructors not supported");
@@ -123,11 +110,11 @@ public class ArrayAccessWasm extends AssignableWasmNode {
         throw new RuntimeException("List type expected for list constructor");
       }
       resolvedElementType = ((ListType) inner).elementType;
-      for (Node child : children) {
-        Type actualType = child.resolveWasm(wasm, resolutionContext, line);
+      final int count = children.length - 1;
+      for (int i = 1; i < count; i++) {
+        Type actualType = children[i + 1].resolveWasm(wasm, resolutionContext, line);
         TraitCast.autoCastWasm(wasm, actualType, resolvedElementType, resolutionContext);
       }
-      final int count = children.length;
       wasm.callWithContext(context -> {
         Object[] array = new Object[count];
         for (int i = count - 1; i >= 0; i--) {

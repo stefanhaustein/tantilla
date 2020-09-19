@@ -1,11 +1,11 @@
 package org.kobjects.asde.lang.parser;
 
 import org.kobjects.asde.lang.node.AndOperator;
+import org.kobjects.asde.lang.node.ArrayAccessWasm;
 import org.kobjects.asde.lang.node.BinaryNotOperator;
 import org.kobjects.asde.lang.node.BitOperator;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Invoke;
-import org.kobjects.asde.lang.node.ArrayAccess;
 import org.kobjects.asde.lang.node.ArrayLiteral;
 import org.kobjects.asde.lang.node.Named;
 import org.kobjects.asde.lang.node.Group;
@@ -125,7 +125,7 @@ class ExpressionBuilder extends Processor<Node> {
     if (":".equals(separator)) {
       return new Slice(children.toArray(Node.EMPTY_ARRAY));
     }
-    return new ArrayAccess(children.toArray(Node.EMPTY_ARRAY));
+    return new ArrayAccessWasm(children.toArray(Node.EMPTY_ARRAY));
   }
 
   @Override
