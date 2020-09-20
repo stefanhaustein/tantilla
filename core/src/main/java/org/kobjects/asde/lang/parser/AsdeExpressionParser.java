@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.parser;
 
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.expressionparser.ExpressionParser;
@@ -9,7 +10,7 @@ import org.kobjects.expressionparser.Tokenizer;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-public class AsdeExpressionParser extends ExpressionParser<Node> {
+public class AsdeExpressionParser extends ExpressionParser<ExpressionNode> {
 
   static final Pattern NUMBER_PATTERN = Pattern.compile(
       "\\G\\s*((0x[0-9a-fA-f]+)|(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?)");

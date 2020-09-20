@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.node;
 
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Types;
@@ -8,19 +9,11 @@ import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 
-public class ImpliedSliceValue extends Node {
-  @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
-  }
+public class ImpliedSliceValue extends ExpressionNode {
 
   @Override
-  public Object eval(EvaluationContext evaluationContext) {
-    throw new IllegalStateException();
-  }
-
-  @Override
-  public Type returnType() {
-    return Types.FLOAT;
+  protected Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
+    throw new UnsupportedOperationException();
   }
 
   @Override

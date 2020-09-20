@@ -21,7 +21,7 @@ public class Literal extends ExpressionNode {
   }
 
   public Literal(Object value, Format format) {
-    super((Node[]) null);
+    super((ExpressionNode[]) null);
     this.value = value;
     this.format = format;
   }

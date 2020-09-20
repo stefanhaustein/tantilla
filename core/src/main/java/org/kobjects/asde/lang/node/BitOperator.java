@@ -17,7 +17,7 @@ public class BitOperator extends ExpressionNode {
   private final Kind kind;
 
 
-  public BitOperator(BitOperator.Kind kind, Node child1, Node child2) {
+  public BitOperator(BitOperator.Kind kind, ExpressionNode child1, ExpressionNode child2) {
     super(child1, child2);
     this.kind = kind;
   }

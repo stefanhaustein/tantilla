@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.io;
 
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.markdown.Section;
 import org.kobjects.markdown.Text;
@@ -215,7 +216,7 @@ public class Shell {
         if (tokenizer.currentType == Tokenizer.TokenType.EOF) {
           property = null;
         } else {
-          Node node = program.parser.expressionParser.parse(tokenizer);
+          ExpressionNode node = program.parser.expressionParser.parse(tokenizer);
           UserFunction wrapper = new UserFunction(program, new FunctionType(Types.VOID));
           wrapper.appendStatement(new VoidStatement(node));
           ValidationContext.validateShellInput(wrapper);

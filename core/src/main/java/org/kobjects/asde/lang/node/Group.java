@@ -8,7 +8,7 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.Map;
 
 public class Group extends ExpressionNode {
-    public Group(Node child) {
+    public Group(ExpressionNode child) {
         super(child);
     }
 

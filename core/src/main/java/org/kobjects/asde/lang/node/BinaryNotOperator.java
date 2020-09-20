@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class BinaryNotOperator extends ExpressionNode {
 
-  public BinaryNotOperator(Node child) {
+  public BinaryNotOperator(ExpressionNode child) {
     super(child);
   }
 

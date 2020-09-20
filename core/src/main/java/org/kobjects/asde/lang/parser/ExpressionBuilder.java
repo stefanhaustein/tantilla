@@ -4,6 +4,7 @@ import org.kobjects.asde.lang.node.AndOperator;
 import org.kobjects.asde.lang.node.ArrayAccess;
 import org.kobjects.asde.lang.node.BinaryNotOperator;
 import org.kobjects.asde.lang.node.BitOperator;
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.asde.lang.node.Identifier;
 import org.kobjects.asde.lang.node.Invoke;
 import org.kobjects.asde.lang.node.ArrayLiteral;
@@ -30,7 +31,7 @@ import java.util.List;
  * This class configures and manages the parser and is able to turn the expression parser
  * callbacks into an expression node tree.
  */
-class ExpressionBuilder extends Processor<Node> {
+class ExpressionBuilder extends Processor<ExpressionNode> {
 
   private final Program program;
 
@@ -55,7 +56,7 @@ class ExpressionBuilder extends Processor<Node> {
   }*/
 
   @Override
-  public Node prefixOperator(Tokenizer tokenizer, String name, Node param) {
+  public ExpressionNode prefixOperator(Tokenizer tokenizer, String name, ExpressionNode param) {
     switch (name) {
       case "not":
         return new NotOperator(param);
@@ -72,7 +73,7 @@ class ExpressionBuilder extends Processor<Node> {
   }
 
   @Override
-  public Node suffixOperator(Tokenizer tokenizer, String name, Node base) {
+  public ExpressionNode suffixOperator(Tokenizer tokenizer, String name, ExpressionNode base) {
     AsdeExpressionParser subParser = new AsdeExpressionParser(program);
     ArrayList<Node> children = new ArrayList<>();
     children.add(base);
@@ -129,7 +130,7 @@ class ExpressionBuilder extends Processor<Node> {
   }
 
   @Override
-  public Node infixOperator(Tokenizer tokenizer, String name, Node left, Node right) {
+  public ExpressionNode infixOperator(Tokenizer tokenizer, String name, ExpressionNode left, ExpressionNode right) {
     switch (name) {
     /*  case ":":
         return new Named(left, right); */
@@ -187,19 +188,19 @@ class ExpressionBuilder extends Processor<Node> {
   }
 
   @Override
-  public Node group(Tokenizer tokenizer, String bracket, List<Node> args) {
+  public ExpressionNode group(Tokenizer tokenizer, String bracket, List<ExpressionNode> args) {
     switch (bracket) {
       case "(":
         return new Group(args.get(0));
       case "[":
-        return new ArrayLiteral(args.toArray(new Node[0]));
+        return new ArrayLiteral(args.toArray(ExpressionNode.EMPTY_ARRAY));
       default:
         return super.group(tokenizer, bracket, args);
     }
   }
 
   @Override
-  public Node identifier(Tokenizer tokenizer, String name) {
+  public ExpressionNode identifier(Tokenizer tokenizer, String name) {
 
     switch(name) {
       case "true":
@@ -213,7 +214,7 @@ class ExpressionBuilder extends Processor<Node> {
   }
 
   @Override
-  public Node numberLiteral(Tokenizer tokenizer, String value) {
+  public ExpressionNode numberLiteral(Tokenizer tokenizer, String value) {
     if (value.startsWith("0x")) {
       return new Literal((double) Long.parseLong(value.substring(2), 16), Literal.Format.HEX);
     }
@@ -221,7 +222,7 @@ class ExpressionBuilder extends Processor<Node> {
   }
 
   @Override
-  public Node stringLiteral(Tokenizer tokenizer, String value) {
+  public ExpressionNode stringLiteral(Tokenizer tokenizer, String value) {
     return new Literal(value.substring(1, value.length()-1).replace("\"\"", "\""));
   }
 }

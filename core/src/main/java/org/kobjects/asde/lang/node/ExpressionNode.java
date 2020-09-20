@@ -10,7 +10,7 @@ public abstract class ExpressionNode extends Node {
   WasmExpression wasmExpression;
   Type resolvedType;
 
-  public ExpressionNode(Node... children) {
+  public ExpressionNode(ExpressionNode... children) {
     super(children);
   }
 

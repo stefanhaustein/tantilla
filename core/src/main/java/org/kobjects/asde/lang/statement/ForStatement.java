@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.statement;
 
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.LocalSymbol;
 import org.kobjects.asde.lang.io.SyntaxColor;
@@ -23,7 +24,7 @@ public class ForStatement extends BlockStatement {
 
   static Type ITERATOR = new TypeImpl("iterator", null){};
 
-  public ForStatement(String varName, Node child) {
+  public ForStatement(String varName, ExpressionNode child) {
     super(child);
     this.variableName = varName;
   }

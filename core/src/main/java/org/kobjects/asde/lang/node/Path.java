@@ -30,7 +30,7 @@ public class Path extends AssignableWasmNode implements HasProperty {
   private Object resolvedConstant;
   private ResolvedKind resolvedKind = ResolvedKind.UNRESOLVED;
 
-  public Path(Node left, Node right) {
+  public Path(ExpressionNode left, ExpressionNode right) {
     super(left);
     if (!(right instanceof Identifier)) {
       throw new RuntimeException("Path name expected");

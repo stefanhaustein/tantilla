@@ -34,7 +34,7 @@ public class TraitCast extends Node {
 
   }
 
-  public static final Node autoCast(Node node, Type expectedType, ValidationContext context) {
+  public static final Node autoCast(ExpressionNode node, Type expectedType, ValidationContext context) {
     AdapterType adapterType = getAdapterType(node.returnType(), expectedType, context);
 
     return adapterType == null ? node : new TraitCast(node, adapterType);
@@ -54,7 +54,7 @@ public class TraitCast extends Node {
 
   private final AdapterType adapterType;
 
-  TraitCast(Node instanceExpression, AdapterType adapterType) {
+  TraitCast(ExpressionNode instanceExpression, AdapterType adapterType) {
     super(instanceExpression);
     this.adapterType = adapterType;
   }

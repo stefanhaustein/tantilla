@@ -17,7 +17,7 @@ public class RelationalOperator extends ExpressionNode {
 
   private final Kind kind;
 
-  public RelationalOperator(Kind kind, Node child1, Node child2) {
+  public RelationalOperator(Kind kind, ExpressionNode child1, ExpressionNode child2) {
     super(child1, child2);
     this.kind = kind;
   }

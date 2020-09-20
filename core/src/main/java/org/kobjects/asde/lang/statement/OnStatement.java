@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.statement;
 
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.ValidationContext;
@@ -15,7 +16,7 @@ public class OnStatement extends BlockStatement  {
   int resolvedEndLine;
   ArrayList<Node> listenableSubexpressions = new ArrayList<>();
 
-  public OnStatement(Node condition) {
+  public OnStatement(ExpressionNode condition) {
     super(condition);
   }
 

@@ -18,7 +18,7 @@ public class MathOperator extends ExpressionNode {
   public final Kind kind;
 
 
-  public MathOperator(Kind kind, Node child1, Node child2) {
+  public MathOperator(Kind kind, ExpressionNode child1, ExpressionNode child2) {
     super(child1, child2);
     this.kind = kind;
   }

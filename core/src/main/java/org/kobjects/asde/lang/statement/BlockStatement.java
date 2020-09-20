@@ -2,6 +2,7 @@ package org.kobjects.asde.lang.statement;
 
 
 import org.kobjects.asde.lang.function.ValidationContext;
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 
@@ -11,7 +12,7 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 public abstract class BlockStatement extends Statement {
 
 
-  BlockStatement(Node... children) {
+  BlockStatement(ExpressionNode... children) {
     super(children);
   }
 

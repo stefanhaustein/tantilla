@@ -2,6 +2,7 @@ package org.kobjects.asde.lang.statement;
 
 import org.kobjects.asde.lang.node.Assignable;
 import org.kobjects.asde.lang.node.AssignableWasmNode;
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.asde.lang.node.TraitCast;
 import org.kobjects.asde.lang.type.AwaitableType;
 import org.kobjects.asde.lang.type.Type;
@@ -23,11 +24,11 @@ public class AssignmentStatement extends Statement {
     ASSIGN, MUT, LET
   }
 
-  public static AssignmentStatement createDeclaration(Kind kind, String varName, boolean await, Node init) {
+  public static AssignmentStatement createDeclaration(Kind kind, String varName, boolean await, ExpressionNode init) {
     return new AssignmentStatement(kind, varName, null, await, init);
   }
 
-  public static AssignmentStatement createAssignment(Node target, boolean await, Node init) {
+  public static AssignmentStatement createAssignment(ExpressionNode target, boolean await, ExpressionNode init) {
     if (!(target instanceof AssignableWasmNode)) {
       throw new RuntimeException("Assignment target is not assignable.");
     }
@@ -40,7 +41,7 @@ public class AssignmentStatement extends Statement {
   Assignable resolvedTarget;
   Node resolvedSource;
 
-  private AssignmentStatement(Kind kind, String varName, Node target, boolean await, Node init) {
+  private AssignmentStatement(Kind kind, String varName, ExpressionNode target, boolean await, ExpressionNode init) {
     super(init, target);
     this.kind = kind;
     this.varName = varName;

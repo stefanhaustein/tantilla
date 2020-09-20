@@ -18,7 +18,7 @@ public class Invoke extends ExpressionNode {
   final boolean parenthesis;
   Property resolvedProperty;
 
-  public Invoke(boolean parenthesis, Node... children) {
+  public Invoke(boolean parenthesis, ExpressionNode... children) {
     super(children);
     this.parenthesis = parenthesis;
   }

@@ -4,6 +4,7 @@ import org.kobjects.asde.lang.exceptions.ExceptionWithReplacementPropolsal;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.ValidationContext;
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.AwaitableType;
@@ -15,7 +16,7 @@ import org.kobjects.markdown.AnnotatedStringBuilder;
 import java.util.Map;
 
 public class LaunchStatement extends Statement {
-  public LaunchStatement(Node expression) {
+  public LaunchStatement(ExpressionNode expression) {
     super(expression);
   }
 

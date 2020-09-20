@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.statement;
 
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
@@ -10,7 +11,7 @@ import java.util.Map;
 
 public class PrintStatement extends Statement {
 
-  public PrintStatement(Node... children) {
+  public PrintStatement(ExpressionNode... children) {
     super(children);
   }
 

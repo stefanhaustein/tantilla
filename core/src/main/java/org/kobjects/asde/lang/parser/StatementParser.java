@@ -6,6 +6,7 @@ import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.Parameter;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.function.UserFunction;
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.asde.lang.node.Invoke;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.node.Group;
@@ -160,7 +161,7 @@ public class StatementParser {
         return;
     }
 
-    Node expression = expressionParser.parse(tokenizer);
+    ExpressionNode expression = expressionParser.parse(tokenizer);
     if (tokenizer.tryConsume("=")) {
       boolean await = tokenizer.tryConsume("await");
       try {
@@ -203,7 +204,7 @@ public class StatementParser {
 
   private void parseConditional(Tokenizer tokenizer, ConditionStatement.Kind kind, List<Statement> result) {
     tokenizer.nextToken();
-    Node condition = expressionParser.parse(tokenizer);
+    ExpressionNode condition = expressionParser.parse(tokenizer);
     if (!tryConsume(tokenizer, ":")) {
       throw tokenizer.exception("':' expected after '" + kind.name().toLowerCase() + "'-condition.'", null);
     }
@@ -212,7 +213,7 @@ public class StatementParser {
 
   private OnStatement parseOn(Tokenizer tokenizer) {
     tokenizer.nextToken();
-    Node expr = expressionParser.parse(tokenizer);
+    ExpressionNode expr = expressionParser.parse(tokenizer);
     if (!tryConsume(tokenizer, ":")) {
       throw new RuntimeException("':' expected.");
     }
@@ -221,7 +222,7 @@ public class StatementParser {
 
   private OnChangeStatement parseOnchange(Tokenizer tokenizer) {
     tokenizer.nextToken();
-    Node expr = expressionParser.parse(tokenizer);
+    ExpressionNode expr = expressionParser.parse(tokenizer);
     if (!tryConsume(tokenizer, ":")) {
       throw new RuntimeException("':' expected.");
     }
@@ -239,14 +240,14 @@ public class StatementParser {
         break;
       }
     }
-    return new PrintStatement(args.toArray(new Node[0]));
+    return new PrintStatement(args.toArray(ExpressionNode.EMPTY_ARRAY));
   }
 
   private ForStatement parseFor(Tokenizer tokenizer) {
     tokenizer.nextToken();
     String varName = tokenizer.consumeIdentifier();
     require(tokenizer, "in");
-    Node iterable = expressionParser.parse(tokenizer);
+    ExpressionNode iterable = expressionParser.parse(tokenizer);
     tokenizer.consume(":");
     return new ForStatement(varName, iterable);
   }
@@ -263,7 +264,7 @@ public class StatementParser {
     String varName = tokenizer.consumeIdentifier();
     tokenizer.consume("=");
     boolean await = tokenizer.tryConsume("await");
-    Node value = expressionParser.parse(tokenizer);
+    ExpressionNode value = expressionParser.parse(tokenizer);
     return AssignmentStatement.createDeclaration(kind, varName, await, value);
   }
 

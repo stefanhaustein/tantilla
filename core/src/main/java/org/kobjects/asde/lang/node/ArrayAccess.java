@@ -25,7 +25,7 @@ public class ArrayAccess extends AssignableWasmNode {
   Kind kind = Kind.UNRESOLVED;
   Type resolvedElementType;
 
-  public ArrayAccess(Node... children) {
+  public ArrayAccess(ExpressionNode... children) {
     super(children);
   }
 

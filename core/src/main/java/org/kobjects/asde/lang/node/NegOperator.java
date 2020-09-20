@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class NegOperator extends ExpressionNode {
 
-  public NegOperator(Node child) {
+  public NegOperator(ExpressionNode child) {
     super(child);
   }
 

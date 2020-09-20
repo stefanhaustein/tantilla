@@ -10,7 +10,7 @@ import java.util.Map;
 public class Named extends Node {
 
   public final String name;
-  public Named(String name, Node value) {
+  public Named(String name, ExpressionNode value) {
     super(value);
     this.name = name;
   }

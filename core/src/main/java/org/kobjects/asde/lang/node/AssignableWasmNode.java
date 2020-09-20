@@ -6,7 +6,7 @@ import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 
 public abstract class AssignableWasmNode extends ExpressionNode {
 
-  protected AssignableWasmNode(Node... children) {
+  protected AssignableWasmNode(ExpressionNode... children) {
     super(children);
   }
 

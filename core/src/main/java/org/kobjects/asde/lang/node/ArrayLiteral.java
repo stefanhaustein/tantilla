@@ -13,7 +13,7 @@ import java.util.Map;
 public class ArrayLiteral extends ExpressionNode {
     ListType resolvedType;
 
-    public ArrayLiteral(Node... children) {
+    public ArrayLiteral(ExpressionNode... children) {
         super(children);
     }
 

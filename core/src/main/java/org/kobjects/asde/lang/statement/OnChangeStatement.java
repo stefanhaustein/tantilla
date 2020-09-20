@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.statement;
 
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.node.Node;
@@ -11,7 +12,7 @@ public class OnChangeStatement extends BlockStatement  {
 
   int resolvedEndLine;
 
-  public OnChangeStatement(Node listen) {
+  public OnChangeStatement(ExpressionNode listen) {
     super(listen);
   }
 

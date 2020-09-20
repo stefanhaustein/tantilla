@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.statement;
 
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.exceptions.ExceptionWithReplacementPropolsal;
 import org.kobjects.asde.lang.function.Callable;
@@ -13,7 +14,7 @@ import org.kobjects.asde.lang.type.Type;
 import java.util.Map;
 
 public class VoidStatement extends Statement {
-  public VoidStatement(Node expression) {
+  public VoidStatement(ExpressionNode expression) {
     super(expression);
   }
 

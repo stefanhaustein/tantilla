@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.statement;
 
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.asde.lang.type.AwaitableType;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.async.Promise;
@@ -18,7 +19,7 @@ public class ReturnStatement extends Statement {
   Node resolvedChild;
   boolean async;
 
-  public ReturnStatement(Node... children) {
+  public ReturnStatement(ExpressionNode... children) {
     super(children);
   }
 

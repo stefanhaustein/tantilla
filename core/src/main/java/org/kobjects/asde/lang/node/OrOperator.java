@@ -11,7 +11,7 @@ import java.util.Map;
 
 public final class OrOperator extends ExpressionNode {
 
-  public OrOperator(Node child1, Node child2) {
+  public OrOperator(ExpressionNode child1, ExpressionNode child2) {
     super(child1, child2);
   }
 

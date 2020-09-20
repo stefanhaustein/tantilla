@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class AndOperator extends ExpressionNode {
 
-  public AndOperator(Node child1, Node child2) {
+  public AndOperator(ExpressionNode child1, ExpressionNode child2) {
     super(child1, child2);
   }
 

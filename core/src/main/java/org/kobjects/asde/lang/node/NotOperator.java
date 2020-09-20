@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class NotOperator extends ExpressionNode {
 
-  public NotOperator(Node child) {
+  public NotOperator(ExpressionNode child) {
     super(child);
   }
 

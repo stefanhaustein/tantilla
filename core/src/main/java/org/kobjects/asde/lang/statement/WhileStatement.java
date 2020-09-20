@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.statement;
 
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Types;
@@ -13,7 +14,7 @@ public class WhileStatement extends BlockStatement {
   int resolvedStartLine;
   int resolvedEndLine;
 
-  public WhileStatement(Node condition) {
+  public WhileStatement(ExpressionNode condition) {
     super(condition);
   }
 

@@ -17,7 +17,7 @@ public class Slice extends ExpressionNode {
   Type resolvedElementType;
   boolean forString;
 
-  public Slice(Node... children) {
+  public Slice(ExpressionNode... children) {
     super(children);
   }
 
