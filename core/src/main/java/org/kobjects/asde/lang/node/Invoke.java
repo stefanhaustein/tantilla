@@ -63,7 +63,7 @@ public class Invoke extends ExpressionNode {
     }
 
     if (baseType instanceof Classifier) {
-      Node[] adjustedChildren = new Node[children.length];
+      ExpressionNode[] adjustedChildren = new ExpressionNode[children.length];
       adjustedChildren[0] = path.children[0];
       for (int i = 1; i < adjustedChildren.length; i++) {
         adjustedChildren[i] = children[i];

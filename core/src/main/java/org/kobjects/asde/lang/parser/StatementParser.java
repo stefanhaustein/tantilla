@@ -51,7 +51,7 @@ public class StatementParser {
     return expressionParser.createTokenizer(line);
   }
 
-  public Node parseExpression(String unparsed) {
+  public ExpressionNode parseExpression(String unparsed) {
     Tokenizer tokenizer = expressionParser.createTokenizer(unparsed);
     tokenizer.nextToken();
     return expressionParser.parse(tokenizer);

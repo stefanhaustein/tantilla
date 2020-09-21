@@ -45,33 +45,6 @@ public abstract class Node {
 
   protected abstract void onResolve(ValidationContext resolutionContext, int line);
 
-  public final void resolveWasm(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line, Type expectedType) {
-    try {
-      Type type = resolveWasmImpl(wasm, resolutionContext, line);
-      if (type != expectedType) {
-        throw new RuntimeException("Actual type (" + type + ") does not match expected type (" + expectedType + ").");
-      }
-    } catch (Exception e) {
-      resolutionContext.addError(this, e);
-    }
-  }
-
-  public final Type resolveWasm(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
-    try {
-      return resolveWasmImpl(wasm, resolutionContext, line);
-    } catch (Exception e) {
-      resolutionContext.addError(this, e);
-      return null;
-    }
-  }
-
-  protected Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
-    resolve(resolutionContext, line);
-    wasm.callWithContext(context -> {
-      context.dataStack.pushObject(eval(context));
-    });
-    return returnType();
-  }
 
 
   public boolean resolve(ValidationContext resolutionContext, int line) {
@@ -102,31 +75,6 @@ public abstract class Node {
     throw new EvaluationException(this, "Boolean or Number expected; got " + Types.of(o));
   }
 
-  public double evalDouble(EvaluationContext evaluationContext) {
-    Object o = eval(evaluationContext);
-    if (o instanceof Number) {
-      return ((Number) o).doubleValue();
-    }
-    if (o instanceof Boolean) {
-      return ((Boolean) o) ? 1.0 : 0.0;
-    }
-    throw new EvaluationException(this, "Number expected; got: " + o);
-  }
-
-  public int evalInt(EvaluationContext evaluationContext) {
-    Object o = eval(evaluationContext);
-    if (o instanceof Number) {
-      return ((Number) o).intValue();
-    }
-    if (o instanceof Boolean) {
-      return ((Boolean) o) ? 1 : 0;
-    }
-    throw new EvaluationException(this, "Number expected; got: " + o);
-  }
-
-  public String evalString(EvaluationContext evaluationContext) {
-    return Program.toString(eval(evaluationContext));
-  }
 
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     if (children != null && children.length > 0) {

@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.classifier;
 
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Type;
 
@@ -12,13 +13,13 @@ import java.util.Set;
 public abstract class AbstractProperty implements Property {
   protected String name;
   protected boolean mutable;
-  protected Node initializer;
+  protected ExpressionNode initializer;
   protected Type fixedType;
 
   Map<Node, Exception> errors = Collections.emptyMap();
   Set<Property> initializationDependencies = Collections.emptySet();
 
-  protected AbstractProperty(boolean mutable, String name, Type fixedType, Node initializer) {
+  protected AbstractProperty(boolean mutable, String name, Type fixedType, ExpressionNode initializer) {
     this.mutable = mutable;
     this.name = name;
     this.fixedType = fixedType;
@@ -36,7 +37,7 @@ public abstract class AbstractProperty implements Property {
     return name;
   }
 
-  public Node getInitializer() {
+  public ExpressionNode getInitializer() {
     return initializer;
   }
 

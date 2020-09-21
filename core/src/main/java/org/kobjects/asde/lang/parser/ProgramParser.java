@@ -10,6 +10,7 @@ import org.kobjects.asde.lang.classifier.trait.Trait;
 import org.kobjects.asde.lang.classifier.StaticProperty;
 import org.kobjects.asde.lang.classifier.trait.TraitProperty;
 import org.kobjects.asde.lang.function.UserFunction;
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.statement.BlockStatement;
@@ -161,7 +162,7 @@ public class ProgramParser {
             }
             Property property;
             if (tokenizer.tryConsume("=")) {
-              Node initilaizer = statementParser.expressionParser.parse(tokenizer);
+              ExpressionNode initilaizer = statementParser.expressionParser.parse(tokenizer);
               property = isConst ? StaticProperty.createWithInitializer(currentClassifier, false, name, initilaizer)
                   : InstanceFieldProperty.createWithInitializer((ClassType) currentClassifier, mutable, name, initilaizer);
             } else if (tokenizer.tryConsume(":")) {
@@ -177,7 +178,7 @@ public class ProgramParser {
             currentClassifier.putProperty(property);
           } else {
             tokenizer.consume("=");
-            Node initializer = statementParser.expressionParser.parse(tokenizer);
+            ExpressionNode initializer = statementParser.expressionParser.parse(tokenizer);
             // mutable is (currently?) redundant here...
             program.mainModule.putProperty(StaticProperty.createWithInitializer(program.mainModule, !isConst, name, initializer));
           }

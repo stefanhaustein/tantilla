@@ -9,14 +9,14 @@ import org.kobjects.asde.lang.wasm.runtime.WasmExpression;
 
 public class InvocationResolver {
 
-  static int resolveWasm(WasmExpressionBuilder wasm, FunctionType signature, Node[] children, int offset, boolean permitPositional, ValidationContext context, int line) {
+  static int resolveWasm(WasmExpressionBuilder wasm, FunctionType signature, ExpressionNode[] children, int offset, boolean permitPositional, ValidationContext context, int line) {
     if (signature.getParameterCount() < children.length - offset) {
       throw new RuntimeException("Too many parameters. Expected " + signature.getParameterCount() + " but got " + children.length);
     }
 
     WasmExpressionBuilder[] result = new WasmExpressionBuilder[signature.getParameterCount()];
     for (int i = 0; i < children.length - offset; i++) {
-      Node value = children[i + offset];
+      ExpressionNode value = children[i + offset];
       int parameterIndex;
       if (value instanceof Named) {
         permitPositional = false;
@@ -44,7 +44,7 @@ public class InvocationResolver {
     for (int i = 0; i < result.length; i++) {
       if (result[i] == null) {
         Parameter parameter = signature.getParameter(i);
-        Node defaultValueExpression = parameter.getDefaultValueExpression();
+        ExpressionNode defaultValueExpression = parameter.getDefaultValueExpression();
         if (defaultValueExpression == null) {
           throw new RuntimeException("No default value available for parameter " + parameter.getName());
         }

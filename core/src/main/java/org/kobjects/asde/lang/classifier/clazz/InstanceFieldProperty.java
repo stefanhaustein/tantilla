@@ -1,6 +1,7 @@
 package org.kobjects.asde.lang.classifier.clazz;
 
 import org.kobjects.asde.lang.classifier.AbstractProperty;
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
@@ -11,7 +12,7 @@ public class InstanceFieldProperty extends AbstractProperty {
   int fieldIndex = -1;
 
 
-  public static InstanceFieldProperty createWithInitializer(ClassType owner, boolean isMutable, String propertyName, Node initializer) {
+  public static InstanceFieldProperty createWithInitializer(ClassType owner, boolean isMutable, String propertyName, ExpressionNode initializer) {
     return new InstanceFieldProperty(
         owner,
         isMutable,
@@ -30,7 +31,7 @@ public class InstanceFieldProperty extends AbstractProperty {
   }
 
 
-  public InstanceFieldProperty(ClassType owner, boolean isMutable, Type type, String propertyName, Node initializer) {
+  public InstanceFieldProperty(ClassType owner, boolean isMutable, Type type, String propertyName, ExpressionNode initializer) {
     super(isMutable, propertyName, type, initializer);
     this.owner = owner;
   }

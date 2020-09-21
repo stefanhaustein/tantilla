@@ -14,6 +14,27 @@ public abstract class ExpressionNode extends Node {
     super(children);
   }
 
+
+  public final Type resolveWasm(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
+    try {
+      return resolveWasmImpl(wasm, resolutionContext, line);
+    } catch (Exception e) {
+      resolutionContext.addError(this, e);
+      return null;
+    }
+  }
+
+
+  public final void resolveWasm(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line, Type expectedType) {
+    try {
+      Type type = resolveWasmImpl(wasm, resolutionContext, line);
+      if (type != expectedType) {
+        throw new RuntimeException("Actual type (" + type + ") does not match expected type (" + expectedType + ").");
+      }
+    } catch (Exception e) {
+      resolutionContext.addError(this, e);
+    }
+  }
   @Override
   public final boolean resolve(ValidationContext resolutionContext, int line) {
     WasmExpressionBuilder wasmExpressionBuilder = new WasmExpressionBuilder();

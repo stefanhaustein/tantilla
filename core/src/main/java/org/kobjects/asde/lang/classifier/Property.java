@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.classifier;
 
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.trait.Trait;
 import org.kobjects.asde.lang.function.FunctionType;
@@ -63,7 +64,7 @@ public interface Property extends Comparable<Property> {
     throw new RuntimeException(toString(this) + " does not support setting a static value.");
   }
 
-  default Node getInitializer() {
+  default ExpressionNode getInitializer() {
     return null;
   };
 

@@ -4,6 +4,7 @@ import org.kobjects.asde.lang.classifier.trait.AdapterInstance;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.UserFunction;
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Type;
@@ -32,7 +33,7 @@ public class StaticProperty extends AbstractProperty {
         methodImplementation);
   }
 
-  public static StaticProperty createWithInitializer(Classifier owner, boolean isMutable, String propertyName, Node initializer) {
+  public static StaticProperty createWithInitializer(Classifier owner, boolean isMutable, String propertyName, ExpressionNode initializer) {
     return new StaticProperty(
         owner,
         isMutable,
@@ -54,7 +55,7 @@ public class StaticProperty extends AbstractProperty {
   }
 
 
-  StaticProperty(Classifier owner, boolean isMutable, Type fixedType, String name, Node initializer, Object staticValue) {
+  StaticProperty(Classifier owner, boolean isMutable, Type fixedType, String name, ExpressionNode initializer, Object staticValue) {
     super(isMutable, name, fixedType, initializer);
     this.owner = owner;
     this.staticValue = staticValue;
