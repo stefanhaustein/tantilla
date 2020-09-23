@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.asde.lang.node.ExpressionNode;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
+import org.kobjects.asde.lang.wasm.runtime.WasmExpression;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Types;
@@ -22,6 +24,7 @@ public class ConditionStatement extends BlockStatement {
   int resolvedLine;
   ConditionStatement resolvedPrevious;
   ConditionStatement resolvedNext;
+  WasmExpression resolvedCondition;
 
   public ConditionStatement(Kind kind, ExpressionNode condition) {
     super(condition);
@@ -34,8 +37,9 @@ public class ConditionStatement extends BlockStatement {
   }
 
 
+
   @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
+  public boolean resolve(ValidationContext resolutionContext, int line) {
     resolvedLine = line;
     resolvedPrevious = null;
     resolvedNext = null;
@@ -52,10 +56,12 @@ public class ConditionStatement extends BlockStatement {
       }
       resolvedPrevious.resolvedNext = this;
     }
-    if (children[0].returnType()!= Types.BOOL) {
-      throw new RuntimeException("Boolean condition value expected.");
-    }
+
+    WasmExpressionBuilder builder = new WasmExpressionBuilder();
+    children[0].resolveWasm(builder, resolutionContext, line, Types.BOOL);
+    resolvedCondition = builder.build();
     resolutionContext.startBlock(this);
+    return true;
   }
 
 
@@ -63,7 +69,11 @@ public class ConditionStatement extends BlockStatement {
   public Object eval(EvaluationContext evaluationContext) {
     if (kind == Kind.IF) {
       ConditionStatement current = this;
-      while (!current.children[0].evalBoolean(evaluationContext)) {
+      while (true) {
+        current.resolvedCondition.run(evaluationContext);
+        if (evaluationContext.dataStack.popBoolean()) {
+          break;
+        }
         current = current.resolvedNext;
         if (current == null) {
           evaluationContext.currentLine = resolvedEndLine + 1;

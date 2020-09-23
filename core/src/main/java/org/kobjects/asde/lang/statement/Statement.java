@@ -5,6 +5,7 @@ import org.kobjects.asde.lang.function.Block;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.Type;
 
@@ -14,6 +15,11 @@ public abstract class Statement extends Node {
 
   Statement(ExpressionNode... children) {
     super(children);
+  }
+
+  @Override
+  protected void onResolve(ValidationContext resolutionContext, int line) {
+    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -38,5 +44,6 @@ public abstract class Statement extends Node {
     block = resolutionContext.getCurrentBlock();
     return super.resolve(resolutionContext, line);
   }
+
 
 }
