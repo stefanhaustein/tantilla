@@ -23,6 +23,7 @@ import org.kobjects.asde.lang.classifier.clazz.InstanceFieldProperty;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.StaticProperty;
 import org.kobjects.asde.lang.classifier.trait.Trait;
+import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.program.ProgramListener;
 import org.kobjects.asde.lang.type.Type;
@@ -155,7 +156,7 @@ public class FieldFlow {
     }
 
 
-      Node initializer = fixedType == null ? mainActivity.program.parser.parseExpression(editText.getText().toString()) : null;
+      ExpressionNode initializer = fixedType == null ? mainActivity.program.parser.parseExpression(editText.getText().toString()) : null;
     //    if (symbol == null) {
 
       Property property = fixedType == null

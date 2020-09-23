@@ -39,7 +39,7 @@ public class AssignmentStatement extends Statement {
   public final Kind kind;
   String varName;
   Assignable resolvedTarget;
-  Node resolvedSource;
+  WasmExpression resolvedSource;
 
   private AssignmentStatement(Kind kind, String varName, ExpressionNode target, boolean await, ExpressionNode init) {
     super(init, target);
@@ -50,7 +50,8 @@ public class AssignmentStatement extends Statement {
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
-    Object value = resolvedSource.eval(evaluationContext);
+    resolvedSource.run(evaluationContext);
+    Object value = evaluationContext.dataStack.popObject();
     if (await) {
       final EvaluationContext innerContext = new EvaluationContext(evaluationContext);
       innerContext.currentLine++;
@@ -73,16 +74,10 @@ public class AssignmentStatement extends Statement {
   @Override
   public boolean resolve(ValidationContext resolutionContext, int line) {
     block = resolutionContext.getCurrentBlock();
-    if (!children[0].resolve(resolutionContext, line)) {
-      return false;
-    }
     if (kind == Kind.ASSIGN) {
       try {
-        // May fail if resolve above has failed.
-        if (children[1] instanceof AssignableWasmNode) {
           WasmExpressionBuilder builder = new WasmExpressionBuilder();
           Type expectedType = ((AssignableWasmNode) children[1]).resolveForAssignment(builder, resolutionContext, line);
-          resolvedSource = TraitCast.autoCast(children[0], expectedType, resolutionContext);
           WasmExpression wasm = builder.build();
           resolvedTarget = new Assignable() {
             @Override
@@ -91,13 +86,20 @@ public class AssignmentStatement extends Statement {
               wasm.run(evaluationContext, -1);
             }
           };
-        }
+
+          builder = new WasmExpressionBuilder();
+          Type actualType = children[0].resolveWasm(builder, resolutionContext, line);
+          TraitCast.autoCastWasm(builder, actualType, expectedType, resolutionContext);
+          resolvedSource = builder.build();
+
       } catch (Exception e) {
         resolutionContext.addError(this, e);
       }
 
     } else {
-      Type type = children[0].returnType();
+      WasmExpressionBuilder builder = new WasmExpressionBuilder();
+      Type type = children[0].resolveWasm(builder, resolutionContext, line);;
+      resolvedSource = builder.build();
       if (await) {
         if (type instanceof AwaitableType) {
           throw new RuntimeException("awaitable type expected.");
@@ -108,7 +110,6 @@ public class AssignmentStatement extends Statement {
         type = ((AwaitableType) type).getWrapped();
       }
       resolvedTarget = resolutionContext.declareLocalVariable(varName, type, kind != Kind.LET);
-      resolvedSource = children[0];
     }
     return true;
   }
