@@ -72,8 +72,7 @@ public class AssignmentStatement extends Statement {
   }
 
   @Override
-  public boolean resolve(ValidationContext resolutionContext, int line) {
-    block = resolutionContext.getCurrentBlock();
+  public void resolveImpl(ValidationContext resolutionContext, int line) {
     if (kind == Kind.ASSIGN) {
       try {
           WasmExpressionBuilder builder = new WasmExpressionBuilder();
@@ -111,11 +110,6 @@ public class AssignmentStatement extends Statement {
       }
       resolvedTarget = resolutionContext.declareLocalVariable(varName, type, kind != Kind.LET);
     }
-    return true;
-  }
-
-
-  public void onResolve(ValidationContext resolutionContext, int line) {
   }
 
 

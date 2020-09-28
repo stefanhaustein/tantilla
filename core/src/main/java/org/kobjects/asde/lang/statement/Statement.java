@@ -42,7 +42,12 @@ public abstract class Statement extends Node {
   @Override
   public boolean resolve(ValidationContext resolutionContext, int line) {
     block = resolutionContext.getCurrentBlock();
-    return super.resolve(resolutionContext, line);
+    resolveImpl(resolutionContext, line);
+    return true;
+  }
+
+  protected void resolveImpl(ValidationContext validationContext, int line) {
+    super.resolve(validationContext, line);
   }
 
 

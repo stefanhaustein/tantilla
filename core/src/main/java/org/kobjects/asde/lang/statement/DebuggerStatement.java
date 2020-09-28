@@ -8,10 +8,6 @@ import org.kobjects.asde.lang.node.Node;
 import java.util.Map;
 
 public class DebuggerStatement extends Statement {
-  @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
-    // nothing to do here...
-  }
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {

@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.asde.lang.node.ExpressionNode;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
+import org.kobjects.asde.lang.wasm.runtime.WasmExpression;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.LocalSymbol;
 import org.kobjects.asde.lang.io.SyntaxColor;
@@ -21,6 +23,7 @@ public class ForStatement extends BlockStatement {
   LocalSymbol resolvedIterator;
   int resolvedNextLine;
   int resolvedForLine;
+  WasmExpression resolvedIterable;
 
   static Type ITERATOR = new TypeImpl("iterator", null){};
 
@@ -29,21 +32,31 @@ public class ForStatement extends BlockStatement {
     this.variableName = varName;
   }
 
-  public void onResolve(ValidationContext resolutionContext, int line) {
+  @Override
+  public boolean resolve(ValidationContext resolutionContext, int line) {
+    block = resolutionContext.getCurrentBlock();
     resolutionContext.startBlock(this);
     resolvedForLine = line;
 
-    if (!(children[0].returnType() instanceof ListType)) {
+    WasmExpressionBuilder builder = new WasmExpressionBuilder();
+
+    Type type = children[0].resolveWasm(builder, resolutionContext, line);
+
+    if (!(type instanceof ListType)) {
       throw new RuntimeException("in expression must result in a list");
     }
-    ListType arrayType = (ListType) children[0].returnType();
+    ListType arrayType = (ListType) type;
     resolvedIterator = resolutionContext.declareLocalVariable(variableName + "-iterator", ITERATOR, false);
     resolvedVariable = resolutionContext.declareLocalVariable(variableName, arrayType.elementType, false);
+    resolvedIterable = builder.build();
+
+    return true;
   }
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
-    Iterator<Object> iterator = ((ListImpl) children[0].eval(evaluationContext)).defensiveCopy().iterator();
+    resolvedIterable.run(evaluationContext);
+    Iterator<Object> iterator = ((ListImpl) evaluationContext.dataStack.popObject()).defensiveCopy().iterator();
     if (!iterator.hasNext()) {
       evaluationContext.currentLine = resolvedNextLine + 1;
     } else {

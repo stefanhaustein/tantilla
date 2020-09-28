@@ -39,7 +39,7 @@ public class ConditionStatement extends BlockStatement {
 
 
   @Override
-  public boolean resolve(ValidationContext resolutionContext, int line) {
+  public void resolveImpl(ValidationContext resolutionContext, int line) {
     resolvedLine = line;
     resolvedPrevious = null;
     resolvedNext = null;
@@ -61,7 +61,6 @@ public class ConditionStatement extends BlockStatement {
     children[0].resolveWasm(builder, resolutionContext, line, Types.BOOL);
     resolvedCondition = builder.build();
     resolutionContext.startBlock(this);
-    return true;
   }
 
 
