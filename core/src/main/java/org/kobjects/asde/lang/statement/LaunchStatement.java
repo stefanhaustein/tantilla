@@ -10,22 +10,28 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.AwaitableType;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
+import org.kobjects.asde.lang.wasm.runtime.WasmExpression;
 import org.kobjects.async.Promise;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 
 import java.util.Map;
 
 public class LaunchStatement extends Statement {
+  private WasmExpression resolvedExpression;
+
   public LaunchStatement(ExpressionNode expression) {
     super(expression);
   }
 
   @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
-    Type returnType = children[0].returnType();
+  protected void resolveImpl(ValidationContext resolutionContext, int line) {
+    WasmExpressionBuilder builder = new WasmExpressionBuilder();
+    Type returnType = children[0].resolveWasm(builder, resolutionContext, line);
     if (!(returnType instanceof AwaitableType)) {
       throw new RuntimeException("Awaitable expected; got: " + returnType);
     }
+    resolvedExpression = builder.build();
   }
 
   @Override
@@ -33,7 +39,7 @@ public class LaunchStatement extends Statement {
 
     evaluationContext.control.program.getExecutor();
 
-    Promise<?> result = (Promise<?>) children[0].eval(evaluationContext);
+    Promise<?> result = (Promise<?>) resolvedExpression.run(evaluationContext).popObject();
 
     result.execute(evaluationContext.control.program.getExecutor(), unused -> {});
 

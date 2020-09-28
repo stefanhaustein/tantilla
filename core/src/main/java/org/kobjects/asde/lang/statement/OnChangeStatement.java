@@ -1,6 +1,9 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.asde.lang.node.ExpressionNode;
+import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
+import org.kobjects.asde.lang.wasm.runtime.WasmExpression;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.node.Node;
@@ -11,6 +14,8 @@ import java.util.Map;
 public class OnChangeStatement extends BlockStatement  {
 
   int resolvedEndLine;
+  Type resolvedType;
+  WasmExpression resolvedExpression;
 
   public OnChangeStatement(ExpressionNode listen) {
     super(listen);
@@ -20,9 +25,15 @@ public class OnChangeStatement extends BlockStatement  {
   @Override
   protected void onResolve(ValidationContext resolutionContext, int line) {
     resolutionContext.startBlock(this);
-    if (!children[0].returnType().supportsChangeListeners()) {
+
+    WasmExpressionBuilder builder = new WasmExpressionBuilder();
+    resolvedType = children[0].resolveWasm(builder, resolutionContext, line);
+
+    if (!resolvedType.supportsChangeListeners()) {
       throw new RuntimeException("Expression does not support change notifications.");
     }
+
+    resolvedExpression = builder.build();
   }
 
 
@@ -32,7 +43,7 @@ public class OnChangeStatement extends BlockStatement  {
     newContectBase.currentLine++;
 
     Trigger trigger = new Trigger(newContectBase);
-    children[0].returnType().addChangeListener(children[0].eval(evaluationContext), trigger);
+    resolvedType.addChangeListener(resolvedExpression.run(evaluationContext).popObject(), trigger);
 
     evaluationContext.currentLine = resolvedEndLine + 1;
     return null;

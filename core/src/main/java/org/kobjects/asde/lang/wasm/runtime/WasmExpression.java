@@ -15,8 +15,8 @@ public class WasmExpression {
   }
 
 
-  public void run(EvaluationContext context) {
-    run(context, 1);
+  public DataArray run(EvaluationContext context) {
+    return run(context, 1);
   }
 
   public int skipBlock(int pc, boolean orElse) {
@@ -66,7 +66,7 @@ public class WasmExpression {
   }
 
 
-  public void run(EvaluationContext context, int expectedStackGrowth) {
+  public DataArray run(EvaluationContext context, int expectedStackGrowth) {
     DataArray stack = context.dataStack;
     int pc = 0;
     int expectedStackSize = stack.size() + expectedStackGrowth;
@@ -738,6 +738,7 @@ public class WasmExpression {
       throw new RuntimeException("Expected stack size: " + expectedStackSize + "; actual: " + stack.size());
     }
 
+    return stack;
   }
 
 }

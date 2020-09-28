@@ -1,6 +1,10 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.asde.lang.node.ExpressionNode;
+import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.type.Types;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
+import org.kobjects.asde.lang.wasm.runtime.WasmExpression;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.function.ValidationContext;
@@ -14,7 +18,9 @@ import java.util.Map;
 public class OnStatement extends BlockStatement  {
 
   int resolvedEndLine;
-  ArrayList<Node> listenableSubexpressions = new ArrayList<>();
+  WasmExpression resolvedTrigger;
+  ArrayList<WasmExpression> resolvedListenableSubexpressions = new ArrayList<>();
+  ArrayList<Type> resolvedTypes = new ArrayList();
 
   public OnStatement(ExpressionNode condition) {
     super(condition);
@@ -22,18 +28,23 @@ public class OnStatement extends BlockStatement  {
 
 
   @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
+  protected void resolveImpl(ValidationContext resolutionContext, int line) {
     resolutionContext.startBlock(this);
-    listenableSubexpressions.clear();
+    resolvedListenableSubexpressions.clear();
+    resolvedTypes.clear();
     findListenableSubexpressions(children, resolutionContext, line);
+    WasmExpressionBuilder builder = new WasmExpressionBuilder();
+    children[0].resolveWasm(builder, resolutionContext, line, Types.BOOL);
+    resolvedTrigger = builder.build();
   }
 
-  void findListenableSubexpressions(Node[] nodes, ValidationContext resolutionContext, int line) {
-    for (Node node: nodes) {
-      if (node.returnType().supportsChangeListeners()) {
-        // Make sure it has wasm if needed.
-        node.resolve(resolutionContext, line);
-        listenableSubexpressions.add(node);
+  void findListenableSubexpressions(ExpressionNode[] nodes, ValidationContext resolutionContext, int line) {
+    for (ExpressionNode node: nodes) {
+      WasmExpressionBuilder builder = new WasmExpressionBuilder();
+      Type type = node.resolveWasm(builder, resolutionContext, line);
+      if (type.supportsChangeListeners()) {
+        resolvedTypes.add(type);
+        resolvedListenableSubexpressions.add(builder.build());
       } else {
         findListenableSubexpressions(node.children, resolutionContext, line);
       }
@@ -46,8 +57,8 @@ public class OnStatement extends BlockStatement  {
     newContectBase.currentLine++;
 
     Trigger trigger = new Trigger(newContectBase);
-    for (Node node : listenableSubexpressions) {
-      node.returnType().addChangeListener(node.eval(evaluationContext), trigger);
+    for (int i = 0; i < resolvedTypes.size(); i++) {
+      resolvedTypes.get(i).addChangeListener(resolvedListenableSubexpressions.get(i).run(evaluationContext).popObject(), trigger);
     }
 
     evaluationContext.currentLine = resolvedEndLine + 1;
@@ -87,7 +98,7 @@ public class OnStatement extends BlockStatement  {
           evaluationContext.control.getState() == ProgramControl.State.ENDED) {
         return;
       }
-      if (children[0].evalBoolean(evaluationContext)) {
+      if (resolvedTrigger.run(evaluationContext).popBoolean()) {
 //        System.out.println("Condition did trigger: " + OnStatement.this);
         if (armed) {
           armed = false;
