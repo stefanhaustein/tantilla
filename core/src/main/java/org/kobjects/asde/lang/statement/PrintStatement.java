@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.asde.lang.node.ExpressionNode;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
+import org.kobjects.asde.lang.wasm.runtime.WasmExpression;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
@@ -11,19 +13,27 @@ import java.util.Map;
 
 public class PrintStatement extends Statement {
 
+  WasmExpression[] resolvedExpressions;
+
   public PrintStatement(ExpressionNode... children) {
     super(children);
+    resolvedExpressions = new WasmExpression[children.length];
   }
 
   @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
+  protected void resolveImpl(ValidationContext resolutionContext, int line) {
+    for (int i = 0; i < children.length; i++) {
+      WasmExpressionBuilder builder = new WasmExpressionBuilder();
+      children[i].resolveWasm(builder, resolutionContext, line);
+      resolvedExpressions[i] = builder.build();
+    }
   }
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
     Program program = evaluationContext.control.program;
-    for (int i = 0; i < children.length; i++) {
-      Object val = children[i].eval(evaluationContext);
+    for (WasmExpression wasmExpression : resolvedExpressions) {
+      Object val = wasmExpression.run(evaluationContext).popObject();
       program.print(Program.toString(val));
     }
     return null;

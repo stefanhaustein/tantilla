@@ -16,7 +16,7 @@ public class RemStatement extends Statement {
   }
 
   @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
+  protected void resolveImpl(ValidationContext resolutionContext, int line) {
     // Nothing to do here.
   }
 
