@@ -3,6 +3,8 @@ package org.kobjects.asde.lang.statement;
 import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.asde.lang.type.AwaitableType;
 import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
+import org.kobjects.asde.lang.wasm.runtime.WasmExpression;
 import org.kobjects.async.Promise;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.io.SyntaxColor;
@@ -16,7 +18,7 @@ import java.util.Map;
 
 public class ReturnStatement extends Statement {
 
-  Node resolvedChild;
+  WasmExpression resolvedExpression;
   boolean async;
 
   public ReturnStatement(ExpressionNode... children) {
@@ -24,7 +26,7 @@ public class ReturnStatement extends Statement {
   }
 
   @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
+  protected void resolveImpl(ValidationContext resolutionContext, int line) {
     Type returnType = resolutionContext.userFunction.getType().getReturnType();
     async = returnType instanceof AwaitableType;
     Type unwrappedReturnType = async ? ((AwaitableType) returnType).getWrapped() : returnType;
@@ -33,14 +35,16 @@ public class ReturnStatement extends Statement {
       if (unwrappedReturnType != Types.VOID) {
         throw new RuntimeException("Return value expected for function.");
       }
-      resolvedChild = null;
+      resolvedExpression = null;
     } else if (children.length == 1) {
-      Type type = children[0].returnType();
+      WasmExpressionBuilder builder = new WasmExpressionBuilder();
+      Type type = children[0].resolveWasm(builder, resolutionContext, line);
       if (type instanceof AwaitableType) {
-        resolvedChild = TraitCast.autoCast(children[0], returnType, resolutionContext);
+        TraitCast.autoCastWasm(builder, type, returnType, resolutionContext);
       } else {
-        resolvedChild = TraitCast.autoCast(children[0], unwrappedReturnType, resolutionContext);
+        TraitCast.autoCastWasm(builder, type, unwrappedReturnType, resolutionContext);
       }
+      resolvedExpression = builder.build();
     } else {
       throw new RuntimeException("Impossible");
     }
@@ -48,8 +52,8 @@ public class ReturnStatement extends Statement {
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
-    if (resolvedChild != null) {
-      Object result = resolvedChild.eval(evaluationContext);
+    if (resolvedExpression != null) {
+      Object result = resolvedExpression.run(evaluationContext).popObject();
       evaluationContext.returnValue = async ? Promise.of(result) : result;
     }
     evaluationContext.currentLine = Integer.MAX_VALUE;

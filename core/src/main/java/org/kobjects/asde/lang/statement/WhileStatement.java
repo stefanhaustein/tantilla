@@ -1,6 +1,8 @@
 package org.kobjects.asde.lang.statement;
 
 import org.kobjects.asde.lang.node.ExpressionNode;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
+import org.kobjects.asde.lang.wasm.runtime.WasmExpression;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Types;
@@ -13,6 +15,7 @@ import java.util.Map;
 public class WhileStatement extends BlockStatement {
   int resolvedStartLine;
   int resolvedEndLine;
+  WasmExpression resolvedCondition;
 
   public WhileStatement(ExpressionNode condition) {
     super(condition);
@@ -31,15 +34,15 @@ public class WhileStatement extends BlockStatement {
   @Override
   protected void onResolve(ValidationContext resolutionContext, int line) {
     resolvedStartLine = line;
-    if (children[0].returnType() != Types.BOOL) {
-      throw new RuntimeException("Boolean condition expected.");
-    }
+    WasmExpressionBuilder builder = new WasmExpressionBuilder();
+    children[0].resolveWasm(builder, resolutionContext, line, Types.BOOL);
+    resolvedCondition = builder.build();
     resolutionContext.startBlock(this);
   }
 
   @Override
   public Object eval(EvaluationContext evaluationContext) {
-    if (children[0].evalBoolean(evaluationContext)) {
+    if (resolvedCondition.run(evaluationContext).popBoolean()) {
       evaluationContext.currentLine = resolvedStartLine + 1;
     } else {
       evaluationContext.currentLine = resolvedEndLine + 1;
