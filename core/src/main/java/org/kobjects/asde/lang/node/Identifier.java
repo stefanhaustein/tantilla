@@ -54,16 +54,14 @@ public class Identifier extends AssignableWasmNode implements HasProperty {
       wasm.callWithContext(context -> {
           System.err.println("Evaluated local '" + name + " to " + context.dataStack.getObject(context.dataStack.size() - 1));
       });
-      resolvedType = resolvedLocalVariable.getType();
-    } else {
-      resolvedRootProperty = resolutionContext.program.mainModule.getProperty(name);
-      if (resolvedRootProperty == null) {
-        throw new RuntimeException("Variable not found: '" + name + "'");
-      }
-      resolvedKind = Kind.ROOT_MODULE_PROPERTY;
-      resolvedType = StaticPropertyResolver.resolveStaticProperty(wasm, resolutionContext, resolvedRootProperty, forSet);
+      return resolvedLocalVariable.getType();
     }
-    return resolvedType;
+    resolvedRootProperty = resolutionContext.program.mainModule.getProperty(name);
+    if (resolvedRootProperty == null) {
+      throw new RuntimeException("Variable not found: '" + name + "'");
+    }
+    resolvedKind = Kind.ROOT_MODULE_PROPERTY;
+    return StaticPropertyResolver.resolveStaticProperty(wasm, resolutionContext, resolvedRootProperty, forSet);
   }
 
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {

@@ -65,26 +65,6 @@ public class FieldView extends PropertyView {
         target.addView(initializerView);
     }
 
-    void addChildList(ViewGroup target, int indent, Node node) {
-        for (int i = 0; i < node.children.length; i++) {
-            Node child = node.children[i];
-            boolean last = i == node.children.length - 1;
-            if (child instanceof ArrayLiteral && isMultiDim(child.returnType())) {
-                if (i == 0) {
-                    addLine(target, indent, "{");
-                }
-                addChildList(target, indent + 1, child);
-                addLine(target, indent, last ? "}" : "}, {");
-            } else {
-                addLine(target, indent, last ? String.valueOf(child) : (child + ","));
-            }
-        }
-    }
-
-
-    public boolean isMultiDim(Type type) {
-        return (type instanceof ListType && ((ListType) type).elementType instanceof ListType);
-    }
 
     public void refresh() {
         super.refresh();

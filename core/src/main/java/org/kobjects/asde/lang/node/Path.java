@@ -45,8 +45,7 @@ public class Path extends AssignableWasmNode implements HasProperty {
 
   @Override
   public Type resolveForAssignment(WasmExpressionBuilder wasm, ValidationContext validationContext, int line) {
-    resolvedType = resolveWasmImpl(wasm, validationContext, line, /* forSet= */ true);
-    return resolvedType;
+    return resolveWasmImpl(wasm, validationContext, line, /* forSet= */ true);
   }
 
   private Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line, boolean forSet) {
@@ -92,8 +91,7 @@ public class Path extends AssignableWasmNode implements HasProperty {
               evaluationContext.push(value);
               evaluationContext.call(callable, 2);
             });
-            resolvedType = functionType.getParameter(1).getExplicitType();
-            return resolvedType;
+            return functionType.getParameter(1).getExplicitType();
           }
         }
       }
@@ -103,7 +101,7 @@ public class Path extends AssignableWasmNode implements HasProperty {
     if (resolvedProperty == null) {
       throw new RuntimeException("Property '" + pathName + "'"
           + (forSet ? (" or set_" + pathName + " method") : "")
-          + " not found in " + children[0].returnType());
+          + " not found in " + baseType);
     }
     resolutionContext.validateProperty(resolvedProperty);
     if (resolvedProperty.getType() == null) {
@@ -116,10 +114,9 @@ public class Path extends AssignableWasmNode implements HasProperty {
           throw new RuntimeException("Parameterless (apart from self) method expected for property-style invocation.");
         }
         resolvedKind = ResolvedKind.INSTANCE_PROPERTY_GET;
-        resolvedType = functionType.getReturnType();
-        return resolvedType;
+        return functionType.getReturnType();
       }
-      throw new RuntimeException("No-static Instance property expected. Please use " + children[0].returnType() + "." + resolvedProperty + " for a static reference instead.");
+      throw new RuntimeException("No-static Instance property expected. Please use " + baseType + "." + resolvedProperty + " for a static reference instead.");
     }
     resolvedKind = ResolvedKind.INSTANCE_FIELD;
     if (forSet) {
@@ -138,8 +135,7 @@ public class Path extends AssignableWasmNode implements HasProperty {
         evaluationContext.dataStack.pushObject(resolvedProperty.get(evaluationContext, instance));
       });
     }
-    resolvedType = resolvedProperty.getType();
-    return resolvedType;
+    return resolvedProperty.getType();
   }
 
   private Type resolveStatic(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line, Type type, boolean forSet) {
@@ -151,18 +147,16 @@ public class Path extends AssignableWasmNode implements HasProperty {
       resolvedConstant = enumType.getLiteral(pathName);
       resolvedKind = ResolvedKind.ENUM_LITERAL;
       wasm.objConst(resolvedConstant);
-      resolvedType = enumType;
       return enumType;
     }
     if (type instanceof Classifier) {
       resolvedProperty = ((Classifier) type).getProperty(pathName);
       if (resolvedProperty == null) {
-        throw new RuntimeException("Property '" + pathName + "' not found in " + children[0].returnType());
+        throw new RuntimeException("Property '" + pathName + "' not found in " + type);
       }
       resolutionContext.validateProperty(resolvedProperty);
-      resolvedType = StaticPropertyResolver.resolveStaticProperty(wasm, resolutionContext, resolvedProperty, forSet);
       resolvedKind = ResolvedKind.STATIC_PROPERTY;
-      return resolvedType;
+      return StaticPropertyResolver.resolveStaticProperty(wasm, resolutionContext, resolvedProperty, forSet);
     }
     throw new RuntimeException("Classifier expected as path base; got: " + type);
   }

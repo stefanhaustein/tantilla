@@ -50,7 +50,7 @@ public class Literal extends ExpressionNode {
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     if (value instanceof String) {
       appendLinked(asb, "\"" + ((String) value).replace("\"", "\"\"") + '"', errors, SyntaxColor.STRING);
-    } else if (format == Format.HEX && returnType() == Types.FLOAT && ((Number) value).longValue() == ((Number) value).doubleValue()) {
+    } else if (format == Format.HEX && (value instanceof Number) && ((Number) value).longValue() == ((Number) value).doubleValue()) {
       appendLinked(asb, "0x" + Long.toHexString(((Number) value).longValue()), errors);
     } else {
       appendLinked(asb, Program.toString(value), errors);

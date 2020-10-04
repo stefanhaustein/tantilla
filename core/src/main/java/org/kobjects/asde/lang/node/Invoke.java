@@ -71,7 +71,7 @@ public class Invoke extends ExpressionNode {
 
       resolvedProperty = ((Classifier) baseType).getProperty(name);
       if (resolvedProperty == null) {
-        throw new RuntimeException("Property '" + name + "' not found in " + adjustedChildren[0].returnType());
+        throw new RuntimeException("Property '" + name + "' not found in " + baseType);
       }
 
       resolutionContext.validateProperty(resolvedProperty);

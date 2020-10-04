@@ -97,7 +97,7 @@ public class Slice extends ExpressionNode {
         context.dataStack.pushObject(new ListImpl(resolvedElementType, data));
       });
     }
-    return resolvedType = type0;
+    return type0;
   }
 
   @Override

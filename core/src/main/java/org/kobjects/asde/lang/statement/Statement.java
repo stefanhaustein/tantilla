@@ -17,11 +17,7 @@ public abstract class Statement extends Node {
     super(children);
   }
 
-
-  @Override
-  public final Type returnType() {
-    return Types.VOID;
-  }
+  public abstract Object eval(EvaluationContext evaluationContext);
 
   public int getIndent() {
     if (block == null) {
@@ -35,8 +31,7 @@ public abstract class Statement extends Node {
     return false;
   }
 
-  @Override
-  public boolean resolve(ValidationContext resolutionContext, int line) {
+  public final boolean resolve(ValidationContext resolutionContext, int line) {
     block = resolutionContext.getCurrentBlock();
     resolveImpl(resolutionContext, line);
     return true;

@@ -47,7 +47,7 @@ public class ArrayAccess extends AssignableWasmNode {
       tokenizer.nextToken();
       resolvedElementType = resolutionContext.program.parser.parseType(tokenizer);
       wasm.objConst(resolvedElementType);
-      return resolvedType = new MetaType(resolvedElementType);
+      return new MetaType(resolvedElementType);
     }
 
     Type type0 = children[0].resolveWasm(new WasmExpressionBuilder(), resolutionContext, line);
@@ -61,7 +61,7 @@ public class ArrayAccess extends AssignableWasmNode {
       }
       Type type1 = children[1].resolveWasm(wasm, resolutionContext, line);
       if (type1 != Types.FLOAT) {
-        throw new RuntimeException("Number argument expected for array access; got: " + children[1].returnType());
+        throw new RuntimeException("Number argument expected for array access; got: " + type1);
       }
 
       if (type0 == Types.STR) {
@@ -81,7 +81,7 @@ public class ArrayAccess extends AssignableWasmNode {
           }
           context.dataStack.pushObject(s.substring(pos, pos + Character.charCount(pos)));
         });
-        return resolvedType = Types.STR;
+        return Types.STR;
       }
       kind = Kind.ARRAY_ACCESS;
       if (forSet) {
@@ -97,7 +97,7 @@ public class ArrayAccess extends AssignableWasmNode {
           context.dataStack.pushObject(array.get(index < 0 ? array.length() - index : index));
         });
       }
-      return resolvedType = ((ListType) type0).elementType;
+      return ((ListType) type0).elementType;
     }
 
     if (type0 instanceof MetaType) {
@@ -122,10 +122,10 @@ public class ArrayAccess extends AssignableWasmNode {
         }
         context.dataStack.pushObject(new ListImpl(resolvedElementType, array));
       });
-      return resolvedType = new ListType(resolvedElementType);
+      return new ListType(resolvedElementType);
     }
 
-    throw new RuntimeException("Not a list: " + children[0] + " (" + children[0].returnType() + ") -- this: " + this);
+    throw new RuntimeException("Not a list: " + children[0] + " (" + type0 + ") -- this: " + this);
   }
 
   @Override

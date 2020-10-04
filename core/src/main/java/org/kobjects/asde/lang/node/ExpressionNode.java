@@ -7,13 +7,10 @@ import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.asde.lang.wasm.runtime.WasmExpression;
 
 public abstract class ExpressionNode extends Node {
-  WasmExpression wasmExpression;
-  Type resolvedType;
 
   public ExpressionNode(ExpressionNode... children) {
     super(children);
   }
-
 
   public final Type resolveWasm(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
     try {
@@ -23,7 +20,6 @@ public abstract class ExpressionNode extends Node {
       return null;
     }
   }
-
 
   public final void resolveWasm(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line, Type expectedType) {
     try {
@@ -35,29 +31,6 @@ public abstract class ExpressionNode extends Node {
       resolutionContext.addError(this, e);
     }
   }
-  @Override
-  public final boolean resolve(ValidationContext resolutionContext, int line) {
-    WasmExpressionBuilder wasmExpressionBuilder = new WasmExpressionBuilder();
-    resolvedType = resolveWasm(wasmExpressionBuilder, resolutionContext, line);
-    wasmExpression = wasmExpressionBuilder.build();
-    return resolvedType != null;
-  }
-
 
   protected abstract Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line);
-
-  @Override
-  public final Object eval(EvaluationContext evaluationContext) {
-    try {
-      wasmExpression.run(evaluationContext);
-      return evaluationContext.dataStack.popObject();
-    } catch (Exception e) {
-      throw new RuntimeException("Exception in " + toString(), e);
-    }
-  }
-
-  @Override
-  public final Type returnType() {
-    return resolvedType;
-  }
 }

@@ -50,7 +50,6 @@ public class WasmExpression {
         case Wasm.I32_CONST:
         case Wasm.I64_CONST:
         case Wasm.OBJ_CONST:
-        case Wasm.EVAL:
           while ((code[pc++] & 0x80) != 0) {
             // condition contains increment.
           }
@@ -715,13 +714,7 @@ public class WasmExpression {
           break;
         }
 
-        case Wasm.EVAL: {
-          int index = code[pc++] & 255;
-          Node node = (Node) (references[index]);
-          context.push(node.eval(context));
-          break;
-        }
-        case Wasm.CALL_WITH_CONTEXT: {
+         case Wasm.CALL_WITH_CONTEXT: {
           CallWithContext callWithContext = (CallWithContext) stack.popObject();
           callWithContext.call(context);
           break;

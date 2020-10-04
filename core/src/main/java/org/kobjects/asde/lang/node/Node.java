@@ -18,22 +18,7 @@ import java.util.Map;
 public abstract class Node {
 
   // Used in error collections for property level errors.
-  public static Node NO_NODE = new Node() {
-    @Override
-    public boolean resolve(ValidationContext resolutionContext, int line) {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Object eval(EvaluationContext evaluationContext) {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Type returnType() {
-      throw new UnsupportedOperationException();
-    }
-  };
+  public static Node NO_NODE = new Node() {};
 
   public static final ExpressionNode[] EMPTY_ARRAY = new ExpressionNode[0];
 
@@ -42,10 +27,6 @@ public abstract class Node {
   protected Node(ExpressionNode... children) {
     this.children = children == null || children.length == 0 ? EMPTY_ARRAY : children;
   }
-
-  public abstract boolean resolve(ValidationContext resolutionContext, int line);
-
-  public abstract Object eval(EvaluationContext evaluationContext);
 
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     if (children != null && children.length > 0) {
@@ -82,9 +63,6 @@ public abstract class Node {
     toString(asb, Collections.<Node, Exception>emptyMap(), false);
     return asb.toString();
   }
-
-  public abstract Type returnType();
-
 
   public void process(Consumer<Node> action) {
     for (Node child : children) {

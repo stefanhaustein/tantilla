@@ -28,7 +28,7 @@ public class ArrayLiteral extends ExpressionNode {
             for (int i = 1; i < count; i++) {
                 Type typeI = children[i].resolveWasm(wasm, resolutionContext, line);
                 if (!elementType.equals(typeI)) {
-                    throw new RuntimeException("Type mismatch. Expected: " + elementType + " but was " + children[i].returnType());
+                    throw new RuntimeException("Type mismatch. Expected: " + elementType + " but was " + typeI);
                 }
             }
             resolvedType = new ListType(elementType);

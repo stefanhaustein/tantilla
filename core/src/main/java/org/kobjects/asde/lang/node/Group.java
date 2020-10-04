@@ -14,7 +14,7 @@ public class Group extends ExpressionNode {
 
     @Override
     protected Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
-        return resolvedType = children[0].resolveWasm(wasm, resolutionContext, line);
+        return  children[0].resolveWasm(wasm, resolutionContext, line);
     }
 
     @Override
