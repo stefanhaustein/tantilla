@@ -1,25 +1,27 @@
 package org.kobjects.asde.lang.function;
 
 import org.kobjects.asde.lang.node.ExpressionNode;
-import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.type.Type;
+import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
+import org.kobjects.asde.lang.wasm.runtime.WasmExpression;
 
 public class Parameter {
     public static final Parameter[] EMPTY_ARRAY = new Parameter[0];
 
     private final String name;
-    private final Type type;
+    private final Type explicitType;
     private final ExpressionNode defaultValueExpression;
+    private Type resolvedType;
 
     private Parameter(String name, Type type) {
         this.name = name;
-        this.type = type;
+        this.explicitType = type;
         defaultValueExpression = null;
     }
 
     private Parameter(String name, ExpressionNode defaultValueExpression) {
         this.name = name;
-        this.type = null;
+        this.explicitType = null;
         this.defaultValueExpression = defaultValueExpression;
     }
 
@@ -35,8 +37,12 @@ public class Parameter {
         return name;
     }
 
-    public Type getType() {
-        return type != null ? type : defaultValueExpression.returnType();
+    public Type getExplicitType() {
+        return explicitType != null ? explicitType : resolvedType;
+    }
+
+    public boolean hasDefaultValue() {
+        return defaultValueExpression != null;
     }
 
     public ExpressionNode getDefaultValueExpression() {
@@ -44,6 +50,12 @@ public class Parameter {
     }
 
     public String toString() {
-        return name + ": " + type;
+        return name + ": " + explicitType;
+    }
+
+    public void resolve(ValidationContext validationContext) {
+        if (defaultValueExpression != null) {
+            resolvedType = defaultValueExpression.resolveWasm(new WasmExpressionBuilder(), validationContext, 0);
+        }
     }
 }

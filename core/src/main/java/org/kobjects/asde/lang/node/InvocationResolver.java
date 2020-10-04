@@ -5,7 +5,6 @@ import org.kobjects.asde.lang.function.Parameter;
 import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
-import org.kobjects.asde.lang.wasm.runtime.WasmExpression;
 
 public class InvocationResolver {
 
@@ -37,7 +36,7 @@ public class InvocationResolver {
       Parameter parameter = signature.getParameter(parameterIndex);
       WasmExpressionBuilder childBuilder = wasm.childBuilder();
       Type actualType = value.resolveWasm(childBuilder, context, line);
-      TraitCast.autoCastWasm(childBuilder, actualType, parameter.getType(), context);
+      TraitCast.autoCastWasm(childBuilder, actualType, parameter.getExplicitType(), context);
       result[parameterIndex] = childBuilder;
     }
 

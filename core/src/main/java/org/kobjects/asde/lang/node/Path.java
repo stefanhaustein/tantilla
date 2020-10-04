@@ -92,7 +92,7 @@ public class Path extends AssignableWasmNode implements HasProperty {
               evaluationContext.push(value);
               evaluationContext.call(callable, 2);
             });
-            resolvedType = functionType.getParameter(1).getType();
+            resolvedType = functionType.getParameter(1).getExplicitType();
             return resolvedType;
           }
         }

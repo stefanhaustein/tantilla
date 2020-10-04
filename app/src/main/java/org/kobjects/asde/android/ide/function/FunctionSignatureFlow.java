@@ -372,7 +372,7 @@ public class FunctionSignatureFlow {
     }
 
     ParameterWithOriginalIndex(Parameter parameter, int originalIndex) {
-      this(parameter.getName(), parameter.getType(), originalIndex);
+      this(parameter.getName(), parameter.getExplicitType(), originalIndex);
     }
 
 

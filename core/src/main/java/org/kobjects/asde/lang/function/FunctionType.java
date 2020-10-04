@@ -30,7 +30,7 @@ public class FunctionType implements Type {
   }
 
   public Type getParameterType(int index) {
-    return parameters[index].getType();
+    return parameters[index].getExplicitType();
   }
 
   public int getParameterCount() {

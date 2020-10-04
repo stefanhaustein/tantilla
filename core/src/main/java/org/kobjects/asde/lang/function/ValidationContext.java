@@ -131,9 +131,7 @@ public class ValidationContext {
     if (userFunction != null) {
       FunctionType type = userFunction.type;
       for (int i = 0; i < type.getParameterCount(); i++) {
-        if (type.getParameter(i).getDefaultValueExpression() != null) {
-          type.getParameter(i).getDefaultValueExpression().resolve(this, 0);
-        }
+        type.getParameter(i).resolve(this);
         currentBlock.localSymbols.put(type.getParameter(i).getName(), new LocalSymbol(localSymbolCount++, type.getParameterType(i), false));
       }
     }
