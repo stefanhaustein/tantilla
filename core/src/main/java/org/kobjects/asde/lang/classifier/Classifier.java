@@ -20,7 +20,7 @@ public interface Classifier extends Type {
   default void processNodes(Consumer<Node> action) {
     for (Property symbol : getProperties()) {
       if (!symbol.isInstanceField()) {
-        if (symbol.getInitializer() != null) {
+        if (symbol.hasInitializer()) {
           symbol.getInitializer().process(action);
         }
         if (symbol.getStaticValue() instanceof Classifier) {

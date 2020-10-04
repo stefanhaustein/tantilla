@@ -74,13 +74,7 @@ public class StaticProperty extends AbstractProperty {
       return fixedType;
     }
     if (initializer != null) {
-      try {
-        return initializer.returnType();
-      } catch (Exception e) {
-        // Safer than making sure all nodes don't throw when asking for an unresolved return value.
-        // TODO: Might make sense to have a special type for this case instead of null.
-        // e.printStackTrace();
-      }
+      return resolvedType;
     }
     return Types.of(staticValue);
   }
@@ -130,8 +124,8 @@ public class StaticProperty extends AbstractProperty {
         dep.init(evaluationContext, initialized);
       }
     }
-    if (initializer != null) {
-      staticValue = initializer.eval(evaluationContext);
+    if (resolvedInitializer != null) {
+      staticValue = resolvedInitializer.run(evaluationContext).popObject();
     }
   }
 

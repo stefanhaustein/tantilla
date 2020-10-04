@@ -111,7 +111,7 @@ public class ValidationContext {
       other.validate();
     }
     Runnable addInitializationDependencies = () -> {
-      if (!property.isInstanceField() && property.getInitializer() != null) {
+      if (!property.isInstanceField() && property.hasInitializer()) {
         initializationDependencies.add(property);
       } else {
         initializationDependencies.addAll(property.getInitializationDependencies());
@@ -139,8 +139,8 @@ public class ValidationContext {
     }
 
     if (property != null) {
-      if (property.getInitializer() != null) {
-        property.getInitializer().resolve(this, 0);
+      if (property.hasInitializer()) {
+        property.resolveInitializer(this);
       }
 
       // Recursion should be ok from here on
@@ -255,7 +255,7 @@ public class ValidationContext {
 
   private void validateAllMethods(Classifier classifier) {
     for (Property property : classifier.getProperties()) {
-      if (property.getInitializer() == null && property.getType() instanceof FunctionType) {
+      if (!property.hasInitializer() && property.getType() instanceof FunctionType) {
 
         FunctionType functionType = (FunctionType) property.getType();
         if (functionType.getParameterCount() > 0 && functionType.getParameter(0).getName().equals("self")) {

@@ -63,9 +63,9 @@ public class ClassType extends AbstractClassifier implements InstantiableClassTy
     ArrayList<Parameter> parameters = new ArrayList<>();
     for (Property property : getProperties()) {
       if (property.isInstanceField()) {
-        parameters.add(property.getInitializer() == null
-            ? Parameter.create(property.getName(), property.getType())
-            : Parameter.create(property.getName(), property.getInitializer()));
+        parameters.add(property.hasInitializer()
+            ? Parameter.create(property.getName(), property.getInitializer())
+            : Parameter.create(property.getName(), property.getType()));
       }
     }
     return new FunctionType(this, parameters.toArray(Parameter.EMPTY_ARRAY));

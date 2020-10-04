@@ -89,7 +89,7 @@ public class FieldFlow {
 
 
     final EditText editText = new EditText(mainActivity);
-    if (fieldView != null && fieldView.property.getInitializer() != null) {
+    if (fieldView != null && fieldView.property.hasInitializer()) {
       editText.setText(fieldView.property.getInitializer().toString());
     }
 
@@ -116,7 +116,7 @@ public class FieldFlow {
 
           }
         });
-      if (fieldView != null && fieldView.property.getInitializer() == null) {
+      if (fieldView != null && !fieldView.property.hasInitializer()) {
         typeSpinner.selectType(fieldView.property.getType());
         textInputLayout.setEnabled(false);
       }

@@ -1,5 +1,6 @@
 package org.kobjects.asde.lang.classifier;
 
+import org.kobjects.asde.lang.function.ValidationContext;
 import org.kobjects.asde.lang.node.ExpressionNode;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.trait.Trait;
@@ -20,7 +21,10 @@ import java.util.Set;
 public interface Property extends Comparable<Property> {
 
   static String toString(Property property) {
-    return property.getClass().getSimpleName() + " " + property.getOwner() + "." + property.getName() + " (type: " + property.getType() + "; initializer: " + property.getInitializer() + ")";
+    return property.getClass().getSimpleName() + " " + property.getOwner()
+        + "." + property.getName()
+        + " (type: " + property.getType()
+        + (property.hasInitializer() ?  "; initializer: " + property.getInitializer() : "") + ")";
   }
 
   static int order(Property property) {
@@ -65,8 +69,12 @@ public interface Property extends Comparable<Property> {
   }
 
   default ExpressionNode getInitializer() {
-    return null;
+    throw new UnsupportedOperationException();
   };
+
+  default boolean hasInitializer() {
+    return false;
+  }
 
   /**
    * Used to set validation results.
@@ -103,7 +111,7 @@ public interface Property extends Comparable<Property> {
     } else {
       asb.append(indent);
       asb.append(getName());
-      if (getInitializer() != null) {
+      if (hasInitializer()) {
         asb.append(" = ");
         getInitializer().toString(asb, getErrors(), exportFormat);
       } else {
@@ -127,4 +135,8 @@ public interface Property extends Comparable<Property> {
   }
 
   CharSequence getDocumentation();
+
+  default void resolveInitializer(ValidationContext validationContext) {
+    throw new UnsupportedOperationException();
+  }
 }

@@ -49,7 +49,7 @@ public class InstanceFieldProperty extends AbstractProperty {
   public Type getType() {
     if (initializer != null) {
       try {
-        return initializer.returnType();
+        return resolvedType;
       } catch (Exception e) {
         // Safer than making sure all nodes don't throw when asking for an unresolved return value.
         // TODO: Might make sense to have a special type for this case instead of null.

@@ -120,7 +120,7 @@ public class FieldView extends PropertyView {
 
         codeView.removeAllViews();
 
-        if (property.getInitializer() != null) {
+        if (property.hasInitializer()) {
                 addLine(codeView, 1, property.getInitializer());
        }
     }
