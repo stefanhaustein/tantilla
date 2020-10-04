@@ -17,10 +17,6 @@ public abstract class Statement extends Node {
     super(children);
   }
 
-  @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
-    throw new UnsupportedOperationException();
-  }
 
   @Override
   public final Type returnType() {
@@ -46,9 +42,7 @@ public abstract class Statement extends Node {
     return true;
   }
 
-  protected void resolveImpl(ValidationContext validationContext, int line) {
-    super.resolve(validationContext, line);
-  }
+  protected abstract void resolveImpl(ValidationContext validationContext, int line);
 
 
 }

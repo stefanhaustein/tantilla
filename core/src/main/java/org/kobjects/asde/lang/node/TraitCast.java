@@ -13,7 +13,7 @@ import org.kobjects.asde.lang.wasm.Wasm;
 import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
 import org.kobjects.asde.lang.wasm.runtime.CallWithContext;
 
-public class TraitCast extends Node {
+public class TraitCast{
 
   public static AdapterType getAdapterType(Type actualType, Type expectedType, ValidationContext validationContext) {
     if (expectedType.equals(actualType)) {
@@ -34,12 +34,6 @@ public class TraitCast extends Node {
 
   }
 
-  public static final Node autoCast(ExpressionNode node, Type expectedType, ValidationContext context) {
-    AdapterType adapterType = getAdapterType(node.returnType(), expectedType, context);
-
-    return adapterType == null ? node : new TraitCast(node, adapterType);
-
-  }
 
   public static void autoCastWasm(WasmExpressionBuilder wasm, Type actualType, Type expectedType, ValidationContext validationContext) {
     AdapterType adapterType = getAdapterType(actualType, expectedType, validationContext);
@@ -50,27 +44,4 @@ public class TraitCast extends Node {
     }
   }
 
-
-
-  private final AdapterType adapterType;
-
-  TraitCast(ExpressionNode instanceExpression, AdapterType adapterType) {
-    super(instanceExpression);
-    this.adapterType = adapterType;
-  }
-
-  @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
-
-  }
-
-  @Override
-  public Object eval(EvaluationContext evaluationContext) {
-    return new AdapterInstance(adapterType, (ClassInstance) children[0].eval(evaluationContext));
-  }
-
-  @Override
-  public Type returnType() {
-    return adapterType.trait;
-  }
 }

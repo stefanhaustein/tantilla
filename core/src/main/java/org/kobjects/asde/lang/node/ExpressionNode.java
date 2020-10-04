@@ -43,10 +43,6 @@ public abstract class ExpressionNode extends Node {
     return resolvedType != null;
   }
 
-  @Override
-  protected final void onResolve(ValidationContext resolutionContext, int line) {
-    throw new UnsupportedOperationException();
-  }
 
   protected abstract Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line);
 

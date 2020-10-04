@@ -23,7 +23,7 @@ public class OnChangeStatement extends BlockStatement  {
 
 
   @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
+  protected void resolveImpl(ValidationContext resolutionContext, int line) {
     resolutionContext.startBlock(this);
 
     WasmExpressionBuilder builder = new WasmExpressionBuilder();

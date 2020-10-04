@@ -32,7 +32,7 @@ public class WhileStatement extends BlockStatement {
   }
 
   @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
+  protected void resolveImpl(ValidationContext resolutionContext, int line) {
     resolvedStartLine = line;
     WasmExpressionBuilder builder = new WasmExpressionBuilder();
     children[0].resolveWasm(builder, resolutionContext, line, Types.BOOL);

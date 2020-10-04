@@ -32,9 +32,7 @@ public class ForStatement extends BlockStatement {
     this.variableName = varName;
   }
 
-  @Override
-  public boolean resolve(ValidationContext resolutionContext, int line) {
-    block = resolutionContext.getCurrentBlock();
+  protected void resolveImpl(ValidationContext resolutionContext, int line) {
     resolutionContext.startBlock(this);
     resolvedForLine = line;
 
@@ -49,8 +47,6 @@ public class ForStatement extends BlockStatement {
     resolvedIterator = resolutionContext.declareLocalVariable(variableName + "-iterator", ITERATOR, false);
     resolvedVariable = resolutionContext.declareLocalVariable(variableName, arrayType.elementType, false);
     resolvedIterable = builder.build();
-
-    return true;
   }
 
   @Override

@@ -19,4 +19,9 @@ public class DebuggerStatement extends Statement {
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     appendLinked(asb, "DEBUGGER", errors);
   }
+
+  @Override
+  protected void resolveImpl(ValidationContext validationContext, int line) {
+    // Nothing to do here...
+  }
 }

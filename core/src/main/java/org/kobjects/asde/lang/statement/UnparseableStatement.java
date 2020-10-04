@@ -18,11 +18,6 @@ public class UnparseableStatement extends Statement {
   }
 
   @Override
-  protected void onResolve(ValidationContext resolutionContext, int line) {
-    throw error;
-  }
-
-  @Override
   public Object eval(EvaluationContext evaluationContext) {
     return null;
   }
@@ -30,5 +25,10 @@ public class UnparseableStatement extends Statement {
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     appendLinked(asb, text, errors);
+  }
+
+  @Override
+  protected void resolveImpl(ValidationContext validationContext, int line) {
+    // Nothing to do here.
   }
 }

@@ -20,7 +20,7 @@ public abstract class Node {
   // Used in error collections for property level errors.
   public static Node NO_NODE = new Node() {
     @Override
-    protected void onResolve(ValidationContext resolutionContext, int line) {
+    public boolean resolve(ValidationContext resolutionContext, int line) {
       throw new UnsupportedOperationException();
     }
 
@@ -43,38 +43,9 @@ public abstract class Node {
     this.children = children == null || children.length == 0 ? EMPTY_ARRAY : children;
   }
 
-  protected abstract void onResolve(ValidationContext resolutionContext, int line);
-
-
-
-  public boolean resolve(ValidationContext resolutionContext, int line) {
-    for (Node child: children) {
-      if (!child.resolve(resolutionContext, line)) {
-        return false;
-      }
-    }
-    try {
-      onResolve(resolutionContext, line);
-      return true;
-    } catch (Exception e) {
-      resolutionContext.addError(this, e);
-      return false;
-    }
-  }
+  public abstract boolean resolve(ValidationContext resolutionContext, int line);
 
   public abstract Object eval(EvaluationContext evaluationContext);
-
-  public boolean evalBoolean(EvaluationContext evaluationContext) {
-    Object o = eval(evaluationContext);
-    if (o instanceof Boolean) {
-      return (Boolean) o;
-    }
-    if (o instanceof Number) {
-      return ((Number) o).doubleValue() != 0;
-    }
-    throw new EvaluationException(this, "Boolean or Number expected; got " + Types.of(o));
-  }
-
 
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
     if (children != null && children.length > 0) {
