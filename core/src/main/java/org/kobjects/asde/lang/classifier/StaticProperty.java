@@ -1,20 +1,16 @@
 package org.kobjects.asde.lang.classifier;
 
-import org.kobjects.asde.lang.classifier.trait.AdapterInstance;
 import org.kobjects.asde.lang.function.Callable;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.UserFunction;
-import org.kobjects.asde.lang.node.ExpressionNode;
+import org.kobjects.asde.lang.expression.ExpressionNode;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.expression.Node;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.type.Types;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Used for modules and classes

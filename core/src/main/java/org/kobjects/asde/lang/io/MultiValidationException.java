@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.io;
 
 import org.kobjects.asde.lang.function.UserFunction;
-import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.expression.Node;
 
 import java.util.HashMap;
 

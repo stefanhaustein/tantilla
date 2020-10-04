@@ -5,10 +5,9 @@ import android.widget.TextView;
 
 import org.kobjects.asde.android.ide.Colors;
 import org.kobjects.asde.android.ide.MainActivity;
-import org.kobjects.asde.android.ide.errors.Errors;
 import org.kobjects.asde.android.ide.widget.ExpandableList;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.expression.Node;
 
 import java.util.ArrayList;
 import java.util.List;

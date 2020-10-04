@@ -1,7 +1,5 @@
 package org.kobjects.asde.lang.function;
 
-import org.kobjects.asde.lang.node.Node;
-
 public abstract class StatementSearch implements StatementMatcher {
 
   /*

@@ -1,4 +1,4 @@
-package org.kobjects.asde.lang.node;
+package org.kobjects.asde.lang.expression;
 
 import org.kobjects.asde.lang.classifier.trait.AdapterInstance;
 import org.kobjects.asde.lang.classifier.trait.AdapterType;
@@ -7,11 +7,8 @@ import org.kobjects.asde.lang.classifier.clazz.ClassType;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.classifier.trait.Trait;
 import org.kobjects.asde.lang.function.ValidationContext;
-import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
-import org.kobjects.asde.lang.wasm.Wasm;
 import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
-import org.kobjects.asde.lang.wasm.runtime.CallWithContext;
 
 public class TraitCast{
 

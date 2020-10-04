@@ -1,9 +1,8 @@
 package org.kobjects.asde.lang.function;
 
-import org.kobjects.asde.lang.node.ExpressionNode;
+import org.kobjects.asde.lang.expression.ExpressionNode;
 import org.kobjects.asde.lang.type.Type;
 import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
-import org.kobjects.asde.lang.wasm.runtime.WasmExpression;
 
 public class Parameter {
     public static final Parameter[] EMPTY_ARRAY = new Parameter[0];

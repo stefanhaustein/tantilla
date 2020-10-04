@@ -1,8 +1,7 @@
 package org.kobjects.asde.lang.classifier.clazz;
 
 import org.kobjects.asde.lang.classifier.AbstractProperty;
-import org.kobjects.asde.lang.node.ExpressionNode;
-import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.expression.ExpressionNode;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 

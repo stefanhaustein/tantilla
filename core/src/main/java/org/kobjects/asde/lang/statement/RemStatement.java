@@ -2,7 +2,7 @@ package org.kobjects.asde.lang.statement;
 
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
-import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.expression.Node;
 import org.kobjects.asde.lang.function.ValidationContext;
 
 import java.util.Map;

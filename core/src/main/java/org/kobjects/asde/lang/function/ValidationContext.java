@@ -8,7 +8,7 @@ import org.kobjects.asde.lang.classifier.Classifier;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.statement.BlockStatement;
-import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.expression.Node;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;
 

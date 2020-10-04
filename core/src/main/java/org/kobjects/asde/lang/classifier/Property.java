@@ -1,13 +1,13 @@
 package org.kobjects.asde.lang.classifier;
 
 import org.kobjects.asde.lang.function.ValidationContext;
-import org.kobjects.asde.lang.node.ExpressionNode;
+import org.kobjects.asde.lang.expression.ExpressionNode;
 import org.kobjects.markdown.AnnotatedStringBuilder;
 import org.kobjects.asde.lang.classifier.trait.Trait;
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.UserFunction;
 import org.kobjects.asde.lang.io.SyntaxColor;
-import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.expression.Node;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.MetaType;
 import org.kobjects.asde.lang.type.Type;

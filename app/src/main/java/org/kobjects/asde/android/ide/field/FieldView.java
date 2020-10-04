@@ -11,11 +11,7 @@ import org.kobjects.asde.android.ide.MainActivity;
 import org.kobjects.asde.android.ide.property.DeleteFlow;
 import org.kobjects.asde.android.ide.property.RenameFlow;
 import org.kobjects.asde.android.ide.property.PropertyView;
-import org.kobjects.asde.lang.list.ListType;
-import org.kobjects.asde.lang.node.ArrayLiteral;
-import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.classifier.Property;
-import org.kobjects.asde.lang.type.Type;
 
 import java.util.Collections;
 

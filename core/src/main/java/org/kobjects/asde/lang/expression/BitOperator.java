@@ -1,4 +1,4 @@
-package org.kobjects.asde.lang.node;
+package org.kobjects.asde.lang.expression;
 
 import org.kobjects.asde.lang.wasm.Wasm;
 import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;

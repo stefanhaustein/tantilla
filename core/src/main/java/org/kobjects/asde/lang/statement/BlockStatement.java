@@ -2,8 +2,7 @@ package org.kobjects.asde.lang.statement;
 
 
 import org.kobjects.asde.lang.function.ValidationContext;
-import org.kobjects.asde.lang.node.ExpressionNode;
-import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.expression.ExpressionNode;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 
 /**

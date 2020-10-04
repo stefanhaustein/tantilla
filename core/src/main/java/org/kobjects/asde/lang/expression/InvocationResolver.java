@@ -1,4 +1,4 @@
-package org.kobjects.asde.lang.node;
+package org.kobjects.asde.lang.expression;
 
 import org.kobjects.asde.lang.function.FunctionType;
 import org.kobjects.asde.lang.function.Parameter;

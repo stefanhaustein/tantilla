@@ -1,4 +1,4 @@
-package org.kobjects.asde.lang.node;
+package org.kobjects.asde.lang.expression;
 
 import org.kobjects.asde.lang.wasm.Wasm;
 import org.kobjects.asde.lang.wasm.builder.WasmExpressionBuilder;
@@ -9,25 +9,22 @@ import org.kobjects.asde.lang.type.Type;
 
 import java.util.Map;
 
-public class NegOperator extends ExpressionNode {
+public class NotOperator extends ExpressionNode {
 
-  public NegOperator(ExpressionNode child) {
+  public NotOperator(ExpressionNode child) {
     super(child);
   }
 
   @Override
   protected Type resolveWasmImpl(WasmExpressionBuilder wasm, ValidationContext resolutionContext, int line) {
-    Type t0 = children[0].resolveWasm(wasm, resolutionContext, line);
-    if (t0 != Types.FLOAT) {
-      throw new RuntimeException("Number argument expected for negation.");
-    }
-    wasm.opCode(Wasm.F64_NEG);
-    return Types.FLOAT;
+    children[0].resolveWasm(wasm, resolutionContext, line, Types.BOOL);
+    wasm.opCode(Wasm.I32_EQZ);
+    return Types.BOOL;
   }
 
   @Override
   public void toString(AnnotatedStringBuilder asb, Map<Node, Exception> errors, boolean preferAscii) {
-    appendLinked(asb,"-", errors);
+    appendLinked(asb,"not ", errors);
     children[0].toString(asb, errors, preferAscii);
   }
 }

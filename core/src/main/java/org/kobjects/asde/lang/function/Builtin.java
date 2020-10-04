@@ -4,7 +4,7 @@ import org.kobjects.markdown.AnnotatedString;
 import org.kobjects.asde.lang.classifier.Property;
 import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.list.ListType;
-import org.kobjects.asde.lang.node.Literal;
+import org.kobjects.asde.lang.expression.Literal;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.type.Type;

@@ -1,7 +1,7 @@
 package org.kobjects.asde.lang.function;
 
 import org.kobjects.markdown.AnnotatedStringBuilder;
-import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.expression.Node;
 import org.kobjects.asde.lang.statement.BlockStatement;
 import org.kobjects.asde.lang.statement.Statement;
 

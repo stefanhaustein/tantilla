@@ -1,6 +1,6 @@
 package org.kobjects.asde.lang.function;
 
-import org.kobjects.asde.lang.node.Assignable;
+import org.kobjects.asde.lang.expression.Assignable;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Type;
 

@@ -12,7 +12,7 @@ import org.kobjects.asde.lang.program.Program;
 import org.kobjects.asde.lang.program.ProgramControl;
 import org.kobjects.asde.lang.exceptions.WrappedExecutionException;
 import org.kobjects.asde.lang.runtime.StartStopListener;
-import org.kobjects.asde.lang.node.Node;
+import org.kobjects.asde.lang.expression.Node;
 
 import java.util.ArrayList;
 import java.util.Collections;

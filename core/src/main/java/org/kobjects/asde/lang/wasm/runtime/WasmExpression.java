@@ -1,6 +1,5 @@
 package org.kobjects.asde.lang.wasm.runtime;
 
-import org.kobjects.asde.lang.node.Node;
 import org.kobjects.asde.lang.runtime.DataArray;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.wasm.Wasm;

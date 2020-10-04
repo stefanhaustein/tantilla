@@ -1,8 +1,7 @@
 package org.kobjects.asde.lang.parser;
 
-import org.kobjects.asde.lang.node.ExpressionNode;
+import org.kobjects.asde.lang.expression.ExpressionNode;
 import org.kobjects.asde.lang.program.Program;
-import org.kobjects.asde.lang.node.Node;
 import org.kobjects.expressionparser.ExpressionParser;
 import org.kobjects.expressionparser.OperatorType;
 import org.kobjects.expressionparser.Tokenizer;
