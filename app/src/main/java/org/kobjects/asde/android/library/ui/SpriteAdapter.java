@@ -8,16 +8,19 @@ import org.kobjects.asde.lang.list.ListImpl;
 import org.kobjects.asde.lang.list.ListType;
 import org.kobjects.asde.lang.type.Typed;
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.krash.Animated;
-import org.kobjects.krash.EdgeMode;
-import org.kobjects.krash.Screen;
-import org.kobjects.krash.Sprite;
-import org.kobjects.krash.TextBox;
-import org.kobjects.krash.XAlign;
-import org.kobjects.krash.YAlign;
+import org.kobjects.krash.android.AndroidSprite;
+import org.kobjects.krash.api.Animated;
+import org.kobjects.krash.api.Content;
+import org.kobjects.krash.api.EdgeMode;
+import org.kobjects.krash.api.Screen;
+import org.kobjects.krash.api.Sprite;
+import org.kobjects.krash.api.TextContent;
+import org.kobjects.krash.api.XAlign;
+import org.kobjects.krash.api.YAlign;
 import org.kobjects.asde.lang.type.EnumType;
 import org.kobjects.asde.lang.classifier.builtin.NativeClass;
 import org.kobjects.asde.lang.type.Type;
+import org.kobjects.krash.api.Animated;
 
 import java.util.Collection;
 
@@ -73,15 +76,26 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setZ(((Double) value).floatValue());
           }
         },
-        new NativeProperty(TYPE, "size", "size", Types.FLOAT) {
+        new NativeProperty(TYPE, "width", "width", Types.FLOAT) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
-            return (double) ((SpriteAdapter) instance).sprite.getSize();
+            return (double) ((SpriteAdapter) instance).sprite.getWidth();
           }
 
           @Override
           public void set(EvaluationContext context, Object instance, Object value) {
-            ((SpriteAdapter) instance).sprite.setSize(((Double) value).floatValue());
+            ((SpriteAdapter) instance).sprite.setWidth(((Double) value).floatValue());
+          }
+        },
+        new NativeProperty(TYPE, "height", "height", Types.FLOAT) {
+          @Override
+          public Object get(EvaluationContext context, Object instance) {
+            return (double) ((SpriteAdapter) instance).sprite.getHeight();
+          }
+
+          @Override
+          public void set(EvaluationContext context, Object instance, Object value) {
+            ((SpriteAdapter) instance).sprite.setHeight(((Double) value).floatValue());
           }
         },
         new NativeProperty(TYPE, "angle", "angle", Types.FLOAT) {
@@ -183,7 +197,7 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setDirection(((Double) value).floatValue());
           }
         },
-        new NativeProperty(TYPE, "bubble", "Text bubble", TextBoxType.TYPE) {
+        new NativeProperty(TYPE, "bubble", "Text bubble", SpriteAdapter.TYPE) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return ((SpriteAdapter) instance).sprite.getBubble();
@@ -191,10 +205,10 @@ public class SpriteAdapter implements Animated, Typed {
 
           @Override
           public void set(EvaluationContext context, Object instance, Object value) {
-            ((SpriteAdapter) instance).sprite.setBubble(((TextBox) value));
+            ((SpriteAdapter) instance).sprite.setBubble(((Sprite) value));
           }
         },
-        new NativeProperty(TYPE, "label", "Text label", TextBoxType.TYPE) {
+        new NativeProperty(TYPE, "label", "Text label", SpriteAdapter.TYPE) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             return ((SpriteAdapter) instance).sprite.getLabel();
@@ -202,7 +216,7 @@ public class SpriteAdapter implements Animated, Typed {
 
           @Override
           public void set(EvaluationContext context, Object instance, Object value) {
-            ((SpriteAdapter) instance).sprite.setLabel(((TextBox) value));
+            ((SpriteAdapter) instance).sprite.setLabel(((Sprite) value));
           }
         },
 
@@ -217,6 +231,21 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setFace((String) value);
           }
         },
+
+        new NativeProperty(TYPE, "text", "Sprite text", Types.STR) {
+          @Override
+          public Object get(EvaluationContext context, Object instance) {
+            Content content = ((SpriteAdapter) instance).sprite.getContent();
+            return (content instanceof TextContent) ? ((TextContent) content).getText() : "";
+          }
+
+          @Override
+          public void set(EvaluationContext context, Object instance, Object value) {
+            Sprite sprite = ((SpriteAdapter) instance).sprite;
+            sprite.setContent(sprite.getScreen().createText(String.valueOf(value)));
+          }
+        },
+
         new NativeProperty(TYPE, "anchor", "Anchor for relative positioning", TYPE) {
           @Override
           public Object get(EvaluationContext context, Object instance) {
@@ -289,7 +318,7 @@ public class SpriteAdapter implements Animated, Typed {
   ListImpl collisionsArray = new ListImpl(SpriteAdapter.TYPE);
 
   public SpriteAdapter(final Screen screen) {
-    sprite = new Sprite(screen);
+    sprite = screen.createSprite();
     sprite.setTag(this);
     sprite.setSize(10);
    }

@@ -1,6 +1,6 @@
 def main():
   let bob = screen.newSprite()
-  bob.size = 50
+  bob.width = 50
   mut dx = 0.5
   mut dy = 0
   bob.yAlign = YAlign.BOTTOM
@@ -9,7 +9,7 @@ def main():
     if bob.x < 0:
       dx = 1
     end
-    if bob.x > screen.width - bob.size:
+    if bob.x > screen.width - bob.width:
       dx = -1
     end
     if bob.y < 0:

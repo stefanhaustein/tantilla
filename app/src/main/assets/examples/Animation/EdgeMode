@@ -1,7 +1,7 @@
 def main():
  let ball = screen.newSprite()
  ball.face = "🎱"
- ball.size = 30
+ ball.height = 30
  ball.edgeMode = EdgeMode.BOUNCE
  ball.rotation = 300
  ball.dx = -57
@@ -9,7 +9,7 @@ def main():
  ball.say "EdgeMode.BOUNCE"
  let ghost = screen.newSprite()
  ghost.face = "👻"
- ghost.size = 30
+ ghost.height = 30
  ghost.edgeMode = EdgeMode.WRAP
  ghost.opacity = 0.7
  ghost.dx = 13

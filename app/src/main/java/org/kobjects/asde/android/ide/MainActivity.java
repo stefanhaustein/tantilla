@@ -48,9 +48,8 @@ import org.kobjects.asde.lang.type.AwaitableType;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.android.library.ui.DpadAdapter;
 import org.kobjects.asde.android.library.ui.SpriteAdapter;
-import org.kobjects.asde.android.library.ui.TextBoxType;
 import org.kobjects.async.Promise;
-import org.kobjects.krash.Screen;
+import org.kobjects.krash.android.AndroidScreen;
 import org.kobjects.abcnotation.SampleManager;
 import org.kobjects.asde.lang.function.FunctionType;
 
@@ -106,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
 
   RunControlView runControlView;
-  Screen screen;
+  AndroidScreen screen;
   boolean runningFromShortcut;
 
   ShortcutHandler shortcutHandler;
@@ -189,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
     leftScrollView = new ScrollView(this);
     runControlView = new RunControlView(this); //, runButton);
     controlView = new ControlView(this);
-    screen = new Screen(this);
+    screen = new AndroidScreen(this);
 
     new Thread(() -> {
       long callTime = System.currentTimeMillis();
@@ -215,7 +214,6 @@ public class MainActivity extends AppCompatActivity {
     program.addBuiltin("XAlign", ScreenType.X_ALIGN);
     program.addBuiltin("YAlign", ScreenType.Y_ALIGN);
     program.addBuiltin("Sprite", SpriteAdapter.TYPE);
-    program.addBuiltin("TextBox", TextBoxType.TYPE);
     program.addBuiltin("Pen", PenType.TYPE);
     program.addBuiltin("dpad", dpadAdapter);
     program.addBuiltin("sleep", new BuiltinFunction((evaluationContext, paramCount) -> {
@@ -461,7 +459,7 @@ public class MainActivity extends AppCompatActivity {
 
     removeFromParent(leftScrollView);
     removeFromParent(mainScrollView);
-    removeFromParent(screen.view);
+    removeFromParent(screen.getView());
     removeFromParent(controlView);
     removeFromParent(programView);
     removeFromParent(programTitleView);
@@ -490,13 +488,13 @@ public class MainActivity extends AppCompatActivity {
       FrameLayout rootLayout = new FrameLayout(this);
 
       rootLayout.addView(mainScrollView);
-      rootLayout.addView(screen.view);
+      rootLayout.addView(screen.getView());
       textOutputView.titleView.setVisibility(View.GONE);
 
       FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
       layoutParams.gravity = Gravity.TOP | Gravity.RIGHT;
       rootLayout.addView(runControlView, layoutParams);
-      screen.view.setBackgroundColor(0);
+      screen.getView().setBackgroundColor(0);
 
       scrollContentView.addView(textOutputView);
       rootView = rootLayout;
@@ -595,7 +593,7 @@ public class MainActivity extends AppCompatActivity {
 
 
       if (portraitMode && !overlayGraphicsMode) {
-        resizableFrameLayout.addView(screen.view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        resizableFrameLayout.addView(screen.getView(), new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         FrameLayout.LayoutParams resizableFrameLayoutParmas =
             new FrameLayout.LayoutParams(Dimensions.dpToPx(this, 120), Dimensions.dpToPx(this, 120));
@@ -604,12 +602,12 @@ public class MainActivity extends AppCompatActivity {
         resizableFrameLayoutParmas.topMargin = Dimensions.dpToPx(this, 36);
 
         resizableFrameLayoutParmas.gravity = Gravity.TOP | Gravity.RIGHT;
-        screen.view.setBackgroundColor(getBackgroundColor());
+        screen.getView().setBackgroundColor(getBackgroundColor());
 
         mainView.addView(resizableFrameLayout, resizableFrameLayoutParmas);
       } else {
-        screen.view.setBackgroundColor(0);
-        mainView.addView(screen.view, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        screen.getView().setBackgroundColor(0);
+        mainView.addView(screen.getView(), new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
       }
 
         /*}  else {

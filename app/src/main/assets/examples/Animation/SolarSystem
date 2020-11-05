@@ -41,7 +41,7 @@ def newBody(mass: float, distance: float, velocity: float, face: str, size: floa
  planet.mass = mass
  planet.x = distance
  planet.vy = velocity
- planet.sprite.size = size
+ planet.sprite.width = size
  planet.sprite.face = face
  return planet
 end

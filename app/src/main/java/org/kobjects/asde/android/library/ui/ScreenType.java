@@ -6,11 +6,11 @@ import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
 import org.kobjects.asde.lang.type.EnumType;
 import org.kobjects.asde.lang.classifier.builtin.NativeClass;
-import org.kobjects.krash.Pen;
-import org.kobjects.krash.Screen;
-import org.kobjects.krash.TextBox;
-import org.kobjects.krash.XAlign;
-import org.kobjects.krash.YAlign;
+import org.kobjects.krash.android.Pen;
+import org.kobjects.krash.android.AndroidScreen;
+import org.kobjects.krash.api.Screen;
+import org.kobjects.krash.api.XAlign;
+import org.kobjects.krash.api.YAlign;
 
 
 public class ScreenType {
@@ -23,7 +23,7 @@ public class ScreenType {
     "Representation of the main device screen.");
 
   static {
-    Types.addClass(Screen.class, TYPE);
+    Types.addClass(AndroidScreen.class, TYPE);
     TYPE.addProperties(
         new NativeReadonlyProperty(TYPE, "width", "The width of the visible area. At least 200 and exactly 200 for a square screen.", Types.FLOAT) {
           @Override
@@ -41,7 +41,7 @@ public class ScreenType {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
             Screen self = (Screen) evaluationContext.getParameter(0);
-            return new Pen(self);
+            return new Pen((AndroidScreen) self);
           }
         },
         new NativeMethod(TYPE, "newSprite", "Create a new sprite attached to this screen object.", SpriteAdapter.TYPE, TYPE) {
@@ -51,17 +51,10 @@ public class ScreenType {
             return new SpriteAdapter(self);
           }
         },
-        new NativeMethod(TYPE, "newTextBox", "Create a new textBox attached to this screen object.", TextBoxType.TYPE, TYPE) {
-          @Override
-          public Object call(EvaluationContext evaluationContext, int paramCount) {
-            Screen self = (Screen) evaluationContext.getParameter(0);
-            return new TextBox(self);
-          }
-        },
         new NativeMethod(TYPE, "cls", "Clear the screen", Types.VOID, TYPE) {
           @Override
           public Object call(EvaluationContext evaluationContext, int paramCount) {
-            Screen self = (Screen) evaluationContext.getParameter(0);
+            AndroidScreen self = (AndroidScreen) evaluationContext.getParameter(0);
             self.cls();
             return null;
           }

@@ -5,7 +5,7 @@ import org.kobjects.asde.lang.classifier.builtin.NativeMethod;
 import org.kobjects.asde.lang.classifier.builtin.NativeProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.krash.Pen;
+import org.kobjects.krash.android.Pen;
 
 
 public class PenType {

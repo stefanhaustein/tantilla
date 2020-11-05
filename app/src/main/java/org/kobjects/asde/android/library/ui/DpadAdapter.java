@@ -7,7 +7,7 @@ import org.kobjects.asde.lang.classifier.builtin.NativeProperty;
 import org.kobjects.asde.lang.runtime.EvaluationContext;
 import org.kobjects.asde.lang.type.Typed;
 import org.kobjects.asde.lang.type.Types;
-import org.kobjects.krash.Dpad;
+import org.kobjects.krash.android.Dpad;
 import org.kobjects.asde.lang.classifier.builtin.NativeClass;
 import org.kobjects.asde.lang.type.Type;
 
