@@ -32,7 +32,7 @@ dependencies {
     implementation "com.github.stefanhaustein.android-tone-generator:core:v1.0.2"
     implementation "com.github.stefanhaustein.abcnotation:core:v1.0.0"
     implementation "com.github.stefanhaustein.abcnotation:sounds:v1.0.0"
-    implementation "com.github.stefanhaustein.krash:core:v2.0.6"
+    implementation "com.github.stefanhaustein.krash:core:v2.0.9"
 
     api project(':core')
     api project(':markdown')

@@ -14,7 +14,7 @@ import org.kobjects.krash.api.Content;
 import org.kobjects.krash.api.EdgeMode;
 import org.kobjects.krash.api.Screen;
 import org.kobjects.krash.api.Sprite;
-import org.kobjects.krash.api.TextContent;
+import org.kobjects.krash.api.Text;
 import org.kobjects.krash.api.XAlign;
 import org.kobjects.krash.api.YAlign;
 import org.kobjects.asde.lang.type.EnumType;
@@ -208,17 +208,7 @@ public class SpriteAdapter implements Animated, Typed {
             ((SpriteAdapter) instance).sprite.setBubble(((Sprite) value));
           }
         },
-        new NativeProperty(TYPE, "label", "Text label", SpriteAdapter.TYPE) {
-          @Override
-          public Object get(EvaluationContext context, Object instance) {
-            return ((SpriteAdapter) instance).sprite.getLabel();
-          }
 
-          @Override
-          public void set(EvaluationContext context, Object instance, Object value) {
-            ((SpriteAdapter) instance).sprite.setLabel(((Sprite) value));
-          }
-        },
 
         new NativeProperty(TYPE, "face", "Sprite Emoji face", Types.STR) {
           @Override
@@ -236,7 +226,7 @@ public class SpriteAdapter implements Animated, Typed {
           @Override
           public Object get(EvaluationContext context, Object instance) {
             Content content = ((SpriteAdapter) instance).sprite.getContent();
-            return (content instanceof TextContent) ? ((TextContent) content).getText() : "";
+            return (content instanceof Text) ? ((Text) content).getText() : "";
           }
 
           @Override
@@ -320,7 +310,7 @@ public class SpriteAdapter implements Animated, Typed {
   public SpriteAdapter(final Screen screen) {
     sprite = screen.createSprite();
     sprite.setTag(this);
-    sprite.setSize(10);
+    sprite.setHeight(10);
    }
 
 
